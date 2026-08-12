@@ -3,12 +3,12 @@
     "interfaces": [
         {
             "name": "ColorGroup",
-            "id": "interface-ColorGroup-1a8eed4d287ec3e3316caf5b25635dd0ba2a9ba02a6e529b3cefe6f95da59ebd9b12115545f552140feac15839907df42c1e8c9dfee0673900ea4a52d059c54b",
+            "id": "interface-ColorGroup-062b90e80cc1b9d1e69dad0563901416c9f8f045d6643ac1dbf42ac69166f7862f0c9b5741012e1a6c25ecd92d38caeb82731ee26d99a21ebb3212db013bf361",
             "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
             "deprecated": false,
             "deprecationMessage": "",
             "type": "interface",
-            "sourceCode": "import { afterNextRender, Component, input, signal } from '@angular/core';\n\ntype ColorMode = 'primitives' | 'semantic';\n\ninterface Swatch {\n  /** Custom-property name, e.g. `--gray-400` or `--color-background-brand-default`. */\n  name: string;\n  /** Resolved value from getComputedStyle, e.g. `#757575`. */\n  value: string;\n}\n\ninterface ColorGroup {\n  title: string;\n  swatches: Swatch[];\n}\n\nconst SEMANTIC_ORDER = ['background', 'text', 'border', 'icon'];\nconst COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\\(/i;\n\n/**\n * Storybook-only Foundations grid. Enumerates the design-system color custom\n * properties actually loaded in the preview (`.storybook/design-tokens.scss`),\n * resolves each value, groups them, and copies `var(--name)` on click.\n * `mode=\"semantic\"` also exposes a light/dark toggle (tokens differ per theme).\n */\n@Component({\n  selector: 'egov-color-grid',\n  template: `\n    @if (mode() === 'semantic') {\n      <div class=\"toolbar\">\n        <span class=\"toolbar__label\">Theme</span>\n        <button type=\"button\" [class.active]=\"theme() === 'light'\" (click)=\"setTheme('light')\">Light</button>\n        <button type=\"button\" [class.active]=\"theme() === 'dark'\" (click)=\"setTheme('dark')\">Dark</button>\n      </div>\n    }\n\n    @for (group of groups(); track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (swatch of group.swatches; track swatch.name) {\n            <button\n              type=\"button\"\n              class=\"swatch\"\n              [title]=\"'Copy var(' + swatch.name + ')'\"\n              (click)=\"copy(swatch.name)\"\n            >\n              <span class=\"swatch__chip\" [style.background]=\"'var(' + swatch.name + ')'\"></span>\n              <span class=\"swatch__meta\">\n                <code class=\"swatch__name\">{{ swatch.name }}</code>\n                <span class=\"swatch__value\">{{ swatch.value }}</span>\n              </span>\n              <span class=\"swatch__copied\" [class.show]=\"copied() === swatch.name\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n\n    @if (groups().length === 0) {\n      <p class=\"empty\">No color tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));\n      gap: 0.75rem;\n    }\n    .swatch {\n      display: flex;\n      align-items: center;\n      gap: 0.75rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.6rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .swatch:hover {\n      border-color: #cfcfcf;\n    }\n    .swatch__chip {\n      flex: 0 0 auto;\n      width: 40px;\n      height: 40px;\n      border-radius: 8px;\n      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);\n    }\n    .swatch__meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .swatch__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .swatch__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .swatch__copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .swatch__copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class ColorGridComponent {\n  readonly mode = input<ColorMode>('primitives');\n\n  protected readonly theme = signal<'light' | 'dark'>('light');\n  protected readonly groups = signal<ColorGroup[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected setTheme(theme: 'light' | 'dark'): void {\n    this.theme.set(theme);\n    this.load();\n  }\n\n  protected copy(name: string): void {\n    void navigator.clipboard?.writeText(`var(${name})`);\n    this.copied.set(name);\n    setTimeout(() => this.copied.update((current) => (current === name ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const root = document.documentElement;\n\n    if (this.mode() === 'semantic' && this.theme() === 'dark') {\n      root.setAttribute('data-theme', 'dark');\n    } else {\n      root.removeAttribute('data-theme');\n    }\n\n    const styles = getComputedStyle(root);\n    const swatches: Swatch[] = [];\n\n    for (const name of this.collectNames()) {\n      const value = styles.getPropertyValue(name).trim();\n\n      if (this.mode() === 'semantic' || COLOR_VALUE.test(value)) {\n        swatches.push({ name, value });\n      }\n    }\n\n    this.groups.set(this.group(swatches));\n  }\n\n  /** Enumerate `:root` custom-property names from the preview's stylesheets. */\n  private collectNames(): string[] {\n    const names = new Set<string>();\n    const wantSemantic = this.mode() === 'semantic';\n\n    for (const sheet of Array.from(document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue; // cross-origin sheet — skip\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule) || rule.selectorText !== ':root') {\n          continue;\n        }\n\n        for (const name of Array.from(rule.style)) {\n          const isSemantic = name.startsWith('--color-');\n\n          if (name.startsWith('--') && isSemantic === wantSemantic) {\n            names.add(name);\n          }\n        }\n      }\n    }\n\n    return [...names];\n  }\n\n  private group(swatches: Swatch[]): ColorGroup[] {\n    const buckets = new Map<string, Swatch[]>();\n\n    for (const swatch of swatches) {\n      const key = this.mode() === 'semantic' ? this.categoryOf(swatch.name) : this.familyOf(swatch.name);\n      const bucket = buckets.get(key) ?? [];\n\n      bucket.push(swatch);\n      buckets.set(key, bucket);\n    }\n\n    const order = this.mode() === 'semantic' ? SEMANTIC_ORDER : [...buckets.keys()].sort();\n\n    return order\n      .filter((key) => buckets.has(key))\n      .concat([...buckets.keys()].filter((k) => !order.includes(k)).sort())\n      .map((title) => ({ title, swatches: buckets.get(title)!.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })) }));\n  }\n\n  /** `--blue-sky-600` -> `blue-sky`; `--gray-200-alpha` -> `gray`; `--black` -> `black`. */\n  private familyOf(name: string): string {\n    const parts = name.replace(/^--/, '').split('-');\n\n    while (parts.length > 1 && (/^\\d+$/.test(parts[parts.length - 1]) || parts[parts.length - 1] === 'alpha')) {\n      parts.pop();\n    }\n\n    return parts.join('-');\n  }\n\n  /** `--color-background-brand-default` -> `background`. */\n  private categoryOf(name: string): string {\n    return name.replace(/^--color-/, '').split('-')[0];\n  }\n}\n",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, input, signal } from '@angular/core';\n\ntype ColorMode = 'primitives' | 'semantic';\n\ninterface Swatch {\n  name: string;\n  value: string;\n}\n\ninterface ColorGroup {\n  title: string;\n  swatches: Swatch[];\n}\n\nconst SEMANTIC_ORDER = ['background', 'text', 'border', 'icon'];\nconst COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\\(/i;\n\n@Component({\n  selector: 'egov-color-grid',\n  template: `\n    @if (mode() === 'semantic') {\n      <div class=\"toolbar\">\n        <span class=\"toolbar__label\">Theme</span>\n        <button type=\"button\" [class.active]=\"theme() === 'light'\" (click)=\"setTheme('light')\">Light</button>\n        <button type=\"button\" [class.active]=\"theme() === 'dark'\" (click)=\"setTheme('dark')\">Dark</button>\n      </div>\n    }\n\n    @for (group of groups(); track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (swatch of group.swatches; track swatch.name) {\n            <button\n              type=\"button\"\n              class=\"swatch\"\n              [title]=\"'Copy var(' + swatch.name + ')'\"\n              (click)=\"copy(swatch.name)\"\n            >\n              <span class=\"swatch__chip\" [style.background]=\"'var(' + swatch.name + ')'\"></span>\n              <span class=\"swatch__meta\">\n                <code class=\"swatch__name\">{{ swatch.name }}</code>\n                <span class=\"swatch__value\">{{ swatch.value }}</span>\n              </span>\n              <span class=\"swatch__copied\" [class.show]=\"copied() === swatch.name\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n\n    @if (groups().length === 0) {\n      <p class=\"empty\">No color tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));\n      gap: 0.75rem;\n    }\n    .swatch {\n      display: flex;\n      align-items: center;\n      gap: 0.75rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.6rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .swatch:hover {\n      border-color: #cfcfcf;\n    }\n    .swatch__chip {\n      flex: 0 0 auto;\n      width: 40px;\n      height: 40px;\n      border-radius: 8px;\n      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);\n    }\n    .swatch__meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .swatch__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .swatch__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .swatch__copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .swatch__copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class ColorGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  readonly mode = input<ColorMode>('primitives');\n\n  protected readonly theme = signal<'light' | 'dark'>('light');\n  protected readonly groups = signal<ColorGroup[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected setTheme(theme: 'light' | 'dark'): void {\n    this.theme.set(theme);\n\n    this.load();\n  }\n\n  protected copy(name: string): void {\n    void navigator.clipboard?.writeText(`var(${name})`);\n\n    this.copied.set(name);\n\n    setTimeout(() => this.copied.update((current) => (current === name ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const root = this._document.documentElement;\n\n    if (this.mode() === 'semantic' && this.theme() === 'dark') {\n      root.setAttribute('data-theme', 'dark');\n    } else {\n      root.removeAttribute('data-theme');\n    }\n\n    const styles = getComputedStyle(root);\n    const swatches: Swatch[] = [];\n\n    for (const name of this.collectNames()) {\n      const value = styles.getPropertyValue(name).trim();\n\n      if (this.mode() === 'semantic' || COLOR_VALUE.test(value)) {\n        swatches.push({ name, value });\n      }\n    }\n\n    this.groups.set(this.group(swatches));\n  }\n\n  private collectNames(): string[] {\n    const names = new Set<string>();\n    const wantSemantic = this.mode() === 'semantic';\n\n    for (const sheet of Array.from(document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue;\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule) || rule.selectorText !== ':root') {\n          continue;\n        }\n\n        for (const name of Array.from(rule.style)) {\n          const isSemantic = name.startsWith('--color-');\n\n          if (name.startsWith('--') && isSemantic === wantSemantic) {\n            names.add(name);\n          }\n        }\n      }\n    }\n\n    return [...names];\n  }\n\n  private group(swatches: Swatch[]): ColorGroup[] {\n    const buckets = new Map<string, Swatch[]>();\n\n    for (const swatch of swatches) {\n      const key = this.mode() === 'semantic' ? this.categoryOf(swatch.name) : this.familyOf(swatch.name);\n      const bucket = buckets.get(key) ?? [];\n\n      bucket.push(swatch);\n      buckets.set(key, bucket);\n    }\n\n    const order = this.mode() === 'semantic' ? SEMANTIC_ORDER : [...buckets.keys()].sort();\n\n    return order\n      .filter((key) => buckets.has(key))\n      .concat([...buckets.keys()].filter((k) => !order.includes(k)).sort())\n      .map((title) => ({ title, swatches: buckets.get(title)!.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })) }));\n  }\n\n  private familyOf(name: string): string {\n    const parts = name.replace(/^--/, '').split('-');\n\n    while (parts.length > 1 && (/^\\d+$/.test(parts[parts.length - 1]) || parts[parts.length - 1] === 'alpha')) {\n      parts.pop();\n    }\n\n    return parts.join('-');\n  }\n\n  private categoryOf(name: string): string {\n    return name.replace(/^--color-/, '').split('-')[0];\n  }\n}\n",
             "displayName": "ColorGroup",
             "properties": [
                 {
@@ -20,7 +20,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 14,
+                    "line": 12,
                     "rawdescription": "\n"
                 },
                 {
@@ -32,7 +32,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 13,
+                    "line": 11,
                     "rawdescription": "\n"
                 }
             ],
@@ -47,12 +47,12 @@
         },
         {
             "name": "Swatch",
-            "id": "interface-Swatch-1a8eed4d287ec3e3316caf5b25635dd0ba2a9ba02a6e529b3cefe6f95da59ebd9b12115545f552140feac15839907df42c1e8c9dfee0673900ea4a52d059c54b",
+            "id": "interface-Swatch-062b90e80cc1b9d1e69dad0563901416c9f8f045d6643ac1dbf42ac69166f7862f0c9b5741012e1a6c25ecd92d38caeb82731ee26d99a21ebb3212db013bf361",
             "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
             "deprecated": false,
             "deprecationMessage": "",
             "type": "interface",
-            "sourceCode": "import { afterNextRender, Component, input, signal } from '@angular/core';\n\ntype ColorMode = 'primitives' | 'semantic';\n\ninterface Swatch {\n  /** Custom-property name, e.g. `--gray-400` or `--color-background-brand-default`. */\n  name: string;\n  /** Resolved value from getComputedStyle, e.g. `#757575`. */\n  value: string;\n}\n\ninterface ColorGroup {\n  title: string;\n  swatches: Swatch[];\n}\n\nconst SEMANTIC_ORDER = ['background', 'text', 'border', 'icon'];\nconst COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\\(/i;\n\n/**\n * Storybook-only Foundations grid. Enumerates the design-system color custom\n * properties actually loaded in the preview (`.storybook/design-tokens.scss`),\n * resolves each value, groups them, and copies `var(--name)` on click.\n * `mode=\"semantic\"` also exposes a light/dark toggle (tokens differ per theme).\n */\n@Component({\n  selector: 'egov-color-grid',\n  template: `\n    @if (mode() === 'semantic') {\n      <div class=\"toolbar\">\n        <span class=\"toolbar__label\">Theme</span>\n        <button type=\"button\" [class.active]=\"theme() === 'light'\" (click)=\"setTheme('light')\">Light</button>\n        <button type=\"button\" [class.active]=\"theme() === 'dark'\" (click)=\"setTheme('dark')\">Dark</button>\n      </div>\n    }\n\n    @for (group of groups(); track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (swatch of group.swatches; track swatch.name) {\n            <button\n              type=\"button\"\n              class=\"swatch\"\n              [title]=\"'Copy var(' + swatch.name + ')'\"\n              (click)=\"copy(swatch.name)\"\n            >\n              <span class=\"swatch__chip\" [style.background]=\"'var(' + swatch.name + ')'\"></span>\n              <span class=\"swatch__meta\">\n                <code class=\"swatch__name\">{{ swatch.name }}</code>\n                <span class=\"swatch__value\">{{ swatch.value }}</span>\n              </span>\n              <span class=\"swatch__copied\" [class.show]=\"copied() === swatch.name\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n\n    @if (groups().length === 0) {\n      <p class=\"empty\">No color tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));\n      gap: 0.75rem;\n    }\n    .swatch {\n      display: flex;\n      align-items: center;\n      gap: 0.75rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.6rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .swatch:hover {\n      border-color: #cfcfcf;\n    }\n    .swatch__chip {\n      flex: 0 0 auto;\n      width: 40px;\n      height: 40px;\n      border-radius: 8px;\n      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);\n    }\n    .swatch__meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .swatch__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .swatch__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .swatch__copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .swatch__copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class ColorGridComponent {\n  readonly mode = input<ColorMode>('primitives');\n\n  protected readonly theme = signal<'light' | 'dark'>('light');\n  protected readonly groups = signal<ColorGroup[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected setTheme(theme: 'light' | 'dark'): void {\n    this.theme.set(theme);\n    this.load();\n  }\n\n  protected copy(name: string): void {\n    void navigator.clipboard?.writeText(`var(${name})`);\n    this.copied.set(name);\n    setTimeout(() => this.copied.update((current) => (current === name ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const root = document.documentElement;\n\n    if (this.mode() === 'semantic' && this.theme() === 'dark') {\n      root.setAttribute('data-theme', 'dark');\n    } else {\n      root.removeAttribute('data-theme');\n    }\n\n    const styles = getComputedStyle(root);\n    const swatches: Swatch[] = [];\n\n    for (const name of this.collectNames()) {\n      const value = styles.getPropertyValue(name).trim();\n\n      if (this.mode() === 'semantic' || COLOR_VALUE.test(value)) {\n        swatches.push({ name, value });\n      }\n    }\n\n    this.groups.set(this.group(swatches));\n  }\n\n  /** Enumerate `:root` custom-property names from the preview's stylesheets. */\n  private collectNames(): string[] {\n    const names = new Set<string>();\n    const wantSemantic = this.mode() === 'semantic';\n\n    for (const sheet of Array.from(document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue; // cross-origin sheet — skip\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule) || rule.selectorText !== ':root') {\n          continue;\n        }\n\n        for (const name of Array.from(rule.style)) {\n          const isSemantic = name.startsWith('--color-');\n\n          if (name.startsWith('--') && isSemantic === wantSemantic) {\n            names.add(name);\n          }\n        }\n      }\n    }\n\n    return [...names];\n  }\n\n  private group(swatches: Swatch[]): ColorGroup[] {\n    const buckets = new Map<string, Swatch[]>();\n\n    for (const swatch of swatches) {\n      const key = this.mode() === 'semantic' ? this.categoryOf(swatch.name) : this.familyOf(swatch.name);\n      const bucket = buckets.get(key) ?? [];\n\n      bucket.push(swatch);\n      buckets.set(key, bucket);\n    }\n\n    const order = this.mode() === 'semantic' ? SEMANTIC_ORDER : [...buckets.keys()].sort();\n\n    return order\n      .filter((key) => buckets.has(key))\n      .concat([...buckets.keys()].filter((k) => !order.includes(k)).sort())\n      .map((title) => ({ title, swatches: buckets.get(title)!.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })) }));\n  }\n\n  /** `--blue-sky-600` -> `blue-sky`; `--gray-200-alpha` -> `gray`; `--black` -> `black`. */\n  private familyOf(name: string): string {\n    const parts = name.replace(/^--/, '').split('-');\n\n    while (parts.length > 1 && (/^\\d+$/.test(parts[parts.length - 1]) || parts[parts.length - 1] === 'alpha')) {\n      parts.pop();\n    }\n\n    return parts.join('-');\n  }\n\n  /** `--color-background-brand-default` -> `background`. */\n  private categoryOf(name: string): string {\n    return name.replace(/^--color-/, '').split('-')[0];\n  }\n}\n",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, input, signal } from '@angular/core';\n\ntype ColorMode = 'primitives' | 'semantic';\n\ninterface Swatch {\n  name: string;\n  value: string;\n}\n\ninterface ColorGroup {\n  title: string;\n  swatches: Swatch[];\n}\n\nconst SEMANTIC_ORDER = ['background', 'text', 'border', 'icon'];\nconst COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\\(/i;\n\n@Component({\n  selector: 'egov-color-grid',\n  template: `\n    @if (mode() === 'semantic') {\n      <div class=\"toolbar\">\n        <span class=\"toolbar__label\">Theme</span>\n        <button type=\"button\" [class.active]=\"theme() === 'light'\" (click)=\"setTheme('light')\">Light</button>\n        <button type=\"button\" [class.active]=\"theme() === 'dark'\" (click)=\"setTheme('dark')\">Dark</button>\n      </div>\n    }\n\n    @for (group of groups(); track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (swatch of group.swatches; track swatch.name) {\n            <button\n              type=\"button\"\n              class=\"swatch\"\n              [title]=\"'Copy var(' + swatch.name + ')'\"\n              (click)=\"copy(swatch.name)\"\n            >\n              <span class=\"swatch__chip\" [style.background]=\"'var(' + swatch.name + ')'\"></span>\n              <span class=\"swatch__meta\">\n                <code class=\"swatch__name\">{{ swatch.name }}</code>\n                <span class=\"swatch__value\">{{ swatch.value }}</span>\n              </span>\n              <span class=\"swatch__copied\" [class.show]=\"copied() === swatch.name\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n\n    @if (groups().length === 0) {\n      <p class=\"empty\">No color tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));\n      gap: 0.75rem;\n    }\n    .swatch {\n      display: flex;\n      align-items: center;\n      gap: 0.75rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.6rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .swatch:hover {\n      border-color: #cfcfcf;\n    }\n    .swatch__chip {\n      flex: 0 0 auto;\n      width: 40px;\n      height: 40px;\n      border-radius: 8px;\n      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);\n    }\n    .swatch__meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .swatch__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .swatch__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .swatch__copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .swatch__copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class ColorGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  readonly mode = input<ColorMode>('primitives');\n\n  protected readonly theme = signal<'light' | 'dark'>('light');\n  protected readonly groups = signal<ColorGroup[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected setTheme(theme: 'light' | 'dark'): void {\n    this.theme.set(theme);\n\n    this.load();\n  }\n\n  protected copy(name: string): void {\n    void navigator.clipboard?.writeText(`var(${name})`);\n\n    this.copied.set(name);\n\n    setTimeout(() => this.copied.update((current) => (current === name ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const root = this._document.documentElement;\n\n    if (this.mode() === 'semantic' && this.theme() === 'dark') {\n      root.setAttribute('data-theme', 'dark');\n    } else {\n      root.removeAttribute('data-theme');\n    }\n\n    const styles = getComputedStyle(root);\n    const swatches: Swatch[] = [];\n\n    for (const name of this.collectNames()) {\n      const value = styles.getPropertyValue(name).trim();\n\n      if (this.mode() === 'semantic' || COLOR_VALUE.test(value)) {\n        swatches.push({ name, value });\n      }\n    }\n\n    this.groups.set(this.group(swatches));\n  }\n\n  private collectNames(): string[] {\n    const names = new Set<string>();\n    const wantSemantic = this.mode() === 'semantic';\n\n    for (const sheet of Array.from(document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue;\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule) || rule.selectorText !== ':root') {\n          continue;\n        }\n\n        for (const name of Array.from(rule.style)) {\n          const isSemantic = name.startsWith('--color-');\n\n          if (name.startsWith('--') && isSemantic === wantSemantic) {\n            names.add(name);\n          }\n        }\n      }\n    }\n\n    return [...names];\n  }\n\n  private group(swatches: Swatch[]): ColorGroup[] {\n    const buckets = new Map<string, Swatch[]>();\n\n    for (const swatch of swatches) {\n      const key = this.mode() === 'semantic' ? this.categoryOf(swatch.name) : this.familyOf(swatch.name);\n      const bucket = buckets.get(key) ?? [];\n\n      bucket.push(swatch);\n      buckets.set(key, bucket);\n    }\n\n    const order = this.mode() === 'semantic' ? SEMANTIC_ORDER : [...buckets.keys()].sort();\n\n    return order\n      .filter((key) => buckets.has(key))\n      .concat([...buckets.keys()].filter((k) => !order.includes(k)).sort())\n      .map((title) => ({ title, swatches: buckets.get(title)!.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })) }));\n  }\n\n  private familyOf(name: string): string {\n    const parts = name.replace(/^--/, '').split('-');\n\n    while (parts.length > 1 && (/^\\d+$/.test(parts[parts.length - 1]) || parts[parts.length - 1] === 'alpha')) {\n      parts.pop();\n    }\n\n    return parts.join('-');\n  }\n\n  private categoryOf(name: string): string {\n    return name.replace(/^--color-/, '').split('-')[0];\n  }\n}\n",
             "displayName": "Swatch",
             "properties": [
                 {
@@ -63,9 +63,9 @@
                     "type": "string",
                     "indexKey": "",
                     "optional": false,
-                    "description": "<p>Custom-property name, e.g. <code>--gray-400</code> or <code>--color-background-brand-default</code>.</p>\n",
-                    "line": 7,
-                    "rawdescription": "\nCustom-property name, e.g. `--gray-400` or `--color-background-brand-default`."
+                    "description": "",
+                    "line": 6,
+                    "rawdescription": "\n"
                 },
                 {
                     "name": "value",
@@ -75,9 +75,133 @@
                     "type": "string",
                     "indexKey": "",
                     "optional": false,
-                    "description": "<p>Resolved value from getComputedStyle, e.g. <code>#757575</code>.</p>\n",
+                    "description": "",
+                    "line": 7,
+                    "rawdescription": "\n"
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 172,
+            "methods": [],
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        },
+        {
+            "name": "TypeGroup",
+            "id": "interface-TypeGroup-3087b0a40bea452c40de49e0aa3145125d013a2c9a8a3e4a61921ef0bced5a141e8da249463b796b0af7177cd9f3a5b5f82a5dba9b3c306e0816b172fd499619",
+            "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "type": "interface",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, signal } from '@angular/core';\n\ntype Device = 'desktop' | 'mobile';\n\ninterface TypeStyle {\n  /** Full class name, e.g. `mud-desktop-display-xl`. */\n  className: string;\n  fontSize: string;\n  fontWeight: string;\n  lineHeight: string;\n  letterSpacing: string;\n}\n\ninterface TypeGroup {\n  title: string;\n  styles: TypeStyle[];\n}\n\nconst FAMILY_ORDER = ['display', 'heading', 'body', 'caption'];\nconst SAMPLE = 'The quick brown fox';\n\n/**\n * Storybook-only Foundations page for the typography scale. Enumerates the\n * `.mud-{desktop|mobile}-*` type classes loaded in the preview\n * (`.storybook/design-tokens.scss`), renders a specimen in each, reads its\n * declared size/weight/line-height/letter-spacing, and copies the class name\n * on click. The Desktop/Mobile toggle switches which scale is shown.\n */\n@Component({\n  selector: 'egov-typography-grid',\n  template: `\n    <div class=\"toolbar\">\n      <span class=\"toolbar__label\">Device</span>\n      <button type=\"button\" [class.active]=\"device() === 'desktop'\" (click)=\"setDevice('desktop')\">Desktop</button>\n      <button type=\"button\" [class.active]=\"device() === 'mobile'\" (click)=\"setDevice('mobile')\">Mobile</button>\n    </div>\n\n    @for (group of groups(); track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        @for (style of group.styles; track style.className) {\n          <button type=\"button\" class=\"row\" [title]=\"'Copy ' + style.className\" (click)=\"copy(style.className)\">\n            <div class=\"specimen\" [class]=\"style.className\">{{ sample }}</div>\n            <div class=\"meta\">\n              <code class=\"meta__name\">{{ style.className }}</code>\n              <span class=\"meta__props\">\n                {{ style.fontSize }} · {{ style.fontWeight }} · lh {{ style.lineHeight }}\n                @if (style.letterSpacing) {\n                  · ls {{ style.letterSpacing }}\n                }\n              </span>\n            </div>\n            <span class=\"copied\" [class.show]=\"copied() === style.className\">copied ✓</span>\n          </button>\n        }\n      </section>\n    }\n\n    @if (groups().length === 0) {\n      <p class=\"empty\">No typography classes found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2.5rem;\n    }\n    .group__title {\n      margin: 0 0 1rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .row {\n      display: block;\n      position: relative;\n      width: 100%;\n      text-align: left;\n      border: 0;\n      border-top: 1px solid #f0f0f0;\n      background: transparent;\n      padding: 1rem 0.5rem;\n      cursor: pointer;\n    }\n    .row:hover {\n      background: #fafafa;\n    }\n    .specimen {\n      margin: 0 0 0.35rem;\n      overflow-wrap: anywhere;\n    }\n    .meta {\n      display: flex;\n      flex-wrap: wrap;\n      gap: 0.5rem 1rem;\n      align-items: baseline;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__props {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.5rem;\n      top: 1rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class TypographyGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  protected readonly sample = SAMPLE;\n  protected readonly device = signal<Device>('desktop');\n  protected readonly groups = signal<TypeGroup[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected setDevice(device: Device): void {\n    this.device.set(device);\n\n    this.load();\n  }\n\n  protected copy(className: string): void {\n    void navigator.clipboard?.writeText(className);\n    this.copied.set(className);\n\n    setTimeout(() => this.copied.update((current) => (current === className ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const single = new RegExp(`^\\\\.mud-${this.device()}-[a-z0-9-]+$`);\n    const seen = new Set<string>();\n    const styles: TypeStyle[] = [];\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue; // cross-origin sheet — skip\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule) || !single.test(rule.selectorText)) {\n          continue;\n        }\n\n        const className = rule.selectorText.slice(1);\n\n        if (seen.has(className)) {\n          continue;\n        }\n\n        seen.add(className);\n        styles.push({\n          className,\n          fontSize: rule.style.getPropertyValue('font-size').trim(),\n          fontWeight: rule.style.getPropertyValue('font-weight').trim(),\n          lineHeight: rule.style.getPropertyValue('line-height').trim(),\n          letterSpacing: rule.style.getPropertyValue('letter-spacing').trim(),\n        });\n      }\n    }\n\n    this.groups.set(this.group(styles));\n  }\n\n  private group(styles: TypeStyle[]): TypeGroup[] {\n    const buckets = new Map<string, TypeStyle[]>();\n\n    for (const style of styles) {\n      const key = this.familyOf(style.className);\n      const bucket = buckets.get(key) ?? [];\n\n      bucket.push(style);\n      buckets.set(key, bucket);\n    }\n\n    const known = FAMILY_ORDER.filter((key) => buckets.has(key));\n    const rest = [...buckets.keys()].filter((key) => !FAMILY_ORDER.includes(key)).sort();\n\n    return [...known, ...rest].map((title) => ({\n      title,\n      styles: buckets.get(title)!.sort((a, b) => parseFloat(b.fontSize) - parseFloat(a.fontSize)),\n    }));\n  }\n\n  /** `mud-desktop-display-xl` -> `display`. */\n  private familyOf(className: string): string {\n    return className.replace(/^mud-(desktop|mobile)-/, '').split('-')[0];\n  }\n}\n",
+            "displayName": "TypeGroup",
+            "properties": [
+                {
+                    "name": "styles",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "TypeStyle[]",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 16,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "title",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 15,
+                    "rawdescription": "\n"
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 172,
+            "methods": [],
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        },
+        {
+            "name": "TypeStyle",
+            "id": "interface-TypeStyle-3087b0a40bea452c40de49e0aa3145125d013a2c9a8a3e4a61921ef0bced5a141e8da249463b796b0af7177cd9f3a5b5f82a5dba9b3c306e0816b172fd499619",
+            "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "type": "interface",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, signal } from '@angular/core';\n\ntype Device = 'desktop' | 'mobile';\n\ninterface TypeStyle {\n  /** Full class name, e.g. `mud-desktop-display-xl`. */\n  className: string;\n  fontSize: string;\n  fontWeight: string;\n  lineHeight: string;\n  letterSpacing: string;\n}\n\ninterface TypeGroup {\n  title: string;\n  styles: TypeStyle[];\n}\n\nconst FAMILY_ORDER = ['display', 'heading', 'body', 'caption'];\nconst SAMPLE = 'The quick brown fox';\n\n/**\n * Storybook-only Foundations page for the typography scale. Enumerates the\n * `.mud-{desktop|mobile}-*` type classes loaded in the preview\n * (`.storybook/design-tokens.scss`), renders a specimen in each, reads its\n * declared size/weight/line-height/letter-spacing, and copies the class name\n * on click. The Desktop/Mobile toggle switches which scale is shown.\n */\n@Component({\n  selector: 'egov-typography-grid',\n  template: `\n    <div class=\"toolbar\">\n      <span class=\"toolbar__label\">Device</span>\n      <button type=\"button\" [class.active]=\"device() === 'desktop'\" (click)=\"setDevice('desktop')\">Desktop</button>\n      <button type=\"button\" [class.active]=\"device() === 'mobile'\" (click)=\"setDevice('mobile')\">Mobile</button>\n    </div>\n\n    @for (group of groups(); track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        @for (style of group.styles; track style.className) {\n          <button type=\"button\" class=\"row\" [title]=\"'Copy ' + style.className\" (click)=\"copy(style.className)\">\n            <div class=\"specimen\" [class]=\"style.className\">{{ sample }}</div>\n            <div class=\"meta\">\n              <code class=\"meta__name\">{{ style.className }}</code>\n              <span class=\"meta__props\">\n                {{ style.fontSize }} · {{ style.fontWeight }} · lh {{ style.lineHeight }}\n                @if (style.letterSpacing) {\n                  · ls {{ style.letterSpacing }}\n                }\n              </span>\n            </div>\n            <span class=\"copied\" [class.show]=\"copied() === style.className\">copied ✓</span>\n          </button>\n        }\n      </section>\n    }\n\n    @if (groups().length === 0) {\n      <p class=\"empty\">No typography classes found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2.5rem;\n    }\n    .group__title {\n      margin: 0 0 1rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .row {\n      display: block;\n      position: relative;\n      width: 100%;\n      text-align: left;\n      border: 0;\n      border-top: 1px solid #f0f0f0;\n      background: transparent;\n      padding: 1rem 0.5rem;\n      cursor: pointer;\n    }\n    .row:hover {\n      background: #fafafa;\n    }\n    .specimen {\n      margin: 0 0 0.35rem;\n      overflow-wrap: anywhere;\n    }\n    .meta {\n      display: flex;\n      flex-wrap: wrap;\n      gap: 0.5rem 1rem;\n      align-items: baseline;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__props {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.5rem;\n      top: 1rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class TypographyGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  protected readonly sample = SAMPLE;\n  protected readonly device = signal<Device>('desktop');\n  protected readonly groups = signal<TypeGroup[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected setDevice(device: Device): void {\n    this.device.set(device);\n\n    this.load();\n  }\n\n  protected copy(className: string): void {\n    void navigator.clipboard?.writeText(className);\n    this.copied.set(className);\n\n    setTimeout(() => this.copied.update((current) => (current === className ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const single = new RegExp(`^\\\\.mud-${this.device()}-[a-z0-9-]+$`);\n    const seen = new Set<string>();\n    const styles: TypeStyle[] = [];\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue; // cross-origin sheet — skip\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule) || !single.test(rule.selectorText)) {\n          continue;\n        }\n\n        const className = rule.selectorText.slice(1);\n\n        if (seen.has(className)) {\n          continue;\n        }\n\n        seen.add(className);\n        styles.push({\n          className,\n          fontSize: rule.style.getPropertyValue('font-size').trim(),\n          fontWeight: rule.style.getPropertyValue('font-weight').trim(),\n          lineHeight: rule.style.getPropertyValue('line-height').trim(),\n          letterSpacing: rule.style.getPropertyValue('letter-spacing').trim(),\n        });\n      }\n    }\n\n    this.groups.set(this.group(styles));\n  }\n\n  private group(styles: TypeStyle[]): TypeGroup[] {\n    const buckets = new Map<string, TypeStyle[]>();\n\n    for (const style of styles) {\n      const key = this.familyOf(style.className);\n      const bucket = buckets.get(key) ?? [];\n\n      bucket.push(style);\n      buckets.set(key, bucket);\n    }\n\n    const known = FAMILY_ORDER.filter((key) => buckets.has(key));\n    const rest = [...buckets.keys()].filter((key) => !FAMILY_ORDER.includes(key)).sort();\n\n    return [...known, ...rest].map((title) => ({\n      title,\n      styles: buckets.get(title)!.sort((a, b) => parseFloat(b.fontSize) - parseFloat(a.fontSize)),\n    }));\n  }\n\n  /** `mud-desktop-display-xl` -> `display`. */\n  private familyOf(className: string): string {\n    return className.replace(/^mud-(desktop|mobile)-/, '').split('-')[0];\n  }\n}\n",
+            "displayName": "TypeStyle",
+            "properties": [
+                {
+                    "name": "className",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "<p>Full class name, e.g. <code>mud-desktop-display-xl</code>.</p>\n",
+                    "line": 7,
+                    "rawdescription": "\nFull class name, e.g. `mud-desktop-display-xl`."
+                },
+                {
+                    "name": "fontSize",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 8,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "fontWeight",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
                     "line": 9,
-                    "rawdescription": "\nResolved value from getComputedStyle, e.g. `#757575`."
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "letterSpacing",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 11,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "lineHeight",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 10,
+                    "rawdescription": "\n"
                 }
             ],
             "indexSignatures": [],
@@ -98,7 +222,7 @@
     "components": [
         {
             "name": "ColorGridComponent",
-            "id": "component-ColorGridComponent-1a8eed4d287ec3e3316caf5b25635dd0ba2a9ba02a6e529b3cefe6f95da59ebd9b12115545f552140feac15839907df42c1e8c9dfee0673900ea4a52d059c54b",
+            "id": "component-ColorGridComponent-062b90e80cc1b9d1e69dad0563901416c9f8f045d6643ac1dbf42ac69166f7862f0c9b5741012e1a6c25ecd92d38caeb82731ee26d99a21ebb3212db013bf361",
             "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
             "changeDetection": "ChangeDetectionStrategy.OnPush",
             "encapsulation": [],
@@ -127,7 +251,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 169,
+                    "line": 163,
                     "rawdescription": "\n",
                     "modifierKind": [
                         148
@@ -138,6 +262,23 @@
             "outputsClass": [],
             "propertiesClass": [
                 {
+                    "name": "_document",
+                    "coverageIgnore": false,
+                    "defaultValue": "inject(DOCUMENT)",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 161,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        123,
+                        148
+                    ]
+                },
+                {
                     "name": "copied",
                     "coverageIgnore": false,
                     "defaultValue": "signal<string | null>(null)",
@@ -147,7 +288,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 173,
+                    "line": 167,
                     "rawdescription": "\n",
                     "modifierKind": [
                         124,
@@ -164,7 +305,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 172,
+                    "line": 166,
                     "rawdescription": "\n",
                     "modifierKind": [
                         124,
@@ -181,7 +322,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 171,
+                    "line": 165,
                     "rawdescription": "\n",
                     "modifierKind": [
                         124,
@@ -206,11 +347,11 @@
                     "optional": false,
                     "returnType": "string",
                     "typeParameters": [],
-                    "line": 276,
+                    "line": 270,
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "rawdescription": "\n`--color-background-brand-default` -> `background`.",
-                    "description": "<p><code>--color-background-brand-default</code> -&gt; <code>background</code>.</p>\n",
+                    "rawdescription": "\n",
+                    "description": "",
                     "modifierKind": [
                         123
                     ],
@@ -235,11 +376,11 @@
                     "optional": false,
                     "returnType": "string[]",
                     "typeParameters": [],
-                    "line": 214,
+                    "line": 210,
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "rawdescription": "\nEnumerate `:root` custom-property names from the preview's stylesheets.",
-                    "description": "<p>Enumerate <code>:root</code> custom-property names from the preview&#39;s stylesheets.</p>\n",
+                    "rawdescription": "\n",
+                    "description": "",
                     "modifierKind": [
                         123
                     ]
@@ -260,7 +401,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 184,
+                    "line": 179,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "\n",
@@ -298,11 +439,11 @@
                     "optional": false,
                     "returnType": "string",
                     "typeParameters": [],
-                    "line": 265,
+                    "line": 260,
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "rawdescription": "\n`--blue-sky-600` -> `blue-sky`; `--gray-200-alpha` -> `gray`; `--black` -> `black`.",
-                    "description": "<p><code>--blue-sky-600</code> -&gt; <code>blue-sky</code>; <code>--gray-200-alpha</code> -&gt; <code>gray</code>; <code>--black</code> -&gt; <code>black</code>.</p>\n",
+                    "rawdescription": "\n",
+                    "description": "",
                     "modifierKind": [
                         123
                     ],
@@ -336,7 +477,7 @@
                     "optional": false,
                     "returnType": "ColorGroup[]",
                     "typeParameters": [],
-                    "line": 245,
+                    "line": 241,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "\n",
@@ -365,7 +506,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 190,
+                    "line": 187,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "\n",
@@ -390,7 +531,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 179,
+                    "line": 173,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "\n",
@@ -420,23 +561,331 @@
             "hostListeners": [],
             "standalone": true,
             "imports": [],
-            "description": "<p>Storybook-only Foundations grid. Enumerates the design-system color custom\nproperties actually loaded in the preview (<code>.storybook/design-tokens.scss</code>),\nresolves each value, groups them, and copies <code>var(--name)</code> on click.\n<code>mode=&quot;semantic&quot;</code> also exposes a light/dark toggle (tokens differ per theme).</p>\n",
-            "rawdescription": "\n\nStorybook-only Foundations grid. Enumerates the design-system color custom\nproperties actually loaded in the preview (`.storybook/design-tokens.scss`),\nresolves each value, groups them, and copies `var(--name)` on click.\n`mode=\"semantic\"` also exposes a light/dark toggle (tokens differ per theme).\n",
+            "description": "",
+            "rawdescription": "\n",
             "type": "component",
-            "sourceCode": "import { afterNextRender, Component, input, signal } from '@angular/core';\n\ntype ColorMode = 'primitives' | 'semantic';\n\ninterface Swatch {\n  /** Custom-property name, e.g. `--gray-400` or `--color-background-brand-default`. */\n  name: string;\n  /** Resolved value from getComputedStyle, e.g. `#757575`. */\n  value: string;\n}\n\ninterface ColorGroup {\n  title: string;\n  swatches: Swatch[];\n}\n\nconst SEMANTIC_ORDER = ['background', 'text', 'border', 'icon'];\nconst COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\\(/i;\n\n/**\n * Storybook-only Foundations grid. Enumerates the design-system color custom\n * properties actually loaded in the preview (`.storybook/design-tokens.scss`),\n * resolves each value, groups them, and copies `var(--name)` on click.\n * `mode=\"semantic\"` also exposes a light/dark toggle (tokens differ per theme).\n */\n@Component({\n  selector: 'egov-color-grid',\n  template: `\n    @if (mode() === 'semantic') {\n      <div class=\"toolbar\">\n        <span class=\"toolbar__label\">Theme</span>\n        <button type=\"button\" [class.active]=\"theme() === 'light'\" (click)=\"setTheme('light')\">Light</button>\n        <button type=\"button\" [class.active]=\"theme() === 'dark'\" (click)=\"setTheme('dark')\">Dark</button>\n      </div>\n    }\n\n    @for (group of groups(); track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (swatch of group.swatches; track swatch.name) {\n            <button\n              type=\"button\"\n              class=\"swatch\"\n              [title]=\"'Copy var(' + swatch.name + ')'\"\n              (click)=\"copy(swatch.name)\"\n            >\n              <span class=\"swatch__chip\" [style.background]=\"'var(' + swatch.name + ')'\"></span>\n              <span class=\"swatch__meta\">\n                <code class=\"swatch__name\">{{ swatch.name }}</code>\n                <span class=\"swatch__value\">{{ swatch.value }}</span>\n              </span>\n              <span class=\"swatch__copied\" [class.show]=\"copied() === swatch.name\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n\n    @if (groups().length === 0) {\n      <p class=\"empty\">No color tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));\n      gap: 0.75rem;\n    }\n    .swatch {\n      display: flex;\n      align-items: center;\n      gap: 0.75rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.6rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .swatch:hover {\n      border-color: #cfcfcf;\n    }\n    .swatch__chip {\n      flex: 0 0 auto;\n      width: 40px;\n      height: 40px;\n      border-radius: 8px;\n      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);\n    }\n    .swatch__meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .swatch__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .swatch__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .swatch__copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .swatch__copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class ColorGridComponent {\n  readonly mode = input<ColorMode>('primitives');\n\n  protected readonly theme = signal<'light' | 'dark'>('light');\n  protected readonly groups = signal<ColorGroup[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected setTheme(theme: 'light' | 'dark'): void {\n    this.theme.set(theme);\n    this.load();\n  }\n\n  protected copy(name: string): void {\n    void navigator.clipboard?.writeText(`var(${name})`);\n    this.copied.set(name);\n    setTimeout(() => this.copied.update((current) => (current === name ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const root = document.documentElement;\n\n    if (this.mode() === 'semantic' && this.theme() === 'dark') {\n      root.setAttribute('data-theme', 'dark');\n    } else {\n      root.removeAttribute('data-theme');\n    }\n\n    const styles = getComputedStyle(root);\n    const swatches: Swatch[] = [];\n\n    for (const name of this.collectNames()) {\n      const value = styles.getPropertyValue(name).trim();\n\n      if (this.mode() === 'semantic' || COLOR_VALUE.test(value)) {\n        swatches.push({ name, value });\n      }\n    }\n\n    this.groups.set(this.group(swatches));\n  }\n\n  /** Enumerate `:root` custom-property names from the preview's stylesheets. */\n  private collectNames(): string[] {\n    const names = new Set<string>();\n    const wantSemantic = this.mode() === 'semantic';\n\n    for (const sheet of Array.from(document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue; // cross-origin sheet — skip\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule) || rule.selectorText !== ':root') {\n          continue;\n        }\n\n        for (const name of Array.from(rule.style)) {\n          const isSemantic = name.startsWith('--color-');\n\n          if (name.startsWith('--') && isSemantic === wantSemantic) {\n            names.add(name);\n          }\n        }\n      }\n    }\n\n    return [...names];\n  }\n\n  private group(swatches: Swatch[]): ColorGroup[] {\n    const buckets = new Map<string, Swatch[]>();\n\n    for (const swatch of swatches) {\n      const key = this.mode() === 'semantic' ? this.categoryOf(swatch.name) : this.familyOf(swatch.name);\n      const bucket = buckets.get(key) ?? [];\n\n      bucket.push(swatch);\n      buckets.set(key, bucket);\n    }\n\n    const order = this.mode() === 'semantic' ? SEMANTIC_ORDER : [...buckets.keys()].sort();\n\n    return order\n      .filter((key) => buckets.has(key))\n      .concat([...buckets.keys()].filter((k) => !order.includes(k)).sort())\n      .map((title) => ({ title, swatches: buckets.get(title)!.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })) }));\n  }\n\n  /** `--blue-sky-600` -> `blue-sky`; `--gray-200-alpha` -> `gray`; `--black` -> `black`. */\n  private familyOf(name: string): string {\n    const parts = name.replace(/^--/, '').split('-');\n\n    while (parts.length > 1 && (/^\\d+$/.test(parts[parts.length - 1]) || parts[parts.length - 1] === 'alpha')) {\n      parts.pop();\n    }\n\n    return parts.join('-');\n  }\n\n  /** `--color-background-brand-default` -> `background`. */\n  private categoryOf(name: string): string {\n    return name.replace(/^--color-/, '').split('-')[0];\n  }\n}\n",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, input, signal } from '@angular/core';\n\ntype ColorMode = 'primitives' | 'semantic';\n\ninterface Swatch {\n  name: string;\n  value: string;\n}\n\ninterface ColorGroup {\n  title: string;\n  swatches: Swatch[];\n}\n\nconst SEMANTIC_ORDER = ['background', 'text', 'border', 'icon'];\nconst COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\\(/i;\n\n@Component({\n  selector: 'egov-color-grid',\n  template: `\n    @if (mode() === 'semantic') {\n      <div class=\"toolbar\">\n        <span class=\"toolbar__label\">Theme</span>\n        <button type=\"button\" [class.active]=\"theme() === 'light'\" (click)=\"setTheme('light')\">Light</button>\n        <button type=\"button\" [class.active]=\"theme() === 'dark'\" (click)=\"setTheme('dark')\">Dark</button>\n      </div>\n    }\n\n    @for (group of groups(); track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (swatch of group.swatches; track swatch.name) {\n            <button\n              type=\"button\"\n              class=\"swatch\"\n              [title]=\"'Copy var(' + swatch.name + ')'\"\n              (click)=\"copy(swatch.name)\"\n            >\n              <span class=\"swatch__chip\" [style.background]=\"'var(' + swatch.name + ')'\"></span>\n              <span class=\"swatch__meta\">\n                <code class=\"swatch__name\">{{ swatch.name }}</code>\n                <span class=\"swatch__value\">{{ swatch.value }}</span>\n              </span>\n              <span class=\"swatch__copied\" [class.show]=\"copied() === swatch.name\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n\n    @if (groups().length === 0) {\n      <p class=\"empty\">No color tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));\n      gap: 0.75rem;\n    }\n    .swatch {\n      display: flex;\n      align-items: center;\n      gap: 0.75rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.6rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .swatch:hover {\n      border-color: #cfcfcf;\n    }\n    .swatch__chip {\n      flex: 0 0 auto;\n      width: 40px;\n      height: 40px;\n      border-radius: 8px;\n      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);\n    }\n    .swatch__meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .swatch__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .swatch__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .swatch__copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .swatch__copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class ColorGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  readonly mode = input<ColorMode>('primitives');\n\n  protected readonly theme = signal<'light' | 'dark'>('light');\n  protected readonly groups = signal<ColorGroup[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected setTheme(theme: 'light' | 'dark'): void {\n    this.theme.set(theme);\n\n    this.load();\n  }\n\n  protected copy(name: string): void {\n    void navigator.clipboard?.writeText(`var(${name})`);\n\n    this.copied.set(name);\n\n    setTimeout(() => this.copied.update((current) => (current === name ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const root = this._document.documentElement;\n\n    if (this.mode() === 'semantic' && this.theme() === 'dark') {\n      root.setAttribute('data-theme', 'dark');\n    } else {\n      root.removeAttribute('data-theme');\n    }\n\n    const styles = getComputedStyle(root);\n    const swatches: Swatch[] = [];\n\n    for (const name of this.collectNames()) {\n      const value = styles.getPropertyValue(name).trim();\n\n      if (this.mode() === 'semantic' || COLOR_VALUE.test(value)) {\n        swatches.push({ name, value });\n      }\n    }\n\n    this.groups.set(this.group(swatches));\n  }\n\n  private collectNames(): string[] {\n    const names = new Set<string>();\n    const wantSemantic = this.mode() === 'semantic';\n\n    for (const sheet of Array.from(document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue;\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule) || rule.selectorText !== ':root') {\n          continue;\n        }\n\n        for (const name of Array.from(rule.style)) {\n          const isSemantic = name.startsWith('--color-');\n\n          if (name.startsWith('--') && isSemantic === wantSemantic) {\n            names.add(name);\n          }\n        }\n      }\n    }\n\n    return [...names];\n  }\n\n  private group(swatches: Swatch[]): ColorGroup[] {\n    const buckets = new Map<string, Swatch[]>();\n\n    for (const swatch of swatches) {\n      const key = this.mode() === 'semantic' ? this.categoryOf(swatch.name) : this.familyOf(swatch.name);\n      const bucket = buckets.get(key) ?? [];\n\n      bucket.push(swatch);\n      buckets.set(key, bucket);\n    }\n\n    const order = this.mode() === 'semantic' ? SEMANTIC_ORDER : [...buckets.keys()].sort();\n\n    return order\n      .filter((key) => buckets.has(key))\n      .concat([...buckets.keys()].filter((k) => !order.includes(k)).sort())\n      .map((title) => ({ title, swatches: buckets.get(title)!.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })) }));\n  }\n\n  private familyOf(name: string): string {\n    const parts = name.replace(/^--/, '').split('-');\n\n    while (parts.length > 1 && (/^\\d+$/.test(parts[parts.length - 1]) || parts[parts.length - 1] === 'alpha')) {\n      parts.pop();\n    }\n\n    return parts.join('-');\n  }\n\n  private categoryOf(name: string): string {\n    return name.replace(/^--color-/, '').split('-')[0];\n  }\n}\n",
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));\n      gap: 0.75rem;\n    }\n    .swatch {\n      display: flex;\n      align-items: center;\n      gap: 0.75rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.6rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .swatch:hover {\n      border-color: #cfcfcf;\n    }\n    .swatch__chip {\n      flex: 0 0 auto;\n      width: 40px;\n      height: 40px;\n      border-radius: 8px;\n      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);\n    }\n    .swatch__meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .swatch__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .swatch__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .swatch__copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .swatch__copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  \n",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "args": [],
+                "line": 167,
+                "rawdescription": "\n"
+            },
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        },
+        {
+            "name": "TypographyGridComponent",
+            "id": "component-TypographyGridComponent-3087b0a40bea452c40de49e0aa3145125d013a2c9a8a3e4a61921ef0bced5a141e8da249463b796b0af7177cd9f3a5b5f82a5dba9b3c306e0816b172fd499619",
+            "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+            "changeDetection": "ChangeDetectionStrategy.OnPush",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "egov-typography-grid",
+            "styleUrls": [],
+            "styles": [
+                "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2.5rem;\n    }\n    .group__title {\n      margin: 0 0 1rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .row {\n      display: block;\n      position: relative;\n      width: 100%;\n      text-align: left;\n      border: 0;\n      border-top: 1px solid #f0f0f0;\n      background: transparent;\n      padding: 1rem 0.5rem;\n      cursor: pointer;\n    }\n    .row:hover {\n      background: #fafafa;\n    }\n    .specimen {\n      margin: 0 0 0.35rem;\n      overflow-wrap: anywhere;\n    }\n    .meta {\n      display: flex;\n      flex-wrap: wrap;\n      gap: 0.5rem 1rem;\n      align-items: baseline;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__props {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.5rem;\n      top: 1rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  "
+            ],
+            "template": "<div class=\"toolbar\">\n  <span class=\"toolbar__label\">Device</span>\n  <button type=\"button\" [class.active]=\"device() === 'desktop'\" (click)=\"setDevice('desktop')\">Desktop</button>\n  <button type=\"button\" [class.active]=\"device() === 'mobile'\" (click)=\"setDevice('mobile')\">Mobile</button>\n</div>\n\n@for (group of groups(); track group.title) {\n  <section class=\"group\">\n    <h3 class=\"group__title\">{{ group.title }}</h3>\n    @for (style of group.styles; track style.className) {\n      <button type=\"button\" class=\"row\" [title]=\"'Copy ' + style.className\" (click)=\"copy(style.className)\">\n        <div class=\"specimen\" [class]=\"style.className\">{{ sample }}</div>\n        <div class=\"meta\">\n          <code class=\"meta__name\">{{ style.className }}</code>\n          <span class=\"meta__props\">\n            {{ style.fontSize }} · {{ style.fontWeight }} · lh {{ style.lineHeight }}\n            @if (style.letterSpacing) {\n              · ls {{ style.letterSpacing }}\n            }\n          </span>\n        </div>\n        <span class=\"copied\" [class.show]=\"copied() === style.className\">copied ✓</span>\n      </button>\n    }\n  </section>\n}\n\n@if (groups().length === 0) {\n  <p class=\"empty\">No typography classes found in the loaded stylesheet.</p>\n}\n",
+            "templateUrl": [],
+            "templateVariables": [],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "_document",
+                    "coverageIgnore": false,
+                    "defaultValue": "inject(DOCUMENT)",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 156,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        123,
+                        148
+                    ]
+                },
+                {
+                    "name": "copied",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal<string | null>(null)",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 161,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                },
+                {
+                    "name": "device",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal<Device>('desktop')",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 159,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                },
+                {
+                    "name": "groups",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal<TypeGroup[]>([])",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 160,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                },
+                {
+                    "name": "sample",
+                    "coverageIgnore": false,
+                    "defaultValue": "SAMPLE",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 158,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "copy",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "className",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 173,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        124
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "className",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "familyOf",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "className",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "string",
+                    "typeParameters": [],
+                    "line": 240,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n`mud-desktop-display-xl` -> `display`.",
+                    "description": "<p><code>mud-desktop-display-xl</code> -&gt; <code>display</code>.</p>\n",
+                    "modifierKind": [
+                        123
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "className",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "group",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "styles",
+                            "type": "TypeStyle[]",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "TypeGroup[]",
+                    "typeParameters": [],
+                    "line": 219,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        123
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "styles",
+                            "type": "TypeStyle[]",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "load",
+                    "coverageIgnore": false,
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 180,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        123
+                    ]
+                },
+                {
+                    "name": "setDevice",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "device",
+                            "type": "Device",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 167,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        124
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "device",
+                            "type": "Device",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "coverageIgnore": false,
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "standalone": true,
+            "imports": [],
+            "description": "<p>Storybook-only Foundations page for the typography scale. Enumerates the\n<code>.mud-{desktop|mobile}-*</code> type classes loaded in the preview\n(<code>.storybook/design-tokens.scss</code>), renders a specimen in each, reads its\ndeclared size/weight/line-height/letter-spacing, and copies the class name\non click. The Desktop/Mobile toggle switches which scale is shown.</p>\n",
+            "rawdescription": "\n\nStorybook-only Foundations page for the typography scale. Enumerates the\n`.mud-{desktop|mobile}-*` type classes loaded in the preview\n(`.storybook/design-tokens.scss`), renders a specimen in each, reads its\ndeclared size/weight/line-height/letter-spacing, and copies the class name\non click. The Desktop/Mobile toggle switches which scale is shown.\n",
+            "type": "component",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, signal } from '@angular/core';\n\ntype Device = 'desktop' | 'mobile';\n\ninterface TypeStyle {\n  /** Full class name, e.g. `mud-desktop-display-xl`. */\n  className: string;\n  fontSize: string;\n  fontWeight: string;\n  lineHeight: string;\n  letterSpacing: string;\n}\n\ninterface TypeGroup {\n  title: string;\n  styles: TypeStyle[];\n}\n\nconst FAMILY_ORDER = ['display', 'heading', 'body', 'caption'];\nconst SAMPLE = 'The quick brown fox';\n\n/**\n * Storybook-only Foundations page for the typography scale. Enumerates the\n * `.mud-{desktop|mobile}-*` type classes loaded in the preview\n * (`.storybook/design-tokens.scss`), renders a specimen in each, reads its\n * declared size/weight/line-height/letter-spacing, and copies the class name\n * on click. The Desktop/Mobile toggle switches which scale is shown.\n */\n@Component({\n  selector: 'egov-typography-grid',\n  template: `\n    <div class=\"toolbar\">\n      <span class=\"toolbar__label\">Device</span>\n      <button type=\"button\" [class.active]=\"device() === 'desktop'\" (click)=\"setDevice('desktop')\">Desktop</button>\n      <button type=\"button\" [class.active]=\"device() === 'mobile'\" (click)=\"setDevice('mobile')\">Mobile</button>\n    </div>\n\n    @for (group of groups(); track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        @for (style of group.styles; track style.className) {\n          <button type=\"button\" class=\"row\" [title]=\"'Copy ' + style.className\" (click)=\"copy(style.className)\">\n            <div class=\"specimen\" [class]=\"style.className\">{{ sample }}</div>\n            <div class=\"meta\">\n              <code class=\"meta__name\">{{ style.className }}</code>\n              <span class=\"meta__props\">\n                {{ style.fontSize }} · {{ style.fontWeight }} · lh {{ style.lineHeight }}\n                @if (style.letterSpacing) {\n                  · ls {{ style.letterSpacing }}\n                }\n              </span>\n            </div>\n            <span class=\"copied\" [class.show]=\"copied() === style.className\">copied ✓</span>\n          </button>\n        }\n      </section>\n    }\n\n    @if (groups().length === 0) {\n      <p class=\"empty\">No typography classes found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2.5rem;\n    }\n    .group__title {\n      margin: 0 0 1rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .row {\n      display: block;\n      position: relative;\n      width: 100%;\n      text-align: left;\n      border: 0;\n      border-top: 1px solid #f0f0f0;\n      background: transparent;\n      padding: 1rem 0.5rem;\n      cursor: pointer;\n    }\n    .row:hover {\n      background: #fafafa;\n    }\n    .specimen {\n      margin: 0 0 0.35rem;\n      overflow-wrap: anywhere;\n    }\n    .meta {\n      display: flex;\n      flex-wrap: wrap;\n      gap: 0.5rem 1rem;\n      align-items: baseline;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__props {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.5rem;\n      top: 1rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class TypographyGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  protected readonly sample = SAMPLE;\n  protected readonly device = signal<Device>('desktop');\n  protected readonly groups = signal<TypeGroup[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected setDevice(device: Device): void {\n    this.device.set(device);\n\n    this.load();\n  }\n\n  protected copy(className: string): void {\n    void navigator.clipboard?.writeText(className);\n    this.copied.set(className);\n\n    setTimeout(() => this.copied.update((current) => (current === className ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const single = new RegExp(`^\\\\.mud-${this.device()}-[a-z0-9-]+$`);\n    const seen = new Set<string>();\n    const styles: TypeStyle[] = [];\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue; // cross-origin sheet — skip\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule) || !single.test(rule.selectorText)) {\n          continue;\n        }\n\n        const className = rule.selectorText.slice(1);\n\n        if (seen.has(className)) {\n          continue;\n        }\n\n        seen.add(className);\n        styles.push({\n          className,\n          fontSize: rule.style.getPropertyValue('font-size').trim(),\n          fontWeight: rule.style.getPropertyValue('font-weight').trim(),\n          lineHeight: rule.style.getPropertyValue('line-height').trim(),\n          letterSpacing: rule.style.getPropertyValue('letter-spacing').trim(),\n        });\n      }\n    }\n\n    this.groups.set(this.group(styles));\n  }\n\n  private group(styles: TypeStyle[]): TypeGroup[] {\n    const buckets = new Map<string, TypeStyle[]>();\n\n    for (const style of styles) {\n      const key = this.familyOf(style.className);\n      const bucket = buckets.get(key) ?? [];\n\n      bucket.push(style);\n      buckets.set(key, bucket);\n    }\n\n    const known = FAMILY_ORDER.filter((key) => buckets.has(key));\n    const rest = [...buckets.keys()].filter((key) => !FAMILY_ORDER.includes(key)).sort();\n\n    return [...known, ...rest].map((title) => ({\n      title,\n      styles: buckets.get(title)!.sort((a, b) => parseFloat(b.fontSize) - parseFloat(a.fontSize)),\n    }));\n  }\n\n  /** `mud-desktop-display-xl` -> `display`. */\n  private familyOf(className: string): string {\n    return className.replace(/^mud-(desktop|mobile)-/, '').split('-')[0];\n  }\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2.5rem;\n    }\n    .group__title {\n      margin: 0 0 1rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .row {\n      display: block;\n      position: relative;\n      width: 100%;\n      text-align: left;\n      border: 0;\n      border-top: 1px solid #f0f0f0;\n      background: transparent;\n      padding: 1rem 0.5rem;\n      cursor: pointer;\n    }\n    .row:hover {\n      background: #fafafa;\n    }\n    .specimen {\n      margin: 0 0 0.35rem;\n      overflow-wrap: anywhere;\n    }\n    .meta {\n      display: flex;\n      flex-wrap: wrap;\n      gap: 0.5rem 1rem;\n      align-items: baseline;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__props {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.5rem;\n      top: 1rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  \n",
             "jsdoctags": [
                 {
-                    "pos": 510,
-                    "end": 828,
+                    "pos": 484,
+                    "end": 855,
                     "kind": 321,
                     "id": 0,
                     "flags": 16777216,
                     "modifierFlagsCache": 0,
                     "transformFlags": 0,
-                    "comment": "Storybook-only Foundations grid. Enumerates the design-system color custom\nproperties actually loaded in the preview (`.storybook/design-tokens.scss`),\nresolves each value, groups them, and copies `var(--name)` on click.\n`mode=\"semantic\"` also exposes a light/dark toggle (tokens differ per theme)."
+                    "comment": "Storybook-only Foundations page for the typography scale. Enumerates the\n`.mud-{desktop|mobile}-*` type classes loaded in the preview\n(`.storybook/design-tokens.scss`), renders a specimen in each, reads its\ndeclared size/weight/line-height/letter-spacing, and copies the class name\non click. The Desktop/Mobile toggle switches which scale is shown."
                 }
             ],
             "constructorObj": {
@@ -445,7 +894,7 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "args": [],
-                "line": 173,
+                "line": 161,
                 "rawdescription": "\n"
             },
             "extends": [],
@@ -479,6 +928,17 @@
                 "deprecationMessage": "",
                 "type": "unknown",
                 "defaultValue": "/^#([0-9a-f]{3,8})$|^rgba?\\(/i"
+            },
+            {
+                "name": "FAMILY_ORDER",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "[]",
+                "defaultValue": "['display', 'heading', 'body', 'caption']"
             },
             {
                 "name": "ICON_NAMES",
@@ -525,6 +985,17 @@
                 "defaultValue": "{\n  title: 'Foundations/Semantic Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<TypographyGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Typography',\n  component: TypographyGridComponent,\n  decorators: [moduleMetadata({ imports: [TypographyGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
                 "name": "Palette",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -533,9 +1004,7 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story",
-                "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"primitives\" />` }),\n}",
-                "rawdescription": "The primitive palette (grays, blue-sky, greens, reds, …). Click a swatch to copy `var(--name)`.",
-                "description": "<p>The primitive palette (grays, blue-sky, greens, reds, …). Click a swatch to copy <code>var(--name)</code>.</p>\n"
+                "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"primitives\" />` }),\n}"
             },
             {
                 "name": "Playground",
@@ -560,6 +1029,30 @@
                 "defaultValue": "{\n  parameters: {\n    options: {\n      storySort: { order: ['Introduction', 'Foundations', 'Components', '*'] },\n    },\n    controls: {\n      matchers: {\n        color: /(background|color)$/i,\n        date: /Date$/i,\n      },\n    },\n\n    a11y: {\n      // 'todo' - show a11y violations in the test UI only\n      // 'error' - fail CI on a11y violations\n      // 'off' - skip a11y checks entirely\n      test: 'todo',\n    },\n  },\n}"
             },
             {
+                "name": "SAMPLE",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "string",
+                "defaultValue": "'The quick brown fox'"
+            },
+            {
+                "name": "Scale",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: () => ({ template: `<egov-typography-grid />` }),\n}",
+                "rawdescription": "The type scale grouped by display / heading / body / caption. Toggle Desktop/Mobile; click a row to copy the class name.",
+                "description": "<p>The type scale grouped by display / heading / body / caption. Toggle Desktop/Mobile; click a row to copy the class name.</p>\n"
+            },
+            {
                 "name": "SEMANTIC_ORDER",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -579,9 +1072,7 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story",
-                "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}",
-                "rawdescription": "Semantic tokens grouped by background / text / border / icon, with a light/dark toggle. Click to copy `var(--color-…)`.",
-                "description": "<p>Semantic tokens grouped by background / text / border / icon, with a light/dark toggle. Click to copy <code>var(--color-…)</code>.</p>\n"
+                "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
             }
         ],
         "functions": [],
@@ -593,6 +1084,19 @@
                 "coverageIgnore": false,
                 "rawtype": "\"primitives\" | \"semantic\"",
                 "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 193
+            },
+            {
+                "name": "Device",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "\"desktop\" | \"mobile\"",
+                "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -632,6 +1136,19 @@
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<ColorGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<TypographyGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -711,6 +1228,30 @@
                     "defaultValue": "['background', 'text', 'border', 'icon']"
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/typography-grid.component.ts": [
+                {
+                    "name": "FAMILY_ORDER",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "[]",
+                    "defaultValue": "['display', 'heading', 'body', 'caption']"
+                },
+                {
+                    "name": "SAMPLE",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "defaultValue": "'The quick brown fox'"
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/colors.stories.ts": [
                 {
                     "name": "meta",
@@ -732,9 +1273,7 @@
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"primitives\" />` }),\n}",
-                    "rawdescription": "The primitive palette (grays, blue-sky, greens, reds, …). Click a swatch to copy `var(--name)`.",
-                    "description": "<p>The primitive palette (grays, blue-sky, greens, reds, …). Click a swatch to copy <code>var(--name)</code>.</p>\n"
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"primitives\" />` }),\n}"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts": [
@@ -758,9 +1297,33 @@
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}",
-                    "rawdescription": "Semantic tokens grouped by background / text / border / icon, with a light/dark toggle. Click to copy `var(--color-…)`.",
-                    "description": "<p>Semantic tokens grouped by background / text / border / icon, with a light/dark toggle. Click to copy <code>var(--color-…)</code>.</p>\n"
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/typography.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<TypographyGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Typography',\n  component: TypographyGridComponent,\n  decorators: [moduleMetadata({ imports: [TypographyGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Scale",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-typography-grid />` }),\n}",
+                    "rawdescription": "The type scale grouped by display / heading / body / caption. Toggle Desktop/Mobile; click a row to copy the class name.",
+                    "description": "<p>The type scale grouped by display / heading / body / caption. Toggle Desktop/Mobile; click a row to copy the class name.</p>\n"
                 }
             ],
             "projects/ngx-egov-ui/.storybook/preview.ts": [
@@ -788,6 +1351,21 @@
                     "coverageIgnore": false,
                     "rawtype": "\"primitives\" | \"semantic\"",
                     "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 193
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/typography-grid.component.ts": [
+                {
+                    "name": "Device",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "\"desktop\" | \"mobile\"",
+                    "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -839,6 +1417,21 @@
                     "description": "",
                     "kind": 184
                 }
+            ],
+            "projects/ngx-egov-ui/src/stories/typography.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<TypographyGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
             ]
         }
     },
@@ -848,7 +1441,7 @@
         "children": []
     },
     "coverage": {
-        "count": 16,
+        "count": 4,
         "status": "low",
         "files": [
             {
@@ -866,9 +1459,9 @@
                 "type": "component",
                 "linktype": "component",
                 "name": "ColorGridComponent",
-                "coveragePercent": 30,
-                "coverageCount": "4/13",
-                "status": "medium"
+                "coveragePercent": 0,
+                "coverageCount": "0/14",
+                "status": "low"
             },
             {
                 "filePath": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
@@ -884,9 +1477,9 @@
                 "type": "interface",
                 "linktype": "interface",
                 "name": "Swatch",
-                "coveragePercent": 66,
-                "coverageCount": "2/3",
-                "status": "good"
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
             },
             {
                 "filePath": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
@@ -934,9 +1527,9 @@
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
                 "name": "Palette",
-                "coveragePercent": 100,
-                "coverageCount": "1/1",
-                "status": "very-good"
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
             },
             {
                 "filePath": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
@@ -1014,12 +1607,99 @@
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
                 "name": "Tokens",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "TypographyGridComponent",
+                "coveragePercent": 16,
+                "coverageCount": "2/12",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "TypeGroup",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "TypeStyle",
+                "coveragePercent": 16,
+                "coverageCount": "1/6",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "FAMILY_ORDER",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "SAMPLE",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Device",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Scale",
                 "coveragePercent": 100,
                 "coverageCount": "1/1",
                 "status": "very-good"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
                 "type": "type alias",
                 "linktype": "miscellaneous",
                 "linksubtype": "typealias",
