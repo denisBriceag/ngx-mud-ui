@@ -1,0 +1,336 @@
+@use './colors' as *;
+@use './variables' as variables;
+
+:root {
+   
+  --color-background-base-default: var(--white-1000);
+  --color-background-base-default-hover: var(--gray-100);
+  --color-background-base-default-active: var(--gray-250);
+
+  --color-background-base-secondary: var(--gray-100);
+  --color-background-base-secondary-hover: var(--gray-200);
+  --color-background-base-secondary-active: var(--gray-250);
+
+  --color-background-base-tertiary: var(--gray-200);
+  --color-background-base-tertiary-hover: var(--gray-250);
+  --color-background-base-tertiary-active: var(--gray-300);
+
+  
+  --color-background-base-inverse-default: var(--gray-900);
+  --color-background-base-inverse-default-hover: var(--gray-700);
+  --color-background-base-inverse-default-active: var(--gray-600);
+
+  
+  --color-background-brand-default: var(--blue-sky-600); 
+  --color-background-brand-default-hover: var(--blue-sky-700);
+  --color-background-brand-default-active: var(--blue-sky-800);
+
+  --color-background-brand-secondary: var(--blue-sky-100);
+  --color-background-brand-secondary-hover: var(--blue-sky-200);
+  --color-background-brand-secondary-active: var(--blue-sky-300);
+
+  --color-background-brand-tertiary: var(--blue-sky-900);
+
+  
+  --color-background-disabled-default: var(--gray-200);
+  --color-background-disabled-secondary: var(--gray-250);
+
+  
+  --color-background-positive-default: var(--green-900);
+  --color-background-positive-default-hover: var(--green-700);
+  --color-background-positive-default-active: var(--green-800);
+
+  --color-background-positive-secondary: var(--green-100);
+  --color-background-positive-secondary-active: var(--green-200);
+
+  
+  --color-background-warning-default: var(--apricot-400);
+  --color-background-warning-default-hover: var(--apricot-500);
+  --color-background-warning-default-active: var(--apricot-600);
+
+  --color-background-warning-secondary: var(--apricot-100);
+  --color-background-warning-secondary-active: var(--apricot-200);
+  --color-background-warning-accent: var(--apricot-300);
+
+  
+  --color-background-danger-default: var(--red-600);
+  --color-background-danger-default-hover: var(--red-700);
+  --color-background-danger-default-active: var(--red-800);
+
+  --color-background-danger-secondary: var(--red-100);
+  --color-background-danger-secondary-hover: var(--red-200);
+  --color-background-danger-secondary-active: var(--red-300);
+}
+
+:root {
+  
+  --color-border-base-default: var(--gray-250);
+  --color-border-base-secondary: var(--gray-300);
+  --color-border-base-tertiary: var(--gray-600);
+  --color-border-base-strong: var(--gray-900);
+
+  
+  --color-border-brand-default: var(--blue-sky-600);
+
+  
+  --color-border-disabled-default: var(--gray-250);
+
+  
+  --color-border-positive-default: var(--green-700);
+
+  
+  --color-border-warning-default: var(--apricot-600);
+
+  
+  --color-border-danger-default: var(--red-600);
+}
+
+:root {
+  
+  --color-text-base-default: var(--black-1000);
+  --color-text-base-secondary: var(--gray-700);
+  --color-text-base-tertiary: var(--gray-400);
+
+  --color-text-base-default-on-color: var(--black-1000);
+  --color-text-base-secondary-on-color: var(--gray-600);
+
+  
+  --color-text-base-inverse-default: var(--white-1000);
+  --color-text-base-inverse-on-color: var(--white-1000);
+
+  
+  --color-text-brand-default: var(--blue-sky-600);
+  --color-text-brand-default-hover: var(--blue-sky-600);
+  --color-text-brand-on-secondary: var(--blue-sky-600);
+  --color-text-brand-visited: var(--magenta-600);
+
+  
+  --color-text-disabled-default: var(--gray-300);
+  --color-text-disabled-on-disabled: var(--gray-300);
+
+  
+  --color-text-positive-default: var(--green-600);
+  --color-text-positive-on-secondary: var(--green-700);
+
+  
+  --color-text-warning-default: var(--apricot-700);
+  --color-text-warning-on-secondary: var(--apricot-700);
+
+  
+  --color-text-danger-default: var(--red-600);
+  --color-text-danger-on-secondary: var(--red-700); 
+}
+
+:root {
+  
+  --color-icon-base-default: var(--black-1000); 
+  --color-icon-base-secondary: var(--gray-600);
+  --color-icon-base-tertiary: var(--gray-400);
+
+  --color-icon-base-default-on-color: var(--black-1000);
+  --color-icon-base-secondary-on-color: var(--gray-600);
+
+  
+  --color-icon-base-inverse-default: var(--white-1000);
+  --color-icon-base-inverse-on-color: var(--white-1000);
+
+  
+  --color-icon-brand-default: var(--blue-sky-600);
+  --color-icon-brand-on-secondary: var(--blue-sky-600);
+  --color-icon-brand-visited: var(--magenta-600);
+
+  
+  --color-icon-disabled-default: var(--gray-300);
+  --color-icon-disabled-on-disabled: var(--gray-300);
+
+  
+  --color-icon-positive-default: var(--green-600);
+  --color-icon-positive-on-secondary: var(--green-700);
+
+  
+  --color-icon-warning-default: var(--apricot-600);
+  --color-icon-warning-on-secondary: var(--apricot-700);
+
+  
+  --color-icon-danger-default: var(--red-600);
+  --color-icon-danger-on-secondary: var(--red-700);
+}
+
+$token-spacing-0:  var(--spacing-0);
+$token-spacing-2:  var(--spacing-2);
+$token-spacing-4:  var(--spacing-4);
+$token-spacing-6:  var(--spacing-6);
+$token-spacing-8:  var(--spacing-8);
+$token-spacing-12: var(--spacing-12);
+$token-spacing-16: var(--spacing-16);
+$token-spacing-20: var(--spacing-20);
+$token-spacing-24: var(--spacing-24);
+$token-spacing-32: var(--spacing-32);
+$token-spacing-40: var(--spacing-40);
+$token-spacing-48: var(--spacing-48);
+$token-spacing-56: var(--spacing-56);
+$token-spacing-64: var(--spacing-64);
+$token-spacing-72: var(--spacing-72);
+$token-spacing-80: var(--spacing-80);
+$token-spacing-120: var(--spacing-120);
+
+$drop-shadows: (
+  100: (
+    0 0 0.5px rgba(0, 0, 0, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.15)
+  ),
+  100-inverse: (
+    0 0 0.5px rgba(0, 0, 0, 0.3),
+    0 -1px 3px rgba(0, 0, 0, 0.15)
+  ),
+  200: (
+    0 0 0.5px rgba(0, 0, 0, 0.18),
+    0 3px 8px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.08)
+  ),
+  300: (
+    0 0 0.5px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    0 5px 12px rgba(0, 0, 0, 0.08)
+  ),
+  400: (
+    0 0 0.5px rgba(0, 0, 0, 0.12),
+    0 10px 24px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.08)
+  ),
+  500: (
+    0 0 0.5px rgba(0, 0, 0, 0.08),
+    0 3px 12px rgba(0, 0, 0, 0.05),
+    0 12px 32px rgba(0, 0, 0, 0.12),
+    0 2px 5px rgba(0, 0, 0, 0.1)
+  ),
+  600: (
+    0 0 0.5px rgba(0, 0, 0, 0.08),
+    0 3px 12px rgba(0, 0, 0, 0.05),
+    0 16px 48px rgba(0, 0, 0, 0.14),
+    0 6px 12px rgba(0, 0, 0, 0.1)
+  )
+);
+
+$font-weights: (
+  regular: 400,
+  medium: 500,
+  bold: 600
+);
+@function font-weight($weight-name) {
+  @return map-get($font-weights, $weight-name);
+}
+
+$icon-sizes: (
+  default: 24px,
+  medium: 20px,
+  small: 16px,
+  extra-small: 12px
+);
+
+$input-colors: (
+  default: (
+    border: var(--gray-250),
+    border-hover: var(--gray-600),
+    focus: var(--blue-sky-200),
+    focus-border: var(--blue-sky-600),
+    placeholder: var(--gray-500),
+    text: var(--gray-900),
+    background: var(--white),
+    disabled-bg: var(--gray-100),
+    disabled-border: var(--gray-250),
+    disabled-text: var(--gray-500),
+    readonly-bg: var(--gray-100),
+    readonly-border: var(--gray-200),
+    readonly-text: var(--gray-700)
+  ),
+  warning: (
+    border: var(--apricot-500),
+    border-hover: var(--apricot-600),
+    focus: var(--apricot-200),
+    focus-border: var(--apricot-500),
+    text: var(--gray-900),
+    background: var(--white),
+    disabled-bg: var(--gray-100),
+    disabled-border: var(--gray-250),
+    disabled-text: var(--gray-500),
+    readonly-bg: var(--apricot-100),
+    readonly-border: var(--apricot-300),
+    readonly-text: var(--apricot-700)
+  ),
+  destructive: (
+    border: var(--red-600),
+    border-hover: var(--red-600),
+    focus: var(--red-200),
+    focus-border: var(--red-500),
+    text: var(--gray-900),
+    background: var(--white),
+    disabled-bg: var(--gray-100),
+    disabled-border: var(--gray-250),
+    disabled-text: var(--gray-500),
+    readonly-bg: var(--red-100),
+    readonly-border: var(--red-300),
+    readonly-text: var(--red-700)
+  ),
+  success: (
+    border: var(--green-600),
+    border-hover: var(--green-700),
+    focus: var(--green-200),
+    focus-border: var(--green-600),
+    text: var(--gray-900),
+    background: var(--white),
+    disabled-bg: var(--gray-100),
+    disabled-border: var(--gray-250),
+    disabled-text: var(--gray-500),
+    readonly-bg: var(--green-100),
+    readonly-border: var(--green-300),
+    readonly-text: var(--green-800)
+  )
+);
+
+$input-sizes: (
+  small: (
+    font-size: var(--font-size-14, 14px),
+    padding: 8px 12px,
+    height: 32px,
+    icon-size: 16px
+  ),
+  medium: (
+    font-size: var(--font-size-16, 16px),
+    padding: 12px 16px,
+    height: 40px,
+    icon-size: 20px
+  ),
+  large: (
+    font-size: var(--font-size-18, 18px),
+    padding: 16px 20px,
+    height: 48px,
+    icon-size: 24px
+  )
+);
+
+:root {
+  --modal-width-sm: 350px;
+  --modal-width-md: 590px;   
+  --modal-width-lg: 720px;
+  --modal-width-full: 100vw;
+  --z-modal: 1000px;
+
+  --motion-duration-md: 0.3s;
+  --motion-duration-lg: 0.5s;
+  --motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-easing-decelerate: cubic-bezier(0.0, 0, 0.2, 1);
+  --motion-scale-sm: 0.9;
+}
+
+:root {
+  --color-link-primary-default: var(--color-text-brand-default);
+  --color-link-primary-hover: var(--color-text-brand-default-hover);
+  --color-link-primary-visited: var(--color-text-brand-visited);
+
+  --color-link-strict-default: var(--color-text-base-default);
+  --color-link-strict-hover: var(--color-text-base-secondary);
+
+  --color-link-white-default: var(--color-text-base-inverse-default);
+}
+

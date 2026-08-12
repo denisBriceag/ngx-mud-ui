@@ -2,9 +2,60 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "pnpm"
+    "packageManager": "pnpm",
+    "schematicCollections": ["angular-eslint"]
   },
   "newProjectRoot": "projects",
   "projects": {
+    "ngx-egov-ui": {
+      "projectType": "library",
+      "root": "projects/ngx-egov-ui",
+      "sourceRoot": "projects/ngx-egov-ui/src",
+      "prefix": "egov",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngx-egov-ui/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ngx-egov-ui/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/ngx-egov-ui/tsconfig.spec.json",
+            "include": ["**/*.spec.ts", "../icons/src/**/*.spec.ts"]
+          }
+        },
+        "storybook": {
+          "builder": "@storybook/angular-vite:start-storybook",
+          "options": {
+            "configDir": "projects/ngx-egov-ui/.storybook",
+            "browserTarget": "ngx-egov-ui:build",
+            "port": 6006
+          }
+        },
+        "build-storybook": {
+          "builder": "@storybook/angular-vite:build-storybook",
+          "options": {
+            "configDir": "projects/ngx-egov-ui/.storybook",
+            "browserTarget": "ngx-egov-ui:build",
+            "outputDir": "storybook-static"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["projects/ngx-egov-ui/**/*.ts", "projects/ngx-egov-ui/**/*.html"],
+            "eslintConfig": "projects/ngx-egov-ui/eslint.config.mjs"
+          }
+        }
+      }
+    }
   }
 }

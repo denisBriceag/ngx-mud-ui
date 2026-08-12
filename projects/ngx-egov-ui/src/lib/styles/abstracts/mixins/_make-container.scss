@@ -1,0 +1,35 @@
+@use 'sass:map' as map;
+@use '../mud-prefix' as mud;
+
+@mixin make-container($max-widths, $breakpoints) {
+  @at-root {
+    .#{mud.mud-class('container')} {
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
+      padding-left: var(--spacing-12, 12px);
+      padding-right: var(--spacing-12, 12px);
+
+      @each $bp, $max in $max-widths {
+        @if $bp != default {
+          // `var(--breakpoint-*)` in @media is not reliably applied; use Sass map for min-width.
+          @media (min-width: map.get($breakpoints, $bp)) {
+            max-width: var(--container-max-width-#{$bp});
+          }
+        } @else {
+          max-width: $max;
+        }
+      }
+    }
+
+    .#{mud.mud-class('container-fluid')} {
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
+      padding-left: var(--spacing-12, 12px);
+      padding-right: var(--spacing-12, 12px);
+    }
+  }
+}

@@ -1,0 +1,58 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mud-prefix' as mud;
+
+:root {
+  @each $key, $value in vars.$border-widths {
+    --border-width-#{$key}: #{$value};
+  }
+
+  @each $key, $value in vars.$radius {
+    --border-radius-#{$key}: #{$value};
+  }
+
+  @each $key, $value in vars.$border-styles {
+    --border-style-#{$key}: #{$value};
+  }
+
+  --border-width: var(--border-width-1);
+  --border-style: var(--border-style-solid);
+  --border-radius: var(--border-radius-0);
+  --border-color: currentColor;
+}
+
+.#{mud.mud-class('border')} {
+  border: var(--border-width) var(--border-style) var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+@each $key, $value in vars.$border-widths {
+  .#{mud.mud-class('border-#{$key}')} { border-width: #{$value} !important; }
+  .#{mud.mud-class('border-top-#{$key}')} { border-top-width: #{$value} !important; }
+  .#{mud.mud-class('border-right-#{$key}')} { border-right-width: #{$value} !important; }
+  .#{mud.mud-class('border-bottom-#{$key}')} { border-bottom-width: #{$value} !important; }
+  .#{mud.mud-class('border-left-#{$key}')} { border-left-width: #{$value} !important; }
+}
+
+@each $key, $value in vars.$radius {
+  .#{mud.mud-class('radius-#{$key}')} { border-radius: #{$value} !important; }
+  .#{mud.mud-class('radius-top-left-#{$key}')} { border-top-left-radius: #{$value} !important; }
+  .#{mud.mud-class('radius-top-right-#{$key}')} { border-top-right-radius: #{$value} !important; }
+  .#{mud.mud-class('radius-bottom-left-#{$key}')} { border-bottom-left-radius: #{$value} !important; }
+  .#{mud.mud-class('radius-bottom-right-#{$key}')} { border-bottom-right-radius: #{$value} !important; }
+}
+
+@each $key, $value in vars.$border-styles {
+  .#{mud.mud-class('border-style-#{$key}')} { border-style: #{$value} !important; }
+  .#{mud.mud-class('border-top-style-#{$key}')} { border-top-style: #{$value} !important; }
+  .#{mud.mud-class('border-right-style-#{$key}')} { border-right-style: #{$value} !important; }
+  .#{mud.mud-class('border-bottom-style-#{$key}')} { border-bottom-style: #{$value} !important; }
+  .#{mud.mud-class('border-left-style-#{$key}')} { border-left-style: #{$value} !important; }
+}
+
+@each $key, $value in vars.$border-styles {
+  .#{mud.mud-class('border-#{$key}')} { border-style: #{$value} !important; }
+  .#{mud.mud-class('border-top-#{$key}')} { border-top-style: #{$value} !important; }
+  .#{mud.mud-class('border-right-#{$key}')} { border-right-style: #{$value} !important; }
+  .#{mud.mud-class('border-bottom-#{$key}')} { border-bottom-style: #{$value} !important; }
+  .#{mud.mud-class('border-left-#{$key}')} { border-left-style: #{$value} !important; }
+}

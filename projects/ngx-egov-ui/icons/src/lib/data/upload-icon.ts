@@ -1,0 +1,14 @@
+// GENERATED FILE — do not edit. Regenerate with `pnpm icons:generate`.
+import type { EgovIcon } from '../types';
+
+export const uploadIcon: EgovIcon = {
+  name: 'upload-icon',
+  variants: {
+    outlined: {
+      24: {
+        viewBox: '0 0 25 30',
+        body: '<g filter="url(#a)"><g clip-path="url(#b)"><path fill="url(#c)" d="M3 4a2 2 0 0 1 2-2h9.145l7.072 6.494V24a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><g filter="url(#d)"><path fill="#fff" d="m14.145 2 7.072 6.494H15.3a1.157 1.157 0 0 1-1.156-1.157z"/></g></g></g><defs><filter id="a" width="24.217" height="30" x="0" y="0" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/><feOffset dy="1"/><feGaussianBlur stdDeviation="1.5"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.16 0"/><feBlend in2="BackgroundImageFix" result="effect1_dropShadow_1034_4"/><feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/><feOffset/><feGaussianBlur stdDeviation=".25"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0"/><feBlend in2="effect1_dropShadow_1034_4" result="effect2_dropShadow_1034_4"/><feBlend in="SourceGraphic" in2="effect2_dropShadow_1034_4" result="shape"/></filter><filter id="d" width="14.012" height="13.434" x="9.229" y="-.024" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/><feOffset dx="-.289" dy=".289"/><feGaussianBlur stdDeviation=".434"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.08 0"/><feBlend in2="BackgroundImageFix" result="effect1_dropShadow_1034_4"/><feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/><feOffset dx="-1.446" dy="1.446"/><feGaussianBlur stdDeviation="1.735"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0"/><feBlend in2="effect1_dropShadow_1034_4" result="effect2_dropShadow_1034_4"/><feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/><feOffset/><feGaussianBlur stdDeviation=".072"/><feComposite in2="hardAlpha" operator="out"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"/><feBlend in2="effect2_dropShadow_1034_4" result="effect3_dropShadow_1034_4"/><feBlend in="SourceGraphic" in2="effect3_dropShadow_1034_4" result="shape"/></filter><linearGradient id="c" x1="12" x2="12" y1="2" y2="26" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#f8f8f8"/></linearGradient><clipPath id="b"><path fill="#fff" d="M3 2h18.217v24H3z"/></clipPath></defs>'
+      }
+    }
+  }
+};

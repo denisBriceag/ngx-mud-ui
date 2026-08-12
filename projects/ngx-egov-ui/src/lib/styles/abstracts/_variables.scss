@@ -1,0 +1,443 @@
+@use './colors';
+
+$color-palettes: (
+  'gray': (
+    100,
+    200,
+    250,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+  ),
+  'blue-sky': (
+    100,
+    150,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+  ),
+  'lavender': (
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+  ),
+  'purple': (
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+  ),
+  'magenta': (
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+  ),
+  'forest-green': (
+    100,
+    150,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+  ),
+  'green': (
+    50,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+  ),
+  'apricot': (
+    50,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+  ),
+  'red': (
+    50,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+  ),
+  'black': (),
+  'white': (),
+);
+
+$alpha-palettes: (
+  'black': (
+    100-alpha,
+    200-alpha,
+    300-alpha,
+    400-alpha,
+    500-alpha,
+  ),
+  'white': (
+    100-alpha,
+    200-alpha,
+    300-alpha,
+    400-alpha,
+    500-alpha,
+  ),
+  'gray': (
+    100-alpha,
+    200-alpha,
+    300-alpha,
+    400-alpha,
+    500-alpha,
+  ),
+);
+
+$font-weight-bold: 600;
+$font-weight-semibold: 500;
+$font-weight-regular: 400;
+
+$border-widths: (
+  '0-5': 0.5px,
+  0: 0,
+  1: 1px,
+  '1-5': 1.5px,
+  2: 2px,
+  3: 3px,
+  4: 4px,
+  6: 6px,
+  8: 8px,
+);
+
+$radius: (
+  0: 0,
+  2: 2px,
+  4: 4px,
+  5: 5px,
+  6: 6px,
+  8: 8px,
+  10: 10px,
+  12: 12px,
+  14: 14px,
+  16: 16px,
+  20: 20px,
+  24: 24px,
+  32: 32px,
+  40: 40px,
+  full: 999px,
+);
+
+$border-styles: (
+  solid: solid,
+  dashed: dashed,
+  dotted: dotted,
+  double: double,
+  none: none,
+);
+
+$breakpoints: (
+  xs: 320px,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1248px,
+  xxl: 1440px,
+);
+
+// Largest tier container cap (xxl); also used for header shell max-width.
+$layout-container-max-width: 1440px;
+
+$container-max-widths: (
+  xs: 288px,
+  sm: 544px,
+  md: 720px,
+  lg: 944px,
+  xl: 1200px,
+  xxl: $layout-container-max-width,
+);
+
+$grid-columns: 12 !default;
+
+// Layout column counts per tier (design grid); column utilities still use $grid-columns.
+$layout-columns: (
+  xs: 4,
+  sm: 4,
+  md: 8,
+  lg: 12,
+  xl: 12,
+  xxl: 12,
+);
+
+$gutters: (
+  xs: 16px,
+  sm: 16px,
+  md: 24px,
+  lg: 24px,
+  xl: 24px,
+  xxl: 24px,
+);
+
+$spacings: (
+  0: 0px,
+  2: 2px,
+  4: 4px,
+  6: 6px,
+  8: 8px,
+  12: 12px,
+  16: 16px,
+  20: 20px,
+  24: 24px,
+  32: 32px,
+  40: 40px,
+  48: 48px,
+  56: 56px,
+  64: 64px,
+);
+
+$drop-shadows: (
+  100: (
+    0 0 0.5px rgba(0, 0, 0, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.15),
+  ),
+  100-inverse: (
+      0 0 0.5px rgba(0, 0, 0, 0.3),
+      0 -1px 3px rgba(0, 0, 0, 0.15),
+    ),
+  200: (
+    0 0 0.5px rgba(0, 0, 0, 0.18),
+    0 3px 8px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.08),
+  ),
+  300: (
+    0 0 0.5px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    0 5px 12px rgba(0, 0, 0, 0.08),
+  ),
+  400: (
+    0 0 0.5px rgba(0, 0, 0, 0.12),
+    0 10px 24px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.08),
+  ),
+  500: (
+    0 0 0.5px rgba(0, 0, 0, 0.08),
+    0 3px 12px rgba(0, 0, 0, 0.05),
+    0 12px 32px rgba(0, 0, 0, 0.12),
+    0 2px 5px rgba(0, 0, 0, 0.1),
+  ),
+  600: (
+    0 0 0.5px rgba(0, 0, 0, 0.08),
+    0 3px 12px rgba(0, 0, 0, 0.05),
+    0 16px 48px rgba(0, 0, 0, 0.14),
+    0 6px 12px rgba(0, 0, 0, 0.1),
+  ),
+);
+
+:root {
+  --layout-container-max-width: #{$layout-container-max-width};
+
+  @each $key, $val in $breakpoints {
+    --breakpoint-#{$key}: #{$val};
+  }
+
+  @each $key, $max in $container-max-widths {
+    --container-max-width-#{$key}: #{$max};
+  }
+
+  --grid-columns: #{$grid-columns};
+
+  @each $key, $g in $gutters {
+    --grid-gutter-#{$key}: #{$g};
+  }
+
+  @each $key, $cols in $layout-columns {
+    --layout-columns-#{$key}: #{$cols};
+  }
+
+  --font-family-base: 'Onest', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-family-descriptor: var(--font-family-mono);
+  --font-weight-regular: 400;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 600;
+}
+
+:root {
+  --text-display-lg-font-family: var(--font-family-base);
+  --text-display-md-font-family: var(--font-family-base);
+
+  --text-heading-h1-lg-font-family: var(--font-family-base);
+  --text-heading-h2-md-font-family: var(--font-family-base);
+  --text-heading-h3-sm-font-family: var(--font-family-base);
+  --text-heading-h4-xs-font-family: var(--font-family-base);
+  --text-heading-h5-2xs-font-family: var(--font-family-base);
+
+  --text-body-lg-font-family: var(--font-family-base);
+  --text-body-lg-500-font-family: var(--font-family-base);
+  --text-body-md-font-family: var(--font-family-base);
+  --text-body-md-500-font-family: var(--font-family-base);
+  --text-body-sm-font-family: var(--font-family-base);
+  --text-body-sm-500-font-family: var(--font-family-base);
+
+  --text-caption-md-font-family: var(--font-family-base);
+  --text-caption-md-500-font-family: var(--font-family-base);
+  --text-caption-sm-font-family: var(--font-family-base);
+}
+
+:root {
+  --text-display-lg-font-weight: var(--font-weight-bold);
+  --text-display-md-font-weight: var(--font-weight-bold);
+
+  --text-heading-h1-lg-font-weight: var(--font-weight-bold);
+  --text-heading-h2-md-font-weight: var(--font-weight-bold);
+  --text-heading-h3-sm-font-weight: var(--font-weight-bold);
+  --text-heading-h4-xs-font-weight: var(--font-weight-semibold);
+  --text-heading-h5-2xs-font-weight: var(--font-weight-semibold);
+
+  --text-body-lg-font-weight: var(--font-weight-regular);
+  --text-body-lg-500-font-weight: var(--font-weight-semibold);
+  --text-body-md-font-weight: var(--font-weight-regular);
+  --text-body-md-500-font-weight: var(--font-weight-semibold);
+  --text-body-sm-font-weight: var(--font-weight-regular);
+  --text-body-sm-500-font-weight: var(--font-weight-semibold);
+
+  --text-caption-md-font-weight: var(--font-weight-regular);
+  --text-caption-md-500-font-weight: var(--font-weight-semibold);
+  --text-caption-sm-font-weight: var(--font-weight-regular);
+}
+
+:root {
+  --text-display-lg-font-size: 56px;
+  --text-display-lg-line-height: 140%;
+  --text-display-lg-letter-spacing: -0.02em;
+
+  --text-display-md-font-size: 48px;
+  --text-display-md-line-height: 140%;
+  --text-display-md-letter-spacing: -0.02em;
+
+  --text-heading-h1-lg-font-size: 40px;
+  --text-heading-h2-md-font-size: 32px;
+  --text-heading-h3-sm-font-size: 28px;
+  --text-heading-h4-xs-font-size: 24px;
+  --text-heading-h5-2xs-font-size: 20px;
+
+  --text-heading-h1-lg-line-height: 150%;
+  --text-heading-h2-md-line-height: 150%;
+  --text-heading-h3-sm-line-height: 150%;
+  --text-heading-h4-xs-line-height: 150%;
+  --text-heading-h5-2xs-line-height: 150%;
+
+  --text-body-lg-font-size: 18px;
+  --text-body-lg-500-font-size: 18px;
+  --text-body-md-font-size: 16px;
+  --text-body-md-500-font-size: 16px;
+  --text-body-sm-font-size: 14px;
+  --text-body-sm-500-font-size: 14px;
+
+  --text-body-lg-line-height: 150%;
+  --text-body-md-line-height: 140%;
+  --text-body-sm-line-height: 140%;
+
+  --text-caption-md-font-size: 12px;
+  --text-caption-md-500-font-size: 12px;
+  --text-caption-sm-font-size: 10px;
+
+  --text-caption-md-line-height: 140%;
+  --text-caption-sm-line-height: 140%;
+}
+
+:root {
+  --text-font-size-14: 14px;
+  --text-font-size-16: 16px;
+
+  --text-line-height-20: 20px;
+  --text-line-height-24: 24px;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --text-display-lg-font-size: 48px;
+    --text-display-md-font-size: 40px;
+
+    --text-heading-h1-lg-font-size: 32px;
+    --text-heading-h2-md-font-size: 28px;
+    --text-heading-h3-sm-font-size: 22px;
+    --text-heading-h4-xs-font-size: 18px;
+    --text-heading-h5-2xs-font-size: 16px;
+
+    --text-body-lg-font-size: 16px;
+    --text-body-lg-500-font-size: 16px;
+    --text-body-md-font-size: 14px;
+    --text-body-md-500-font-size: 14px;
+    --text-body-sm-font-size: 12px;
+    --text-body-sm-500-font-size: 12px;
+
+    --text-caption-md-font-size: 10px;
+    --text-caption-md-500-font-size: 10px;
+    --text-caption-sm-font-size: 8px;
+  }
+}
+
+$font-sizes: (
+  8: 8px,
+  10: 10px,
+  12: 12px,
+  14: 14px,
+  16: 16px,
+  18: 18px,
+  20: 20px,
+  24: 24px,
+  30: 30px,
+  36: 36px,
+  40: 40px,
+  48: 48px,
+  56: 56px,
+  60: 60px,
+  72: 72px,
+);
+
+$line-heights: (
+  tight: 120%,
+  normal: 140%,
+  relaxed: 150%,
+);

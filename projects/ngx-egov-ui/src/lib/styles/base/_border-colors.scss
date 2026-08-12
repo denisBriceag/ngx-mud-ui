@@ -1,0 +1,25 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mud-prefix' as mud;
+@use 'sass:list';
+
+@each $color, $shades in vars.$color-palettes {
+  @if list.length($shades) > 0 {
+    @each $shade in $shades {
+      .#{mud.mud-class('border-#{$color}-#{$shade}')} {
+        border-color: var(--#{$color}-#{$shade}) !important;
+      }
+    }
+  } @else {
+    .#{mud.mud-class('border-#{$color}')} {
+      border-color: var(--#{$color}) !important;
+    }
+  }
+}
+
+@each $color, $shades in vars.$alpha-palettes {
+  @each $shade in $shades {
+    .#{mud.mud-class('border-#{$color}-#{$shade}')} {
+      border-color: var(--#{$color}-#{$shade}) !important;
+    }
+  }
+}

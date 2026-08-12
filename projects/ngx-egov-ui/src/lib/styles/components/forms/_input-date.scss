@@ -1,0 +1,60 @@
+@use "sass:map";
+@use "../../abstracts/tokens" as tokens;
+@use './input' as *; 
+
+.input-date {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  font-family: "Onest", sans-serif;
+
+  input[type="date"] {
+    width: 100%;
+    padding: var(--spacing-12) var(--spacing-16);
+    border: 1.5px solid var(--color-border-base-default);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-16);
+    color: var(--color-text-base-default);
+    background-color: var(--color-background-base-default);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    
+    &:focus {
+      border-color: map.get(map.get(tokens.$input-colors, default), focus);
+      box-shadow: 0 0 0 2px map.get(map.get(tokens.$input-colors, default), focus);
+    }
+
+    
+    &.is-warning {
+      border-color: map.get(map.get(tokens.$input-colors, warning), focus);
+      box-shadow: 0 0 0 2px map.get(map.get(tokens.$input-colors, warning), focus);
+    }
+
+    
+    &.is-destructive {
+      border-color: map.get(map.get(tokens.$input-colors, destructive), focus);
+      box-shadow: 0 0 0 2px map.get(map.get(tokens.$input-colors, destructive), focus);
+    }
+
+    
+    &:disabled {
+      background-color: var(--color-background-base-disabled);
+      border-color: var(--color-border-base-disabled);
+      color: var(--color-text-base-disabled);
+      cursor: not-allowed;
+    }
+  }
+
+  
+  .input-date-icon {
+    position: absolute;
+    right: var(--spacing-12);
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+  }
+}

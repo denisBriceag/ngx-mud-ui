@@ -1,0 +1,97 @@
+@use '../abstracts/mud-prefix' as mud;
+
+.#{mud.mud-class('btn')} {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-body-md-500-font-size);
+  font-family: inherit;
+  font-weight: 500;
+  line-height: 1.375;
+  border-radius: var(--border-radius-8);
+  padding: var(--spacing-12, 0.75rem) var(--spacing-20, 1.25rem);
+  gap: var(--spacing-4, 0.25rem);
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s;
+
+  &:disabled {
+    background-color: var(--gray-200);
+    color: var(--gray-300);
+    border-color: var(--gray-200);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.#{mud.mud-class('btn-filled')} {
+  background-color: var(--blue-sky-600, #0058d2);
+  color: var(--white, #ffffff);
+  border: 1px solid transparent;
+}
+
+.#{mud.mud-class('btn-outlined')} {
+  background-color: transparent;
+  border: 1px solid var(--blue-sky-600, #0058d2);
+  border: var(--blue-sky-600, #0058d2) var(--solid, solid) var(--border-width-2, 2px);
+  color: var(--blue-sky-600, #0058d2);
+}
+
+.#{mud.mud-class('btn-text')} {
+  background-color: transparent;
+  border: none;
+  color: var(--blue-sky-600, #0058d2);
+}
+
+.#{mud.mud-class('btn-icon')} {
+  background-color: transparent;
+  border: none;
+  padding: var(--spacing-8, 0.5rem);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+
+  &:hover:not(:disabled) {
+    background-color: var(--gray-100, #f5f5f5);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--gray-200, #f1f1f1);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+}
+
+.#{mud.mud-class('btn-pill')} {
+  border-radius: 9999px;
+}
+.#{mud.mud-class('btn-rounded')} {
+  border-radius: var(--border-radius-full, 9999px);
+}
+
+.#{mud.mud-class('btn-group')} {
+  display: inline-flex;
+  gap: var(--spacing-12, 0.75rem);
+
+  &--inline {
+    flex-direction: row;
+  }
+
+  &--vertical {
+    flex-direction: column;
+  }
+
+  .#{mud.mud-class('btn')} {
+    margin: 0;
+  }
+}

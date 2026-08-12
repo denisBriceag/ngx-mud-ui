@@ -1,0 +1,19 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/ngx-egov-ui",
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  },
+  "assets": [
+    {
+      "glob": "**/*",
+      "input": "./src/lib/styles",
+      "output": "./styles"
+    },
+    {
+      "glob": "**/*",
+      "input": "./src/lib/assets",
+      "output": "./assets"
+    }
+  ]
+}

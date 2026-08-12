@@ -1,0 +1,24 @@
+@use '../abstracts/tokens' as *;
+
+:root {
+  @each $name, $size in $icon-sizes {
+    --icon-size-#{$name}: #{$size};
+  }
+}
+
+.icon {
+  display: inline-block;
+  vertical-align: middle;
+  fill: currentColor;
+  width: var(--icon-size-default);
+  height: var(--icon-size-default);
+}
+
+@each $name, $size in $icon-sizes {
+  @if $name != default {
+    .#{$name} {
+      width: var(--icon-size-#{$name});
+      height: var(--icon-size-#{$name});
+    }
+  }
+}
