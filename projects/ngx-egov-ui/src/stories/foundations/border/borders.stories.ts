@@ -13,7 +13,6 @@ export default meta;
 
 type Story = StoryObj<BorderGridComponent>;
 
-/** Border tokens — radius, width, and style — each with a visual preview. Click a cell to copy `var(--…)`. */
 export const Tokens: Story = {
   render: () => ({ template: `<egov-border-grid />` }),
 };
