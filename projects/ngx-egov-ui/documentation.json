@@ -2063,7 +2063,7 @@
         },
         {
             "name": "TabsInteractiveDemo",
-            "id": "component-TabsInteractiveDemo-53ca6fb2a27f662ba9358cd040ad7fd69a4bbdda8b52b828ebd2938764e75c16fe4de6ad43b09fa5f7178d1afdbcb1944df41a3014e8659daa019b144c3a5722",
+            "id": "component-TabsInteractiveDemo-aa3be4fd450523ae387812c702462d1f56e8de4222006ec76beb33151602c7485536ad938aff34f98007821ce2507af2985608f8eca0907e264821480549fd7b",
             "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
             "changeDetection": "ChangeDetectionStrategy.OnPush",
             "encapsulation": [],
@@ -2092,7 +2092,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 134,
+                    "line": 160,
                     "rawdescription": "\n",
                     "modifierKind": [
                         148
@@ -2108,7 +2108,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 133,
+                    "line": 159,
                     "rawdescription": "\n",
                     "modifierKind": [
                         148
@@ -2132,7 +2132,7 @@
                     "optional": false,
                     "returnType": "number",
                     "typeParameters": [],
-                    "line": 140,
+                    "line": 166,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "\n",
@@ -2167,7 +2167,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 136,
+                    "line": 162,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "\n",
@@ -2204,14 +2204,14 @@
             "description": "<p>Live demo: external controls + a read-out of <code>selectedIndex</code> and the last <code>selectedTabChange</code>.</p>\n",
             "rawdescription": "\nLive demo: external controls + a read-out of `selectedIndex` and the last `selectedTabChange`.",
             "type": "component",
-            "sourceCode": "import type { Meta, StoryObj } from '@storybook/angular-vite';\nimport { applicationConfig, moduleMetadata } from '@storybook/angular-vite';\nimport { Component, signal } from '@angular/core';\nimport { EgovTab, EgovTabGroup, EgovTabLabel } from '../../../tabs/src/public-api';\nimport type { EgovTabChangeEvent } from '../../../tabs/src/public-api';\nimport { alarm, EgovIconComponent, lock, provideEgovIcons, search, settings } from '../../../icons/src/public-api';\n\nconst COUNTER_STYLE =\n  'display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:9999px;background:var(--gray-100,#f1f1f1);color:var(--black,#121212);font-size:12px';\n\nconst meta: Meta<EgovTabGroup> = {\n  title: 'Components/Tabs',\n  component: EgovTabGroup,\n  decorators: [\n    moduleMetadata({ imports: [EgovTabGroup, EgovTab, EgovTabLabel, EgovIconComponent] }),\n    applicationConfig({ providers: [provideEgovIcons([alarm, settings, search, lock])] }),\n  ],\n  argTypes: {\n    stretchTabs: { control: 'boolean' },\n    size: { control: 'inline-radio', options: ['md', 'sm'] },\n  },\n  args: {\n    stretchTabs: false,\n    size: 'md',\n  },\n};\n\nexport default meta;\n\ntype Story = StoryObj<EgovTabGroup>;\n\n/** Plain labels, a custom `egovTabLabel` with a counter, and a disabled tab. */\nexport const Basic: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Example tabs\">\n        <egov-tab label=\"Overview\"><p style=\"padding:16px 0\">Overview content.</p></egov-tab>\n        <egov-tab label=\"Details\"><p style=\"padding:16px 0\">Details content.</p></egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel>Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts content (custom label with a counter).</p>\n        </egov-tab>\n        <egov-tab label=\"Disabled\" [disabled]=\"true\"><p style=\"padding:16px 0\">Unreachable.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** Tabs stretched to fill the header width. */\nexport const Stretched: Story = {\n  args: { stretchTabs: true },\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Stretched tabs\">\n        <egov-tab label=\"One\"><p style=\"padding:16px 0\">One.</p></egov-tab>\n        <egov-tab label=\"Two\"><p style=\"padding:16px 0\">Two.</p></egov-tab>\n        <egov-tab label=\"Three\"><p style=\"padding:16px 0\">Three.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** Custom labels with a leading `egov-icon` and a trailing counter. */\nexport const WithIconsAndCounters: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Tabs with icons\">\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"alarm\" [scale]=\"20\" /> Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"search\" [scale]=\"20\" /> Search</ng-template>\n          <p style=\"padding:16px 0\">Search.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"settings\" [scale]=\"20\" /> Settings</ng-template>\n          <p style=\"padding:16px 0\">Settings.</p>\n        </egov-tab>\n        <egov-tab [disabled]=\"true\">\n          <ng-template egovTabLabel><egov-icon name=\"lock\" [scale]=\"20\" /> Locked</ng-template>\n          <p style=\"padding:16px 0\">Unreachable (disabled tab with a custom icon label).</p>\n        </egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** First tab disabled (selection snaps to the first enabled), plus a disabled tab in the middle (keyboard skips it). */\nexport const DisabledTabs: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Disabled tabs\">\n        <egov-tab label=\"Locked\" [disabled]=\"true\"><p style=\"padding:16px 0\">Locked.</p></egov-tab>\n        <egov-tab label=\"Active\"><p style=\"padding:16px 0\">This one is selected on load.</p></egov-tab>\n        <egov-tab label=\"Skipped\" [disabled]=\"true\"><p style=\"padding:16px 0\">Skipped.</p></egov-tab>\n        <egov-tab label=\"Last\"><p style=\"padding:16px 0\">Reached by pressing → (skips the disabled one).</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** Live demo: external controls + a read-out of `selectedIndex` and the last `selectedTabChange`. */\n@Component({\n  selector: 'egov-tabs-demo',\n  imports: [EgovTabGroup, EgovTab],\n  template: `\n    <div style=\"display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-family:system-ui\">\n      <button type=\"button\" (click)=\"tabs.focusTab(0)\">focusTab(0)</button>\n      <button type=\"button\" (click)=\"selected.set(clamp(selected() - 1))\">Prev</button>\n      <button type=\"button\" (click)=\"selected.set(clamp(selected() + 1))\">Next</button>\n      <code>selectedIndex = {{ selected() }}</code>\n      <code>last selectedTabChange = {{ lastEvent() }}</code>\n    </div>\n    <egov-tab-group\n      #tabs\n      [selectedIndex]=\"selected()\"\n      (selectedIndexChange)=\"selected.set($event)\"\n      (selectedTabChange)=\"onChange($event)\"\n      aria-label=\"Interactive tabs\"\n    >\n      <egov-tab label=\"First\"><p style=\"padding:16px 0\">First content.</p></egov-tab>\n      <egov-tab label=\"Second\"><p style=\"padding:16px 0\">Second content.</p></egov-tab>\n      <egov-tab label=\"Third\"><p style=\"padding:16px 0\">Third content.</p></egov-tab>\n    </egov-tab-group>\n  `,\n})\nclass TabsInteractiveDemo {\n  readonly selected = signal(0);\n  readonly lastEvent = signal('—');\n\n  onChange(event: EgovTabChangeEvent): void {\n    this.lastEvent.set(`{ index: ${event.index} }`);\n  }\n\n  clamp(index: number): number {\n    return Math.max(0, Math.min(2, index));\n  }\n}\n\nexport const Interactive: Story = {\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [TabsInteractiveDemo] })],\n  render: () => ({ template: `<egov-tabs-demo />` }),\n};\n",
+            "sourceCode": "import type { Meta, StoryObj } from '@storybook/angular-vite';\nimport { applicationConfig, moduleMetadata } from '@storybook/angular-vite';\nimport { Component, signal } from '@angular/core';\nimport { EgovTab, EgovTabGroup, EgovTabLabel } from '../../../tabs/src/public-api';\nimport type { EgovTabChangeEvent } from '../../../tabs/src/public-api';\nimport { alarm, EgovIconComponent, lock, provideEgovIcons, search, settings } from '../../../icons/src/public-api';\n\nconst COUNTER_STYLE =\n  'display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:9999px;background:var(--gray-100,#f1f1f1);color:var(--black,#121212);font-size:12px';\n\nconst meta: Meta<EgovTabGroup> = {\n  title: 'Components/Tabs',\n  component: EgovTabGroup,\n  decorators: [\n    moduleMetadata({ imports: [EgovTabGroup, EgovTab, EgovTabLabel, EgovIconComponent] }),\n    applicationConfig({ providers: [provideEgovIcons([alarm, settings, search, lock])] }),\n  ],\n  argTypes: {\n    stretchTabs: { control: 'boolean' },\n    size: { control: 'inline-radio', options: ['md', 'sm'] },\n  },\n  args: {\n    stretchTabs: false,\n    size: 'md',\n  },\n};\n\nexport default meta;\n\ntype Story = StoryObj<EgovTabGroup>;\n\n/** Plain labels, a custom `egovTabLabel` with a counter, and a disabled tab. */\nexport const Basic: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Example tabs\">\n        <egov-tab label=\"Overview\"><p style=\"padding:16px 0\">Overview content.</p></egov-tab>\n        <egov-tab label=\"Details\"><p style=\"padding:16px 0\">Details content.</p></egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel>Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts content (custom label with a counter).</p>\n        </egov-tab>\n        <egov-tab label=\"Disabled\" [disabled]=\"true\"><p style=\"padding:16px 0\">Unreachable.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** Tabs stretched to fill the header width. */\nexport const Stretched: Story = {\n  args: { stretchTabs: true },\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Stretched tabs\">\n        <egov-tab label=\"One\"><p style=\"padding:16px 0\">One.</p></egov-tab>\n        <egov-tab label=\"Two\"><p style=\"padding:16px 0\">Two.</p></egov-tab>\n        <egov-tab label=\"Three\"><p style=\"padding:16px 0\">Three.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/**\n * Too many tabs for the width: the strip scrolls horizontally, the overflowing\n * edge fades, and a chevron appears to page through. Resize the container to see\n * the chevrons/fade toggle. (Wrapped in a fixed-width box to force the overflow.)\n */\nexport const Overflowing: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"max-width:520px;border:1px dashed #d0d0d0;border-radius:8px;padding:12px\">\n        <egov-tab-group aria-label=\"Many tabs\">\n          <egov-tab label=\"Overview\"><p style=\"padding:16px 0\">Overview.</p></egov-tab>\n          <egov-tab label=\"Details\"><p style=\"padding:16px 0\">Details.</p></egov-tab>\n          <egov-tab label=\"Documents\"><p style=\"padding:16px 0\">Documents.</p></egov-tab>\n          <egov-tab label=\"History\"><p style=\"padding:16px 0\">History.</p></egov-tab>\n          <egov-tab label=\"Payments\"><p style=\"padding:16px 0\">Payments.</p></egov-tab>\n          <egov-tab label=\"Notifications\"><p style=\"padding:16px 0\">Notifications.</p></egov-tab>\n          <egov-tab label=\"Permissions\"><p style=\"padding:16px 0\">Permissions.</p></egov-tab>\n          <egov-tab label=\"Settings\"><p style=\"padding:16px 0\">Settings.</p></egov-tab>\n          <egov-tab label=\"Advanced\"><p style=\"padding:16px 0\">Advanced.</p></egov-tab>\n        </egov-tab-group>\n      </div>\n    `,\n  }),\n};\n\n/** Custom labels with a leading `egov-icon` and a trailing counter. */\nexport const WithIconsAndCounters: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Tabs with icons\">\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"alarm\" [scale]=\"20\" /> Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"search\" [scale]=\"20\" /> Search</ng-template>\n          <p style=\"padding:16px 0\">Search.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"settings\" [scale]=\"20\" /> Settings</ng-template>\n          <p style=\"padding:16px 0\">Settings.</p>\n        </egov-tab>\n        <egov-tab [disabled]=\"true\">\n          <ng-template egovTabLabel><egov-icon name=\"lock\" [scale]=\"20\" /> Locked</ng-template>\n          <p style=\"padding:16px 0\">Unreachable (disabled tab with a custom icon label).</p>\n        </egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** First tab disabled (selection snaps to the first enabled), plus a disabled tab in the middle (keyboard skips it). */\nexport const DisabledTabs: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Disabled tabs\">\n        <egov-tab label=\"Locked\" [disabled]=\"true\"><p style=\"padding:16px 0\">Locked.</p></egov-tab>\n        <egov-tab label=\"Active\"><p style=\"padding:16px 0\">This one is selected on load.</p></egov-tab>\n        <egov-tab label=\"Skipped\" [disabled]=\"true\"><p style=\"padding:16px 0\">Skipped.</p></egov-tab>\n        <egov-tab label=\"Last\"><p style=\"padding:16px 0\">Reached by pressing → (skips the disabled one).</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** Live demo: external controls + a read-out of `selectedIndex` and the last `selectedTabChange`. */\n@Component({\n  selector: 'egov-tabs-demo',\n  imports: [EgovTabGroup, EgovTab],\n  template: `\n    <div style=\"display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-family:system-ui\">\n      <button type=\"button\" (click)=\"tabs.focusTab(0)\">focusTab(0)</button>\n      <button type=\"button\" (click)=\"selected.set(clamp(selected() - 1))\">Prev</button>\n      <button type=\"button\" (click)=\"selected.set(clamp(selected() + 1))\">Next</button>\n      <code>selectedIndex = {{ selected() }}</code>\n      <code>last selectedTabChange = {{ lastEvent() }}</code>\n    </div>\n    <egov-tab-group\n      #tabs\n      [selectedIndex]=\"selected()\"\n      (selectedIndexChange)=\"selected.set($event)\"\n      (selectedTabChange)=\"onChange($event)\"\n      aria-label=\"Interactive tabs\"\n    >\n      <egov-tab label=\"First\"><p style=\"padding:16px 0\">First content.</p></egov-tab>\n      <egov-tab label=\"Second\"><p style=\"padding:16px 0\">Second content.</p></egov-tab>\n      <egov-tab label=\"Third\"><p style=\"padding:16px 0\">Third content.</p></egov-tab>\n    </egov-tab-group>\n  `,\n})\nclass TabsInteractiveDemo {\n  readonly selected = signal(0);\n  readonly lastEvent = signal('—');\n\n  onChange(event: EgovTabChangeEvent): void {\n    this.lastEvent.set(`{ index: ${event.index} }`);\n  }\n\n  clamp(index: number): number {\n    return Math.max(0, Math.min(2, index));\n  }\n}\n\nexport const Interactive: Story = {\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [TabsInteractiveDemo] })],\n  render: () => ({ template: `<egov-tabs-demo />` }),\n};\n",
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "",
             "jsdoctags": [
                 {
-                    "pos": 4503,
-                    "end": 4604,
+                    "pos": 5877,
+                    "end": 5978,
                     "kind": 321,
                     "id": 0,
                     "flags": 16777216,
@@ -2743,17 +2743,6 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<CursorGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -2771,6 +2760,17 @@
                 "deprecationMessage": "",
                 "type": "Meta<ColorGridComponent>",
                 "defaultValue": "{\n  title: 'Foundations/Semantic Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<CursorGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "meta",
@@ -2848,6 +2848,19 @@
                 "deprecationMessage": "",
                 "type": "[]",
                 "defaultValue": "[\n  'block',\n  'inline',\n  'inline-block',\n  'flex',\n  'inline-flex',\n  'grid',\n  'inline-grid',\n  'table',\n  'table-row',\n  'table-cell',\n  'none',\n]"
+            },
+            {
+                "name": "Overflowing",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"max-width:520px;border:1px dashed #d0d0d0;border-radius:8px;padding:12px\">\n        <egov-tab-group aria-label=\"Many tabs\">\n          <egov-tab label=\"Overview\"><p style=\"padding:16px 0\">Overview.</p></egov-tab>\n          <egov-tab label=\"Details\"><p style=\"padding:16px 0\">Details.</p></egov-tab>\n          <egov-tab label=\"Documents\"><p style=\"padding:16px 0\">Documents.</p></egov-tab>\n          <egov-tab label=\"History\"><p style=\"padding:16px 0\">History.</p></egov-tab>\n          <egov-tab label=\"Payments\"><p style=\"padding:16px 0\">Payments.</p></egov-tab>\n          <egov-tab label=\"Notifications\"><p style=\"padding:16px 0\">Notifications.</p></egov-tab>\n          <egov-tab label=\"Permissions\"><p style=\"padding:16px 0\">Permissions.</p></egov-tab>\n          <egov-tab label=\"Settings\"><p style=\"padding:16px 0\">Settings.</p></egov-tab>\n          <egov-tab label=\"Advanced\"><p style=\"padding:16px 0\">Advanced.</p></egov-tab>\n        </egov-tab-group>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Too many tabs for the width: the strip scrolls horizontally, the overflowing\nedge fades, and a chevron appears to page through. Resize the container to see\nthe chevrons/fade toggle. (Wrapped in a fixed-width box to force the overflow.)",
+                "description": "<p>Too many tabs for the width: the strip scrolls horizontally, the overflowing\nedge fades, and a chevron appears to page through. Resize the container to see\nthe chevrons/fade toggle. (Wrapped in a fixed-width box to force the overflow.)</p>\n"
             },
             {
                 "name": "Padding",
@@ -3117,19 +3130,6 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<CursorGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "rawdescription": "",
-                "description": "",
-                "kind": 184
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "coverageIgnore": false,
                 "rawtype": "StoryObj<ColorGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
                 "deprecated": false,
@@ -3145,6 +3145,19 @@
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<ColorGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<CursorGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -3352,6 +3365,19 @@
                     "defaultValue": "{\n  title: 'Components/Tabs',\n  component: EgovTabGroup,\n  decorators: [\n    moduleMetadata({ imports: [EgovTabGroup, EgovTab, EgovTabLabel, EgovIconComponent] }),\n    applicationConfig({ providers: [provideEgovIcons([alarm, settings, search, lock])] }),\n  ],\n  argTypes: {\n    stretchTabs: { control: 'boolean' },\n    size: { control: 'inline-radio', options: ['md', 'sm'] },\n  },\n  args: {\n    stretchTabs: false,\n    size: 'md',\n  },\n}"
                 },
                 {
+                    "name": "Overflowing",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"max-width:520px;border:1px dashed #d0d0d0;border-radius:8px;padding:12px\">\n        <egov-tab-group aria-label=\"Many tabs\">\n          <egov-tab label=\"Overview\"><p style=\"padding:16px 0\">Overview.</p></egov-tab>\n          <egov-tab label=\"Details\"><p style=\"padding:16px 0\">Details.</p></egov-tab>\n          <egov-tab label=\"Documents\"><p style=\"padding:16px 0\">Documents.</p></egov-tab>\n          <egov-tab label=\"History\"><p style=\"padding:16px 0\">History.</p></egov-tab>\n          <egov-tab label=\"Payments\"><p style=\"padding:16px 0\">Payments.</p></egov-tab>\n          <egov-tab label=\"Notifications\"><p style=\"padding:16px 0\">Notifications.</p></egov-tab>\n          <egov-tab label=\"Permissions\"><p style=\"padding:16px 0\">Permissions.</p></egov-tab>\n          <egov-tab label=\"Settings\"><p style=\"padding:16px 0\">Settings.</p></egov-tab>\n          <egov-tab label=\"Advanced\"><p style=\"padding:16px 0\">Advanced.</p></egov-tab>\n        </egov-tab-group>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Too many tabs for the width: the strip scrolls horizontally, the overflowing\nedge fades, and a chevron appears to page through. Resize the container to see\nthe chevrons/fade toggle. (Wrapped in a fixed-width box to force the overflow.)",
+                    "description": "<p>Too many tabs for the width: the strip scrolls horizontally, the overflowing\nedge fades, and a chevron appears to page through. Resize the container to see\nthe chevrons/fade toggle. (Wrapped in a fixed-width box to force the overflow.)</p>\n"
+                },
+                {
                     "name": "Stretched",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
@@ -3524,30 +3550,6 @@
                     "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts": [
-                {
-                    "name": "meta",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<CursorGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Reference",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}"
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
                 {
                     "name": "meta",
@@ -3594,6 +3596,30 @@
                     "deprecationMessage": "",
                     "type": "Story",
                     "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<CursorGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Reference",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
@@ -3840,21 +3866,6 @@
                     "kind": 184
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<CursorGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
                 {
                     "name": "Story",
@@ -3878,6 +3889,21 @@
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<ColorGridComponent>",
                     "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<CursorGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -3983,7 +4009,7 @@
         "children": []
     },
     "coverage": {
-        "count": 5,
+        "count": 6,
         "status": "low",
         "files": [
             {
@@ -4104,6 +4130,16 @@
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
                 "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Overflowing",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
             },
             {
                 "filePath": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",

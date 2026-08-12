@@ -186,6 +186,48 @@ describe('EgovTabGroup', () => {
     expect(fixture.nativeElement.querySelector('.tabs')?.classList.contains('tabs--sm')).toBe(true);
   });
 
+  it('shows no scroll chevrons when the strip fits the viewport', async () => {
+    const { fixture } = await render();
+
+    expect(fixture.nativeElement.querySelector('.tab-scroll')).toBeNull();
+  });
+
+  it('toggles scroll chevrons based on the viewport overflow position', async () => {
+    const { fixture } = await render();
+    const viewport = fixture.nativeElement.querySelector('.tab-viewport') as HTMLElement;
+    const setMetrics = (scrollLeft: number) => {
+      Object.defineProperty(viewport, 'scrollWidth', { value: 600, configurable: true });
+      Object.defineProperty(viewport, 'clientWidth', { value: 300, configurable: true });
+      Object.defineProperty(viewport, 'scrollLeft', { value: scrollLeft, configurable: true });
+      viewport.dispatchEvent(new Event('scroll'));
+    };
+
+    // At the start: only the "next" chevron.
+    setMetrics(0);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('.tab-scroll--prev')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.tab-scroll--next')).not.toBeNull();
+
+    // In the middle: both chevrons.
+    setMetrics(150);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('.tab-scroll--prev')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.tab-scroll--next')).not.toBeNull();
+
+    // At the end: only the "prev" chevron.
+    setMetrics(300);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('.tab-scroll--prev')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.tab-scroll--next')).toBeNull();
+  });
+
+  it('keeps the tablist inside a scroll viewport', async () => {
+    const { fixture } = await render();
+    const viewport = fixture.nativeElement.querySelector('.tab-viewport');
+
+    expect(viewport?.querySelector('[role="tablist"]')).not.toBeNull();
+  });
+
   it('can disable a tab that uses a custom egovTabLabel', async () => {
     const { fixture, host, tabs } = await render();
 

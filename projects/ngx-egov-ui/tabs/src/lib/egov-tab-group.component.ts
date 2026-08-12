@@ -3,11 +3,14 @@ import {
   booleanAttribute,
   Component,
   contentChildren,
+  DestroyRef,
   effect,
+  inject,
   input,
   model,
   output,
   signal,
+  viewChild,
   viewChildren,
 } from '@angular/core';
 import type { ElementRef } from '@angular/core';
@@ -30,35 +33,72 @@ import type { EgovTabChangeEvent } from './egov-tab-change-event';
   template: `
     <div class="tabs" [class.tabs--stretch]="stretchTabs()" [class.tabs--sm]="size() === 'sm'">
       <div
-        class="tab-buttons"
-        role="tablist"
-        aria-orientation="horizontal"
-        [attr.aria-label]="ariaLabel()"
-        [attr.aria-labelledby]="ariaLabelledby()"
+        class="tab-header"
+        [class.tab-header--overflow-start]="canScrollStart()"
+        [class.tab-header--overflow-end]="canScrollEnd()"
       >
-        @for (tab of tabs(); track tab; let i = $index) {
+        @if (canScrollStart()) {
           <button
-            #tabButton
             type="button"
-            role="tab"
-            class="tab-button"
-            [class.active]="i === selectedIndex()"
-            [id]="tab.tabId()"
-            [disabled]="tab.disabled()"
-            [attr.aria-selected]="i === selectedIndex()"
-            [attr.aria-controls]="tab.tabId() + '-panel'"
-            [attr.aria-label]="tab.ariaLabel()"
-            [attr.aria-labelledby]="tab.ariaLabelledby()"
-            [attr.tabindex]="i === selectedIndex() ? 0 : -1"
-            (click)="selectTab(i)"
-            (focus)="focusedIndex.set(i)"
-            (keydown)="onKeydown($event)"
+            class="tab-scroll tab-scroll--prev"
+            tabindex="-1"
+            aria-hidden="true"
+            (click)="scrollByStep(-1)"
           >
-            @if (tab.templateLabel(); as label) {
-              <ng-template [cdkPortalOutlet]="label" />
-            } @else {
-              {{ tab.label() }}
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        }
+
+        <div class="tab-viewport" #viewport (scroll)="updateOverflow()">
+          <div
+            class="tab-buttons"
+            #tabStrip
+            role="tablist"
+            aria-orientation="horizontal"
+            [attr.aria-label]="ariaLabel()"
+            [attr.aria-labelledby]="ariaLabelledby()"
+          >
+            @for (tab of tabs(); track tab; let i = $index) {
+              <button
+                #tabButton
+                type="button"
+                role="tab"
+                class="tab-button"
+                [class.active]="i === selectedIndex()"
+                [id]="tab.tabId()"
+                [disabled]="tab.disabled()"
+                [attr.aria-selected]="i === selectedIndex()"
+                [attr.aria-controls]="tab.tabId() + '-panel'"
+                [attr.aria-label]="tab.ariaLabel()"
+                [attr.aria-labelledby]="tab.ariaLabelledby()"
+                [attr.tabindex]="i === selectedIndex() ? 0 : -1"
+                (click)="selectTab(i)"
+                (focus)="focusedIndex.set(i)"
+                (keydown)="onKeydown($event)"
+              >
+                @if (tab.templateLabel(); as label) {
+                  <ng-template [cdkPortalOutlet]="label" />
+                } @else {
+                  {{ tab.label() }}
+                }
+              </button>
             }
+          </div>
+        </div>
+
+        @if (canScrollEnd()) {
+          <button
+            type="button"
+            class="tab-scroll tab-scroll--next"
+            tabindex="-1"
+            aria-hidden="true"
+            (click)="scrollByStep(1)"
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
           </button>
         }
       </div>
@@ -83,6 +123,8 @@ import type { EgovTabChangeEvent } from './egov-tab-change-event';
   styleUrl: './egov-tab-group.component.scss',
 })
 export class EgovTabGroup {
+  private readonly _destroyRef = inject(DestroyRef);
+
   readonly tabs = contentChildren(EgovTab);
 
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
@@ -95,8 +137,13 @@ export class EgovTabGroup {
   readonly selectedTabChange = output<EgovTabChangeEvent>();
 
   protected readonly focusedIndex = signal(0);
+  protected readonly canScrollStart = signal(false);
+  protected readonly canScrollEnd = signal(false);
 
   private readonly _buttons = viewChildren<ElementRef<HTMLButtonElement>>('tabButton');
+  private readonly _viewport = viewChild<ElementRef<HTMLElement>>('viewport');
+  private readonly _strip = viewChild<ElementRef<HTMLElement>>('tabStrip');
+
   private _lastEmitted = -1;
   private _initialized = false;
 
@@ -112,6 +159,28 @@ export class EgovTabGroup {
           this.selectedIndex.set(firstEnabled);
         }
       }
+    });
+
+    afterNextRender(() => {
+      this.updateOverflow();
+
+      if (typeof ResizeObserver === 'undefined') {
+        return;
+      }
+
+      const observer = new ResizeObserver(() => this.updateOverflow());
+      const viewport = this._viewport()?.nativeElement;
+      const strip = this._strip()?.nativeElement;
+
+      if (viewport) {
+        observer.observe(viewport);
+      }
+
+      if (strip) {
+        observer.observe(strip);
+      }
+
+      this._destroyRef.onDestroy(() => observer.disconnect());
     });
 
     effect(() => {
@@ -150,8 +219,35 @@ export class EgovTabGroup {
   focusTab(index: number): void {
     if (index >= 0 && index < this.tabs().length) {
       this.focusedIndex.set(index);
-      this._buttons()[index]?.nativeElement.focus();
+
+      const button = this._buttons()[index]?.nativeElement;
+
+      button?.focus();
+      button?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
     }
+  }
+
+  protected updateOverflow(): void {
+    const viewport = this._viewport()?.nativeElement;
+
+    if (!viewport) {
+      this.canScrollStart.set(false);
+      this.canScrollEnd.set(false);
+
+      return;
+    }
+
+    const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+    const left = viewport.scrollLeft;
+
+    this.canScrollStart.set(left > 1);
+    this.canScrollEnd.set(maxScroll > 1 && left < maxScroll - 1);
+  }
+
+  protected scrollByStep(direction: 1 | -1): void {
+    const viewport = this._viewport()?.nativeElement;
+
+    viewport?.scrollBy({ left: direction * viewport.clientWidth * 0.75, behavior: 'smooth' });
   }
 
   protected onKeydown(event: KeyboardEvent): void {

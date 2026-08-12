@@ -62,6 +62,27 @@ export const Stretched: Story = {
   }),
 };
 
+export const Overflowing: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <div style="max-width:520px;border:1px dashed #d0d0d0;border-radius:8px;padding:12px">
+        <egov-tab-group aria-label="Many tabs">
+          <egov-tab label="Overview"><p style="padding:16px 0">Overview.</p></egov-tab>
+          <egov-tab label="Details"><p style="padding:16px 0">Details.</p></egov-tab>
+          <egov-tab label="Documents"><p style="padding:16px 0">Documents.</p></egov-tab>
+          <egov-tab label="History"><p style="padding:16px 0">History.</p></egov-tab>
+          <egov-tab label="Payments"><p style="padding:16px 0">Payments.</p></egov-tab>
+          <egov-tab label="Notifications"><p style="padding:16px 0">Notifications.</p></egov-tab>
+          <egov-tab label="Permissions"><p style="padding:16px 0">Permissions.</p></egov-tab>
+          <egov-tab label="Settings"><p style="padding:16px 0">Settings.</p></egov-tab>
+          <egov-tab label="Advanced"><p style="padding:16px 0">Advanced.</p></egov-tab>
+        </egov-tab-group>
+      </div>
+    `,
+  }),
+};
+
 /** Custom labels with a leading `egov-icon` and a trailing counter. */
 export const WithIconsAndCounters: Story = {
   render: (args) => ({

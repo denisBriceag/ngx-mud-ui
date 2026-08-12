@@ -2,11 +2,58 @@
   display: block;
 }
 
+.tab-header {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--gray-300, #b2b2b2);
+}
+
+.tab-viewport {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none; // Firefox
+  -ms-overflow-style: none; // legacy Edge
+  --fade-start: 0px;
+  --fade-end: 0px;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--fade-start),
+    #000 calc(100% - var(--fade-end)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--fade-start),
+    #000 calc(100% - var(--fade-end)),
+    transparent 100%
+  );
+}
+
+.tab-viewport::-webkit-scrollbar {
+  display: none; // WebKit
+}
+
+.tab-header--overflow-start .tab-viewport {
+  --fade-start: 32px;
+}
+
+.tab-header--overflow-end .tab-viewport {
+  --fade-end: 32px;
+}
+
 .tab-buttons {
   display: flex;
   gap: 8px;
   width: fit-content;
-  border-bottom: 1px solid var(--gray-300, #b2b2b2);
+}
+
+.tabs--stretch .tab-viewport {
+  overflow-x: visible;
+  mask-image: none;
+  -webkit-mask-image: none;
 }
 
 .tabs--stretch .tab-buttons {
@@ -16,6 +63,30 @@
 .tabs--stretch .tab-button {
   flex: 1;
   justify-content: center;
+}
+
+.tab-scroll {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  width: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--gray-900, #121212);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.tab-scroll svg {
+  width: 20px;
+  height: 20px;
+}
+
+.tab-scroll:hover {
+  color: var(--blue-sky-600, #0058d2);
 }
 
 .tab-button {
@@ -43,8 +114,8 @@
   }
 
   &:focus-visible {
-    outline: 3px solid var(--blue-sky-600, #0058d2);
-    outline-offset: 2px;
+    outline: 2px solid var(--blue-sky-600, #0058d2);
+    outline-offset: -3px;
   }
 
   &:disabled {
