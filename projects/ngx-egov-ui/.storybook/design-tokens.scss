@@ -1,3 +1,5 @@
 @use '../src/lib/styles/abstracts/tokens';
 @use '../src/lib/styles/themes/dark';
 @use '../src/lib/styles/utilities/typography-tokens';
+// Border tokens (--border-radius-* / --border-width-* / --border-style-*) for the Borders page.
+@use '../src/lib/styles/base/border-utilities';
