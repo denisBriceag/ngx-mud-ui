@@ -2,5 +2,5 @@
 @use '../src/lib/styles/themes/dark';
 @use '../src/lib/styles/utilities/typography-tokens';
 @use '../src/lib/styles/base/border-utilities';
-// Elevation tokens (--drop-shadow-*) + .mud-shadow-* classes for the Elevation page.
 @use '../src/lib/styles/base/drop-shadows';
+@use '../src/lib/styles/utilities/display';

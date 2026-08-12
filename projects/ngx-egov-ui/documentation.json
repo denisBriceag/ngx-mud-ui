@@ -159,12 +159,12 @@
         },
         {
             "name": "CursorGroup",
-            "id": "interface-CursorGroup-a407dc19c2d24075d7c0ed17f4ad19940628341c167010a888d23d6dd7b39116bd0d979249d4ff18391e889d207ab0c8a871240b3c41b59eacfe9f18f6e2a96a",
-            "file": "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts",
+            "id": "interface-CursorGroup-834e7107d20d4e77103b6c93ff563ebd0b35b99aab78af6bdd9828cfe079d1f38c0783e01028b8afb92d0f29951e04dc21e4d4090e0e30070914b3e704c881d7",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursor-grid.component.ts",
             "deprecated": false,
             "deprecationMessage": "",
             "type": "interface",
-            "sourceCode": "import { Component, signal } from '@angular/core';\n\ninterface CursorGroup {\n  title: string;\n  cursors: string[];\n}\n\n// Native CSS cursor keywords. The design system ships no cursor tokens/classes,\n// so this is a curated reference (mirrors the design-system's cursors doc page).\nconst CURSOR_GROUPS: CursorGroup[] = [\n  { title: 'General', cursors: ['auto', 'default', 'pointer', 'context-menu', 'help', 'progress', 'wait', 'none'] },\n  {\n    title: 'Selection & action',\n    cursors: ['text', 'vertical-text', 'cell', 'crosshair', 'copy', 'alias', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll'],\n  },\n  { title: 'Zoom', cursors: ['zoom-in', 'zoom-out'] },\n  {\n    title: 'Resize',\n    cursors: ['col-resize', 'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize'],\n  },\n];\n\n/**\n * Storybook-only Foundations reference for native CSS cursors. Hover a cell to\n * preview the cursor; click to copy the `cursor: <value>;` declaration. This is\n * a curated list — the library has no cursor tokens or utility classes.\n */\n@Component({\n  selector: 'egov-cursor-grid',\n  template: `\n    <p class=\"note\">\n      Native CSS cursors — <strong>hover</strong> a cell to preview, <strong>click</strong> to copy\n      <code>cursor: …;</code>. The design system has no cursor tokens/classes; this is a reference.\n    </p>\n\n    @for (group of groups; track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (cursor of group.cursors; track cursor) {\n            <button\n              type=\"button\"\n              class=\"cell\"\n              [style.cursor]=\"cursor\"\n              [title]=\"'Copy cursor: ' + cursor + ';'\"\n              (click)=\"copy(cursor)\"\n            >\n              <span class=\"cell__label\">{{ cursor }}</span>\n              <span class=\"copied\" [class.show]=\"copied() === cursor\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .note code {\n      font-family: ui-monospace, monospace;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      position: relative;\n      min-height: 60px;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fafafa;\n      padding: 0.75rem;\n      font: inherit;\n    }\n    .cell:hover {\n      border-color: #cfcfcf;\n      background: #f2f6ff;\n    }\n    .cell__label {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n  `,\n})\nexport class CursorGridComponent {\n  protected readonly groups = CURSOR_GROUPS;\n  protected readonly copied = signal<string | null>(null);\n\n  protected copy(cursor: string): void {\n    void navigator.clipboard?.writeText(`cursor: ${cursor};`);\n    this.copied.set(cursor);\n\n    setTimeout(() => this.copied.update((current) => (current === cursor ? null : current)), 1200);\n  }\n}\n",
+            "sourceCode": "import { Component, signal } from '@angular/core';\n\ninterface CursorGroup {\n  title: string;\n  cursors: string[];\n}\n\nconst CURSOR_GROUPS: CursorGroup[] = [\n  { title: 'General', cursors: ['auto', 'default', 'pointer', 'context-menu', 'help', 'progress', 'wait', 'none'] },\n  {\n    title: 'Selection & action',\n    cursors: ['text', 'vertical-text', 'cell', 'crosshair', 'copy', 'alias', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll'],\n  },\n  { title: 'Zoom', cursors: ['zoom-in', 'zoom-out'] },\n  {\n    title: 'Resize',\n    cursors: ['col-resize', 'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize'],\n  },\n];\n\n@Component({\n  selector: 'egov-cursor-grid',\n  template: `\n    <p class=\"note\">\n      Native CSS cursors — <strong>hover</strong> a cell to preview, <strong>click</strong> to copy\n      <code>cursor: …;</code>. The design system has no cursor tokens/classes; this is a reference.\n    </p>\n\n    @for (group of groups; track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (cursor of group.cursors; track cursor) {\n            <button\n              type=\"button\"\n              class=\"cell\"\n              [style.cursor]=\"cursor\"\n              [title]=\"'Copy cursor: ' + cursor + ';'\"\n              (click)=\"copy(cursor)\"\n            >\n              <span class=\"cell__label\">{{ cursor }}</span>\n              <span class=\"copied\" [class.show]=\"copied() === cursor\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .note code {\n      font-family: ui-monospace, monospace;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      position: relative;\n      min-height: 60px;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fafafa;\n      padding: 0.75rem;\n      font: inherit;\n    }\n    .cell:hover {\n      border-color: #cfcfcf;\n      background: #f2f6ff;\n    }\n    .cell__label {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n  `,\n})\nexport class CursorGridComponent {\n  protected readonly groups = CURSOR_GROUPS;\n  protected readonly copied = signal<string | null>(null);\n\n  protected copy(cursor: string): void {\n    void navigator.clipboard?.writeText(`cursor: ${cursor};`);\n    this.copied.set(cursor);\n\n    setTimeout(() => this.copied.update((current) => (current === cursor ? null : current)), 1200);\n  }\n}\n",
             "displayName": "CursorGroup",
             "properties": [
                 {
@@ -189,6 +189,50 @@
                     "optional": false,
                     "description": "",
                     "line": 4,
+                    "rawdescription": "\n"
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 172,
+            "methods": [],
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        },
+        {
+            "name": "DisplayUtil",
+            "id": "interface-DisplayUtil-8f55f9fce83123c94c503b9fb3d8e3a5e4932e13f2437ed1db4b47aea88fe136915cdc7e295293965df2b2c26b37d6071298ae70ec5361bc78eff7c690405466",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/display-grid.component.ts",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "type": "interface",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, signal } from '@angular/core';\n\ninterface DisplayUtil {\n  className: string;\n  value: string;\n}\n\nconst ORDER = [\n  'block',\n  'inline',\n  'inline-block',\n  'flex',\n  'inline-flex',\n  'grid',\n  'inline-grid',\n  'table',\n  'table-row',\n  'table-cell',\n  'none',\n];\n\n@Component({\n  selector: 'egov-display-grid',\n  template: `\n    <p class=\"note\">\n      Display utilities set <code>display</code>. Each also has responsive variants —\n      <code>mud-{{ '{' }}breakpoint{{ '}' }}-{{ '{' }}name{{ '}' }}</code> (e.g. <code>mud-md-flex</code>).\n      Click a card to copy the class name.\n    </p>\n\n    <div class=\"grid\">\n      @for (util of utils(); track util.className) {\n        <button type=\"button\" class=\"card\" [title]=\"'Copy ' + util.className\" (click)=\"copy(util.className)\">\n          <div class=\"demo\" [style.display]=\"util.value === 'none' ? 'flex' : util.value\">\n            @if (util.value === 'none') {\n              <span class=\"demo__hidden\">(hidden — nothing renders)</span>\n            } @else {\n              <span class=\"demo__box\">1</span>\n              <span class=\"demo__box\">2</span>\n              <span class=\"demo__box\">3</span>\n            }\n          </div>\n          <div class=\"meta\">\n            <code class=\"meta__name\">{{ util.className }}</code>\n            <span class=\"meta__value\">display: {{ util.value }}</span>\n          </div>\n          <span class=\"copied\" [class.show]=\"copied() === util.className\">copied ✓</span>\n        </button>\n      }\n    </div>\n\n    @if (utils().length === 0) {\n      <p class=\"empty\">No display utilities found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .note code {\n      font-family: ui-monospace, monospace;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));\n      gap: 0.75rem;\n    }\n    .card {\n      display: flex;\n      flex-direction: column;\n      gap: 0.5rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .card:hover {\n      border-color: #cfcfcf;\n    }\n    .demo {\n      gap: 4px;\n      align-content: flex-start;\n      min-height: 72px;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 0.5rem;\n      overflow: hidden;\n    }\n    .demo__box {\n      display: block;\n      width: 28px;\n      height: 20px;\n      border-radius: 4px;\n      background: #7aa7ff;\n      color: #fff;\n      font-size: 0.6rem;\n      text-align: center;\n      line-height: 20px;\n    }\n    .demo__hidden {\n      font-size: 0.7rem;\n      color: #9e9e9e;\n    }\n    .meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class DisplayGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  protected readonly utils = signal<DisplayUtil[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected copy(className: string): void {\n    void navigator.clipboard?.writeText(className);\n    this.copied.set(className);\n\n    setTimeout(() => this.copied.update((current) => (current === className ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const seen = new Set<string>();\n    const utils: DisplayUtil[] = [];\n    const singleClass = /^\\.[a-z0-9-]+$/;\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue;\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule) || !singleClass.test(rule.selectorText)) {\n          continue;\n        }\n\n        const value = rule.style.getPropertyValue('display').trim();\n\n        if (!value || rule.style.length !== 1) {\n          continue;\n        }\n\n        const className = rule.selectorText.slice(1);\n\n        if (!seen.has(className)) {\n          seen.add(className);\n          utils.push({ className, value });\n        }\n      }\n    }\n\n    utils.sort((a, b) => this.rank(a.value) - this.rank(b.value) || a.className.localeCompare(b.className));\n\n    this.utils.set(utils);\n  }\n\n  private rank(value: string): number {\n    const index = ORDER.indexOf(value);\n\n    return index === -1 ? ORDER.length : index;\n  }\n}\n",
+            "displayName": "DisplayUtil",
+            "properties": [
+                {
+                    "name": "className",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 4,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "value",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 5,
                     "rawdescription": "\n"
                 }
             ],
@@ -1030,8 +1074,8 @@
         },
         {
             "name": "CursorGridComponent",
-            "id": "component-CursorGridComponent-a407dc19c2d24075d7c0ed17f4ad19940628341c167010a888d23d6dd7b39116bd0d979249d4ff18391e889d207ab0c8a871240b3c41b59eacfe9f18f6e2a96a",
-            "file": "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts",
+            "id": "component-CursorGridComponent-834e7107d20d4e77103b6c93ff563ebd0b35b99aab78af6bdd9828cfe079d1f38c0783e01028b8afb92d0f29951e04dc21e4d4090e0e30070914b3e704c881d7",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursor-grid.component.ts",
             "changeDetection": "ChangeDetectionStrategy.OnPush",
             "encapsulation": [],
             "entryComponents": [],
@@ -1061,7 +1105,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 124,
+                    "line": 117,
                     "rawdescription": "\n",
                     "modifierKind": [
                         124,
@@ -1078,7 +1122,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 123,
+                    "line": 116,
                     "rawdescription": "\n",
                     "modifierKind": [
                         124,
@@ -1103,7 +1147,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 126,
+                    "line": 119,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "\n",
@@ -1133,25 +1177,211 @@
             "hostListeners": [],
             "standalone": true,
             "imports": [],
-            "description": "<p>Storybook-only Foundations reference for native CSS cursors. Hover a cell to\npreview the cursor; click to copy the <code>cursor: &lt;value&gt;;</code> declaration. This is\na curated list — the library has no cursor tokens or utility classes.</p>\n",
-            "rawdescription": "\n\nStorybook-only Foundations reference for native CSS cursors. Hover a cell to\npreview the cursor; click to copy the `cursor: <value>;` declaration. This is\na curated list — the library has no cursor tokens or utility classes.\n",
+            "description": "",
+            "rawdescription": "\n",
             "type": "component",
-            "sourceCode": "import { Component, signal } from '@angular/core';\n\ninterface CursorGroup {\n  title: string;\n  cursors: string[];\n}\n\n// Native CSS cursor keywords. The design system ships no cursor tokens/classes,\n// so this is a curated reference (mirrors the design-system's cursors doc page).\nconst CURSOR_GROUPS: CursorGroup[] = [\n  { title: 'General', cursors: ['auto', 'default', 'pointer', 'context-menu', 'help', 'progress', 'wait', 'none'] },\n  {\n    title: 'Selection & action',\n    cursors: ['text', 'vertical-text', 'cell', 'crosshair', 'copy', 'alias', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll'],\n  },\n  { title: 'Zoom', cursors: ['zoom-in', 'zoom-out'] },\n  {\n    title: 'Resize',\n    cursors: ['col-resize', 'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize'],\n  },\n];\n\n/**\n * Storybook-only Foundations reference for native CSS cursors. Hover a cell to\n * preview the cursor; click to copy the `cursor: <value>;` declaration. This is\n * a curated list — the library has no cursor tokens or utility classes.\n */\n@Component({\n  selector: 'egov-cursor-grid',\n  template: `\n    <p class=\"note\">\n      Native CSS cursors — <strong>hover</strong> a cell to preview, <strong>click</strong> to copy\n      <code>cursor: …;</code>. The design system has no cursor tokens/classes; this is a reference.\n    </p>\n\n    @for (group of groups; track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (cursor of group.cursors; track cursor) {\n            <button\n              type=\"button\"\n              class=\"cell\"\n              [style.cursor]=\"cursor\"\n              [title]=\"'Copy cursor: ' + cursor + ';'\"\n              (click)=\"copy(cursor)\"\n            >\n              <span class=\"cell__label\">{{ cursor }}</span>\n              <span class=\"copied\" [class.show]=\"copied() === cursor\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .note code {\n      font-family: ui-monospace, monospace;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      position: relative;\n      min-height: 60px;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fafafa;\n      padding: 0.75rem;\n      font: inherit;\n    }\n    .cell:hover {\n      border-color: #cfcfcf;\n      background: #f2f6ff;\n    }\n    .cell__label {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n  `,\n})\nexport class CursorGridComponent {\n  protected readonly groups = CURSOR_GROUPS;\n  protected readonly copied = signal<string | null>(null);\n\n  protected copy(cursor: string): void {\n    void navigator.clipboard?.writeText(`cursor: ${cursor};`);\n    this.copied.set(cursor);\n\n    setTimeout(() => this.copied.update((current) => (current === cursor ? null : current)), 1200);\n  }\n}\n",
+            "sourceCode": "import { Component, signal } from '@angular/core';\n\ninterface CursorGroup {\n  title: string;\n  cursors: string[];\n}\n\nconst CURSOR_GROUPS: CursorGroup[] = [\n  { title: 'General', cursors: ['auto', 'default', 'pointer', 'context-menu', 'help', 'progress', 'wait', 'none'] },\n  {\n    title: 'Selection & action',\n    cursors: ['text', 'vertical-text', 'cell', 'crosshair', 'copy', 'alias', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll'],\n  },\n  { title: 'Zoom', cursors: ['zoom-in', 'zoom-out'] },\n  {\n    title: 'Resize',\n    cursors: ['col-resize', 'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize'],\n  },\n];\n\n@Component({\n  selector: 'egov-cursor-grid',\n  template: `\n    <p class=\"note\">\n      Native CSS cursors — <strong>hover</strong> a cell to preview, <strong>click</strong> to copy\n      <code>cursor: …;</code>. The design system has no cursor tokens/classes; this is a reference.\n    </p>\n\n    @for (group of groups; track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (cursor of group.cursors; track cursor) {\n            <button\n              type=\"button\"\n              class=\"cell\"\n              [style.cursor]=\"cursor\"\n              [title]=\"'Copy cursor: ' + cursor + ';'\"\n              (click)=\"copy(cursor)\"\n            >\n              <span class=\"cell__label\">{{ cursor }}</span>\n              <span class=\"copied\" [class.show]=\"copied() === cursor\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .note code {\n      font-family: ui-monospace, monospace;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      position: relative;\n      min-height: 60px;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fafafa;\n      padding: 0.75rem;\n      font: inherit;\n    }\n    .cell:hover {\n      border-color: #cfcfcf;\n      background: #f2f6ff;\n    }\n    .cell__label {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n  `,\n})\nexport class CursorGridComponent {\n  protected readonly groups = CURSOR_GROUPS;\n  protected readonly copied = signal<string | null>(null);\n\n  protected copy(cursor: string): void {\n    void navigator.clipboard?.writeText(`cursor: ${cursor};`);\n    this.copied.set(cursor);\n\n    setTimeout(() => this.copied.update((current) => (current === cursor ? null : current)), 1200);\n  }\n}\n",
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .note code {\n      font-family: ui-monospace, monospace;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      position: relative;\n      min-height: 60px;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fafafa;\n      padding: 0.75rem;\n      font: inherit;\n    }\n    .cell:hover {\n      border-color: #cfcfcf;\n      background: #f2f6ff;\n    }\n    .cell__label {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n  \n",
-            "jsdoctags": [
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        },
+        {
+            "name": "DisplayGridComponent",
+            "id": "component-DisplayGridComponent-8f55f9fce83123c94c503b9fb3d8e3a5e4932e13f2437ed1db4b47aea88fe136915cdc7e295293965df2b2c26b37d6071298ae70ec5361bc78eff7c690405466",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/display-grid.component.ts",
+            "changeDetection": "ChangeDetectionStrategy.OnPush",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "egov-display-grid",
+            "styleUrls": [],
+            "styles": [
+                "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .note code {\n      font-family: ui-monospace, monospace;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));\n      gap: 0.75rem;\n    }\n    .card {\n      display: flex;\n      flex-direction: column;\n      gap: 0.5rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .card:hover {\n      border-color: #cfcfcf;\n    }\n    .demo {\n      gap: 4px;\n      align-content: flex-start;\n      min-height: 72px;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 0.5rem;\n      overflow: hidden;\n    }\n    .demo__box {\n      display: block;\n      width: 28px;\n      height: 20px;\n      border-radius: 4px;\n      background: #7aa7ff;\n      color: #fff;\n      font-size: 0.6rem;\n      text-align: center;\n      line-height: 20px;\n    }\n    .demo__hidden {\n      font-size: 0.7rem;\n      color: #9e9e9e;\n    }\n    .meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  "
+            ],
+            "template": "<p class=\"note\">\n  Display utilities set <code>display</code>. Each also has responsive variants —\n  <code>mud-{{ '{' }}breakpoint{{ '}' }}-{{ '{' }}name{{ '}' }}</code> (e.g. <code>mud-md-flex</code>).\n  Click a card to copy the class name.\n</p>\n\n<div class=\"grid\">\n  @for (util of utils(); track util.className) {\n    <button type=\"button\" class=\"card\" [title]=\"'Copy ' + util.className\" (click)=\"copy(util.className)\">\n      <div class=\"demo\" [style.display]=\"util.value === 'none' ? 'flex' : util.value\">\n        @if (util.value === 'none') {\n          <span class=\"demo__hidden\">(hidden — nothing renders)</span>\n        } @else {\n          <span class=\"demo__box\">1</span>\n          <span class=\"demo__box\">2</span>\n          <span class=\"demo__box\">3</span>\n        }\n      </div>\n      <div class=\"meta\">\n        <code class=\"meta__name\">{{ util.className }}</code>\n        <span class=\"meta__value\">display: {{ util.value }}</span>\n      </div>\n      <span class=\"copied\" [class.show]=\"copied() === util.className\">copied ✓</span>\n    </button>\n  }\n</div>\n\n@if (utils().length === 0) {\n  <p class=\"empty\">No display utilities found in the loaded stylesheet.</p>\n}\n",
+            "templateUrl": [],
+            "templateVariables": [],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
                 {
-                    "pos": 860,
-                    "end": 1101,
-                    "kind": 321,
-                    "id": 0,
-                    "flags": 16777216,
-                    "modifierFlagsCache": 0,
-                    "transformFlags": 0,
-                    "comment": "Storybook-only Foundations reference for native CSS cursors. Hover a cell to\npreview the cursor; click to copy the `cursor: <value>;` declaration. This is\na curated list — the library has no cursor tokens or utility classes."
+                    "name": "_document",
+                    "coverageIgnore": false,
+                    "defaultValue": "inject(DOCUMENT)",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 147,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        123,
+                        148
+                    ]
+                },
+                {
+                    "name": "copied",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal<string | null>(null)",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 150,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                },
+                {
+                    "name": "utils",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal<DisplayUtil[]>([])",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 149,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
                 }
             ],
+            "methodsClass": [
+                {
+                    "name": "copy",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "className",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 156,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        124
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "className",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "load",
+                    "coverageIgnore": false,
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 163,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        123
+                    ]
+                },
+                {
+                    "name": "rank",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "value",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "number",
+                    "typeParameters": [],
+                    "line": 202,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        123
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "value",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "coverageIgnore": false,
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "standalone": true,
+            "imports": [],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, signal } from '@angular/core';\n\ninterface DisplayUtil {\n  className: string;\n  value: string;\n}\n\nconst ORDER = [\n  'block',\n  'inline',\n  'inline-block',\n  'flex',\n  'inline-flex',\n  'grid',\n  'inline-grid',\n  'table',\n  'table-row',\n  'table-cell',\n  'none',\n];\n\n@Component({\n  selector: 'egov-display-grid',\n  template: `\n    <p class=\"note\">\n      Display utilities set <code>display</code>. Each also has responsive variants —\n      <code>mud-{{ '{' }}breakpoint{{ '}' }}-{{ '{' }}name{{ '}' }}</code> (e.g. <code>mud-md-flex</code>).\n      Click a card to copy the class name.\n    </p>\n\n    <div class=\"grid\">\n      @for (util of utils(); track util.className) {\n        <button type=\"button\" class=\"card\" [title]=\"'Copy ' + util.className\" (click)=\"copy(util.className)\">\n          <div class=\"demo\" [style.display]=\"util.value === 'none' ? 'flex' : util.value\">\n            @if (util.value === 'none') {\n              <span class=\"demo__hidden\">(hidden — nothing renders)</span>\n            } @else {\n              <span class=\"demo__box\">1</span>\n              <span class=\"demo__box\">2</span>\n              <span class=\"demo__box\">3</span>\n            }\n          </div>\n          <div class=\"meta\">\n            <code class=\"meta__name\">{{ util.className }}</code>\n            <span class=\"meta__value\">display: {{ util.value }}</span>\n          </div>\n          <span class=\"copied\" [class.show]=\"copied() === util.className\">copied ✓</span>\n        </button>\n      }\n    </div>\n\n    @if (utils().length === 0) {\n      <p class=\"empty\">No display utilities found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .note code {\n      font-family: ui-monospace, monospace;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));\n      gap: 0.75rem;\n    }\n    .card {\n      display: flex;\n      flex-direction: column;\n      gap: 0.5rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .card:hover {\n      border-color: #cfcfcf;\n    }\n    .demo {\n      gap: 4px;\n      align-content: flex-start;\n      min-height: 72px;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 0.5rem;\n      overflow: hidden;\n    }\n    .demo__box {\n      display: block;\n      width: 28px;\n      height: 20px;\n      border-radius: 4px;\n      background: #7aa7ff;\n      color: #fff;\n      font-size: 0.6rem;\n      text-align: center;\n      line-height: 20px;\n    }\n    .demo__hidden {\n      font-size: 0.7rem;\n      color: #9e9e9e;\n    }\n    .meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class DisplayGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  protected readonly utils = signal<DisplayUtil[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected copy(className: string): void {\n    void navigator.clipboard?.writeText(className);\n    this.copied.set(className);\n\n    setTimeout(() => this.copied.update((current) => (current === className ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const seen = new Set<string>();\n    const utils: DisplayUtil[] = [];\n    const singleClass = /^\\.[a-z0-9-]+$/;\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue;\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule) || !singleClass.test(rule.selectorText)) {\n          continue;\n        }\n\n        const value = rule.style.getPropertyValue('display').trim();\n\n        if (!value || rule.style.length !== 1) {\n          continue;\n        }\n\n        const className = rule.selectorText.slice(1);\n\n        if (!seen.has(className)) {\n          seen.add(className);\n          utils.push({ className, value });\n        }\n      }\n    }\n\n    utils.sort((a, b) => this.rank(a.value) - this.rank(b.value) || a.className.localeCompare(b.className));\n\n    this.utils.set(utils);\n  }\n\n  private rank(value: string): number {\n    const index = ORDER.indexOf(value);\n\n    return index === -1 ? ORDER.length : index;\n  }\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .note code {\n      font-family: ui-monospace, monospace;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));\n      gap: 0.75rem;\n    }\n    .card {\n      display: flex;\n      flex-direction: column;\n      gap: 0.5rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .card:hover {\n      border-color: #cfcfcf;\n    }\n    .demo {\n      gap: 4px;\n      align-content: flex-start;\n      min-height: 72px;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 0.5rem;\n      overflow: hidden;\n    }\n    .demo__box {\n      display: block;\n      width: 28px;\n      height: 20px;\n      border-radius: 4px;\n      background: #7aa7ff;\n      color: #fff;\n      font-size: 0.6rem;\n      text-align: center;\n      line-height: 20px;\n    }\n    .demo__hidden {\n      font-size: 0.7rem;\n      color: #9e9e9e;\n    }\n    .meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  \n",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "args": [],
+                "line": 150,
+                "rawdescription": "\n"
+            },
             "extends": [],
             "relationships": {
                 "incoming": [],
@@ -1389,6 +1619,180 @@
             "relationships": {
                 "incoming": [],
                 "outgoing": []
+            }
+        },
+        {
+            "name": "TabsInteractiveDemo",
+            "id": "component-TabsInteractiveDemo-e2e71b88bfd2bcc3d4a5d12109830ded9b927db7421a5bf829ec185bb4c18be26f76e13643d63d3e268f3f15919929199167bb5951ceab1922f1b4983060da8c",
+            "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+            "changeDetection": "ChangeDetectionStrategy.OnPush",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "egov-tabs-demo",
+            "styleUrls": [],
+            "styles": [],
+            "template": "<div style=\"display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-family:system-ui\">\n  <button type=\"button\" (click)=\"tabs.focusTab(0)\">focusTab(0)</button>\n  <button type=\"button\" (click)=\"selected.set(clamp(selected() - 1))\">Prev</button>\n  <button type=\"button\" (click)=\"selected.set(clamp(selected() + 1))\">Next</button>\n  <code>selectedIndex = {{ selected() }}</code>\n  <code>last selectedTabChange = {{ lastEvent() }}</code>\n</div>\n<egov-tab-group\n  #tabs\n  [selectedIndex]=\"selected()\"\n  (selectedIndexChange)=\"selected.set($event)\"\n  (selectedTabChange)=\"onChange($event)\"\n  aria-label=\"Interactive tabs\"\n>\n  <egov-tab label=\"First\"><p style=\"padding:16px 0\">First content.</p></egov-tab>\n  <egov-tab label=\"Second\"><p style=\"padding:16px 0\">Second content.</p></egov-tab>\n  <egov-tab label=\"Third\"><p style=\"padding:16px 0\">Third content.</p></egov-tab>\n</egov-tab-group>\n",
+            "templateUrl": [],
+            "templateVariables": [],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "lastEvent",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal('—')",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 134,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        148
+                    ]
+                },
+                {
+                    "name": "selected",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal(0)",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 133,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        148
+                    ]
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "clamp",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "index",
+                            "type": "number",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "number",
+                    "typeParameters": [],
+                    "line": 140,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": "index",
+                            "type": "number",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "onChange",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "event",
+                            "type": "EgovTabChangeEvent",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 136,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": "event",
+                            "type": "EgovTabChangeEvent",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "coverageIgnore": false,
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "standalone": true,
+            "imports": [
+                {
+                    "name": "EgovTabGroup"
+                },
+                {
+                    "name": "EgovTab"
+                }
+            ],
+            "description": "<p>Live demo: external controls + a read-out of <code>selectedIndex</code> and the last <code>selectedTabChange</code>.</p>\n",
+            "rawdescription": "\nLive demo: external controls + a read-out of `selectedIndex` and the last `selectedTabChange`.",
+            "type": "component",
+            "sourceCode": "import type { Meta, StoryObj } from '@storybook/angular-vite';\nimport { applicationConfig, moduleMetadata } from '@storybook/angular-vite';\nimport { Component, signal } from '@angular/core';\nimport { EgovTab, EgovTabGroup, EgovTabLabel } from '../../tabs/src/public-api';\nimport type { EgovTabChangeEvent } from '../../tabs/src/public-api';\nimport { alarm, EgovIconComponent, lock, provideEgovIcons, search, settings } from '../../icons/src/public-api';\n\nconst COUNTER_STYLE =\n  'display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:9999px;background:var(--gray-100,#f1f1f1);color:var(--black,#121212);font-size:12px';\n\nconst meta: Meta<EgovTabGroup> = {\n  title: 'Components/Tabs',\n  component: EgovTabGroup,\n  decorators: [\n    moduleMetadata({ imports: [EgovTabGroup, EgovTab, EgovTabLabel, EgovIconComponent] }),\n    applicationConfig({ providers: [provideEgovIcons([alarm, settings, search, lock])] }),\n  ],\n  argTypes: {\n    stretchTabs: { control: 'boolean' },\n    size: { control: 'inline-radio', options: ['md', 'sm'] },\n  },\n  args: {\n    stretchTabs: false,\n    size: 'md',\n  },\n};\n\nexport default meta;\n\ntype Story = StoryObj<EgovTabGroup>;\n\n/** Plain labels, a custom `egovTabLabel` with a counter, and a disabled tab. */\nexport const Basic: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Example tabs\">\n        <egov-tab label=\"Overview\"><p style=\"padding:16px 0\">Overview content.</p></egov-tab>\n        <egov-tab label=\"Details\"><p style=\"padding:16px 0\">Details content.</p></egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel>Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts content (custom label with a counter).</p>\n        </egov-tab>\n        <egov-tab label=\"Disabled\" [disabled]=\"true\"><p style=\"padding:16px 0\">Unreachable.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** Tabs stretched to fill the header width. */\nexport const Stretched: Story = {\n  args: { stretchTabs: true },\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Stretched tabs\">\n        <egov-tab label=\"One\"><p style=\"padding:16px 0\">One.</p></egov-tab>\n        <egov-tab label=\"Two\"><p style=\"padding:16px 0\">Two.</p></egov-tab>\n        <egov-tab label=\"Three\"><p style=\"padding:16px 0\">Three.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** Custom labels with a leading `egov-icon` and a trailing counter. */\nexport const WithIconsAndCounters: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Tabs with icons\">\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"alarm\" scale=\"20\" /> Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"search\" scale=\"20\" /> Search</ng-template>\n          <p style=\"padding:16px 0\">Search.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"settings\" scale=\"20\" /> Settings</ng-template>\n          <p style=\"padding:16px 0\">Settings.</p>\n        </egov-tab>\n        <egov-tab [disabled]=\"true\">\n          <ng-template egovTabLabel><egov-icon name=\"lock\" scale=\"20\" /> Locked</ng-template>\n          <p style=\"padding:16px 0\">Unreachable (disabled tab with a custom icon label).</p>\n        </egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** First tab disabled (selection snaps to the first enabled), plus a disabled tab in the middle (keyboard skips it). */\nexport const DisabledTabs: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Disabled tabs\">\n        <egov-tab label=\"Locked\" [disabled]=\"true\"><p style=\"padding:16px 0\">Locked.</p></egov-tab>\n        <egov-tab label=\"Active\"><p style=\"padding:16px 0\">This one is selected on load.</p></egov-tab>\n        <egov-tab label=\"Skipped\" [disabled]=\"true\"><p style=\"padding:16px 0\">Skipped.</p></egov-tab>\n        <egov-tab label=\"Last\"><p style=\"padding:16px 0\">Reached by pressing → (skips the disabled one).</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** Live demo: external controls + a read-out of `selectedIndex` and the last `selectedTabChange`. */\n@Component({\n  selector: 'egov-tabs-demo',\n  imports: [EgovTabGroup, EgovTab],\n  template: `\n    <div style=\"display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-family:system-ui\">\n      <button type=\"button\" (click)=\"tabs.focusTab(0)\">focusTab(0)</button>\n      <button type=\"button\" (click)=\"selected.set(clamp(selected() - 1))\">Prev</button>\n      <button type=\"button\" (click)=\"selected.set(clamp(selected() + 1))\">Next</button>\n      <code>selectedIndex = {{ selected() }}</code>\n      <code>last selectedTabChange = {{ lastEvent() }}</code>\n    </div>\n    <egov-tab-group\n      #tabs\n      [selectedIndex]=\"selected()\"\n      (selectedIndexChange)=\"selected.set($event)\"\n      (selectedTabChange)=\"onChange($event)\"\n      aria-label=\"Interactive tabs\"\n    >\n      <egov-tab label=\"First\"><p style=\"padding:16px 0\">First content.</p></egov-tab>\n      <egov-tab label=\"Second\"><p style=\"padding:16px 0\">Second content.</p></egov-tab>\n      <egov-tab label=\"Third\"><p style=\"padding:16px 0\">Third content.</p></egov-tab>\n    </egov-tab-group>\n  `,\n})\nclass TabsInteractiveDemo {\n  readonly selected = signal(0);\n  readonly lastEvent = signal('—');\n\n  onChange(event: EgovTabChangeEvent): void {\n    this.lastEvent.set(`{ index: ${event.index} }`);\n  }\n\n  clamp(index: number): number {\n    return Math.max(0, Math.min(2, index));\n  }\n}\n\nexport const Interactive: Story = {\n  // Uses a fixed demo component, so the group-level controls don't apply here.\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [TabsInteractiveDemo] })],\n  render: () => ({ template: `<egov-tabs-demo />` }),\n};\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "",
+            "jsdoctags": [
+                {
+                    "pos": 4486,
+                    "end": 4587,
+                    "kind": 321,
+                    "id": 0,
+                    "flags": 16777216,
+                    "modifierFlagsCache": 0,
+                    "transformFlags": 0,
+                    "comment": "Live demo: external controls + a read-out of `selectedIndex` and the last `selectedTabChange`."
+                }
+            ],
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": [
+                    {
+                        "name": "EgovTabGroup",
+                        "type": "module"
+                    },
+                    {
+                        "name": "EgovTab",
+                        "type": "module"
+                    }
+                ]
             }
         },
         {
@@ -1738,6 +2142,19 @@
                 "defaultValue": "Object.values(iconData) as EgovIcon[]"
             },
             {
+                "name": "Basic",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Example tabs\">\n        <egov-tab label=\"Overview\"><p style=\"padding:16px 0\">Overview content.</p></egov-tab>\n        <egov-tab label=\"Details\"><p style=\"padding:16px 0\">Details content.</p></egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel>Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts content (custom label with a counter).</p>\n        </egov-tab>\n        <egov-tab label=\"Disabled\" [disabled]=\"true\"><p style=\"padding:16px 0\">Unreachable.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n}",
+                "rawdescription": "Plain labels, a custom `egovTabLabel` with a counter, and a disabled tab.",
+                "description": "<p>Plain labels, a custom <code>egovTabLabel</code> with a counter, and a disabled tab.</p>\n"
+            },
+            {
                 "name": "COLOR_VALUE",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -1749,15 +2166,39 @@
                 "defaultValue": "/^#([0-9a-f]{3,8})$|^rgba?\\(/i"
             },
             {
+                "name": "COUNTER_STYLE",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "string",
+                "defaultValue": "'display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:9999px;background:var(--gray-100,#f1f1f1);color:var(--black,#121212);font-size:12px'"
+            },
+            {
                 "name": "CURSOR_GROUPS",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursor-grid.component.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "CursorGroup[]",
                 "defaultValue": "[\n  { title: 'General', cursors: ['auto', 'default', 'pointer', 'context-menu', 'help', 'progress', 'wait', 'none'] },\n  {\n    title: 'Selection & action',\n    cursors: ['text', 'vertical-text', 'cell', 'crosshair', 'copy', 'alias', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll'],\n  },\n  { title: 'Zoom', cursors: ['zoom-in', 'zoom-out'] },\n  {\n    title: 'Resize',\n    cursors: ['col-resize', 'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize'],\n  },\n]"
+            },
+            {
+                "name": "DisabledTabs",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Disabled tabs\">\n        <egov-tab label=\"Locked\" [disabled]=\"true\"><p style=\"padding:16px 0\">Locked.</p></egov-tab>\n        <egov-tab label=\"Active\"><p style=\"padding:16px 0\">This one is selected on load.</p></egov-tab>\n        <egov-tab label=\"Skipped\" [disabled]=\"true\"><p style=\"padding:16px 0\">Skipped.</p></egov-tab>\n        <egov-tab label=\"Last\"><p style=\"padding:16px 0\">Reached by pressing → (skips the disabled one).</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n}",
+                "rawdescription": "First tab disabled (selection snaps to the first enabled), plus a disabled tab in the middle (keyboard skips it).",
+                "description": "<p>First tab disabled (selection snaps to the first enabled), plus a disabled tab in the middle (keyboard skips it).</p>\n"
             },
             {
                 "name": "FAMILY_ORDER",
@@ -1782,6 +2223,17 @@
                 "defaultValue": "ALL_ICONS.map((icon) => icon.name).sort()"
             },
             {
+                "name": "Interactive",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  // Uses a fixed demo component, so the group-level controls don't apply here.\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [TabsInteractiveDemo] })],\n  render: () => ({ template: `<egov-tabs-demo />` }),\n}"
+            },
+            {
                 "name": "Levels",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -1796,12 +2248,12 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "Meta<CursorGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                "type": "Meta<EgovTabGroup>",
+                "defaultValue": "{\n  title: 'Components/Tabs',\n  component: EgovTabGroup,\n  decorators: [\n    moduleMetadata({ imports: [EgovTabGroup, EgovTab, EgovTabLabel, EgovIconComponent] }),\n    applicationConfig({ providers: [provideEgovIcons([alarm, settings, search, lock])] }),\n  ],\n  argTypes: {\n    stretchTabs: { control: 'boolean' },\n    size: { control: 'inline-radio', options: ['md', 'sm'] },\n  },\n  args: {\n    stretchTabs: false,\n    size: 'md',\n  },\n}"
             },
             {
                 "name": "meta",
@@ -1813,17 +2265,6 @@
                 "deprecationMessage": "",
                 "type": "Meta<EgovIconComponent>",
                 "defaultValue": "{\n  title: 'Components/EgovIcon',\n  component: EgovIconComponent,\n  tags: ['autodocs'],\n  decorators: [\n    applicationConfig({ providers: [provideEgovIcons(ALL_ICONS)] }),\n    moduleMetadata({ imports: [EgovIconComponent] }),\n  ],\n  argTypes: {\n    name: {\n      control: 'select',\n      options: ICON_NAMES,\n      description: 'Icon name (kebab-case). All icons are registered in this playground.',\n    },\n    variant: { control: 'inline-radio', options: ['outlined', 'filled'] },\n    scale: { control: 'inline-radio', options: [12, 16, 20, 24] },\n    ariaLabel: {\n      name: 'aria-label',\n      control: 'text',\n      description: 'Accessible label. Leave empty for a decorative icon (aria-hidden).',\n    },\n  },\n  args: {\n    name: 'alarm',\n    variant: 'outlined',\n    scale: 24,\n    ariaLabel: '',\n  },\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"display:inline-flex;align-items:center;gap:1rem;padding:1.5rem;color:#121212;font-family:monospace\">\n        <egov-icon [name]=\"name\" [variant]=\"variant\" [scale]=\"scale\" [aria-label]=\"ariaLabel\" />\n        <span>&lt;egov-icon name=\"{{ name }}\" variant=\"{{ variant }}\" scale=\"{{ scale }}\" /&gt;</span>\n      </div>\n    `,\n  }),\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<BorderGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Borders',\n  component: BorderGridComponent,\n  decorators: [moduleMetadata({ imports: [BorderGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "meta",
@@ -1851,6 +2292,39 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<BorderGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Borders',\n  component: BorderGridComponent,\n  decorators: [moduleMetadata({ imports: [BorderGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<CursorGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<DisplayGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Display',\n  component: DisplayGridComponent,\n  decorators: [moduleMetadata({ imports: [DisplayGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -1868,6 +2342,17 @@
                 "deprecationMessage": "",
                 "type": "Meta<TypographyGridComponent>",
                 "defaultValue": "{\n  title: 'Foundations/Typography',\n  component: TypographyGridComponent,\n  decorators: [moduleMetadata({ imports: [TypographyGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "ORDER",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/display-grid.component.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "[]",
+                "defaultValue": "[\n  'block',\n  'inline',\n  'inline-block',\n  'flex',\n  'inline-flex',\n  'grid',\n  'inline-grid',\n  'table',\n  'table-row',\n  'table-cell',\n  'none',\n]"
             },
             {
                 "name": "Palette",
@@ -1906,14 +2391,12 @@
                 "name": "Reference",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story",
-                "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}",
-                "rawdescription": "Native CSS cursors reference — hover to preview, click to copy `cursor: <value>;`.",
-                "description": "<p>Native CSS cursors reference — hover to preview, click to copy <code>cursor: &lt;value&gt;;</code>.</p>\n"
+                "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}"
             },
             {
                 "name": "SAMPLE",
@@ -1960,15 +2443,17 @@
                 "defaultValue": "['background', 'text', 'border', 'icon']"
             },
             {
-                "name": "Tokens",
+                "name": "Stretched",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story",
-                "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
+                "defaultValue": "{\n  args: { stretchTabs: true },\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Stretched tabs\">\n        <egov-tab label=\"One\"><p style=\"padding:16px 0\">One.</p></egov-tab>\n        <egov-tab label=\"Two\"><p style=\"padding:16px 0\">Two.</p></egov-tab>\n        <egov-tab label=\"Three\"><p style=\"padding:16px 0\">Three.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n}",
+                "rawdescription": "Tabs stretched to fill the header width.",
+                "description": "<p>Tabs stretched to fill the header width.</p>\n"
             },
             {
                 "name": "Tokens",
@@ -1980,6 +2465,41 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
+            },
+            {
+                "name": "Tokens",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
+            },
+            {
+                "name": "Utilities",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: () => ({ template: `<egov-display-grid />` }),\n}"
+            },
+            {
+                "name": "WithIconsAndCounters",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Tabs with icons\">\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"alarm\" scale=\"20\" /> Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"search\" scale=\"20\" /> Search</ng-template>\n          <p style=\"padding:16px 0\">Search.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"settings\" scale=\"20\" /> Settings</ng-template>\n          <p style=\"padding:16px 0\">Settings.</p>\n        </egov-tab>\n        <egov-tab [disabled]=\"true\">\n          <ng-template egovTabLabel><egov-icon name=\"lock\" scale=\"20\" /> Locked</ng-template>\n          <p style=\"padding:16px 0\">Unreachable (disabled tab with a custom icon label).</p>\n        </egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n}",
+                "rawdescription": "Custom labels with a leading `egov-icon` and a trailing counter.",
+                "description": "<p>Custom labels with a leading <code>egov-icon</code> and a trailing counter.</p>\n"
             }
         ],
         "functions": [],
@@ -2028,8 +2548,8 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<CursorGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
+                "rawtype": "StoryObj<EgovTabGroup>",
+                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -2043,19 +2563,6 @@
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<EgovIconComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "rawdescription": "",
-                "description": "",
-                "kind": 184
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "coverageIgnore": false,
-                "rawtype": "StoryObj<BorderGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -2082,6 +2589,45 @@
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<ColorGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<BorderGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<CursorGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<DisplayGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -2176,6 +2722,93 @@
                     "defaultValue": "{}"
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/tabs.stories.ts": [
+                {
+                    "name": "Basic",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Example tabs\">\n        <egov-tab label=\"Overview\"><p style=\"padding:16px 0\">Overview content.</p></egov-tab>\n        <egov-tab label=\"Details\"><p style=\"padding:16px 0\">Details content.</p></egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel>Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts content (custom label with a counter).</p>\n        </egov-tab>\n        <egov-tab label=\"Disabled\" [disabled]=\"true\"><p style=\"padding:16px 0\">Unreachable.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n}",
+                    "rawdescription": "Plain labels, a custom `egovTabLabel` with a counter, and a disabled tab.",
+                    "description": "<p>Plain labels, a custom <code>egovTabLabel</code> with a counter, and a disabled tab.</p>\n"
+                },
+                {
+                    "name": "COUNTER_STYLE",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "defaultValue": "'display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:9999px;background:var(--gray-100,#f1f1f1);color:var(--black,#121212);font-size:12px'"
+                },
+                {
+                    "name": "DisabledTabs",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Disabled tabs\">\n        <egov-tab label=\"Locked\" [disabled]=\"true\"><p style=\"padding:16px 0\">Locked.</p></egov-tab>\n        <egov-tab label=\"Active\"><p style=\"padding:16px 0\">This one is selected on load.</p></egov-tab>\n        <egov-tab label=\"Skipped\" [disabled]=\"true\"><p style=\"padding:16px 0\">Skipped.</p></egov-tab>\n        <egov-tab label=\"Last\"><p style=\"padding:16px 0\">Reached by pressing → (skips the disabled one).</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n}",
+                    "rawdescription": "First tab disabled (selection snaps to the first enabled), plus a disabled tab in the middle (keyboard skips it).",
+                    "description": "<p>First tab disabled (selection snaps to the first enabled), plus a disabled tab in the middle (keyboard skips it).</p>\n"
+                },
+                {
+                    "name": "Interactive",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  // Uses a fixed demo component, so the group-level controls don't apply here.\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [TabsInteractiveDemo] })],\n  render: () => ({ template: `<egov-tabs-demo />` }),\n}"
+                },
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<EgovTabGroup>",
+                    "defaultValue": "{\n  title: 'Components/Tabs',\n  component: EgovTabGroup,\n  decorators: [\n    moduleMetadata({ imports: [EgovTabGroup, EgovTab, EgovTabLabel, EgovIconComponent] }),\n    applicationConfig({ providers: [provideEgovIcons([alarm, settings, search, lock])] }),\n  ],\n  argTypes: {\n    stretchTabs: { control: 'boolean' },\n    size: { control: 'inline-radio', options: ['md', 'sm'] },\n  },\n  args: {\n    stretchTabs: false,\n    size: 'md',\n  },\n}"
+                },
+                {
+                    "name": "Stretched",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  args: { stretchTabs: true },\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Stretched tabs\">\n        <egov-tab label=\"One\"><p style=\"padding:16px 0\">One.</p></egov-tab>\n        <egov-tab label=\"Two\"><p style=\"padding:16px 0\">Two.</p></egov-tab>\n        <egov-tab label=\"Three\"><p style=\"padding:16px 0\">Three.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n}",
+                    "rawdescription": "Tabs stretched to fill the header width.",
+                    "description": "<p>Tabs stretched to fill the header width.</p>\n"
+                },
+                {
+                    "name": "WithIconsAndCounters",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Tabs with icons\">\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"alarm\" scale=\"20\" /> Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"search\" scale=\"20\" /> Search</ng-template>\n          <p style=\"padding:16px 0\">Search.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"settings\" scale=\"20\" /> Settings</ng-template>\n          <p style=\"padding:16px 0\">Settings.</p>\n        </egov-tab>\n        <egov-tab [disabled]=\"true\">\n          <ng-template egovTabLabel><egov-icon name=\"lock\" scale=\"20\" /> Locked</ng-template>\n          <p style=\"padding:16px 0\">Unreachable (disabled tab with a custom icon label).</p>\n        </egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n}",
+                    "rawdescription": "Custom labels with a leading `egov-icon` and a trailing counter.",
+                    "description": "<p>Custom labels with a leading <code>egov-icon</code> and a trailing counter.</p>\n"
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts": [
                 {
                     "name": "COLOR_VALUE",
@@ -2200,12 +2833,12 @@
                     "defaultValue": "['background', 'text', 'border', 'icon']"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/cursors/cursor-grid.component.ts": [
                 {
                     "name": "CURSOR_GROUPS",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursor-grid.component.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -2261,56 +2894,6 @@
                     "defaultValue": "{\n  title: 'Foundations/Elevation',\n  component: ShadowGridComponent,\n  decorators: [moduleMetadata({ imports: [ShadowGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/cursors.stories.ts": [
-                {
-                    "name": "meta",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<CursorGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Reference",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}",
-                    "rawdescription": "Native CSS cursors reference — hover to preview, click to copy `cursor: <value>;`.",
-                    "description": "<p>Native CSS cursors reference — hover to preview, click to copy <code>cursor: &lt;value&gt;;</code>.</p>\n"
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
-                {
-                    "name": "meta",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<BorderGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Borders',\n  component: BorderGridComponent,\n  decorators: [moduleMetadata({ imports: [BorderGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Tokens",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
                 {
                     "name": "meta",
@@ -2359,6 +2942,78 @@
                     "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<BorderGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Borders',\n  component: BorderGridComponent,\n  decorators: [moduleMetadata({ imports: [BorderGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Tokens",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<CursorGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Reference",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<DisplayGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Display',\n  component: DisplayGridComponent,\n  decorators: [moduleMetadata({ imports: [DisplayGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Utilities",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-display-grid />` }),\n}"
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts": [
                 {
                     "name": "meta",
@@ -2381,6 +3036,19 @@
                     "deprecationMessage": "",
                     "type": "Story",
                     "defaultValue": "{\n  render: () => ({ template: `<egov-typography-grid />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/display-utilities/display-grid.component.ts": [
+                {
+                    "name": "ORDER",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/display-grid.component.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "[]",
+                    "defaultValue": "[\n  'block',\n  'inline',\n  'inline-block',\n  'flex',\n  'inline-flex',\n  'grid',\n  'inline-grid',\n  'table',\n  'table-row',\n  'table-cell',\n  'none',\n]"
                 }
             ],
             "projects/ngx-egov-ui/.storybook/preview.ts": [
@@ -2458,14 +3126,14 @@
                     "kind": 193
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/cursors.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/tabs.stories.ts": [
                 {
                     "name": "Story",
                     "ctype": "miscellaneous",
                     "subtype": "typealias",
                     "coverageIgnore": false,
-                    "rawtype": "StoryObj<CursorGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
+                    "rawtype": "StoryObj<EgovTabGroup>",
+                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -2481,21 +3149,6 @@
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<EgovIconComponent>",
                     "file": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<BorderGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -2526,6 +3179,51 @@
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<ColorGridComponent>",
                     "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<BorderGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<CursorGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<DisplayGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -2571,7 +3269,7 @@
         "children": []
     },
     "coverage": {
-        "count": 2,
+        "count": 6,
         "status": "low",
         "files": [
             {
@@ -2626,64 +3324,6 @@
             },
             {
                 "filePath": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
-                "type": "type alias",
-                "linktype": "miscellaneous",
-                "linksubtype": "typealias",
-                "name": "Story",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts",
-                "type": "component",
-                "linktype": "component",
-                "name": "CursorGridComponent",
-                "coveragePercent": 25,
-                "coverageCount": "1/4",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts",
-                "type": "interface",
-                "linktype": "interface",
-                "name": "CursorGroup",
-                "coveragePercent": 0,
-                "coverageCount": "0/3",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "CURSOR_GROUPS",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "meta",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Reference",
-                "coveragePercent": 100,
-                "coverageCount": "1/1",
-                "status": "very-good"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
                 "type": "type alias",
                 "linktype": "miscellaneous",
                 "linksubtype": "typealias",
@@ -2887,6 +3527,122 @@
                 "status": "low"
             },
             {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursor-grid.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "CursorGridComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursor-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "CursorGroup",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursor-grid.component.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "CURSOR_GROUPS",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Reference",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/display-grid.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "DisplayGridComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/8",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/display-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "DisplayUtil",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/display-grid.component.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "ORDER",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Utilities",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
                 "filePath": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
@@ -3023,6 +3779,95 @@
             },
             {
                 "filePath": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "TabsInteractiveDemo",
+                "coveragePercent": 20,
+                "coverageCount": "1/5",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Basic",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "COUNTER_STYLE",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "DisabledTabs",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Interactive",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Stretched",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "WithIconsAndCounters",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
                 "type": "type alias",
                 "linktype": "miscellaneous",
                 "linksubtype": "typealias",
