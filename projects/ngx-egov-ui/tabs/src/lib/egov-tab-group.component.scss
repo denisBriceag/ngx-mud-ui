@@ -1,0 +1,79 @@
+:host {
+  display: block;
+}
+
+.tab-buttons {
+  display: flex;
+  gap: 8px;
+  width: fit-content;
+  border-bottom: 1px solid var(--gray-300, #b2b2b2);
+}
+
+.tabs--stretch .tab-buttons {
+  width: 100%;
+}
+
+.tabs--stretch .tab-button {
+  flex: 1;
+  justify-content: center;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--gray-700, #383838);
+  font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
+  font-size: var(--text-body-md-font-size, 16px);
+  line-height: 1.375;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+
+  &.active {
+    color: var(--blue-sky-600, #0058d2);
+    border-color: var(--blue-sky-600, #0058d2);
+    font-weight: 600;
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--blue-sky-600, #0058d2);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    color: var(--gray-400, #757575);
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  // Auto-shrink on mobile (≤ the `sm` breakpoint, 576px).
+  @media (max-width: 576px) {
+    font-size: var(--text-body-sm-font-size, 14px);
+  }
+}
+
+// Explicit compact variant (size="sm").
+.tabs--sm .tab-button {
+  padding: 8px 12px;
+  font-size: var(--text-body-sm-font-size, 14px);
+  line-height: 1.25;
+}
+
+.tab-panels {
+  margin-top: 16px;
+}
+
+.tab-panel {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}

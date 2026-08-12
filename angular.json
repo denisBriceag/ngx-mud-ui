@@ -29,7 +29,7 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "projects/ngx-egov-ui/tsconfig.spec.json",
-            "include": ["**/*.spec.ts", "../icons/src/**/*.spec.ts"]
+            "include": ["**/*.spec.ts", "../icons/src/**/*.spec.ts", "../tabs/src/**/*.spec.ts"]
           }
         },
         "storybook": {
