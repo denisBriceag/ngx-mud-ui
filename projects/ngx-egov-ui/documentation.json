@@ -1,6 +1,95 @@
 {
     "pipes": [],
-    "interfaces": [],
+    "interfaces": [
+        {
+            "name": "ColorGroup",
+            "id": "interface-ColorGroup-1a8eed4d287ec3e3316caf5b25635dd0ba2a9ba02a6e529b3cefe6f95da59ebd9b12115545f552140feac15839907df42c1e8c9dfee0673900ea4a52d059c54b",
+            "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "type": "interface",
+            "sourceCode": "import { afterNextRender, Component, input, signal } from '@angular/core';\n\ntype ColorMode = 'primitives' | 'semantic';\n\ninterface Swatch {\n  /** Custom-property name, e.g. `--gray-400` or `--color-background-brand-default`. */\n  name: string;\n  /** Resolved value from getComputedStyle, e.g. `#757575`. */\n  value: string;\n}\n\ninterface ColorGroup {\n  title: string;\n  swatches: Swatch[];\n}\n\nconst SEMANTIC_ORDER = ['background', 'text', 'border', 'icon'];\nconst COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\\(/i;\n\n/**\n * Storybook-only Foundations grid. Enumerates the design-system color custom\n * properties actually loaded in the preview (`.storybook/design-tokens.scss`),\n * resolves each value, groups them, and copies `var(--name)` on click.\n * `mode=\"semantic\"` also exposes a light/dark toggle (tokens differ per theme).\n */\n@Component({\n  selector: 'egov-color-grid',\n  template: `\n    @if (mode() === 'semantic') {\n      <div class=\"toolbar\">\n        <span class=\"toolbar__label\">Theme</span>\n        <button type=\"button\" [class.active]=\"theme() === 'light'\" (click)=\"setTheme('light')\">Light</button>\n        <button type=\"button\" [class.active]=\"theme() === 'dark'\" (click)=\"setTheme('dark')\">Dark</button>\n      </div>\n    }\n\n    @for (group of groups(); track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (swatch of group.swatches; track swatch.name) {\n            <button\n              type=\"button\"\n              class=\"swatch\"\n              [title]=\"'Copy var(' + swatch.name + ')'\"\n              (click)=\"copy(swatch.name)\"\n            >\n              <span class=\"swatch__chip\" [style.background]=\"'var(' + swatch.name + ')'\"></span>\n              <span class=\"swatch__meta\">\n                <code class=\"swatch__name\">{{ swatch.name }}</code>\n                <span class=\"swatch__value\">{{ swatch.value }}</span>\n              </span>\n              <span class=\"swatch__copied\" [class.show]=\"copied() === swatch.name\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n\n    @if (groups().length === 0) {\n      <p class=\"empty\">No color tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));\n      gap: 0.75rem;\n    }\n    .swatch {\n      display: flex;\n      align-items: center;\n      gap: 0.75rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.6rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .swatch:hover {\n      border-color: #cfcfcf;\n    }\n    .swatch__chip {\n      flex: 0 0 auto;\n      width: 40px;\n      height: 40px;\n      border-radius: 8px;\n      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);\n    }\n    .swatch__meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .swatch__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .swatch__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .swatch__copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .swatch__copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class ColorGridComponent {\n  readonly mode = input<ColorMode>('primitives');\n\n  protected readonly theme = signal<'light' | 'dark'>('light');\n  protected readonly groups = signal<ColorGroup[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected setTheme(theme: 'light' | 'dark'): void {\n    this.theme.set(theme);\n    this.load();\n  }\n\n  protected copy(name: string): void {\n    void navigator.clipboard?.writeText(`var(${name})`);\n    this.copied.set(name);\n    setTimeout(() => this.copied.update((current) => (current === name ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const root = document.documentElement;\n\n    if (this.mode() === 'semantic' && this.theme() === 'dark') {\n      root.setAttribute('data-theme', 'dark');\n    } else {\n      root.removeAttribute('data-theme');\n    }\n\n    const styles = getComputedStyle(root);\n    const swatches: Swatch[] = [];\n\n    for (const name of this.collectNames()) {\n      const value = styles.getPropertyValue(name).trim();\n\n      if (this.mode() === 'semantic' || COLOR_VALUE.test(value)) {\n        swatches.push({ name, value });\n      }\n    }\n\n    this.groups.set(this.group(swatches));\n  }\n\n  /** Enumerate `:root` custom-property names from the preview's stylesheets. */\n  private collectNames(): string[] {\n    const names = new Set<string>();\n    const wantSemantic = this.mode() === 'semantic';\n\n    for (const sheet of Array.from(document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue; // cross-origin sheet — skip\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule) || rule.selectorText !== ':root') {\n          continue;\n        }\n\n        for (const name of Array.from(rule.style)) {\n          const isSemantic = name.startsWith('--color-');\n\n          if (name.startsWith('--') && isSemantic === wantSemantic) {\n            names.add(name);\n          }\n        }\n      }\n    }\n\n    return [...names];\n  }\n\n  private group(swatches: Swatch[]): ColorGroup[] {\n    const buckets = new Map<string, Swatch[]>();\n\n    for (const swatch of swatches) {\n      const key = this.mode() === 'semantic' ? this.categoryOf(swatch.name) : this.familyOf(swatch.name);\n      const bucket = buckets.get(key) ?? [];\n\n      bucket.push(swatch);\n      buckets.set(key, bucket);\n    }\n\n    const order = this.mode() === 'semantic' ? SEMANTIC_ORDER : [...buckets.keys()].sort();\n\n    return order\n      .filter((key) => buckets.has(key))\n      .concat([...buckets.keys()].filter((k) => !order.includes(k)).sort())\n      .map((title) => ({ title, swatches: buckets.get(title)!.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })) }));\n  }\n\n  /** `--blue-sky-600` -> `blue-sky`; `--gray-200-alpha` -> `gray`; `--black` -> `black`. */\n  private familyOf(name: string): string {\n    const parts = name.replace(/^--/, '').split('-');\n\n    while (parts.length > 1 && (/^\\d+$/.test(parts[parts.length - 1]) || parts[parts.length - 1] === 'alpha')) {\n      parts.pop();\n    }\n\n    return parts.join('-');\n  }\n\n  /** `--color-background-brand-default` -> `background`. */\n  private categoryOf(name: string): string {\n    return name.replace(/^--color-/, '').split('-')[0];\n  }\n}\n",
+            "displayName": "ColorGroup",
+            "properties": [
+                {
+                    "name": "swatches",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Swatch[]",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 14,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "title",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 13,
+                    "rawdescription": "\n"
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 172,
+            "methods": [],
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        },
+        {
+            "name": "Swatch",
+            "id": "interface-Swatch-1a8eed4d287ec3e3316caf5b25635dd0ba2a9ba02a6e529b3cefe6f95da59ebd9b12115545f552140feac15839907df42c1e8c9dfee0673900ea4a52d059c54b",
+            "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "type": "interface",
+            "sourceCode": "import { afterNextRender, Component, input, signal } from '@angular/core';\n\ntype ColorMode = 'primitives' | 'semantic';\n\ninterface Swatch {\n  /** Custom-property name, e.g. `--gray-400` or `--color-background-brand-default`. */\n  name: string;\n  /** Resolved value from getComputedStyle, e.g. `#757575`. */\n  value: string;\n}\n\ninterface ColorGroup {\n  title: string;\n  swatches: Swatch[];\n}\n\nconst SEMANTIC_ORDER = ['background', 'text', 'border', 'icon'];\nconst COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\\(/i;\n\n/**\n * Storybook-only Foundations grid. Enumerates the design-system color custom\n * properties actually loaded in the preview (`.storybook/design-tokens.scss`),\n * resolves each value, groups them, and copies `var(--name)` on click.\n * `mode=\"semantic\"` also exposes a light/dark toggle (tokens differ per theme).\n */\n@Component({\n  selector: 'egov-color-grid',\n  template: `\n    @if (mode() === 'semantic') {\n      <div class=\"toolbar\">\n        <span class=\"toolbar__label\">Theme</span>\n        <button type=\"button\" [class.active]=\"theme() === 'light'\" (click)=\"setTheme('light')\">Light</button>\n        <button type=\"button\" [class.active]=\"theme() === 'dark'\" (click)=\"setTheme('dark')\">Dark</button>\n      </div>\n    }\n\n    @for (group of groups(); track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (swatch of group.swatches; track swatch.name) {\n            <button\n              type=\"button\"\n              class=\"swatch\"\n              [title]=\"'Copy var(' + swatch.name + ')'\"\n              (click)=\"copy(swatch.name)\"\n            >\n              <span class=\"swatch__chip\" [style.background]=\"'var(' + swatch.name + ')'\"></span>\n              <span class=\"swatch__meta\">\n                <code class=\"swatch__name\">{{ swatch.name }}</code>\n                <span class=\"swatch__value\">{{ swatch.value }}</span>\n              </span>\n              <span class=\"swatch__copied\" [class.show]=\"copied() === swatch.name\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n\n    @if (groups().length === 0) {\n      <p class=\"empty\">No color tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));\n      gap: 0.75rem;\n    }\n    .swatch {\n      display: flex;\n      align-items: center;\n      gap: 0.75rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.6rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .swatch:hover {\n      border-color: #cfcfcf;\n    }\n    .swatch__chip {\n      flex: 0 0 auto;\n      width: 40px;\n      height: 40px;\n      border-radius: 8px;\n      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);\n    }\n    .swatch__meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .swatch__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .swatch__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .swatch__copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .swatch__copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class ColorGridComponent {\n  readonly mode = input<ColorMode>('primitives');\n\n  protected readonly theme = signal<'light' | 'dark'>('light');\n  protected readonly groups = signal<ColorGroup[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected setTheme(theme: 'light' | 'dark'): void {\n    this.theme.set(theme);\n    this.load();\n  }\n\n  protected copy(name: string): void {\n    void navigator.clipboard?.writeText(`var(${name})`);\n    this.copied.set(name);\n    setTimeout(() => this.copied.update((current) => (current === name ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const root = document.documentElement;\n\n    if (this.mode() === 'semantic' && this.theme() === 'dark') {\n      root.setAttribute('data-theme', 'dark');\n    } else {\n      root.removeAttribute('data-theme');\n    }\n\n    const styles = getComputedStyle(root);\n    const swatches: Swatch[] = [];\n\n    for (const name of this.collectNames()) {\n      const value = styles.getPropertyValue(name).trim();\n\n      if (this.mode() === 'semantic' || COLOR_VALUE.test(value)) {\n        swatches.push({ name, value });\n      }\n    }\n\n    this.groups.set(this.group(swatches));\n  }\n\n  /** Enumerate `:root` custom-property names from the preview's stylesheets. */\n  private collectNames(): string[] {\n    const names = new Set<string>();\n    const wantSemantic = this.mode() === 'semantic';\n\n    for (const sheet of Array.from(document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue; // cross-origin sheet — skip\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule) || rule.selectorText !== ':root') {\n          continue;\n        }\n\n        for (const name of Array.from(rule.style)) {\n          const isSemantic = name.startsWith('--color-');\n\n          if (name.startsWith('--') && isSemantic === wantSemantic) {\n            names.add(name);\n          }\n        }\n      }\n    }\n\n    return [...names];\n  }\n\n  private group(swatches: Swatch[]): ColorGroup[] {\n    const buckets = new Map<string, Swatch[]>();\n\n    for (const swatch of swatches) {\n      const key = this.mode() === 'semantic' ? this.categoryOf(swatch.name) : this.familyOf(swatch.name);\n      const bucket = buckets.get(key) ?? [];\n\n      bucket.push(swatch);\n      buckets.set(key, bucket);\n    }\n\n    const order = this.mode() === 'semantic' ? SEMANTIC_ORDER : [...buckets.keys()].sort();\n\n    return order\n      .filter((key) => buckets.has(key))\n      .concat([...buckets.keys()].filter((k) => !order.includes(k)).sort())\n      .map((title) => ({ title, swatches: buckets.get(title)!.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })) }));\n  }\n\n  /** `--blue-sky-600` -> `blue-sky`; `--gray-200-alpha` -> `gray`; `--black` -> `black`. */\n  private familyOf(name: string): string {\n    const parts = name.replace(/^--/, '').split('-');\n\n    while (parts.length > 1 && (/^\\d+$/.test(parts[parts.length - 1]) || parts[parts.length - 1] === 'alpha')) {\n      parts.pop();\n    }\n\n    return parts.join('-');\n  }\n\n  /** `--color-background-brand-default` -> `background`. */\n  private categoryOf(name: string): string {\n    return name.replace(/^--color-/, '').split('-')[0];\n  }\n}\n",
+            "displayName": "Swatch",
+            "properties": [
+                {
+                    "name": "name",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "<p>Custom-property name, e.g. <code>--gray-400</code> or <code>--color-background-brand-default</code>.</p>\n",
+                    "line": 7,
+                    "rawdescription": "\nCustom-property name, e.g. `--gray-400` or `--color-background-brand-default`."
+                },
+                {
+                    "name": "value",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "<p>Resolved value from getComputedStyle, e.g. <code>#757575</code>.</p>\n",
+                    "line": 9,
+                    "rawdescription": "\nResolved value from getComputedStyle, e.g. `#757575`."
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 172,
+            "methods": [],
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        }
+    ],
     "injectables": [],
     "guards": [],
     "interceptors": [],
@@ -8,29 +97,322 @@
     "directives": [],
     "components": [
         {
-            "name": "NgxEgovUi",
-            "id": "component-NgxEgovUi-f03d8fa938ea0f9eb56c70488781279cefa980b311fd19bdbf648e804e889c6550de76e6f8abae97c60b2cc132cb3adc575ab71cb1e304573fb66940c84d0fa6",
-            "file": "projects/ngx-egov-ui/src/lib/ngx-egov-ui.ts",
+            "name": "ColorGridComponent",
+            "id": "component-ColorGridComponent-1a8eed4d287ec3e3316caf5b25635dd0ba2a9ba02a6e529b3cefe6f95da59ebd9b12115545f552140feac15839907df42c1e8c9dfee0673900ea4a52d059c54b",
+            "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
             "changeDetection": "ChangeDetectionStrategy.OnPush",
             "encapsulation": [],
             "entryComponents": [],
             "inputs": [],
             "outputs": [],
             "providers": [],
-            "selector": "lib-ngx-egov-ui",
+            "selector": "egov-color-grid",
             "styleUrls": [],
             "styles": [
-                ""
+                "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));\n      gap: 0.75rem;\n    }\n    .swatch {\n      display: flex;\n      align-items: center;\n      gap: 0.75rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.6rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .swatch:hover {\n      border-color: #cfcfcf;\n    }\n    .swatch__chip {\n      flex: 0 0 auto;\n      width: 40px;\n      height: 40px;\n      border-radius: 8px;\n      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);\n    }\n    .swatch__meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .swatch__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .swatch__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .swatch__copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .swatch__copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  "
             ],
-            "template": "<p>ngx-egov-ui works!</p>",
+            "template": "@if (mode() === 'semantic') {\n  <div class=\"toolbar\">\n    <span class=\"toolbar__label\">Theme</span>\n    <button type=\"button\" [class.active]=\"theme() === 'light'\" (click)=\"setTheme('light')\">Light</button>\n    <button type=\"button\" [class.active]=\"theme() === 'dark'\" (click)=\"setTheme('dark')\">Dark</button>\n  </div>\n}\n\n@for (group of groups(); track group.title) {\n  <section class=\"group\">\n    <h3 class=\"group__title\">{{ group.title }}</h3>\n    <div class=\"grid\">\n      @for (swatch of group.swatches; track swatch.name) {\n        <button\n          type=\"button\"\n          class=\"swatch\"\n          [title]=\"'Copy var(' + swatch.name + ')'\"\n          (click)=\"copy(swatch.name)\"\n        >\n          <span class=\"swatch__chip\" [style.background]=\"'var(' + swatch.name + ')'\"></span>\n          <span class=\"swatch__meta\">\n            <code class=\"swatch__name\">{{ swatch.name }}</code>\n            <span class=\"swatch__value\">{{ swatch.value }}</span>\n          </span>\n          <span class=\"swatch__copied\" [class.show]=\"copied() === swatch.name\">copied ✓</span>\n        </button>\n      }\n    </div>\n  </section>\n}\n\n@if (groups().length === 0) {\n  <p class=\"empty\">No color tokens found in the loaded stylesheet.</p>\n}\n",
             "templateUrl": [],
             "templateVariables": [],
             "viewProviders": [],
             "hostDirectives": [],
-            "inputsClass": [],
+            "inputsClass": [
+                {
+                    "name": "mode",
+                    "coverageIgnore": false,
+                    "defaultValue": "'primitives'",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "ColorMode",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 169,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        148
+                    ],
+                    "required": false
+                }
+            ],
             "outputsClass": [],
-            "propertiesClass": [],
-            "methodsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "copied",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal<string | null>(null)",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 173,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                },
+                {
+                    "name": "groups",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal<ColorGroup[]>([])",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 172,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                },
+                {
+                    "name": "theme",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal<'light' | 'dark'>('light')",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 171,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "categoryOf",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "string",
+                    "typeParameters": [],
+                    "line": 276,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n`--color-background-brand-default` -> `background`.",
+                    "description": "<p><code>--color-background-brand-default</code> -&gt; <code>background</code>.</p>\n",
+                    "modifierKind": [
+                        123
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "collectNames",
+                    "coverageIgnore": false,
+                    "args": [],
+                    "optional": false,
+                    "returnType": "string[]",
+                    "typeParameters": [],
+                    "line": 214,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\nEnumerate `:root` custom-property names from the preview's stylesheets.",
+                    "description": "<p>Enumerate <code>:root</code> custom-property names from the preview&#39;s stylesheets.</p>\n",
+                    "modifierKind": [
+                        123
+                    ]
+                },
+                {
+                    "name": "copy",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 184,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        124
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "familyOf",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "string",
+                    "typeParameters": [],
+                    "line": 265,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n`--blue-sky-600` -> `blue-sky`; `--gray-200-alpha` -> `gray`; `--black` -> `black`.",
+                    "description": "<p><code>--blue-sky-600</code> -&gt; <code>blue-sky</code>; <code>--gray-200-alpha</code> -&gt; <code>gray</code>; <code>--black</code> -&gt; <code>black</code>.</p>\n",
+                    "modifierKind": [
+                        123
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "group",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "swatches",
+                            "type": "Swatch[]",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "ColorGroup[]",
+                    "typeParameters": [],
+                    "line": 245,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        123
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "swatches",
+                            "type": "Swatch[]",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "load",
+                    "coverageIgnore": false,
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 190,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        123
+                    ]
+                },
+                {
+                    "name": "setTheme",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "theme",
+                            "type": "\"light\" | \"dark\"",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 179,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        124
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "theme",
+                            "type": "\"light\" | \"dark\"",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
             "coverageIgnore": false,
             "deprecated": false,
             "deprecationMessage": "",
@@ -38,13 +420,34 @@
             "hostListeners": [],
             "standalone": true,
             "imports": [],
-            "description": "",
-            "rawdescription": "\n",
+            "description": "<p>Storybook-only Foundations grid. Enumerates the design-system color custom\nproperties actually loaded in the preview (<code>.storybook/design-tokens.scss</code>),\nresolves each value, groups them, and copies <code>var(--name)</code> on click.\n<code>mode=&quot;semantic&quot;</code> also exposes a light/dark toggle (tokens differ per theme).</p>\n",
+            "rawdescription": "\n\nStorybook-only Foundations grid. Enumerates the design-system color custom\nproperties actually loaded in the preview (`.storybook/design-tokens.scss`),\nresolves each value, groups them, and copies `var(--name)` on click.\n`mode=\"semantic\"` also exposes a light/dark toggle (tokens differ per theme).\n",
             "type": "component",
-            "sourceCode": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'lib-ngx-egov-ui',\n  imports: [],\n  template: ` <p>ngx-egov-ui works!</p> `,\n  styles: ``,\n})\nexport class NgxEgovUi {}\n",
+            "sourceCode": "import { afterNextRender, Component, input, signal } from '@angular/core';\n\ntype ColorMode = 'primitives' | 'semantic';\n\ninterface Swatch {\n  /** Custom-property name, e.g. `--gray-400` or `--color-background-brand-default`. */\n  name: string;\n  /** Resolved value from getComputedStyle, e.g. `#757575`. */\n  value: string;\n}\n\ninterface ColorGroup {\n  title: string;\n  swatches: Swatch[];\n}\n\nconst SEMANTIC_ORDER = ['background', 'text', 'border', 'icon'];\nconst COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\\(/i;\n\n/**\n * Storybook-only Foundations grid. Enumerates the design-system color custom\n * properties actually loaded in the preview (`.storybook/design-tokens.scss`),\n * resolves each value, groups them, and copies `var(--name)` on click.\n * `mode=\"semantic\"` also exposes a light/dark toggle (tokens differ per theme).\n */\n@Component({\n  selector: 'egov-color-grid',\n  template: `\n    @if (mode() === 'semantic') {\n      <div class=\"toolbar\">\n        <span class=\"toolbar__label\">Theme</span>\n        <button type=\"button\" [class.active]=\"theme() === 'light'\" (click)=\"setTheme('light')\">Light</button>\n        <button type=\"button\" [class.active]=\"theme() === 'dark'\" (click)=\"setTheme('dark')\">Dark</button>\n      </div>\n    }\n\n    @for (group of groups(); track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (swatch of group.swatches; track swatch.name) {\n            <button\n              type=\"button\"\n              class=\"swatch\"\n              [title]=\"'Copy var(' + swatch.name + ')'\"\n              (click)=\"copy(swatch.name)\"\n            >\n              <span class=\"swatch__chip\" [style.background]=\"'var(' + swatch.name + ')'\"></span>\n              <span class=\"swatch__meta\">\n                <code class=\"swatch__name\">{{ swatch.name }}</code>\n                <span class=\"swatch__value\">{{ swatch.value }}</span>\n              </span>\n              <span class=\"swatch__copied\" [class.show]=\"copied() === swatch.name\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n\n    @if (groups().length === 0) {\n      <p class=\"empty\">No color tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));\n      gap: 0.75rem;\n    }\n    .swatch {\n      display: flex;\n      align-items: center;\n      gap: 0.75rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.6rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .swatch:hover {\n      border-color: #cfcfcf;\n    }\n    .swatch__chip {\n      flex: 0 0 auto;\n      width: 40px;\n      height: 40px;\n      border-radius: 8px;\n      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);\n    }\n    .swatch__meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .swatch__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .swatch__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .swatch__copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .swatch__copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class ColorGridComponent {\n  readonly mode = input<ColorMode>('primitives');\n\n  protected readonly theme = signal<'light' | 'dark'>('light');\n  protected readonly groups = signal<ColorGroup[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected setTheme(theme: 'light' | 'dark'): void {\n    this.theme.set(theme);\n    this.load();\n  }\n\n  protected copy(name: string): void {\n    void navigator.clipboard?.writeText(`var(${name})`);\n    this.copied.set(name);\n    setTimeout(() => this.copied.update((current) => (current === name ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const root = document.documentElement;\n\n    if (this.mode() === 'semantic' && this.theme() === 'dark') {\n      root.setAttribute('data-theme', 'dark');\n    } else {\n      root.removeAttribute('data-theme');\n    }\n\n    const styles = getComputedStyle(root);\n    const swatches: Swatch[] = [];\n\n    for (const name of this.collectNames()) {\n      const value = styles.getPropertyValue(name).trim();\n\n      if (this.mode() === 'semantic' || COLOR_VALUE.test(value)) {\n        swatches.push({ name, value });\n      }\n    }\n\n    this.groups.set(this.group(swatches));\n  }\n\n  /** Enumerate `:root` custom-property names from the preview's stylesheets. */\n  private collectNames(): string[] {\n    const names = new Set<string>();\n    const wantSemantic = this.mode() === 'semantic';\n\n    for (const sheet of Array.from(document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue; // cross-origin sheet — skip\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule) || rule.selectorText !== ':root') {\n          continue;\n        }\n\n        for (const name of Array.from(rule.style)) {\n          const isSemantic = name.startsWith('--color-');\n\n          if (name.startsWith('--') && isSemantic === wantSemantic) {\n            names.add(name);\n          }\n        }\n      }\n    }\n\n    return [...names];\n  }\n\n  private group(swatches: Swatch[]): ColorGroup[] {\n    const buckets = new Map<string, Swatch[]>();\n\n    for (const swatch of swatches) {\n      const key = this.mode() === 'semantic' ? this.categoryOf(swatch.name) : this.familyOf(swatch.name);\n      const bucket = buckets.get(key) ?? [];\n\n      bucket.push(swatch);\n      buckets.set(key, bucket);\n    }\n\n    const order = this.mode() === 'semantic' ? SEMANTIC_ORDER : [...buckets.keys()].sort();\n\n    return order\n      .filter((key) => buckets.has(key))\n      .concat([...buckets.keys()].filter((k) => !order.includes(k)).sort())\n      .map((title) => ({ title, swatches: buckets.get(title)!.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })) }));\n  }\n\n  /** `--blue-sky-600` -> `blue-sky`; `--gray-200-alpha` -> `gray`; `--black` -> `black`. */\n  private familyOf(name: string): string {\n    const parts = name.replace(/^--/, '').split('-');\n\n    while (parts.length > 1 && (/^\\d+$/.test(parts[parts.length - 1]) || parts[parts.length - 1] === 'alpha')) {\n      parts.pop();\n    }\n\n    return parts.join('-');\n  }\n\n  /** `--color-background-brand-default` -> `background`. */\n  private categoryOf(name: string): string {\n    return name.replace(/^--color-/, '').split('-')[0];\n  }\n}\n",
             "assetsDirs": [],
             "styleUrlsData": "",
-            "stylesData": "\n",
+            "stylesData": "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .toolbar {\n      display: inline-flex;\n      align-items: center;\n      gap: 0.25rem;\n      margin-bottom: 1.5rem;\n      padding: 0.25rem;\n      border: 1px solid #e5e5e5;\n      border-radius: 8px;\n    }\n    .toolbar__label {\n      font-size: 0.75rem;\n      color: #757575;\n      padding: 0 0.5rem;\n    }\n    .toolbar button {\n      border: 0;\n      background: transparent;\n      padding: 0.35rem 0.85rem;\n      border-radius: 6px;\n      font: inherit;\n      cursor: pointer;\n    }\n    .toolbar button.active {\n      background: #121212;\n      color: #fff;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));\n      gap: 0.75rem;\n    }\n    .swatch {\n      display: flex;\n      align-items: center;\n      gap: 0.75rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.6rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .swatch:hover {\n      border-color: #cfcfcf;\n    }\n    .swatch__chip {\n      flex: 0 0 auto;\n      width: 40px;\n      height: 40px;\n      border-radius: 8px;\n      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);\n    }\n    .swatch__meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .swatch__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .swatch__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .swatch__copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .swatch__copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  \n",
+            "jsdoctags": [
+                {
+                    "pos": 510,
+                    "end": 828,
+                    "kind": 321,
+                    "id": 0,
+                    "flags": 16777216,
+                    "modifierFlagsCache": 0,
+                    "transformFlags": 0,
+                    "comment": "Storybook-only Foundations grid. Enumerates the design-system color custom\nproperties actually loaded in the preview (`.storybook/design-tokens.scss`),\nresolves each value, groups them, and copies `var(--name)` on click.\n`mode=\"semantic\"` also exposes a light/dark toggle (tokens differ per theme)."
+                }
+            ],
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "args": [],
+                "line": 173,
+                "rawdescription": "\n"
+            },
             "extends": [],
             "relationships": {
                 "incoming": [],
@@ -67,6 +470,17 @@
                 "defaultValue": "Object.values(iconData) as EgovIcon[]"
             },
             {
+                "name": "COLOR_VALUE",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "unknown",
+                "defaultValue": "/^#([0-9a-f]{3,8})$|^rgba?\\(/i"
+            },
+            {
                 "name": "ICON_NAMES",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -81,12 +495,47 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<ColorGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Meta<EgovIconComponent>",
                 "defaultValue": "{\n  title: 'Components/EgovIcon',\n  component: EgovIconComponent,\n  tags: ['autodocs'],\n  decorators: [\n    applicationConfig({ providers: [provideEgovIcons(ALL_ICONS)] }),\n    moduleMetadata({ imports: [EgovIconComponent] }),\n  ],\n  argTypes: {\n    name: {\n      control: 'select',\n      options: ICON_NAMES,\n      description: 'Icon name (kebab-case). All icons are registered in this playground.',\n    },\n    variant: { control: 'inline-radio', options: ['outlined', 'filled'] },\n    scale: { control: 'inline-radio', options: [12, 16, 20, 24] },\n    ariaLabel: {\n      name: 'aria-label',\n      control: 'text',\n      description: 'Accessible label. Leave empty for a decorative icon (aria-hidden).',\n    },\n  },\n  args: {\n    name: 'alarm',\n    variant: 'outlined',\n    scale: 24,\n    ariaLabel: '',\n  },\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"display:inline-flex;align-items:center;gap:1rem;padding:1.5rem;color:#121212;font-family:monospace\">\n        <egov-icon [name]=\"name\" [variant]=\"variant\" [scale]=\"scale\" [aria-label]=\"ariaLabel\" />\n        <span>&lt;egov-icon name=\"{{ name }}\" variant=\"{{ variant }}\" scale=\"{{ scale }}\" /&gt;</span>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<ColorGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Semantic Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "Palette",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"primitives\" />` }),\n}",
+                "rawdescription": "The primitive palette (grays, blue-sky, greens, reds, …). Click a swatch to copy `var(--name)`.",
+                "description": "<p>The primitive palette (grays, blue-sky, greens, reds, …). Click a swatch to copy <code>var(--name)</code>.</p>\n"
             },
             {
                 "name": "Playground",
@@ -108,11 +557,61 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Preview",
-                "defaultValue": "{\n  parameters: {\n    options: {\n      storySort: { order: ['Introduction', '*'] },\n    },\n    controls: {\n      matchers: {\n        color: /(background|color)$/i,\n        date: /Date$/i,\n      },\n    },\n\n    a11y: {\n      // 'todo' - show a11y violations in the test UI only\n      // 'error' - fail CI on a11y violations\n      // 'off' - skip a11y checks entirely\n      test: 'todo',\n    },\n  },\n}"
+                "defaultValue": "{\n  parameters: {\n    options: {\n      storySort: { order: ['Introduction', 'Foundations', 'Components', '*'] },\n    },\n    controls: {\n      matchers: {\n        color: /(background|color)$/i,\n        date: /Date$/i,\n      },\n    },\n\n    a11y: {\n      // 'todo' - show a11y violations in the test UI only\n      // 'error' - fail CI on a11y violations\n      // 'off' - skip a11y checks entirely\n      test: 'todo',\n    },\n  },\n}"
+            },
+            {
+                "name": "SEMANTIC_ORDER",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "[]",
+                "defaultValue": "['background', 'text', 'border', 'icon']"
+            },
+            {
+                "name": "Tokens",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}",
+                "rawdescription": "Semantic tokens grouped by background / text / border / icon, with a light/dark toggle. Click to copy `var(--color-…)`.",
+                "description": "<p>Semantic tokens grouped by background / text / border / icon, with a light/dark toggle. Click to copy <code>var(--color-…)</code>.</p>\n"
             }
         ],
         "functions": [],
         "typealiases": [
+            {
+                "name": "ColorMode",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "\"primitives\" | \"semantic\"",
+                "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 193
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<ColorGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
             {
                 "name": "Story",
                 "ctype": "miscellaneous",
@@ -120,6 +619,19 @@
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<EgovIconComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<ColorGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -175,6 +687,82 @@
                     "defaultValue": "{}"
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/color-grid.component.ts": [
+                {
+                    "name": "COLOR_VALUE",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "defaultValue": "/^#([0-9a-f]{3,8})$|^rgba?\\(/i"
+                },
+                {
+                    "name": "SEMANTIC_ORDER",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "[]",
+                    "defaultValue": "['background', 'text', 'border', 'icon']"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/colors.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<ColorGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Palette",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"primitives\" />` }),\n}",
+                    "rawdescription": "The primitive palette (grays, blue-sky, greens, reds, …). Click a swatch to copy `var(--name)`.",
+                    "description": "<p>The primitive palette (grays, blue-sky, greens, reds, …). Click a swatch to copy <code>var(--name)</code>.</p>\n"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<ColorGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Semantic Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Tokens",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}",
+                    "rawdescription": "Semantic tokens grouped by background / text / border / icon, with a light/dark toggle. Click to copy `var(--color-…)`.",
+                    "description": "<p>Semantic tokens grouped by background / text / border / icon, with a light/dark toggle. Click to copy <code>var(--color-…)</code>.</p>\n"
+                }
+            ],
             "projects/ngx-egov-ui/.storybook/preview.ts": [
                 {
                     "name": "preview",
@@ -185,13 +773,43 @@
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "Preview",
-                    "defaultValue": "{\n  parameters: {\n    options: {\n      storySort: { order: ['Introduction', '*'] },\n    },\n    controls: {\n      matchers: {\n        color: /(background|color)$/i,\n        date: /Date$/i,\n      },\n    },\n\n    a11y: {\n      // 'todo' - show a11y violations in the test UI only\n      // 'error' - fail CI on a11y violations\n      // 'off' - skip a11y checks entirely\n      test: 'todo',\n    },\n  },\n}"
+                    "defaultValue": "{\n  parameters: {\n    options: {\n      storySort: { order: ['Introduction', 'Foundations', 'Components', '*'] },\n    },\n    controls: {\n      matchers: {\n        color: /(background|color)$/i,\n        date: /Date$/i,\n      },\n    },\n\n    a11y: {\n      // 'todo' - show a11y violations in the test UI only\n      // 'error' - fail CI on a11y violations\n      // 'off' - skip a11y checks entirely\n      test: 'todo',\n    },\n  },\n}"
                 }
             ]
         },
         "groupedFunctions": {},
         "groupedEnumerations": {},
         "groupedTypeAliases": {
+            "projects/ngx-egov-ui/src/stories/color-grid.component.ts": [
+                {
+                    "name": "ColorMode",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "\"primitives\" | \"semantic\"",
+                    "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 193
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/colors.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<ColorGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts": [
                 {
                     "name": "Story",
@@ -200,6 +818,21 @@
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<EgovIconComponent>",
                     "file": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<ColorGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -215,7 +848,7 @@
         "children": []
     },
     "coverage": {
-        "count": 0,
+        "count": 16,
         "status": "low",
         "files": [
             {
@@ -229,10 +862,88 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/lib/ngx-egov-ui.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
                 "type": "component",
                 "linktype": "component",
-                "name": "NgxEgovUi",
+                "name": "ColorGridComponent",
+                "coveragePercent": 30,
+                "coverageCount": "4/13",
+                "status": "medium"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "ColorGroup",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "Swatch",
+                "coveragePercent": 66,
+                "coverageCount": "2/3",
+                "status": "good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "COLOR_VALUE",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "SEMANTIC_ORDER",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "ColorMode",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Palette",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
                 "status": "low"
@@ -279,6 +990,36 @@
             },
             {
                 "filePath": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Tokens",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
                 "type": "type alias",
                 "linktype": "miscellaneous",
                 "linksubtype": "typealias",

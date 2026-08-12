@@ -1,12 +1,16 @@
 import type { Preview } from '@storybook/angular-vite';
 import { setCompodocJson } from '@storybook/addon-docs/angular';
+
 import docJson from '../documentation.json';
+
+import './design-tokens.scss';
+
 setCompodocJson(docJson);
 
 const preview: Preview = {
   parameters: {
     options: {
-      storySort: { order: ['Introduction', '*'] },
+      storySort: { order: ['Introduction', 'Foundations', 'Components', '*'] },
     },
     controls: {
       matchers: {
