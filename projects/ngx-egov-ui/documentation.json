@@ -3,12 +3,12 @@
     "interfaces": [
         {
             "name": "BorderSection",
-            "id": "interface-BorderSection-a5e10c3a47d3c1a4bef8e43a6daae860bbfba8d8e8685fab086c780f42131538f45329e72755c9f856bf44eca2aebfacfe6c520af0fa59b4dc21471e59a8e622",
-            "file": "projects/ngx-egov-ui/src/stories/border-grid.component.ts",
+            "id": "interface-BorderSection-e838b997af0f3ca7b235dbe1f87015ac250f32e641f5eb5fbad3b71c0459ee39707fac302ec4227030198e6b604e7ca84c05775ea6571adc9e33db10a1e95bb0",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/border/border-grid.component.ts",
             "deprecated": false,
             "deprecationMessage": "",
             "type": "interface",
-            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, signal } from '@angular/core';\n\ntype BorderKind = 'radius' | 'width' | 'style';\n\ninterface BorderToken {\n  /** Custom-property name, e.g. `--border-radius-8`. */\n  name: string;\n  /** Resolved value, e.g. `8px` / `1.5px` / `dashed`. */\n  value: string;\n  /** Matching utility class, e.g. `mud-radius-8` (if present in the loaded CSS). */\n  className?: string;\n}\n\ninterface BorderSection {\n  title: string;\n  kind: BorderKind;\n  tokens: BorderToken[];\n}\n\nconst SECTIONS: { title: string; kind: BorderKind; tokenPrefix: string; classStem: string }[] = [\n  { title: 'Radius', kind: 'radius', tokenPrefix: '--border-radius-', classStem: 'radius-' },\n  { title: 'Width', kind: 'width', tokenPrefix: '--border-width-', classStem: 'border-' },\n  { title: 'Style', kind: 'style', tokenPrefix: '--border-style-', classStem: 'border-style-' },\n];\n\n/**\n * Storybook-only Foundations page for border tokens. Enumerates the\n * `--border-{radius,width,style}-*` custom properties loaded in the preview,\n * renders a visual preview of each, and shows BOTH the token and its matching\n * `mud-*` utility class — each copyable on click.\n */\n@Component({\n  selector: 'egov-border-grid',\n  template: `\n    @for (section of sections(); track section.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ section.title }}</h3>\n        <div class=\"grid\">\n          @for (token of section.tokens; track token.name) {\n            <div class=\"cell\">\n              @switch (section.kind) {\n                @case ('radius') {\n                  <span class=\"box box--fill\" [style.borderRadius]=\"'var(' + token.name + ')'\"></span>\n                }\n                @case ('width') {\n                  <span class=\"box box--outline\" [style.borderWidth]=\"'var(' + token.name + ')'\"></span>\n                }\n                @case ('style') {\n                  <span class=\"box box--outline box--thick\" [style.borderStyle]=\"'var(' + token.name + ')'\"></span>\n                }\n              }\n              <span class=\"value\">{{ token.value }}</span>\n\n              <button\n                type=\"button\"\n                class=\"chip\"\n                [title]=\"'Copy var(' + token.name + ')'\"\n                (click)=\"copyText('var(' + token.name + ')', token.name)\"\n              >\n                <code>{{ token.name }}</code>\n                <span class=\"chip__ok\" [class.show]=\"copied() === token.name\">✓</span>\n              </button>\n\n              @if (token.className) {\n                <button\n                  type=\"button\"\n                  class=\"chip chip--class\"\n                  [title]=\"'Copy class ' + token.className\"\n                  (click)=\"copyText(token.className!, token.className!)\"\n                >\n                  <code>.{{ token.className }}</code>\n                  <span class=\"chip__ok\" [class.show]=\"copied() === token.className\">✓</span>\n                </button>\n              }\n            </div>\n          }\n        </div>\n      </section>\n    }\n\n    @if (sections().length === 0) {\n      <p class=\"empty\">No border tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      flex-direction: column;\n      gap: 0.4rem;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n    }\n    .box {\n      width: 100%;\n      height: 44px;\n      box-sizing: border-box;\n    }\n    .box--fill {\n      background: #d7e6ff;\n    }\n    .box--outline {\n      border-style: solid;\n      border-color: #121212;\n    }\n    .box--thick {\n      border-width: 3px;\n    }\n    .value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .chip {\n      display: inline-flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 6px;\n      background: #fafafa;\n      padding: 0.3rem 0.5rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .chip:hover {\n      border-color: #cfcfcf;\n    }\n    .chip code {\n      font-family: ui-monospace, monospace;\n      font-size: 0.74rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .chip--class {\n      background: #f2f6ff;\n    }\n    .chip__ok {\n      color: #0a7d34;\n      font-size: 0.72rem;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .chip__ok.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class BorderGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  protected readonly sections = signal<BorderSection[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected copyText(text: string, key: string): void {\n    void navigator.clipboard?.writeText(text);\n    this.copied.set(key);\n\n    setTimeout(() => this.copied.update((current) => (current === key ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const styles = getComputedStyle(this._document.documentElement);\n    const { tokenNames, classNames } = this.scan();\n    const prefix = this.detectPrefix(classNames);\n\n    const sections = SECTIONS.map(({ title, kind, tokenPrefix, classStem }) => {\n      const tokens = tokenNames\n        .filter((name) => name.startsWith(tokenPrefix))\n        .map((name) => {\n          const key = name.slice(tokenPrefix.length);\n          const className = `${prefix}${classStem}${key}`;\n\n          return {\n            name,\n            value: styles.getPropertyValue(name).trim(),\n            className: classNames.has(className) ? className : undefined,\n          };\n        });\n\n      // Radius/width sort by numeric value; style keeps source order (solid, dashed, …).\n      if (kind !== 'style') {\n        tokens.sort((a, b) => parseFloat(a.value) - parseFloat(b.value));\n      }\n\n      return { title, kind, tokens };\n    }).filter((section) => section.tokens.length > 0);\n\n    this.sections.set(sections);\n  }\n\n  /** Collect border token names (from `:root`) and every single-class selector name. */\n  private scan(): { tokenNames: string[]; classNames: Set<string> } {\n    const tokenNames = new Set<string>();\n    const classNames = new Set<string>();\n    const wantedToken = /^--border-(radius|width|style)-.+/;\n    const singleClass = /^\\.[a-z0-9-]+$/;\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue; // cross-origin sheet — skip\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule)) {\n          continue;\n        }\n\n        if (rule.selectorText === ':root') {\n          for (const name of Array.from(rule.style)) {\n            if (wantedToken.test(name)) {\n              tokenNames.add(name);\n            }\n          }\n        } else if (singleClass.test(rule.selectorText)) {\n          classNames.add(rule.selectorText.slice(1));\n        }\n      }\n    }\n\n    return { tokenNames: [...tokenNames], classNames };\n  }\n\n  /** Derive the utility-class prefix from an all-corners radius class, e.g. `mud-radius-8` -> `mud-`. */\n  private detectPrefix(classNames: Set<string>): string {\n    for (const className of classNames) {\n      const match = className.match(/^(.*?)radius-\\d/);\n\n      if (match) {\n        return match[1];\n      }\n    }\n\n    return 'mud-';\n  }\n}\n",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, signal } from '@angular/core';\n\ntype BorderKind = 'radius' | 'width' | 'style';\n\ninterface BorderToken {\n  name: string;\n  value: string;\n  className?: string;\n}\n\ninterface BorderSection {\n  title: string;\n  kind: BorderKind;\n  tokens: BorderToken[];\n}\n\nconst SECTIONS: { title: string; kind: BorderKind; tokenPrefix: string; classStem: string }[] = [\n  { title: 'Radius', kind: 'radius', tokenPrefix: '--border-radius-', classStem: 'radius-' },\n  { title: 'Width', kind: 'width', tokenPrefix: '--border-width-', classStem: 'border-' },\n  { title: 'Style', kind: 'style', tokenPrefix: '--border-style-', classStem: 'border-style-' },\n];\n\n@Component({\n  selector: 'egov-border-grid',\n  template: `\n    @for (section of sections(); track section.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ section.title }}</h3>\n        <div class=\"grid\">\n          @for (token of section.tokens; track token.name) {\n            <div class=\"cell\">\n              @switch (section.kind) {\n                @case ('radius') {\n                  <span class=\"box box--fill\" [style.borderRadius]=\"'var(' + token.name + ')'\"></span>\n                }\n                @case ('width') {\n                  <span class=\"box box--outline\" [style.borderWidth]=\"'var(' + token.name + ')'\"></span>\n                }\n                @case ('style') {\n                  <span class=\"box box--outline box--thick\" [style.borderStyle]=\"'var(' + token.name + ')'\"></span>\n                }\n              }\n              <span class=\"value\">{{ token.value }}</span>\n\n              <button\n                type=\"button\"\n                class=\"chip\"\n                [title]=\"'Copy var(' + token.name + ')'\"\n                (click)=\"copyText('var(' + token.name + ')', token.name)\"\n              >\n                <code>{{ token.name }}</code>\n                <span class=\"chip__ok\" [class.show]=\"copied() === token.name\">✓</span>\n              </button>\n\n              @if (token.className) {\n                <button\n                  type=\"button\"\n                  class=\"chip chip--class\"\n                  [title]=\"'Copy class ' + token.className\"\n                  (click)=\"copyText(token.className!, token.className!)\"\n                >\n                  <code>.{{ token.className }}</code>\n                  <span class=\"chip__ok\" [class.show]=\"copied() === token.className\">✓</span>\n                </button>\n              }\n            </div>\n          }\n        </div>\n      </section>\n    }\n\n    @if (sections().length === 0) {\n      <p class=\"empty\">No border tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      flex-direction: column;\n      gap: 0.4rem;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n    }\n    .box {\n      width: 100%;\n      height: 44px;\n      box-sizing: border-box;\n    }\n    .box--fill {\n      background: #d7e6ff;\n    }\n    .box--outline {\n      border-style: solid;\n      border-color: #121212;\n    }\n    .box--thick {\n      border-width: 3px;\n    }\n    .value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .chip {\n      display: inline-flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 6px;\n      background: #fafafa;\n      padding: 0.3rem 0.5rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .chip:hover {\n      border-color: #cfcfcf;\n    }\n    .chip code {\n      font-family: ui-monospace, monospace;\n      font-size: 0.74rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .chip--class {\n      background: #f2f6ff;\n    }\n    .chip__ok {\n      color: #0a7d34;\n      font-size: 0.72rem;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .chip__ok.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class BorderGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  protected readonly sections = signal<BorderSection[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected copyText(text: string, key: string): void {\n    void navigator.clipboard?.writeText(text);\n    this.copied.set(key);\n\n    setTimeout(() => this.copied.update((current) => (current === key ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const styles = getComputedStyle(this._document.documentElement);\n    const { tokenNames, classNames } = this.scan();\n    const prefix = this.detectPrefix(classNames);\n\n    const sections = SECTIONS.map(({ title, kind, tokenPrefix, classStem }) => {\n      const tokens = tokenNames\n        .filter((name) => name.startsWith(tokenPrefix))\n        .map((name) => {\n          const key = name.slice(tokenPrefix.length);\n          const className = `${prefix}${classStem}${key}`;\n\n          return {\n            name,\n            value: styles.getPropertyValue(name).trim(),\n            className: classNames.has(className) ? className : undefined,\n          };\n        });\n\n      if (kind !== 'style') {\n        tokens.sort((a, b) => parseFloat(a.value) - parseFloat(b.value));\n      }\n\n      return { title, kind, tokens };\n    }).filter((section) => section.tokens.length > 0);\n\n    this.sections.set(sections);\n  }\n\n  private scan(): { tokenNames: string[]; classNames: Set<string> } {\n    const tokenNames = new Set<string>();\n    const classNames = new Set<string>();\n    const wantedToken = /^--border-(radius|width|style)-.+/;\n    const singleClass = /^\\.[a-z0-9-]+$/;\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue;\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule)) {\n          continue;\n        }\n\n        if (rule.selectorText === ':root') {\n          for (const name of Array.from(rule.style)) {\n            if (wantedToken.test(name)) {\n              tokenNames.add(name);\n            }\n          }\n        } else if (singleClass.test(rule.selectorText)) {\n          classNames.add(rule.selectorText.slice(1));\n        }\n      }\n    }\n\n    return { tokenNames: [...tokenNames], classNames };\n  }\n\n  private detectPrefix(classNames: Set<string>): string {\n    for (const className of classNames) {\n      const match = className.match(/^(.*?)radius-\\d/);\n\n      if (match) {\n        return match[1];\n      }\n    }\n\n    return 'mud-';\n  }\n}\n",
             "displayName": "BorderSection",
             "properties": [
                 {
@@ -20,7 +20,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 16,
+                    "line": 13,
                     "rawdescription": "\n"
                 },
                 {
@@ -32,7 +32,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 15,
+                    "line": 12,
                     "rawdescription": "\n"
                 },
                 {
@@ -44,7 +44,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 17,
+                    "line": 14,
                     "rawdescription": "\n"
                 }
             ],
@@ -59,12 +59,12 @@
         },
         {
             "name": "BorderToken",
-            "id": "interface-BorderToken-a5e10c3a47d3c1a4bef8e43a6daae860bbfba8d8e8685fab086c780f42131538f45329e72755c9f856bf44eca2aebfacfe6c520af0fa59b4dc21471e59a8e622",
-            "file": "projects/ngx-egov-ui/src/stories/border-grid.component.ts",
+            "id": "interface-BorderToken-e838b997af0f3ca7b235dbe1f87015ac250f32e641f5eb5fbad3b71c0459ee39707fac302ec4227030198e6b604e7ca84c05775ea6571adc9e33db10a1e95bb0",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/border/border-grid.component.ts",
             "deprecated": false,
             "deprecationMessage": "",
             "type": "interface",
-            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, signal } from '@angular/core';\n\ntype BorderKind = 'radius' | 'width' | 'style';\n\ninterface BorderToken {\n  /** Custom-property name, e.g. `--border-radius-8`. */\n  name: string;\n  /** Resolved value, e.g. `8px` / `1.5px` / `dashed`. */\n  value: string;\n  /** Matching utility class, e.g. `mud-radius-8` (if present in the loaded CSS). */\n  className?: string;\n}\n\ninterface BorderSection {\n  title: string;\n  kind: BorderKind;\n  tokens: BorderToken[];\n}\n\nconst SECTIONS: { title: string; kind: BorderKind; tokenPrefix: string; classStem: string }[] = [\n  { title: 'Radius', kind: 'radius', tokenPrefix: '--border-radius-', classStem: 'radius-' },\n  { title: 'Width', kind: 'width', tokenPrefix: '--border-width-', classStem: 'border-' },\n  { title: 'Style', kind: 'style', tokenPrefix: '--border-style-', classStem: 'border-style-' },\n];\n\n/**\n * Storybook-only Foundations page for border tokens. Enumerates the\n * `--border-{radius,width,style}-*` custom properties loaded in the preview,\n * renders a visual preview of each, and shows BOTH the token and its matching\n * `mud-*` utility class — each copyable on click.\n */\n@Component({\n  selector: 'egov-border-grid',\n  template: `\n    @for (section of sections(); track section.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ section.title }}</h3>\n        <div class=\"grid\">\n          @for (token of section.tokens; track token.name) {\n            <div class=\"cell\">\n              @switch (section.kind) {\n                @case ('radius') {\n                  <span class=\"box box--fill\" [style.borderRadius]=\"'var(' + token.name + ')'\"></span>\n                }\n                @case ('width') {\n                  <span class=\"box box--outline\" [style.borderWidth]=\"'var(' + token.name + ')'\"></span>\n                }\n                @case ('style') {\n                  <span class=\"box box--outline box--thick\" [style.borderStyle]=\"'var(' + token.name + ')'\"></span>\n                }\n              }\n              <span class=\"value\">{{ token.value }}</span>\n\n              <button\n                type=\"button\"\n                class=\"chip\"\n                [title]=\"'Copy var(' + token.name + ')'\"\n                (click)=\"copyText('var(' + token.name + ')', token.name)\"\n              >\n                <code>{{ token.name }}</code>\n                <span class=\"chip__ok\" [class.show]=\"copied() === token.name\">✓</span>\n              </button>\n\n              @if (token.className) {\n                <button\n                  type=\"button\"\n                  class=\"chip chip--class\"\n                  [title]=\"'Copy class ' + token.className\"\n                  (click)=\"copyText(token.className!, token.className!)\"\n                >\n                  <code>.{{ token.className }}</code>\n                  <span class=\"chip__ok\" [class.show]=\"copied() === token.className\">✓</span>\n                </button>\n              }\n            </div>\n          }\n        </div>\n      </section>\n    }\n\n    @if (sections().length === 0) {\n      <p class=\"empty\">No border tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      flex-direction: column;\n      gap: 0.4rem;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n    }\n    .box {\n      width: 100%;\n      height: 44px;\n      box-sizing: border-box;\n    }\n    .box--fill {\n      background: #d7e6ff;\n    }\n    .box--outline {\n      border-style: solid;\n      border-color: #121212;\n    }\n    .box--thick {\n      border-width: 3px;\n    }\n    .value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .chip {\n      display: inline-flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 6px;\n      background: #fafafa;\n      padding: 0.3rem 0.5rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .chip:hover {\n      border-color: #cfcfcf;\n    }\n    .chip code {\n      font-family: ui-monospace, monospace;\n      font-size: 0.74rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .chip--class {\n      background: #f2f6ff;\n    }\n    .chip__ok {\n      color: #0a7d34;\n      font-size: 0.72rem;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .chip__ok.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class BorderGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  protected readonly sections = signal<BorderSection[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected copyText(text: string, key: string): void {\n    void navigator.clipboard?.writeText(text);\n    this.copied.set(key);\n\n    setTimeout(() => this.copied.update((current) => (current === key ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const styles = getComputedStyle(this._document.documentElement);\n    const { tokenNames, classNames } = this.scan();\n    const prefix = this.detectPrefix(classNames);\n\n    const sections = SECTIONS.map(({ title, kind, tokenPrefix, classStem }) => {\n      const tokens = tokenNames\n        .filter((name) => name.startsWith(tokenPrefix))\n        .map((name) => {\n          const key = name.slice(tokenPrefix.length);\n          const className = `${prefix}${classStem}${key}`;\n\n          return {\n            name,\n            value: styles.getPropertyValue(name).trim(),\n            className: classNames.has(className) ? className : undefined,\n          };\n        });\n\n      // Radius/width sort by numeric value; style keeps source order (solid, dashed, …).\n      if (kind !== 'style') {\n        tokens.sort((a, b) => parseFloat(a.value) - parseFloat(b.value));\n      }\n\n      return { title, kind, tokens };\n    }).filter((section) => section.tokens.length > 0);\n\n    this.sections.set(sections);\n  }\n\n  /** Collect border token names (from `:root`) and every single-class selector name. */\n  private scan(): { tokenNames: string[]; classNames: Set<string> } {\n    const tokenNames = new Set<string>();\n    const classNames = new Set<string>();\n    const wantedToken = /^--border-(radius|width|style)-.+/;\n    const singleClass = /^\\.[a-z0-9-]+$/;\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue; // cross-origin sheet — skip\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule)) {\n          continue;\n        }\n\n        if (rule.selectorText === ':root') {\n          for (const name of Array.from(rule.style)) {\n            if (wantedToken.test(name)) {\n              tokenNames.add(name);\n            }\n          }\n        } else if (singleClass.test(rule.selectorText)) {\n          classNames.add(rule.selectorText.slice(1));\n        }\n      }\n    }\n\n    return { tokenNames: [...tokenNames], classNames };\n  }\n\n  /** Derive the utility-class prefix from an all-corners radius class, e.g. `mud-radius-8` -> `mud-`. */\n  private detectPrefix(classNames: Set<string>): string {\n    for (const className of classNames) {\n      const match = className.match(/^(.*?)radius-\\d/);\n\n      if (match) {\n        return match[1];\n      }\n    }\n\n    return 'mud-';\n  }\n}\n",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, signal } from '@angular/core';\n\ntype BorderKind = 'radius' | 'width' | 'style';\n\ninterface BorderToken {\n  name: string;\n  value: string;\n  className?: string;\n}\n\ninterface BorderSection {\n  title: string;\n  kind: BorderKind;\n  tokens: BorderToken[];\n}\n\nconst SECTIONS: { title: string; kind: BorderKind; tokenPrefix: string; classStem: string }[] = [\n  { title: 'Radius', kind: 'radius', tokenPrefix: '--border-radius-', classStem: 'radius-' },\n  { title: 'Width', kind: 'width', tokenPrefix: '--border-width-', classStem: 'border-' },\n  { title: 'Style', kind: 'style', tokenPrefix: '--border-style-', classStem: 'border-style-' },\n];\n\n@Component({\n  selector: 'egov-border-grid',\n  template: `\n    @for (section of sections(); track section.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ section.title }}</h3>\n        <div class=\"grid\">\n          @for (token of section.tokens; track token.name) {\n            <div class=\"cell\">\n              @switch (section.kind) {\n                @case ('radius') {\n                  <span class=\"box box--fill\" [style.borderRadius]=\"'var(' + token.name + ')'\"></span>\n                }\n                @case ('width') {\n                  <span class=\"box box--outline\" [style.borderWidth]=\"'var(' + token.name + ')'\"></span>\n                }\n                @case ('style') {\n                  <span class=\"box box--outline box--thick\" [style.borderStyle]=\"'var(' + token.name + ')'\"></span>\n                }\n              }\n              <span class=\"value\">{{ token.value }}</span>\n\n              <button\n                type=\"button\"\n                class=\"chip\"\n                [title]=\"'Copy var(' + token.name + ')'\"\n                (click)=\"copyText('var(' + token.name + ')', token.name)\"\n              >\n                <code>{{ token.name }}</code>\n                <span class=\"chip__ok\" [class.show]=\"copied() === token.name\">✓</span>\n              </button>\n\n              @if (token.className) {\n                <button\n                  type=\"button\"\n                  class=\"chip chip--class\"\n                  [title]=\"'Copy class ' + token.className\"\n                  (click)=\"copyText(token.className!, token.className!)\"\n                >\n                  <code>.{{ token.className }}</code>\n                  <span class=\"chip__ok\" [class.show]=\"copied() === token.className\">✓</span>\n                </button>\n              }\n            </div>\n          }\n        </div>\n      </section>\n    }\n\n    @if (sections().length === 0) {\n      <p class=\"empty\">No border tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      flex-direction: column;\n      gap: 0.4rem;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n    }\n    .box {\n      width: 100%;\n      height: 44px;\n      box-sizing: border-box;\n    }\n    .box--fill {\n      background: #d7e6ff;\n    }\n    .box--outline {\n      border-style: solid;\n      border-color: #121212;\n    }\n    .box--thick {\n      border-width: 3px;\n    }\n    .value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .chip {\n      display: inline-flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 6px;\n      background: #fafafa;\n      padding: 0.3rem 0.5rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .chip:hover {\n      border-color: #cfcfcf;\n    }\n    .chip code {\n      font-family: ui-monospace, monospace;\n      font-size: 0.74rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .chip--class {\n      background: #f2f6ff;\n    }\n    .chip__ok {\n      color: #0a7d34;\n      font-size: 0.72rem;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .chip__ok.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class BorderGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  protected readonly sections = signal<BorderSection[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected copyText(text: string, key: string): void {\n    void navigator.clipboard?.writeText(text);\n    this.copied.set(key);\n\n    setTimeout(() => this.copied.update((current) => (current === key ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const styles = getComputedStyle(this._document.documentElement);\n    const { tokenNames, classNames } = this.scan();\n    const prefix = this.detectPrefix(classNames);\n\n    const sections = SECTIONS.map(({ title, kind, tokenPrefix, classStem }) => {\n      const tokens = tokenNames\n        .filter((name) => name.startsWith(tokenPrefix))\n        .map((name) => {\n          const key = name.slice(tokenPrefix.length);\n          const className = `${prefix}${classStem}${key}`;\n\n          return {\n            name,\n            value: styles.getPropertyValue(name).trim(),\n            className: classNames.has(className) ? className : undefined,\n          };\n        });\n\n      if (kind !== 'style') {\n        tokens.sort((a, b) => parseFloat(a.value) - parseFloat(b.value));\n      }\n\n      return { title, kind, tokens };\n    }).filter((section) => section.tokens.length > 0);\n\n    this.sections.set(sections);\n  }\n\n  private scan(): { tokenNames: string[]; classNames: Set<string> } {\n    const tokenNames = new Set<string>();\n    const classNames = new Set<string>();\n    const wantedToken = /^--border-(radius|width|style)-.+/;\n    const singleClass = /^\\.[a-z0-9-]+$/;\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue;\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule)) {\n          continue;\n        }\n\n        if (rule.selectorText === ':root') {\n          for (const name of Array.from(rule.style)) {\n            if (wantedToken.test(name)) {\n              tokenNames.add(name);\n            }\n          }\n        } else if (singleClass.test(rule.selectorText)) {\n          classNames.add(rule.selectorText.slice(1));\n        }\n      }\n    }\n\n    return { tokenNames: [...tokenNames], classNames };\n  }\n\n  private detectPrefix(classNames: Set<string>): string {\n    for (const className of classNames) {\n      const match = className.match(/^(.*?)radius-\\d/);\n\n      if (match) {\n        return match[1];\n      }\n    }\n\n    return 'mud-';\n  }\n}\n",
             "displayName": "BorderToken",
             "properties": [
                 {
@@ -75,9 +75,9 @@
                     "type": "string",
                     "indexKey": "",
                     "optional": true,
-                    "description": "<p>Matching utility class, e.g. <code>mud-radius-8</code> (if present in the loaded CSS).</p>\n",
-                    "line": 11,
-                    "rawdescription": "\nMatching utility class, e.g. `mud-radius-8` (if present in the loaded CSS)."
+                    "description": "",
+                    "line": 8,
+                    "rawdescription": "\n"
                 },
                 {
                     "name": "name",
@@ -87,9 +87,9 @@
                     "type": "string",
                     "indexKey": "",
                     "optional": false,
-                    "description": "<p>Custom-property name, e.g. <code>--border-radius-8</code>.</p>\n",
-                    "line": 7,
-                    "rawdescription": "\nCustom-property name, e.g. `--border-radius-8`."
+                    "description": "",
+                    "line": 6,
+                    "rawdescription": "\n"
                 },
                 {
                     "name": "value",
@@ -99,9 +99,9 @@
                     "type": "string",
                     "indexKey": "",
                     "optional": false,
-                    "description": "<p>Resolved value, e.g. <code>8px</code> / <code>1.5px</code> / <code>dashed</code>.</p>\n",
-                    "line": 9,
-                    "rawdescription": "\nResolved value, e.g. `8px` / `1.5px` / `dashed`."
+                    "description": "",
+                    "line": 7,
+                    "rawdescription": "\n"
                 }
             ],
             "indexSignatures": [],
@@ -116,7 +116,7 @@
         {
             "name": "ColorGroup",
             "id": "interface-ColorGroup-062b90e80cc1b9d1e69dad0563901416c9f8f045d6643ac1dbf42ac69166f7862f0c9b5741012e1a6c25ecd92d38caeb82731ee26d99a21ebb3212db013bf361",
-            "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
             "deprecated": false,
             "deprecationMessage": "",
             "type": "interface",
@@ -158,9 +158,109 @@
             }
         },
         {
+            "name": "CursorGroup",
+            "id": "interface-CursorGroup-a407dc19c2d24075d7c0ed17f4ad19940628341c167010a888d23d6dd7b39116bd0d979249d4ff18391e889d207ab0c8a871240b3c41b59eacfe9f18f6e2a96a",
+            "file": "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "type": "interface",
+            "sourceCode": "import { Component, signal } from '@angular/core';\n\ninterface CursorGroup {\n  title: string;\n  cursors: string[];\n}\n\n// Native CSS cursor keywords. The design system ships no cursor tokens/classes,\n// so this is a curated reference (mirrors the design-system's cursors doc page).\nconst CURSOR_GROUPS: CursorGroup[] = [\n  { title: 'General', cursors: ['auto', 'default', 'pointer', 'context-menu', 'help', 'progress', 'wait', 'none'] },\n  {\n    title: 'Selection & action',\n    cursors: ['text', 'vertical-text', 'cell', 'crosshair', 'copy', 'alias', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll'],\n  },\n  { title: 'Zoom', cursors: ['zoom-in', 'zoom-out'] },\n  {\n    title: 'Resize',\n    cursors: ['col-resize', 'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize'],\n  },\n];\n\n/**\n * Storybook-only Foundations reference for native CSS cursors. Hover a cell to\n * preview the cursor; click to copy the `cursor: <value>;` declaration. This is\n * a curated list — the library has no cursor tokens or utility classes.\n */\n@Component({\n  selector: 'egov-cursor-grid',\n  template: `\n    <p class=\"note\">\n      Native CSS cursors — <strong>hover</strong> a cell to preview, <strong>click</strong> to copy\n      <code>cursor: …;</code>. The design system has no cursor tokens/classes; this is a reference.\n    </p>\n\n    @for (group of groups; track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (cursor of group.cursors; track cursor) {\n            <button\n              type=\"button\"\n              class=\"cell\"\n              [style.cursor]=\"cursor\"\n              [title]=\"'Copy cursor: ' + cursor + ';'\"\n              (click)=\"copy(cursor)\"\n            >\n              <span class=\"cell__label\">{{ cursor }}</span>\n              <span class=\"copied\" [class.show]=\"copied() === cursor\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .note code {\n      font-family: ui-monospace, monospace;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      position: relative;\n      min-height: 60px;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fafafa;\n      padding: 0.75rem;\n      font: inherit;\n    }\n    .cell:hover {\n      border-color: #cfcfcf;\n      background: #f2f6ff;\n    }\n    .cell__label {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n  `,\n})\nexport class CursorGridComponent {\n  protected readonly groups = CURSOR_GROUPS;\n  protected readonly copied = signal<string | null>(null);\n\n  protected copy(cursor: string): void {\n    void navigator.clipboard?.writeText(`cursor: ${cursor};`);\n    this.copied.set(cursor);\n\n    setTimeout(() => this.copied.update((current) => (current === cursor ? null : current)), 1200);\n  }\n}\n",
+            "displayName": "CursorGroup",
+            "properties": [
+                {
+                    "name": "cursors",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string[]",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 5,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "title",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 4,
+                    "rawdescription": "\n"
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 172,
+            "methods": [],
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        },
+        {
+            "name": "Elevation",
+            "id": "interface-Elevation-8ecda617c534e587649ad2734b3d17a42dc9160f267c8cbfd8c924bf742a29b54c875fc0392945706625ddb1d4d59eb897235e2a001386a9fb8ead385f75ba36",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/shadow-grid.component.ts",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "type": "interface",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, signal } from '@angular/core';\n\ninterface Elevation {\n  name: string;\n  value: string;\n  classes: string[];\n}\n\nconst ALIASES: Record<string, string> = {\n  '100': 'xs',\n  '200': 'sm',\n  '300': 'md',\n  '400': 'lg',\n  '500': 'xl',\n};\n\n@Component({\n  selector: 'egov-shadow-grid',\n  template: `\n    <div class=\"grid\">\n      @for (elevation of elevations(); track elevation.name) {\n        <div class=\"cell\">\n          <div class=\"preview\">\n            <span class=\"card\" [style.boxShadow]=\"'var(' + elevation.name + ')'\"></span>\n          </div>\n\n          <button\n            type=\"button\"\n            class=\"chip\"\n            [title]=\"'Copy var(' + elevation.name + ')'\"\n            (click)=\"copyText('var(' + elevation.name + ')', elevation.name)\"\n          >\n            <code>{{ elevation.name }}</code>\n            <span class=\"chip__ok\" [class.show]=\"copied() === elevation.name\">✓</span>\n          </button>\n\n          @for (className of elevation.classes; track className) {\n            <button\n              type=\"button\"\n              class=\"chip chip--class\"\n              [title]=\"'Copy class ' + className\"\n              (click)=\"copyText(className, className)\"\n            >\n              <code>.{{ className }}</code>\n              <span class=\"chip__ok\" [class.show]=\"copied() === className\">✓</span>\n            </button>\n          }\n        </div>\n      }\n    </div>\n\n    @if (elevations().length === 0) {\n      <p class=\"empty\">No elevation tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));\n      gap: 1rem;\n    }\n    .cell {\n      display: flex;\n      flex-direction: column;\n      gap: 0.4rem;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n    }\n    .preview {\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 1.5rem;\n      margin-bottom: 0.35rem;\n    }\n    .card {\n      width: 72px;\n      height: 48px;\n      background: #fff;\n      border-radius: 8px;\n    }\n    .chip {\n      display: inline-flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 6px;\n      background: #fafafa;\n      padding: 0.3rem 0.5rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .chip:hover {\n      border-color: #cfcfcf;\n    }\n    .chip code {\n      font-family: ui-monospace, monospace;\n      font-size: 0.74rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .chip--class {\n      background: #f2f6ff;\n    }\n    .chip__ok {\n      color: #0a7d34;\n      font-size: 0.72rem;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .chip__ok.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class ShadowGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  protected readonly elevations = signal<Elevation[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected copyText(text: string, key: string): void {\n    void navigator.clipboard?.writeText(text);\n    this.copied.set(key);\n\n    setTimeout(() => this.copied.update((current) => (current === key ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const styles = getComputedStyle(this._document.documentElement);\n    const { tokenNames, classNames } = this.scan();\n    const prefix = this.detectPrefix(classNames);\n\n    const elevations = tokenNames\n      .map((name) => {\n        const key = name.slice('--drop-shadow-'.length);\n        const candidates = [`${prefix}shadow-${key}`, ALIASES[key] ? `${prefix}shadow-${ALIASES[key]}` : ''];\n\n        return {\n          name,\n          value: styles.getPropertyValue(name).trim(),\n          classes: candidates.filter((className) => className && classNames.has(className)),\n        };\n      })\n      .sort((a, b) => parseInt(a.name.slice('--drop-shadow-'.length), 10) - parseInt(b.name.slice('--drop-shadow-'.length), 10));\n\n    this.elevations.set(elevations);\n  }\n\n  private scan(): { tokenNames: string[]; classNames: Set<string> } {\n    const tokenNames = new Set<string>();\n    const classNames = new Set<string>();\n    const singleClass = /^\\.[a-z0-9-]+$/;\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue; // cross-origin sheet — skip\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule)) {\n          continue;\n        }\n\n        if (rule.selectorText === ':root') {\n          for (const name of Array.from(rule.style)) {\n            if (name.startsWith('--drop-shadow-')) {\n              tokenNames.add(name);\n            }\n          }\n        } else if (singleClass.test(rule.selectorText)) {\n          classNames.add(rule.selectorText.slice(1));\n        }\n      }\n    }\n\n    return { tokenNames: [...tokenNames], classNames };\n  }\n\n  private detectPrefix(classNames: Set<string>): string {\n    for (const className of classNames) {\n      const match = className.match(/^(.*?)shadow-\\d/);\n\n      if (match) {\n        return match[1];\n      }\n    }\n\n    return 'mud-';\n  }\n}\n",
+            "displayName": "Elevation",
+            "properties": [
+                {
+                    "name": "classes",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string[]",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 6,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "name",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 4,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "value",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 5,
+                    "rawdescription": "\n"
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 172,
+            "methods": [],
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        },
+        {
             "name": "Swatch",
             "id": "interface-Swatch-062b90e80cc1b9d1e69dad0563901416c9f8f045d6643ac1dbf42ac69166f7862f0c9b5741012e1a6c25ecd92d38caeb82731ee26d99a21ebb3212db013bf361",
-            "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
             "deprecated": false,
             "deprecationMessage": "",
             "type": "interface",
@@ -204,7 +304,7 @@
         {
             "name": "TypeGroup",
             "id": "interface-TypeGroup-d8d6a4ae70df044d205e378b8f97df032c0cfb754bd619a66f206d7182e85914cf28ff2447e33049397317b70d8595abe4f0cef9f69f67ddb36372bac0958efc",
-            "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
             "deprecated": false,
             "deprecationMessage": "",
             "type": "interface",
@@ -248,7 +348,7 @@
         {
             "name": "TypeStyle",
             "id": "interface-TypeStyle-d8d6a4ae70df044d205e378b8f97df032c0cfb754bd619a66f206d7182e85914cf28ff2447e33049397317b70d8595abe4f0cef9f69f67ddb36372bac0958efc",
-            "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
             "deprecated": false,
             "deprecationMessage": "",
             "type": "interface",
@@ -334,8 +434,8 @@
     "components": [
         {
             "name": "BorderGridComponent",
-            "id": "component-BorderGridComponent-a5e10c3a47d3c1a4bef8e43a6daae860bbfba8d8e8685fab086c780f42131538f45329e72755c9f856bf44eca2aebfacfe6c520af0fa59b4dc21471e59a8e622",
-            "file": "projects/ngx-egov-ui/src/stories/border-grid.component.ts",
+            "id": "component-BorderGridComponent-e838b997af0f3ca7b235dbe1f87015ac250f32e641f5eb5fbad3b71c0459ee39707fac302ec4227030198e6b604e7ca84c05775ea6571adc9e33db10a1e95bb0",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/border/border-grid.component.ts",
             "changeDetection": "ChangeDetectionStrategy.OnPush",
             "encapsulation": [],
             "entryComponents": [],
@@ -365,7 +465,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 176,
+                    "line": 167,
                     "rawdescription": "\n",
                     "modifierKind": [
                         123,
@@ -382,7 +482,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 179,
+                    "line": 170,
                     "rawdescription": "\n",
                     "modifierKind": [
                         124,
@@ -399,7 +499,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 178,
+                    "line": 169,
                     "rawdescription": "\n",
                     "modifierKind": [
                         124,
@@ -432,7 +532,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 185,
+                    "line": 176,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "\n",
@@ -481,11 +581,11 @@
                     "optional": false,
                     "returnType": "string",
                     "typeParameters": [],
-                    "line": 259,
+                    "line": 247,
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "rawdescription": "\nDerive the utility-class prefix from an all-corners radius class, e.g. `mud-radius-8` -> `mud-`.",
-                    "description": "<p>Derive the utility-class prefix from an all-corners radius class, e.g. <code>mud-radius-8</code> -&gt; <code>mud-</code>.</p>\n",
+                    "rawdescription": "\n",
+                    "description": "",
                     "modifierKind": [
                         123
                     ],
@@ -510,7 +610,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 192,
+                    "line": 183,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "\n",
@@ -526,11 +626,11 @@
                     "optional": false,
                     "returnType": "{ tokenNames: string[]; classNames: Set<string> }",
                     "typeParameters": [],
-                    "line": 223,
+                    "line": 212,
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "rawdescription": "\nCollect border token names (from `:root`) and every single-class selector name.",
-                    "description": "<p>Collect border token names (from <code>:root</code>) and every single-class selector name.</p>\n",
+                    "rawdescription": "\n",
+                    "description": "",
                     "modifierKind": [
                         123
                     ]
@@ -543,32 +643,20 @@
             "hostListeners": [],
             "standalone": true,
             "imports": [],
-            "description": "<p>Storybook-only Foundations page for border tokens. Enumerates the\n<code>--border-{radius,width,style}-*</code> custom properties loaded in the preview,\nrenders a visual preview of each, and shows BOTH the token and its matching\n<code>mud-*</code> utility class — each copyable on click.</p>\n",
-            "rawdescription": "\n\nStorybook-only Foundations page for border tokens. Enumerates the\n`--border-{radius,width,style}-*` custom properties loaded in the preview,\nrenders a visual preview of each, and shows BOTH the token and its matching\n`mud-*` utility class — each copyable on click.\n",
+            "description": "",
+            "rawdescription": "\n",
             "type": "component",
-            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, signal } from '@angular/core';\n\ntype BorderKind = 'radius' | 'width' | 'style';\n\ninterface BorderToken {\n  /** Custom-property name, e.g. `--border-radius-8`. */\n  name: string;\n  /** Resolved value, e.g. `8px` / `1.5px` / `dashed`. */\n  value: string;\n  /** Matching utility class, e.g. `mud-radius-8` (if present in the loaded CSS). */\n  className?: string;\n}\n\ninterface BorderSection {\n  title: string;\n  kind: BorderKind;\n  tokens: BorderToken[];\n}\n\nconst SECTIONS: { title: string; kind: BorderKind; tokenPrefix: string; classStem: string }[] = [\n  { title: 'Radius', kind: 'radius', tokenPrefix: '--border-radius-', classStem: 'radius-' },\n  { title: 'Width', kind: 'width', tokenPrefix: '--border-width-', classStem: 'border-' },\n  { title: 'Style', kind: 'style', tokenPrefix: '--border-style-', classStem: 'border-style-' },\n];\n\n/**\n * Storybook-only Foundations page for border tokens. Enumerates the\n * `--border-{radius,width,style}-*` custom properties loaded in the preview,\n * renders a visual preview of each, and shows BOTH the token and its matching\n * `mud-*` utility class — each copyable on click.\n */\n@Component({\n  selector: 'egov-border-grid',\n  template: `\n    @for (section of sections(); track section.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ section.title }}</h3>\n        <div class=\"grid\">\n          @for (token of section.tokens; track token.name) {\n            <div class=\"cell\">\n              @switch (section.kind) {\n                @case ('radius') {\n                  <span class=\"box box--fill\" [style.borderRadius]=\"'var(' + token.name + ')'\"></span>\n                }\n                @case ('width') {\n                  <span class=\"box box--outline\" [style.borderWidth]=\"'var(' + token.name + ')'\"></span>\n                }\n                @case ('style') {\n                  <span class=\"box box--outline box--thick\" [style.borderStyle]=\"'var(' + token.name + ')'\"></span>\n                }\n              }\n              <span class=\"value\">{{ token.value }}</span>\n\n              <button\n                type=\"button\"\n                class=\"chip\"\n                [title]=\"'Copy var(' + token.name + ')'\"\n                (click)=\"copyText('var(' + token.name + ')', token.name)\"\n              >\n                <code>{{ token.name }}</code>\n                <span class=\"chip__ok\" [class.show]=\"copied() === token.name\">✓</span>\n              </button>\n\n              @if (token.className) {\n                <button\n                  type=\"button\"\n                  class=\"chip chip--class\"\n                  [title]=\"'Copy class ' + token.className\"\n                  (click)=\"copyText(token.className!, token.className!)\"\n                >\n                  <code>.{{ token.className }}</code>\n                  <span class=\"chip__ok\" [class.show]=\"copied() === token.className\">✓</span>\n                </button>\n              }\n            </div>\n          }\n        </div>\n      </section>\n    }\n\n    @if (sections().length === 0) {\n      <p class=\"empty\">No border tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      flex-direction: column;\n      gap: 0.4rem;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n    }\n    .box {\n      width: 100%;\n      height: 44px;\n      box-sizing: border-box;\n    }\n    .box--fill {\n      background: #d7e6ff;\n    }\n    .box--outline {\n      border-style: solid;\n      border-color: #121212;\n    }\n    .box--thick {\n      border-width: 3px;\n    }\n    .value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .chip {\n      display: inline-flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 6px;\n      background: #fafafa;\n      padding: 0.3rem 0.5rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .chip:hover {\n      border-color: #cfcfcf;\n    }\n    .chip code {\n      font-family: ui-monospace, monospace;\n      font-size: 0.74rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .chip--class {\n      background: #f2f6ff;\n    }\n    .chip__ok {\n      color: #0a7d34;\n      font-size: 0.72rem;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .chip__ok.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class BorderGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  protected readonly sections = signal<BorderSection[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected copyText(text: string, key: string): void {\n    void navigator.clipboard?.writeText(text);\n    this.copied.set(key);\n\n    setTimeout(() => this.copied.update((current) => (current === key ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const styles = getComputedStyle(this._document.documentElement);\n    const { tokenNames, classNames } = this.scan();\n    const prefix = this.detectPrefix(classNames);\n\n    const sections = SECTIONS.map(({ title, kind, tokenPrefix, classStem }) => {\n      const tokens = tokenNames\n        .filter((name) => name.startsWith(tokenPrefix))\n        .map((name) => {\n          const key = name.slice(tokenPrefix.length);\n          const className = `${prefix}${classStem}${key}`;\n\n          return {\n            name,\n            value: styles.getPropertyValue(name).trim(),\n            className: classNames.has(className) ? className : undefined,\n          };\n        });\n\n      // Radius/width sort by numeric value; style keeps source order (solid, dashed, …).\n      if (kind !== 'style') {\n        tokens.sort((a, b) => parseFloat(a.value) - parseFloat(b.value));\n      }\n\n      return { title, kind, tokens };\n    }).filter((section) => section.tokens.length > 0);\n\n    this.sections.set(sections);\n  }\n\n  /** Collect border token names (from `:root`) and every single-class selector name. */\n  private scan(): { tokenNames: string[]; classNames: Set<string> } {\n    const tokenNames = new Set<string>();\n    const classNames = new Set<string>();\n    const wantedToken = /^--border-(radius|width|style)-.+/;\n    const singleClass = /^\\.[a-z0-9-]+$/;\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue; // cross-origin sheet — skip\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule)) {\n          continue;\n        }\n\n        if (rule.selectorText === ':root') {\n          for (const name of Array.from(rule.style)) {\n            if (wantedToken.test(name)) {\n              tokenNames.add(name);\n            }\n          }\n        } else if (singleClass.test(rule.selectorText)) {\n          classNames.add(rule.selectorText.slice(1));\n        }\n      }\n    }\n\n    return { tokenNames: [...tokenNames], classNames };\n  }\n\n  /** Derive the utility-class prefix from an all-corners radius class, e.g. `mud-radius-8` -> `mud-`. */\n  private detectPrefix(classNames: Set<string>): string {\n    for (const className of classNames) {\n      const match = className.match(/^(.*?)radius-\\d/);\n\n      if (match) {\n        return match[1];\n      }\n    }\n\n    return 'mud-';\n  }\n}\n",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, signal } from '@angular/core';\n\ntype BorderKind = 'radius' | 'width' | 'style';\n\ninterface BorderToken {\n  name: string;\n  value: string;\n  className?: string;\n}\n\ninterface BorderSection {\n  title: string;\n  kind: BorderKind;\n  tokens: BorderToken[];\n}\n\nconst SECTIONS: { title: string; kind: BorderKind; tokenPrefix: string; classStem: string }[] = [\n  { title: 'Radius', kind: 'radius', tokenPrefix: '--border-radius-', classStem: 'radius-' },\n  { title: 'Width', kind: 'width', tokenPrefix: '--border-width-', classStem: 'border-' },\n  { title: 'Style', kind: 'style', tokenPrefix: '--border-style-', classStem: 'border-style-' },\n];\n\n@Component({\n  selector: 'egov-border-grid',\n  template: `\n    @for (section of sections(); track section.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ section.title }}</h3>\n        <div class=\"grid\">\n          @for (token of section.tokens; track token.name) {\n            <div class=\"cell\">\n              @switch (section.kind) {\n                @case ('radius') {\n                  <span class=\"box box--fill\" [style.borderRadius]=\"'var(' + token.name + ')'\"></span>\n                }\n                @case ('width') {\n                  <span class=\"box box--outline\" [style.borderWidth]=\"'var(' + token.name + ')'\"></span>\n                }\n                @case ('style') {\n                  <span class=\"box box--outline box--thick\" [style.borderStyle]=\"'var(' + token.name + ')'\"></span>\n                }\n              }\n              <span class=\"value\">{{ token.value }}</span>\n\n              <button\n                type=\"button\"\n                class=\"chip\"\n                [title]=\"'Copy var(' + token.name + ')'\"\n                (click)=\"copyText('var(' + token.name + ')', token.name)\"\n              >\n                <code>{{ token.name }}</code>\n                <span class=\"chip__ok\" [class.show]=\"copied() === token.name\">✓</span>\n              </button>\n\n              @if (token.className) {\n                <button\n                  type=\"button\"\n                  class=\"chip chip--class\"\n                  [title]=\"'Copy class ' + token.className\"\n                  (click)=\"copyText(token.className!, token.className!)\"\n                >\n                  <code>.{{ token.className }}</code>\n                  <span class=\"chip__ok\" [class.show]=\"copied() === token.className\">✓</span>\n                </button>\n              }\n            </div>\n          }\n        </div>\n      </section>\n    }\n\n    @if (sections().length === 0) {\n      <p class=\"empty\">No border tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      flex-direction: column;\n      gap: 0.4rem;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n    }\n    .box {\n      width: 100%;\n      height: 44px;\n      box-sizing: border-box;\n    }\n    .box--fill {\n      background: #d7e6ff;\n    }\n    .box--outline {\n      border-style: solid;\n      border-color: #121212;\n    }\n    .box--thick {\n      border-width: 3px;\n    }\n    .value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .chip {\n      display: inline-flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 6px;\n      background: #fafafa;\n      padding: 0.3rem 0.5rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .chip:hover {\n      border-color: #cfcfcf;\n    }\n    .chip code {\n      font-family: ui-monospace, monospace;\n      font-size: 0.74rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .chip--class {\n      background: #f2f6ff;\n    }\n    .chip__ok {\n      color: #0a7d34;\n      font-size: 0.72rem;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .chip__ok.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class BorderGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  protected readonly sections = signal<BorderSection[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected copyText(text: string, key: string): void {\n    void navigator.clipboard?.writeText(text);\n    this.copied.set(key);\n\n    setTimeout(() => this.copied.update((current) => (current === key ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const styles = getComputedStyle(this._document.documentElement);\n    const { tokenNames, classNames } = this.scan();\n    const prefix = this.detectPrefix(classNames);\n\n    const sections = SECTIONS.map(({ title, kind, tokenPrefix, classStem }) => {\n      const tokens = tokenNames\n        .filter((name) => name.startsWith(tokenPrefix))\n        .map((name) => {\n          const key = name.slice(tokenPrefix.length);\n          const className = `${prefix}${classStem}${key}`;\n\n          return {\n            name,\n            value: styles.getPropertyValue(name).trim(),\n            className: classNames.has(className) ? className : undefined,\n          };\n        });\n\n      if (kind !== 'style') {\n        tokens.sort((a, b) => parseFloat(a.value) - parseFloat(b.value));\n      }\n\n      return { title, kind, tokens };\n    }).filter((section) => section.tokens.length > 0);\n\n    this.sections.set(sections);\n  }\n\n  private scan(): { tokenNames: string[]; classNames: Set<string> } {\n    const tokenNames = new Set<string>();\n    const classNames = new Set<string>();\n    const wantedToken = /^--border-(radius|width|style)-.+/;\n    const singleClass = /^\\.[a-z0-9-]+$/;\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue;\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule)) {\n          continue;\n        }\n\n        if (rule.selectorText === ':root') {\n          for (const name of Array.from(rule.style)) {\n            if (wantedToken.test(name)) {\n              tokenNames.add(name);\n            }\n          }\n        } else if (singleClass.test(rule.selectorText)) {\n          classNames.add(rule.selectorText.slice(1));\n        }\n      }\n    }\n\n    return { tokenNames: [...tokenNames], classNames };\n  }\n\n  private detectPrefix(classNames: Set<string>): string {\n    for (const className of classNames) {\n      const match = className.match(/^(.*?)radius-\\d/);\n\n      if (match) {\n        return match[1];\n      }\n    }\n\n    return 'mud-';\n  }\n}\n",
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      flex-direction: column;\n      gap: 0.4rem;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n    }\n    .box {\n      width: 100%;\n      height: 44px;\n      box-sizing: border-box;\n    }\n    .box--fill {\n      background: #d7e6ff;\n    }\n    .box--outline {\n      border-style: solid;\n      border-color: #121212;\n    }\n    .box--thick {\n      border-width: 3px;\n    }\n    .value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .chip {\n      display: inline-flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 6px;\n      background: #fafafa;\n      padding: 0.3rem 0.5rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .chip:hover {\n      border-color: #cfcfcf;\n    }\n    .chip code {\n      font-family: ui-monospace, monospace;\n      font-size: 0.74rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .chip--class {\n      background: #f2f6ff;\n    }\n    .chip__ok {\n      color: #0a7d34;\n      font-size: 0.72rem;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .chip__ok.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  \n",
-            "jsdoctags": [
-                {
-                    "pos": 893,
-                    "end": 1177,
-                    "kind": 321,
-                    "id": 0,
-                    "flags": 16777216,
-                    "modifierFlagsCache": 0,
-                    "transformFlags": 0,
-                    "comment": "Storybook-only Foundations page for border tokens. Enumerates the\n`--border-{radius,width,style}-*` custom properties loaded in the preview,\nrenders a visual preview of each, and shows BOTH the token and its matching\n`mud-*` utility class — each copyable on click."
-                }
-            ],
             "constructorObj": {
                 "name": "constructor",
                 "description": "",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "args": [],
-                "line": 179,
+                "line": 170,
                 "rawdescription": "\n"
             },
             "extends": [],
@@ -580,7 +668,7 @@
         {
             "name": "ColorGridComponent",
             "id": "component-ColorGridComponent-062b90e80cc1b9d1e69dad0563901416c9f8f045d6643ac1dbf42ac69166f7862f0c9b5741012e1a6c25ecd92d38caeb82731ee26d99a21ebb3212db013bf361",
-            "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
             "changeDetection": "ChangeDetectionStrategy.OnPush",
             "encapsulation": [],
             "entryComponents": [],
@@ -941,9 +1029,372 @@
             }
         },
         {
+            "name": "CursorGridComponent",
+            "id": "component-CursorGridComponent-a407dc19c2d24075d7c0ed17f4ad19940628341c167010a888d23d6dd7b39116bd0d979249d4ff18391e889d207ab0c8a871240b3c41b59eacfe9f18f6e2a96a",
+            "file": "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts",
+            "changeDetection": "ChangeDetectionStrategy.OnPush",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "egov-cursor-grid",
+            "styleUrls": [],
+            "styles": [
+                "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .note code {\n      font-family: ui-monospace, monospace;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      position: relative;\n      min-height: 60px;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fafafa;\n      padding: 0.75rem;\n      font: inherit;\n    }\n    .cell:hover {\n      border-color: #cfcfcf;\n      background: #f2f6ff;\n    }\n    .cell__label {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n  "
+            ],
+            "template": "<p class=\"note\">\n  Native CSS cursors — <strong>hover</strong> a cell to preview, <strong>click</strong> to copy\n  <code>cursor: …;</code>. The design system has no cursor tokens/classes; this is a reference.\n</p>\n\n@for (group of groups; track group.title) {\n  <section class=\"group\">\n    <h3 class=\"group__title\">{{ group.title }}</h3>\n    <div class=\"grid\">\n      @for (cursor of group.cursors; track cursor) {\n        <button\n          type=\"button\"\n          class=\"cell\"\n          [style.cursor]=\"cursor\"\n          [title]=\"'Copy cursor: ' + cursor + ';'\"\n          (click)=\"copy(cursor)\"\n        >\n          <span class=\"cell__label\">{{ cursor }}</span>\n          <span class=\"copied\" [class.show]=\"copied() === cursor\">copied ✓</span>\n        </button>\n      }\n    </div>\n  </section>\n}\n",
+            "templateUrl": [],
+            "templateVariables": [],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "copied",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal<string | null>(null)",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 124,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                },
+                {
+                    "name": "groups",
+                    "coverageIgnore": false,
+                    "defaultValue": "CURSOR_GROUPS",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 123,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "copy",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "cursor",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 126,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        124
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "cursor",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "coverageIgnore": false,
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "standalone": true,
+            "imports": [],
+            "description": "<p>Storybook-only Foundations reference for native CSS cursors. Hover a cell to\npreview the cursor; click to copy the <code>cursor: &lt;value&gt;;</code> declaration. This is\na curated list — the library has no cursor tokens or utility classes.</p>\n",
+            "rawdescription": "\n\nStorybook-only Foundations reference for native CSS cursors. Hover a cell to\npreview the cursor; click to copy the `cursor: <value>;` declaration. This is\na curated list — the library has no cursor tokens or utility classes.\n",
+            "type": "component",
+            "sourceCode": "import { Component, signal } from '@angular/core';\n\ninterface CursorGroup {\n  title: string;\n  cursors: string[];\n}\n\n// Native CSS cursor keywords. The design system ships no cursor tokens/classes,\n// so this is a curated reference (mirrors the design-system's cursors doc page).\nconst CURSOR_GROUPS: CursorGroup[] = [\n  { title: 'General', cursors: ['auto', 'default', 'pointer', 'context-menu', 'help', 'progress', 'wait', 'none'] },\n  {\n    title: 'Selection & action',\n    cursors: ['text', 'vertical-text', 'cell', 'crosshair', 'copy', 'alias', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll'],\n  },\n  { title: 'Zoom', cursors: ['zoom-in', 'zoom-out'] },\n  {\n    title: 'Resize',\n    cursors: ['col-resize', 'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize'],\n  },\n];\n\n/**\n * Storybook-only Foundations reference for native CSS cursors. Hover a cell to\n * preview the cursor; click to copy the `cursor: <value>;` declaration. This is\n * a curated list — the library has no cursor tokens or utility classes.\n */\n@Component({\n  selector: 'egov-cursor-grid',\n  template: `\n    <p class=\"note\">\n      Native CSS cursors — <strong>hover</strong> a cell to preview, <strong>click</strong> to copy\n      <code>cursor: …;</code>. The design system has no cursor tokens/classes; this is a reference.\n    </p>\n\n    @for (group of groups; track group.title) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ group.title }}</h3>\n        <div class=\"grid\">\n          @for (cursor of group.cursors; track cursor) {\n            <button\n              type=\"button\"\n              class=\"cell\"\n              [style.cursor]=\"cursor\"\n              [title]=\"'Copy cursor: ' + cursor + ';'\"\n              (click)=\"copy(cursor)\"\n            >\n              <span class=\"cell__label\">{{ cursor }}</span>\n              <span class=\"copied\" [class.show]=\"copied() === cursor\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .note code {\n      font-family: ui-monospace, monospace;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      position: relative;\n      min-height: 60px;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fafafa;\n      padding: 0.75rem;\n      font: inherit;\n    }\n    .cell:hover {\n      border-color: #cfcfcf;\n      background: #f2f6ff;\n    }\n    .cell__label {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n  `,\n})\nexport class CursorGridComponent {\n  protected readonly groups = CURSOR_GROUPS;\n  protected readonly copied = signal<string | null>(null);\n\n  protected copy(cursor: string): void {\n    void navigator.clipboard?.writeText(`cursor: ${cursor};`);\n    this.copied.set(cursor);\n\n    setTimeout(() => this.copied.update((current) => (current === cursor ? null : current)), 1200);\n  }\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .note code {\n      font-family: ui-monospace, monospace;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.8rem;\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      color: #757575;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));\n      gap: 0.75rem;\n    }\n    .cell {\n      display: flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      position: relative;\n      min-height: 60px;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fafafa;\n      padding: 0.75rem;\n      font: inherit;\n    }\n    .cell:hover {\n      border-color: #cfcfcf;\n      background: #f2f6ff;\n    }\n    .cell__label {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n  \n",
+            "jsdoctags": [
+                {
+                    "pos": 860,
+                    "end": 1101,
+                    "kind": 321,
+                    "id": 0,
+                    "flags": 16777216,
+                    "modifierFlagsCache": 0,
+                    "transformFlags": 0,
+                    "comment": "Storybook-only Foundations reference for native CSS cursors. Hover a cell to\npreview the cursor; click to copy the `cursor: <value>;` declaration. This is\na curated list — the library has no cursor tokens or utility classes."
+                }
+            ],
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        },
+        {
+            "name": "ShadowGridComponent",
+            "id": "component-ShadowGridComponent-8ecda617c534e587649ad2734b3d17a42dc9160f267c8cbfd8c924bf742a29b54c875fc0392945706625ddb1d4d59eb897235e2a001386a9fb8ead385f75ba36",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/shadow-grid.component.ts",
+            "changeDetection": "ChangeDetectionStrategy.OnPush",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "egov-shadow-grid",
+            "styleUrls": [],
+            "styles": [
+                "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));\n      gap: 1rem;\n    }\n    .cell {\n      display: flex;\n      flex-direction: column;\n      gap: 0.4rem;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n    }\n    .preview {\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 1.5rem;\n      margin-bottom: 0.35rem;\n    }\n    .card {\n      width: 72px;\n      height: 48px;\n      background: #fff;\n      border-radius: 8px;\n    }\n    .chip {\n      display: inline-flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 6px;\n      background: #fafafa;\n      padding: 0.3rem 0.5rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .chip:hover {\n      border-color: #cfcfcf;\n    }\n    .chip code {\n      font-family: ui-monospace, monospace;\n      font-size: 0.74rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .chip--class {\n      background: #f2f6ff;\n    }\n    .chip__ok {\n      color: #0a7d34;\n      font-size: 0.72rem;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .chip__ok.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  "
+            ],
+            "template": "<div class=\"grid\">\n  @for (elevation of elevations(); track elevation.name) {\n    <div class=\"cell\">\n      <div class=\"preview\">\n        <span class=\"card\" [style.boxShadow]=\"'var(' + elevation.name + ')'\"></span>\n      </div>\n\n      <button\n        type=\"button\"\n        class=\"chip\"\n        [title]=\"'Copy var(' + elevation.name + ')'\"\n        (click)=\"copyText('var(' + elevation.name + ')', elevation.name)\"\n      >\n        <code>{{ elevation.name }}</code>\n        <span class=\"chip__ok\" [class.show]=\"copied() === elevation.name\">✓</span>\n      </button>\n\n      @for (className of elevation.classes; track className) {\n        <button\n          type=\"button\"\n          class=\"chip chip--class\"\n          [title]=\"'Copy class ' + className\"\n          (click)=\"copyText(className, className)\"\n        >\n          <code>.{{ className }}</code>\n          <span class=\"chip__ok\" [class.show]=\"copied() === className\">✓</span>\n        </button>\n      }\n    </div>\n  }\n</div>\n\n@if (elevations().length === 0) {\n  <p class=\"empty\">No elevation tokens found in the loaded stylesheet.</p>\n}\n",
+            "templateUrl": [],
+            "templateVariables": [],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "_document",
+                    "coverageIgnore": false,
+                    "defaultValue": "inject(DOCUMENT)",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 133,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        123,
+                        148
+                    ]
+                },
+                {
+                    "name": "copied",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal<string | null>(null)",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 136,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                },
+                {
+                    "name": "elevations",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal<Elevation[]>([])",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 135,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "copyText",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "text",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        },
+                        {
+                            "name": "key",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 142,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        124
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "text",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "key",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "detectPrefix",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "classNames",
+                            "type": "Set<string>",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "string",
+                    "typeParameters": [],
+                    "line": 204,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        123
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "classNames",
+                            "type": "Set<string>",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "load",
+                    "coverageIgnore": false,
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 149,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        123
+                    ]
+                },
+                {
+                    "name": "scan",
+                    "coverageIgnore": false,
+                    "args": [],
+                    "optional": false,
+                    "returnType": "{ tokenNames: string[]; classNames: Set<string> }",
+                    "typeParameters": [],
+                    "line": 170,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        123
+                    ]
+                }
+            ],
+            "coverageIgnore": false,
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "standalone": true,
+            "imports": [],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, signal } from '@angular/core';\n\ninterface Elevation {\n  name: string;\n  value: string;\n  classes: string[];\n}\n\nconst ALIASES: Record<string, string> = {\n  '100': 'xs',\n  '200': 'sm',\n  '300': 'md',\n  '400': 'lg',\n  '500': 'xl',\n};\n\n@Component({\n  selector: 'egov-shadow-grid',\n  template: `\n    <div class=\"grid\">\n      @for (elevation of elevations(); track elevation.name) {\n        <div class=\"cell\">\n          <div class=\"preview\">\n            <span class=\"card\" [style.boxShadow]=\"'var(' + elevation.name + ')'\"></span>\n          </div>\n\n          <button\n            type=\"button\"\n            class=\"chip\"\n            [title]=\"'Copy var(' + elevation.name + ')'\"\n            (click)=\"copyText('var(' + elevation.name + ')', elevation.name)\"\n          >\n            <code>{{ elevation.name }}</code>\n            <span class=\"chip__ok\" [class.show]=\"copied() === elevation.name\">✓</span>\n          </button>\n\n          @for (className of elevation.classes; track className) {\n            <button\n              type=\"button\"\n              class=\"chip chip--class\"\n              [title]=\"'Copy class ' + className\"\n              (click)=\"copyText(className, className)\"\n            >\n              <code>.{{ className }}</code>\n              <span class=\"chip__ok\" [class.show]=\"copied() === className\">✓</span>\n            </button>\n          }\n        </div>\n      }\n    </div>\n\n    @if (elevations().length === 0) {\n      <p class=\"empty\">No elevation tokens found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));\n      gap: 1rem;\n    }\n    .cell {\n      display: flex;\n      flex-direction: column;\n      gap: 0.4rem;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n    }\n    .preview {\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 1.5rem;\n      margin-bottom: 0.35rem;\n    }\n    .card {\n      width: 72px;\n      height: 48px;\n      background: #fff;\n      border-radius: 8px;\n    }\n    .chip {\n      display: inline-flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 6px;\n      background: #fafafa;\n      padding: 0.3rem 0.5rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .chip:hover {\n      border-color: #cfcfcf;\n    }\n    .chip code {\n      font-family: ui-monospace, monospace;\n      font-size: 0.74rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .chip--class {\n      background: #f2f6ff;\n    }\n    .chip__ok {\n      color: #0a7d34;\n      font-size: 0.72rem;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .chip__ok.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class ShadowGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  protected readonly elevations = signal<Elevation[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected copyText(text: string, key: string): void {\n    void navigator.clipboard?.writeText(text);\n    this.copied.set(key);\n\n    setTimeout(() => this.copied.update((current) => (current === key ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const styles = getComputedStyle(this._document.documentElement);\n    const { tokenNames, classNames } = this.scan();\n    const prefix = this.detectPrefix(classNames);\n\n    const elevations = tokenNames\n      .map((name) => {\n        const key = name.slice('--drop-shadow-'.length);\n        const candidates = [`${prefix}shadow-${key}`, ALIASES[key] ? `${prefix}shadow-${ALIASES[key]}` : ''];\n\n        return {\n          name,\n          value: styles.getPropertyValue(name).trim(),\n          classes: candidates.filter((className) => className && classNames.has(className)),\n        };\n      })\n      .sort((a, b) => parseInt(a.name.slice('--drop-shadow-'.length), 10) - parseInt(b.name.slice('--drop-shadow-'.length), 10));\n\n    this.elevations.set(elevations);\n  }\n\n  private scan(): { tokenNames: string[]; classNames: Set<string> } {\n    const tokenNames = new Set<string>();\n    const classNames = new Set<string>();\n    const singleClass = /^\\.[a-z0-9-]+$/;\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue; // cross-origin sheet — skip\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule)) {\n          continue;\n        }\n\n        if (rule.selectorText === ':root') {\n          for (const name of Array.from(rule.style)) {\n            if (name.startsWith('--drop-shadow-')) {\n              tokenNames.add(name);\n            }\n          }\n        } else if (singleClass.test(rule.selectorText)) {\n          classNames.add(rule.selectorText.slice(1));\n        }\n      }\n    }\n\n    return { tokenNames: [...tokenNames], classNames };\n  }\n\n  private detectPrefix(classNames: Set<string>): string {\n    for (const className of classNames) {\n      const match = className.match(/^(.*?)shadow-\\d/);\n\n      if (match) {\n        return match[1];\n      }\n    }\n\n    return 'mud-';\n  }\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));\n      gap: 1rem;\n    }\n    .cell {\n      display: flex;\n      flex-direction: column;\n      gap: 0.4rem;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n    }\n    .preview {\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 1.5rem;\n      margin-bottom: 0.35rem;\n    }\n    .card {\n      width: 72px;\n      height: 48px;\n      background: #fff;\n      border-radius: 8px;\n    }\n    .chip {\n      display: inline-flex;\n      align-items: center;\n      justify-content: space-between;\n      gap: 0.5rem;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 6px;\n      background: #fafafa;\n      padding: 0.3rem 0.5rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .chip:hover {\n      border-color: #cfcfcf;\n    }\n    .chip code {\n      font-family: ui-monospace, monospace;\n      font-size: 0.74rem;\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .chip--class {\n      background: #f2f6ff;\n    }\n    .chip__ok {\n      color: #0a7d34;\n      font-size: 0.72rem;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .chip__ok.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  \n",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "args": [],
+                "line": 136,
+                "rawdescription": "\n"
+            },
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        },
+        {
             "name": "TypographyGridComponent",
             "id": "component-TypographyGridComponent-d8d6a4ae70df044d205e378b8f97df032c0cfb754bd619a66f206d7182e85914cf28ff2447e33049397317b70d8595abe4f0cef9f69f67ddb36372bac0958efc",
-            "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
             "changeDetection": "ChangeDetectionStrategy.OnPush",
             "encapsulation": [],
             "entryComponents": [],
@@ -1265,10 +1716,21 @@
     "miscellaneous": {
         "variables": [
             {
+                "name": "ALIASES",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/shadow-grid.component.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Record<string, string>",
+                "defaultValue": "{\n  '100': 'xs',\n  '200': 'sm',\n  '300': 'md',\n  '400': 'lg',\n  '500': 'xl',\n}"
+            },
+            {
                 "name": "ALL_ICONS",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -1279,7 +1741,7 @@
                 "name": "COLOR_VALUE",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -1287,10 +1749,21 @@
                 "defaultValue": "/^#([0-9a-f]{3,8})$|^rgba?\\(/i"
             },
             {
+                "name": "CURSOR_GROUPS",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "CursorGroup[]",
+                "defaultValue": "[\n  { title: 'General', cursors: ['auto', 'default', 'pointer', 'context-menu', 'help', 'progress', 'wait', 'none'] },\n  {\n    title: 'Selection & action',\n    cursors: ['text', 'vertical-text', 'cell', 'crosshair', 'copy', 'alias', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll'],\n  },\n  { title: 'Zoom', cursors: ['zoom-in', 'zoom-out'] },\n  {\n    title: 'Resize',\n    cursors: ['col-resize', 'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize'],\n  },\n]"
+            },
+            {
                 "name": "FAMILY_ORDER",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -1301,7 +1774,7 @@
                 "name": "ICON_NAMES",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -1309,32 +1782,32 @@
                 "defaultValue": "ALL_ICONS.map((icon) => icon.name).sort()"
             },
             {
-                "name": "meta",
+                "name": "Levels",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/borders.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "Meta<BorderGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Borders',\n  component: BorderGridComponent,\n  decorators: [moduleMetadata({ imports: [BorderGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                "type": "Story",
+                "defaultValue": "{\n  render: () => ({ template: `<egov-shadow-grid />` }),\n}"
             },
             {
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "Meta<ColorGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                "type": "Meta<CursorGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -1345,7 +1818,29 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<BorderGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Borders',\n  component: BorderGridComponent,\n  decorators: [moduleMetadata({ imports: [BorderGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<ColorGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -1356,7 +1851,18 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<ShadowGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Elevation',\n  component: ShadowGridComponent,\n  decorators: [moduleMetadata({ imports: [ShadowGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -1367,7 +1873,7 @@
                 "name": "Palette",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -1378,7 +1884,7 @@
                 "name": "Playground",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -1397,10 +1903,23 @@
                 "defaultValue": "{\n  parameters: {\n    options: {\n      storySort: { order: ['Introduction', 'Foundations', 'Components', '*'] },\n    },\n    controls: {\n      matchers: {\n        color: /(background|color)$/i,\n        date: /Date$/i,\n      },\n    },\n\n    a11y: {\n      // 'todo' - show a11y violations in the test UI only\n      // 'error' - fail CI on a11y violations\n      // 'off' - skip a11y checks entirely\n      test: 'todo',\n    },\n  },\n}"
             },
             {
+                "name": "Reference",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}",
+                "rawdescription": "Native CSS cursors reference — hover to preview, click to copy `cursor: <value>;`.",
+                "description": "<p>Native CSS cursors reference — hover to preview, click to copy <code>cursor: &lt;value&gt;;</code>.</p>\n"
+            },
+            {
                 "name": "SAMPLE",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -1411,7 +1930,7 @@
                 "name": "Scale",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -1422,7 +1941,7 @@
                 "name": "SECTIONS",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/border-grid.component.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/border/border-grid.component.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -1433,7 +1952,7 @@
                 "name": "SEMANTIC_ORDER",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -1444,20 +1963,18 @@
                 "name": "Tokens",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/borders.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story",
-                "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}",
-                "rawdescription": "Border tokens — radius, width, and style — each with a visual preview. Click a cell to copy `var(--…)`.",
-                "description": "<p>Border tokens — radius, width, and style — each with a visual preview. Click a cell to copy <code>var(--…)</code>.</p>\n"
+                "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
             },
             {
                 "name": "Tokens",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -1473,7 +1990,7 @@
                 "subtype": "typealias",
                 "coverageIgnore": false,
                 "rawtype": "\"radius\" | \"width\" | \"style\"",
-                "file": "projects/ngx-egov-ui/src/stories/border-grid.component.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/border/border-grid.component.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -1486,7 +2003,7 @@
                 "subtype": "typealias",
                 "coverageIgnore": false,
                 "rawtype": "\"primitives\" | \"semantic\"",
-                "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -1499,7 +2016,7 @@
                 "subtype": "typealias",
                 "coverageIgnore": false,
                 "rawtype": "\"desktop\" | \"mobile\"",
-                "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -1511,21 +2028,8 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<BorderGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/borders.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "rawdescription": "",
-                "description": "",
-                "kind": 184
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "coverageIgnore": false,
-                "rawtype": "StoryObj<ColorGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
+                "rawtype": "StoryObj<CursorGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -1538,7 +2042,20 @@
                 "subtype": "typealias",
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<EgovIconComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<BorderGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -1551,7 +2068,33 @@
                 "subtype": "typealias",
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<ColorGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<ColorGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<ShadowGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -1564,7 +2107,7 @@
                 "subtype": "typealias",
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<TypographyGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -1574,12 +2117,25 @@
         ],
         "enumerations": [],
         "groupedVariables": {
-            "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/elevation/shadow-grid.component.ts": [
+                {
+                    "name": "ALIASES",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/shadow-grid.component.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Record<string, string>",
+                    "defaultValue": "{\n  '100': 'xs',\n  '200': 'sm',\n  '300': 'md',\n  '400': 'lg',\n  '500': 'xl',\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts": [
                 {
                     "name": "ALL_ICONS",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1590,7 +2146,7 @@
                     "name": "ICON_NAMES",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1601,7 +2157,7 @@
                     "name": "meta",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1612,7 +2168,7 @@
                     "name": "Playground",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1620,12 +2176,12 @@
                     "defaultValue": "{}"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/color-grid.component.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts": [
                 {
                     "name": "COLOR_VALUE",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1636,7 +2192,7 @@
                     "name": "SEMANTIC_ORDER",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1644,12 +2200,25 @@
                     "defaultValue": "['background', 'text', 'border', 'icon']"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/typography-grid.component.ts": [
+            "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts": [
+                {
+                    "name": "CURSOR_GROUPS",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "CursorGroup[]",
+                    "defaultValue": "[\n  { title: 'General', cursors: ['auto', 'default', 'pointer', 'context-menu', 'help', 'progress', 'wait', 'none'] },\n  {\n    title: 'Selection & action',\n    cursors: ['text', 'vertical-text', 'cell', 'crosshair', 'copy', 'alias', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll'],\n  },\n  { title: 'Zoom', cursors: ['zoom-in', 'zoom-out'] },\n  {\n    title: 'Resize',\n    cursors: ['col-resize', 'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize'],\n  },\n]"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts": [
                 {
                     "name": "FAMILY_ORDER",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1660,7 +2229,7 @@
                     "name": "SAMPLE",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1668,12 +2237,62 @@
                     "defaultValue": "'The quick brown fox'"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/borders.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts": [
+                {
+                    "name": "Levels",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-shadow-grid />` }),\n}"
+                },
                 {
                     "name": "meta",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/borders.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<ShadowGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Elevation',\n  component: ShadowGridComponent,\n  decorators: [moduleMetadata({ imports: [ShadowGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/cursors.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<CursorGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Reference",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}",
+                    "rawdescription": "Native CSS cursors reference — hover to preview, click to copy `cursor: <value>;`.",
+                    "description": "<p>Native CSS cursors reference — hover to preview, click to copy <code>cursor: &lt;value&gt;;</code>.</p>\n"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1684,22 +2303,20 @@
                     "name": "Tokens",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/borders.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}",
-                    "rawdescription": "Border tokens — radius, width, and style — each with a visual preview. Click a cell to copy `var(--…)`.",
-                    "description": "<p>Border tokens — radius, width, and style — each with a visual preview. Click a cell to copy <code>var(--…)</code>.</p>\n"
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/colors.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
                 {
                     "name": "meta",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1710,7 +2327,7 @@
                     "name": "Palette",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1718,12 +2335,12 @@
                     "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"primitives\" />` }),\n}"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts": [
                 {
                     "name": "meta",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1734,7 +2351,7 @@
                     "name": "Tokens",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1742,12 +2359,12 @@
                     "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/typography.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts": [
                 {
                     "name": "meta",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1758,7 +2375,7 @@
                     "name": "Scale",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1779,12 +2396,12 @@
                     "defaultValue": "{\n  parameters: {\n    options: {\n      storySort: { order: ['Introduction', 'Foundations', 'Components', '*'] },\n    },\n    controls: {\n      matchers: {\n        color: /(background|color)$/i,\n        date: /Date$/i,\n      },\n    },\n\n    a11y: {\n      // 'todo' - show a11y violations in the test UI only\n      // 'error' - fail CI on a11y violations\n      // 'off' - skip a11y checks entirely\n      test: 'todo',\n    },\n  },\n}"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/border-grid.component.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/border/border-grid.component.ts": [
                 {
                     "name": "SECTIONS",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/border-grid.component.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/border-grid.component.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -1796,14 +2413,14 @@
         "groupedFunctions": {},
         "groupedEnumerations": {},
         "groupedTypeAliases": {
-            "projects/ngx-egov-ui/src/stories/border-grid.component.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/border/border-grid.component.ts": [
                 {
                     "name": "BorderKind",
                     "ctype": "miscellaneous",
                     "subtype": "typealias",
                     "coverageIgnore": false,
                     "rawtype": "\"radius\" | \"width\" | \"style\"",
-                    "file": "projects/ngx-egov-ui/src/stories/border-grid.component.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/border-grid.component.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -1811,14 +2428,14 @@
                     "kind": 193
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/color-grid.component.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts": [
                 {
                     "name": "ColorMode",
                     "ctype": "miscellaneous",
                     "subtype": "typealias",
                     "coverageIgnore": false,
                     "rawtype": "\"primitives\" | \"semantic\"",
-                    "file": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -1826,14 +2443,14 @@
                     "kind": 193
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/typography-grid.component.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts": [
                 {
                     "name": "Device",
                     "ctype": "miscellaneous",
                     "subtype": "typealias",
                     "coverageIgnore": false,
                     "rawtype": "\"desktop\" | \"mobile\"",
-                    "file": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -1841,14 +2458,14 @@
                     "kind": 193
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/borders.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/cursors.stories.ts": [
                 {
                     "name": "Story",
                     "ctype": "miscellaneous",
                     "subtype": "typealias",
                     "coverageIgnore": false,
-                    "rawtype": "StoryObj<BorderGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/borders.stories.ts",
+                    "rawtype": "StoryObj<CursorGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -1856,29 +2473,14 @@
                     "kind": 184
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/colors.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<ColorGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts": [
                 {
                     "name": "Story",
                     "ctype": "miscellaneous",
                     "subtype": "typealias",
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<EgovIconComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -1886,14 +2488,29 @@
                     "kind": 184
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<BorderGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
                 {
                     "name": "Story",
                     "ctype": "miscellaneous",
                     "subtype": "typealias",
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<ColorGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -1901,14 +2518,44 @@
                     "kind": 184
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/typography.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<ColorGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<ShadowGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts": [
                 {
                     "name": "Story",
                     "ctype": "miscellaneous",
                     "subtype": "typealias",
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<TypographyGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -1924,7 +2571,7 @@
         "children": []
     },
     "coverage": {
-        "count": 6,
+        "count": 2,
         "status": "low",
         "files": [
             {
@@ -1938,171 +2585,7 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/border-grid.component.ts",
-                "type": "component",
-                "linktype": "component",
-                "name": "BorderGridComponent",
-                "coveragePercent": 33,
-                "coverageCount": "3/9",
-                "status": "medium"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/border-grid.component.ts",
-                "type": "interface",
-                "linktype": "interface",
-                "name": "BorderSection",
-                "coveragePercent": 0,
-                "coverageCount": "0/4",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/border-grid.component.ts",
-                "type": "interface",
-                "linktype": "interface",
-                "name": "BorderToken",
-                "coveragePercent": 75,
-                "coverageCount": "3/4",
-                "status": "good"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/border-grid.component.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "SECTIONS",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/border-grid.component.ts",
-                "type": "type alias",
-                "linktype": "miscellaneous",
-                "linksubtype": "typealias",
-                "name": "BorderKind",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/borders.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "meta",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/borders.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Tokens",
-                "coveragePercent": 100,
-                "coverageCount": "1/1",
-                "status": "very-good"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/borders.stories.ts",
-                "type": "type alias",
-                "linktype": "miscellaneous",
-                "linksubtype": "typealias",
-                "name": "Story",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
-                "type": "component",
-                "linktype": "component",
-                "name": "ColorGridComponent",
-                "coveragePercent": 0,
-                "coverageCount": "0/14",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
-                "type": "interface",
-                "linktype": "interface",
-                "name": "ColorGroup",
-                "coveragePercent": 0,
-                "coverageCount": "0/3",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
-                "type": "interface",
-                "linktype": "interface",
-                "name": "Swatch",
-                "coveragePercent": 0,
-                "coverageCount": "0/3",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "COLOR_VALUE",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "SEMANTIC_ORDER",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/color-grid.component.ts",
-                "type": "type alias",
-                "linktype": "miscellaneous",
-                "linksubtype": "typealias",
-                "name": "ColorMode",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "meta",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Palette",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/colors.stories.ts",
-                "type": "type alias",
-                "linktype": "miscellaneous",
-                "linksubtype": "typealias",
-                "name": "Story",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
@@ -2112,7 +2595,7 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
@@ -2122,7 +2605,7 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
@@ -2132,7 +2615,7 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
@@ -2142,7 +2625,7 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/egov-icon.stories.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                 "type": "type alias",
                 "linktype": "miscellaneous",
                 "linksubtype": "typealias",
@@ -2152,7 +2635,35 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "CursorGridComponent",
+                "coveragePercent": 25,
+                "coverageCount": "1/4",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "CursorGroup",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/cursor-grid.component.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "CURSOR_GROUPS",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
@@ -2162,7 +2673,84 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Reference",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/cursors.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/border/border-grid.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "BorderGridComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/9",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/border/border-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "BorderSection",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/border/border-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "BorderToken",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/border/border-grid.component.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "SECTIONS",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/border/border-grid.component.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "BorderKind",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
@@ -2172,7 +2760,7 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/semantic-colors.stories.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                 "type": "type alias",
                 "linktype": "miscellaneous",
                 "linksubtype": "typealias",
@@ -2182,64 +2770,64 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
                 "type": "component",
                 "linktype": "component",
-                "name": "TypographyGridComponent",
-                "coveragePercent": 8,
-                "coverageCount": "1/12",
+                "name": "ColorGridComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/14",
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
                 "type": "interface",
                 "linktype": "interface",
-                "name": "TypeGroup",
+                "name": "ColorGroup",
                 "coveragePercent": 0,
                 "coverageCount": "0/3",
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
                 "type": "interface",
                 "linktype": "interface",
-                "name": "TypeStyle",
+                "name": "Swatch",
                 "coveragePercent": 0,
-                "coverageCount": "0/6",
+                "coverageCount": "0/3",
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
-                "name": "FAMILY_ORDER",
+                "name": "COLOR_VALUE",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
-                "name": "SAMPLE",
+                "name": "SEMANTIC_ORDER",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/typography-grid.component.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
                 "type": "type alias",
                 "linktype": "miscellaneous",
                 "linksubtype": "typealias",
-                "name": "Device",
+                "name": "ColorMode",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
@@ -2249,7 +2837,182 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Palette",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Tokens",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Levels",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/elevation/shadow-grid.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ShadowGridComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/9",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/elevation/shadow-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "Elevation",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/elevation/shadow-grid.component.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "ALIASES",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "TypographyGridComponent",
+                "coveragePercent": 8,
+                "coverageCount": "1/12",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "TypeGroup",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "TypeStyle",
+                "coveragePercent": 0,
+                "coverageCount": "0/6",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "FAMILY_ORDER",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "SAMPLE",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Device",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
@@ -2259,7 +3022,7 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/ngx-egov-ui/src/stories/typography.stories.ts",
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
                 "type": "type alias",
                 "linktype": "miscellaneous",
                 "linksubtype": "typealias",

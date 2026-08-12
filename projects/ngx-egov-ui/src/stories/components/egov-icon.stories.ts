@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
-import { EgovIconComponent, provideEgovIcons } from '../../icons/src/public-api';
-import type { EgovIcon } from '../../icons/src/lib/types';
-import * as iconData from '../../icons/src/lib/data';
+import { EgovIconComponent, provideEgovIcons } from '../../../icons/src/public-api';
+import type { EgovIcon } from '../../../icons/src/lib/types';
+import * as iconData from '../../../icons/src/lib/data';
 
 const ALL_ICONS = Object.values(iconData) as EgovIcon[];
 const ICON_NAMES = ALL_ICONS.map((icon) => icon.name).sort();
