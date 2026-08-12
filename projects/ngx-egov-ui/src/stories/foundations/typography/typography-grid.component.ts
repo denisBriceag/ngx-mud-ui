@@ -160,13 +160,13 @@ export class TypographyGridComponent {
   protected readonly copied = signal<string | null>(null);
 
   constructor() {
-    afterNextRender(() => this.load());
+    afterNextRender(() => this._load());
   }
 
   protected setDevice(device: Device): void {
     this.device.set(device);
 
-    this.load();
+    this._load();
   }
 
   protected copy(className: string): void {
@@ -176,7 +176,7 @@ export class TypographyGridComponent {
     setTimeout(() => this.copied.update((current) => (current === className ? null : current)), 1200);
   }
 
-  private load(): void {
+  private _load(): void {
     const single = new RegExp(`^\\.mud-${this.device()}-[a-z0-9-]+$`);
     const seen = new Set<string>();
     const styles: TypeStyle[] = [];
@@ -212,14 +212,14 @@ export class TypographyGridComponent {
       }
     }
 
-    this.groups.set(this.group(styles));
+    this.groups.set(this._group(styles));
   }
 
-  private group(styles: TypeStyle[]): TypeGroup[] {
+  private _group(styles: TypeStyle[]): TypeGroup[] {
     const buckets = new Map<string, TypeStyle[]>();
 
     for (const style of styles) {
-      const key = this.familyOf(style.className);
+      const key = this._familyOf(style.className);
       const bucket = buckets.get(key) ?? [];
 
       bucket.push(style);
@@ -235,7 +235,7 @@ export class TypographyGridComponent {
     }));
   }
 
-  private familyOf(className: string): string {
+  private _familyOf(className: string): string {
     return className.replace(/^mud-(desktop|mobile)-/, '').split('-')[0];
   }
 }

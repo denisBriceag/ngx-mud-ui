@@ -150,7 +150,7 @@ export class DisplayGridComponent {
   protected readonly copied = signal<string | null>(null);
 
   constructor() {
-    afterNextRender(() => this.load());
+    afterNextRender(() => this._load());
   }
 
   protected copy(className: string): void {
@@ -160,7 +160,7 @@ export class DisplayGridComponent {
     setTimeout(() => this.copied.update((current) => (current === className ? null : current)), 1200);
   }
 
-  private load(): void {
+  private _load(): void {
     const seen = new Set<string>();
     const utils: DisplayUtil[] = [];
     const singleClass = /^\.[a-z0-9-]+$/;
@@ -194,12 +194,12 @@ export class DisplayGridComponent {
       }
     }
 
-    utils.sort((a, b) => this.rank(a.value) - this.rank(b.value) || a.className.localeCompare(b.className));
+    utils.sort((a, b) => this._rank(a.value) - this._rank(b.value) || a.className.localeCompare(b.className));
 
     this.utils.set(utils);
   }
 
-  private rank(value: string): number {
+  private _rank(value: string): number {
     const index = ORDER.indexOf(value);
 
     return index === -1 ? ORDER.length : index;

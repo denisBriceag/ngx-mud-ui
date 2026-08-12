@@ -259,16 +259,16 @@ export class EgovTabGroup {
 
     switch (event.key) {
       case 'ArrowRight':
-        this.focusTab(this.nextEnabled(this.focusedIndex(), 1));
+        this.focusTab(this._nextEnabled(this.focusedIndex(), 1));
         break;
       case 'ArrowLeft':
-        this.focusTab(this.nextEnabled(this.focusedIndex(), -1));
+        this.focusTab(this._nextEnabled(this.focusedIndex(), -1));
         break;
       case 'Home':
-        this.focusTab(this.nextEnabled(-1, 1));
+        this.focusTab(this._nextEnabled(-1, 1));
         break;
       case 'End':
-        this.focusTab(this.nextEnabled(count, -1));
+        this.focusTab(this._nextEnabled(count, -1));
         break;
       case 'Enter':
       case ' ':
@@ -281,7 +281,7 @@ export class EgovTabGroup {
     event.preventDefault();
   }
 
-  private nextEnabled(from: number, direction: 1 | -1): number {
+  private _nextEnabled(from: number, direction: 1 | -1): number {
     const tabs = this.tabs();
     const count = tabs.length;
     let index = from;

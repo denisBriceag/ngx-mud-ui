@@ -136,7 +136,7 @@ export class ShadowGridComponent {
   protected readonly copied = signal<string | null>(null);
 
   constructor() {
-    afterNextRender(() => this.load());
+    afterNextRender(() => this._load());
   }
 
   protected copyText(text: string, key: string): void {
@@ -146,10 +146,10 @@ export class ShadowGridComponent {
     setTimeout(() => this.copied.update((current) => (current === key ? null : current)), 1200);
   }
 
-  private load(): void {
+  private _load(): void {
     const styles = getComputedStyle(this._document.documentElement);
-    const { tokenNames, classNames } = this.scan();
-    const prefix = this.detectPrefix(classNames);
+    const { tokenNames, classNames } = this._scan();
+    const prefix = this._detectPrefix(classNames);
 
     const elevations = tokenNames
       .map((name) => {
@@ -167,7 +167,7 @@ export class ShadowGridComponent {
     this.elevations.set(elevations);
   }
 
-  private scan(): { tokenNames: string[]; classNames: Set<string> } {
+  private _scan(): { tokenNames: string[]; classNames: Set<string> } {
     const tokenNames = new Set<string>();
     const classNames = new Set<string>();
     const singleClass = /^\.[a-z0-9-]+$/;
@@ -201,7 +201,7 @@ export class ShadowGridComponent {
     return { tokenNames: [...tokenNames], classNames };
   }
 
-  private detectPrefix(classNames: Set<string>): string {
+  private _detectPrefix(classNames: Set<string>): string {
     for (const className of classNames) {
       const match = className.match(/^(.*?)shadow-\d/);
 

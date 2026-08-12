@@ -167,13 +167,13 @@ export class ColorGridComponent {
   protected readonly copied = signal<string | null>(null);
 
   constructor() {
-    afterNextRender(() => this.load());
+    afterNextRender(() => this._load());
   }
 
   protected setTheme(theme: 'light' | 'dark'): void {
     this.theme.set(theme);
 
-    this.load();
+    this._load();
   }
 
   protected copy(name: string): void {
@@ -184,7 +184,7 @@ export class ColorGridComponent {
     setTimeout(() => this.copied.update((current) => (current === name ? null : current)), 1200);
   }
 
-  private load(): void {
+  private _load(): void {
     const root = this._document.documentElement;
 
     if (this.mode() === 'semantic' && this.theme() === 'dark') {
@@ -196,7 +196,7 @@ export class ColorGridComponent {
     const styles = getComputedStyle(root);
     const swatches: Swatch[] = [];
 
-    for (const name of this.collectNames()) {
+    for (const name of this._collectNames()) {
       const value = styles.getPropertyValue(name).trim();
 
       if (this.mode() === 'semantic' || COLOR_VALUE.test(value)) {
@@ -204,10 +204,10 @@ export class ColorGridComponent {
       }
     }
 
-    this.groups.set(this.group(swatches));
+    this.groups.set(this._group(swatches));
   }
 
-  private collectNames(): string[] {
+  private _collectNames(): string[] {
     const names = new Set<string>();
     const wantSemantic = this.mode() === 'semantic';
 
@@ -238,11 +238,11 @@ export class ColorGridComponent {
     return [...names];
   }
 
-  private group(swatches: Swatch[]): ColorGroup[] {
+  private _group(swatches: Swatch[]): ColorGroup[] {
     const buckets = new Map<string, Swatch[]>();
 
     for (const swatch of swatches) {
-      const key = this.mode() === 'semantic' ? this.categoryOf(swatch.name) : this.familyOf(swatch.name);
+      const key = this.mode() === 'semantic' ? this._categoryOf(swatch.name) : this._familyOf(swatch.name);
       const bucket = buckets.get(key) ?? [];
 
       bucket.push(swatch);
@@ -257,7 +257,7 @@ export class ColorGridComponent {
       .map((title) => ({ title, swatches: buckets.get(title)!.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })) }));
   }
 
-  private familyOf(name: string): string {
+  private _familyOf(name: string): string {
     const parts = name.replace(/^--/, '').split('-');
 
     while (parts.length > 1 && (/^\d+$/.test(parts[parts.length - 1]) || parts[parts.length - 1] === 'alpha')) {
@@ -267,7 +267,7 @@ export class ColorGridComponent {
     return parts.join('-');
   }
 
-  private categoryOf(name: string): string {
+  private _categoryOf(name: string): string {
     return name.replace(/^--color-/, '').split('-')[0];
   }
 }

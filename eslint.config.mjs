@@ -34,6 +34,15 @@ export default defineConfig([
         },
       ],
       '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          selector: ['classProperty', 'classMethod', 'accessor', 'parameterProperty'],
+          modifiers: ['private'],
+          format: ['camelCase'],
+          leadingUnderscore: 'require',
+        },
+      ],
       '@stylistic/padding-line-between-statements': [
         'error',
         { blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' },

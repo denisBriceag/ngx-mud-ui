@@ -23,8 +23,8 @@ const SCALES: readonly EgovIconScale[] = [12, 16, 20, 24];
   },
 })
 export class EgovIconComponent {
-  private readonly registry = inject(EgovIconRegistry);
-  private readonly sanitizer = inject(DomSanitizer);
+  private readonly _registry = inject(EgovIconRegistry);
+  private readonly _sanitizer = inject(DomSanitizer);
 
   readonly name = input.required<EgovIconName>();
   readonly variant = input<EgovIconVariant>('outlined');
@@ -38,12 +38,12 @@ export class EgovIconComponent {
     },
   });
 
-  private readonly resolution = computed<{
+  private readonly _resolution = computed<{
     geometry: EgovIconGeometry | undefined;
     warnings: readonly string[];
   }>(() => {
     const warnings: string[] = [];
-    const icon = this.registry.get(this.name());
+    const icon = this._registry.get(this.name());
 
     if (!icon) {
       warnings.push(
@@ -53,12 +53,12 @@ export class EgovIconComponent {
       return { geometry: undefined, warnings };
     }
 
-    const variant = this.pickVariant(icon.variants, warnings);
+    const variant = this._pickVariant(icon.variants, warnings);
 
     if (!variant) return { geometry: undefined, warnings };
 
     const byScale = icon.variants[variant]!;
-    const scale = this.pickScale(byScale, warnings);
+    const scale = this._pickScale(byScale, warnings);
 
     if (scale === undefined) return { geometry: undefined, warnings };
 
@@ -66,7 +66,7 @@ export class EgovIconComponent {
   });
 
   protected readonly svg = computed<SafeHtml>(() => {
-    const geometry = this.resolution().geometry;
+    const geometry = this._resolution().geometry;
 
     if (!geometry) return '';
 
@@ -76,18 +76,18 @@ export class EgovIconComponent {
       `width="${px}" height="${px}" fill="currentColor" focusable="false" aria-hidden="true">` +
       `${geometry.body}</svg>`;
 
-    return this.sanitizer.bypassSecurityTrustHtml(markup);
+    return this._sanitizer.bypassSecurityTrustHtml(markup);
   });
 
   constructor() {
     effect(() => {
       if (!isDevMode()) return;
 
-      for (const warning of this.resolution().warnings) console.warn(warning);
+      for (const warning of this._resolution().warnings) console.warn(warning);
     });
   }
 
-  private pickVariant(
+  private _pickVariant(
     variants: EgovIcon['variants'],
     warnings: string[],
   ): EgovIconVariant | undefined {
@@ -104,7 +104,7 @@ export class EgovIconComponent {
     return (Object.keys(variants) as EgovIconVariant[])[0];
   }
 
-  private pickScale(
+  private _pickScale(
     byScale: Partial<Record<EgovIconScale, EgovIconGeometry>>,
     warnings: string[],
   ): EgovIconScale | undefined {

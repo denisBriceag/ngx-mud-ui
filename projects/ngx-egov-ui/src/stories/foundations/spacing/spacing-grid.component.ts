@@ -240,7 +240,7 @@ export class SpacingGridComponent {
   }
 
   constructor() {
-    afterNextRender(() => this.load());
+    afterNextRender(() => this._load());
   }
 
   protected copy(className: string): void {
@@ -250,7 +250,7 @@ export class SpacingGridComponent {
     setTimeout(() => this.copied.update((current) => (current === className ? null : current)), 1200);
   }
 
-  private load(): void {
+  private _load(): void {
     const config = this.config();
     const byVariant = new Map<string, SpacingItem[]>();
     const seen = new Set<string>();
@@ -283,7 +283,7 @@ export class SpacingGridComponent {
         const value = property ? rule.style.getPropertyValue(property).trim() : '';
         const items = byVariant.get(variant) ?? [];
 
-        items.push({ className: rule.selectorText.slice(1), scale, label: this.formatLabel(value) });
+        items.push({ className: rule.selectorText.slice(1), scale, label: this._formatLabel(value) });
         byVariant.set(variant, items);
       }
     }
@@ -302,7 +302,7 @@ export class SpacingGridComponent {
     this.sections.set(sections);
   }
 
-  private formatLabel(value: string): string {
+  private _formatLabel(value: string): string {
     if (!value) {
       return '';
     }
