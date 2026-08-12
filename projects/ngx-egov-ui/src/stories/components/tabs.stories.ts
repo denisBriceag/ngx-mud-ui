@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
 import { Component, signal } from '@angular/core';
-import { EgovTab, EgovTabGroup, EgovTabLabel } from '../../tabs/src/public-api';
-import type { EgovTabChangeEvent } from '../../tabs/src/public-api';
-import { alarm, EgovIconComponent, lock, provideEgovIcons, search, settings } from '../../icons/src/public-api';
+import { EgovTab, EgovTabGroup, EgovTabLabel } from '../../../tabs/src/public-api';
+import type { EgovTabChangeEvent } from '../../../tabs/src/public-api';
+import { alarm, EgovIconComponent, lock, provideEgovIcons, search, settings } from '../../../icons/src/public-api';
 
 const COUNTER_STYLE =
   'display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:9999px;background:var(--gray-100,#f1f1f1);color:var(--black,#121212);font-size:12px';

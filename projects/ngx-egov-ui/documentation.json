@@ -302,6 +302,198 @@
             }
         },
         {
+            "name": "KindConfig",
+            "id": "interface-KindConfig-4d097e04ed38c482388d74289050061d5478f01f0f326a06887596cfaf2f5dddf866a74b1e2e26cd37dd5b60f0867b0c9e95f5dbe75c6d2b4c36a696450b1dba",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "type": "interface",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, input, signal } from '@angular/core';\n\nexport type SpacingKind = 'gap' | 'margin' | 'padding';\n\ninterface SpacingItem {\n  className: string;\n  scale: number;\n  label: string;\n}\n\ninterface SpacingSection {\n  key: string;\n  title: string;\n  items: SpacingItem[];\n}\n\ninterface KindConfig {\n  note: string;\n  test: RegExp;\n  variantOf: (match: RegExpExecArray) => string;\n  scaleOf: (match: RegExpExecArray) => number;\n  sections: { key: string; title: string }[];\n}\n\nconst CONFIG: Record<SpacingKind, KindConfig> = {\n  gap: {\n    note: 'Flexbox / grid gap utilities on the shared spacing scale (each step = 4px). Click a card to copy the class name.',\n    test: /^\\.(gap|row-gap|col-gap)-(\\d+)$/,\n    variantOf: (m) => m[1],\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'gap', title: 'Gap — both axes' },\n      { key: 'col-gap', title: 'Column gap — horizontal' },\n      { key: 'row-gap', title: 'Row gap — vertical' },\n    ],\n  },\n  margin: {\n    note: 'Margin utilities on the shared spacing scale (each step = 4px). The light zone is the margin around the box. Click a card to copy the class name.',\n    test: /^\\.m([trblxy]?)-(\\d+)$/,\n    variantOf: (m) => m[1] || 'a',\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'a', title: 'All sides' },\n      { key: 'x', title: 'Horizontal — x' },\n      { key: 'y', title: 'Vertical — y' },\n      { key: 't', title: 'Top' },\n      { key: 'r', title: 'Right' },\n      { key: 'b', title: 'Bottom' },\n      { key: 'l', title: 'Left' },\n    ],\n  },\n  padding: {\n    note: 'Padding utilities on the shared spacing scale (each step = 4px). The light zone is the padding inside the box. Click a card to copy the class name.',\n    test: /^\\.p([trblxy]?)-(\\d+)$/,\n    variantOf: (m) => m[1] || 'a',\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'a', title: 'All sides' },\n      { key: 'x', title: 'Horizontal — x' },\n      { key: 'y', title: 'Vertical — y' },\n      { key: 't', title: 'Top' },\n      { key: 'r', title: 'Right' },\n      { key: 'b', title: 'Bottom' },\n      { key: 'l', title: 'Left' },\n    ],\n  },\n};\n\n@Component({\n  selector: 'egov-spacing-grid',\n  template: `\n    <p class=\"note\">{{ config().note }}</p>\n\n    @for (section of sections(); track section.key) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ section.title }}</h3>\n        <div class=\"grid\">\n          @for (item of section.items; track item.className) {\n            <button type=\"button\" class=\"card\" [title]=\"'Copy ' + item.className\" (click)=\"copy(item.className)\">\n              <div class=\"demo\">\n                @switch (kind()) {\n                  @case ('gap') {\n                    <div class=\"gapwrap {{ item.className }}\">\n                      @for (n of BOXES; track n) {\n                        <span class=\"gbox\"></span>\n                      }\n                    </div>\n                  }\n                  @case ('margin') {\n                    <div class=\"mzone\"><span class=\"mbox {{ item.className }}\"></span></div>\n                  }\n                  @case ('padding') {\n                    <div class=\"pzone {{ item.className }}\"><span class=\"pinner\"></span></div>\n                  }\n                }\n              </div>\n              <div class=\"meta\">\n                <code class=\"meta__name\">{{ item.className }}</code>\n                <span class=\"meta__value\">{{ item.label }}</span>\n              </div>\n              <span class=\"copied\" [class.show]=\"copied() === item.className\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n\n    @if (sections().length === 0) {\n      <p class=\"empty\">No {{ kind() }} utilities found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.95rem;\n      font-weight: 600;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));\n      gap: 0.75rem;\n      align-items: start;\n    }\n    .card {\n      display: flex;\n      flex-direction: column;\n      gap: 0.5rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .card:hover {\n      border-color: #cfcfcf;\n    }\n    .demo {\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      min-height: 72px;\n      max-height: 200px;\n      overflow: auto;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 0.5rem;\n    }\n    .gapwrap {\n      display: flex;\n      flex-wrap: wrap;\n      width: 96px;\n    }\n    .gbox {\n      width: 28px;\n      height: 20px;\n      border-radius: 4px;\n      background: #7aa7ff;\n    }\n    .mzone {\n      display: inline-flex;\n      background: #dbe7ff;\n      border-radius: 4px;\n    }\n    .mbox {\n      width: 44px;\n      height: 26px;\n      border-radius: 4px;\n      background: #2563eb;\n    }\n    .pzone {\n      display: inline-block;\n      background: #dbe7ff;\n      border-radius: 4px;\n    }\n    .pinner {\n      display: block;\n      width: 44px;\n      height: 26px;\n      border-radius: 2px;\n      background: #2563eb;\n    }\n    .meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class SpacingGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  readonly kind = input.required<SpacingKind>();\n\n  protected readonly BOXES = [0, 1, 2, 3, 4, 5];\n  protected readonly sections = signal<SpacingSection[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  protected config(): KindConfig {\n    return CONFIG[this.kind()];\n  }\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected copy(className: string): void {\n    void navigator.clipboard?.writeText(className);\n    this.copied.set(className);\n\n    setTimeout(() => this.copied.update((current) => (current === className ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const config = this.config();\n    const byVariant = new Map<string, SpacingItem[]>();\n    const seen = new Set<string>();\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue;\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule)) {\n          continue;\n        }\n\n        const match = config.test.exec(rule.selectorText);\n\n        if (!match || seen.has(rule.selectorText)) {\n          continue;\n        }\n\n        seen.add(rule.selectorText);\n\n        const variant = config.variantOf(match);\n        const scale = config.scaleOf(match);\n        const property = rule.style.item(0);\n        const value = property ? rule.style.getPropertyValue(property).trim() : '';\n        const items = byVariant.get(variant) ?? [];\n\n        items.push({ className: rule.selectorText.slice(1), scale, label: this.formatLabel(value) });\n        byVariant.set(variant, items);\n      }\n    }\n\n    const sections: SpacingSection[] = [];\n\n    for (const { key, title } of config.sections) {\n      const items = byVariant.get(key);\n\n      if (items?.length) {\n        items.sort((a, b) => a.scale - b.scale);\n        sections.push({ key, title, items });\n      }\n    }\n\n    this.sections.set(sections);\n  }\n\n  private formatLabel(value: string): string {\n    if (!value) {\n      return '';\n    }\n\n    const px = value.endsWith('rem')\n      ? parseFloat(value) * 16\n      : value.endsWith('px')\n        ? parseFloat(value)\n        : Number.NaN;\n\n    return Number.isNaN(px) ? value : `${px}px · ${value}`;\n  }\n}\n",
+            "displayName": "KindConfig",
+            "properties": [
+                {
+                    "name": "note",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 18,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "scaleOf",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "function",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 21,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "sections",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "{ key: string; title: string }[]",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 22,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "test",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "RegExp",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 19,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "variantOf",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "function",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 20,
+                    "rawdescription": "\n"
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 172,
+            "methods": [],
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        },
+        {
+            "name": "SpacingItem",
+            "id": "interface-SpacingItem-4d097e04ed38c482388d74289050061d5478f01f0f326a06887596cfaf2f5dddf866a74b1e2e26cd37dd5b60f0867b0c9e95f5dbe75c6d2b4c36a696450b1dba",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "type": "interface",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, input, signal } from '@angular/core';\n\nexport type SpacingKind = 'gap' | 'margin' | 'padding';\n\ninterface SpacingItem {\n  className: string;\n  scale: number;\n  label: string;\n}\n\ninterface SpacingSection {\n  key: string;\n  title: string;\n  items: SpacingItem[];\n}\n\ninterface KindConfig {\n  note: string;\n  test: RegExp;\n  variantOf: (match: RegExpExecArray) => string;\n  scaleOf: (match: RegExpExecArray) => number;\n  sections: { key: string; title: string }[];\n}\n\nconst CONFIG: Record<SpacingKind, KindConfig> = {\n  gap: {\n    note: 'Flexbox / grid gap utilities on the shared spacing scale (each step = 4px). Click a card to copy the class name.',\n    test: /^\\.(gap|row-gap|col-gap)-(\\d+)$/,\n    variantOf: (m) => m[1],\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'gap', title: 'Gap — both axes' },\n      { key: 'col-gap', title: 'Column gap — horizontal' },\n      { key: 'row-gap', title: 'Row gap — vertical' },\n    ],\n  },\n  margin: {\n    note: 'Margin utilities on the shared spacing scale (each step = 4px). The light zone is the margin around the box. Click a card to copy the class name.',\n    test: /^\\.m([trblxy]?)-(\\d+)$/,\n    variantOf: (m) => m[1] || 'a',\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'a', title: 'All sides' },\n      { key: 'x', title: 'Horizontal — x' },\n      { key: 'y', title: 'Vertical — y' },\n      { key: 't', title: 'Top' },\n      { key: 'r', title: 'Right' },\n      { key: 'b', title: 'Bottom' },\n      { key: 'l', title: 'Left' },\n    ],\n  },\n  padding: {\n    note: 'Padding utilities on the shared spacing scale (each step = 4px). The light zone is the padding inside the box. Click a card to copy the class name.',\n    test: /^\\.p([trblxy]?)-(\\d+)$/,\n    variantOf: (m) => m[1] || 'a',\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'a', title: 'All sides' },\n      { key: 'x', title: 'Horizontal — x' },\n      { key: 'y', title: 'Vertical — y' },\n      { key: 't', title: 'Top' },\n      { key: 'r', title: 'Right' },\n      { key: 'b', title: 'Bottom' },\n      { key: 'l', title: 'Left' },\n    ],\n  },\n};\n\n@Component({\n  selector: 'egov-spacing-grid',\n  template: `\n    <p class=\"note\">{{ config().note }}</p>\n\n    @for (section of sections(); track section.key) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ section.title }}</h3>\n        <div class=\"grid\">\n          @for (item of section.items; track item.className) {\n            <button type=\"button\" class=\"card\" [title]=\"'Copy ' + item.className\" (click)=\"copy(item.className)\">\n              <div class=\"demo\">\n                @switch (kind()) {\n                  @case ('gap') {\n                    <div class=\"gapwrap {{ item.className }}\">\n                      @for (n of BOXES; track n) {\n                        <span class=\"gbox\"></span>\n                      }\n                    </div>\n                  }\n                  @case ('margin') {\n                    <div class=\"mzone\"><span class=\"mbox {{ item.className }}\"></span></div>\n                  }\n                  @case ('padding') {\n                    <div class=\"pzone {{ item.className }}\"><span class=\"pinner\"></span></div>\n                  }\n                }\n              </div>\n              <div class=\"meta\">\n                <code class=\"meta__name\">{{ item.className }}</code>\n                <span class=\"meta__value\">{{ item.label }}</span>\n              </div>\n              <span class=\"copied\" [class.show]=\"copied() === item.className\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n\n    @if (sections().length === 0) {\n      <p class=\"empty\">No {{ kind() }} utilities found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.95rem;\n      font-weight: 600;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));\n      gap: 0.75rem;\n      align-items: start;\n    }\n    .card {\n      display: flex;\n      flex-direction: column;\n      gap: 0.5rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .card:hover {\n      border-color: #cfcfcf;\n    }\n    .demo {\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      min-height: 72px;\n      max-height: 200px;\n      overflow: auto;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 0.5rem;\n    }\n    .gapwrap {\n      display: flex;\n      flex-wrap: wrap;\n      width: 96px;\n    }\n    .gbox {\n      width: 28px;\n      height: 20px;\n      border-radius: 4px;\n      background: #7aa7ff;\n    }\n    .mzone {\n      display: inline-flex;\n      background: #dbe7ff;\n      border-radius: 4px;\n    }\n    .mbox {\n      width: 44px;\n      height: 26px;\n      border-radius: 4px;\n      background: #2563eb;\n    }\n    .pzone {\n      display: inline-block;\n      background: #dbe7ff;\n      border-radius: 4px;\n    }\n    .pinner {\n      display: block;\n      width: 44px;\n      height: 26px;\n      border-radius: 2px;\n      background: #2563eb;\n    }\n    .meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class SpacingGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  readonly kind = input.required<SpacingKind>();\n\n  protected readonly BOXES = [0, 1, 2, 3, 4, 5];\n  protected readonly sections = signal<SpacingSection[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  protected config(): KindConfig {\n    return CONFIG[this.kind()];\n  }\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected copy(className: string): void {\n    void navigator.clipboard?.writeText(className);\n    this.copied.set(className);\n\n    setTimeout(() => this.copied.update((current) => (current === className ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const config = this.config();\n    const byVariant = new Map<string, SpacingItem[]>();\n    const seen = new Set<string>();\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue;\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule)) {\n          continue;\n        }\n\n        const match = config.test.exec(rule.selectorText);\n\n        if (!match || seen.has(rule.selectorText)) {\n          continue;\n        }\n\n        seen.add(rule.selectorText);\n\n        const variant = config.variantOf(match);\n        const scale = config.scaleOf(match);\n        const property = rule.style.item(0);\n        const value = property ? rule.style.getPropertyValue(property).trim() : '';\n        const items = byVariant.get(variant) ?? [];\n\n        items.push({ className: rule.selectorText.slice(1), scale, label: this.formatLabel(value) });\n        byVariant.set(variant, items);\n      }\n    }\n\n    const sections: SpacingSection[] = [];\n\n    for (const { key, title } of config.sections) {\n      const items = byVariant.get(key);\n\n      if (items?.length) {\n        items.sort((a, b) => a.scale - b.scale);\n        sections.push({ key, title, items });\n      }\n    }\n\n    this.sections.set(sections);\n  }\n\n  private formatLabel(value: string): string {\n    if (!value) {\n      return '';\n    }\n\n    const px = value.endsWith('rem')\n      ? parseFloat(value) * 16\n      : value.endsWith('px')\n        ? parseFloat(value)\n        : Number.NaN;\n\n    return Number.isNaN(px) ? value : `${px}px · ${value}`;\n  }\n}\n",
+            "displayName": "SpacingItem",
+            "properties": [
+                {
+                    "name": "className",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 6,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "label",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 8,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "scale",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "number",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 7,
+                    "rawdescription": "\n"
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 172,
+            "methods": [],
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        },
+        {
+            "name": "SpacingSection",
+            "id": "interface-SpacingSection-4d097e04ed38c482388d74289050061d5478f01f0f326a06887596cfaf2f5dddf866a74b1e2e26cd37dd5b60f0867b0c9e95f5dbe75c6d2b4c36a696450b1dba",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "type": "interface",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, input, signal } from '@angular/core';\n\nexport type SpacingKind = 'gap' | 'margin' | 'padding';\n\ninterface SpacingItem {\n  className: string;\n  scale: number;\n  label: string;\n}\n\ninterface SpacingSection {\n  key: string;\n  title: string;\n  items: SpacingItem[];\n}\n\ninterface KindConfig {\n  note: string;\n  test: RegExp;\n  variantOf: (match: RegExpExecArray) => string;\n  scaleOf: (match: RegExpExecArray) => number;\n  sections: { key: string; title: string }[];\n}\n\nconst CONFIG: Record<SpacingKind, KindConfig> = {\n  gap: {\n    note: 'Flexbox / grid gap utilities on the shared spacing scale (each step = 4px). Click a card to copy the class name.',\n    test: /^\\.(gap|row-gap|col-gap)-(\\d+)$/,\n    variantOf: (m) => m[1],\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'gap', title: 'Gap — both axes' },\n      { key: 'col-gap', title: 'Column gap — horizontal' },\n      { key: 'row-gap', title: 'Row gap — vertical' },\n    ],\n  },\n  margin: {\n    note: 'Margin utilities on the shared spacing scale (each step = 4px). The light zone is the margin around the box. Click a card to copy the class name.',\n    test: /^\\.m([trblxy]?)-(\\d+)$/,\n    variantOf: (m) => m[1] || 'a',\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'a', title: 'All sides' },\n      { key: 'x', title: 'Horizontal — x' },\n      { key: 'y', title: 'Vertical — y' },\n      { key: 't', title: 'Top' },\n      { key: 'r', title: 'Right' },\n      { key: 'b', title: 'Bottom' },\n      { key: 'l', title: 'Left' },\n    ],\n  },\n  padding: {\n    note: 'Padding utilities on the shared spacing scale (each step = 4px). The light zone is the padding inside the box. Click a card to copy the class name.',\n    test: /^\\.p([trblxy]?)-(\\d+)$/,\n    variantOf: (m) => m[1] || 'a',\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'a', title: 'All sides' },\n      { key: 'x', title: 'Horizontal — x' },\n      { key: 'y', title: 'Vertical — y' },\n      { key: 't', title: 'Top' },\n      { key: 'r', title: 'Right' },\n      { key: 'b', title: 'Bottom' },\n      { key: 'l', title: 'Left' },\n    ],\n  },\n};\n\n@Component({\n  selector: 'egov-spacing-grid',\n  template: `\n    <p class=\"note\">{{ config().note }}</p>\n\n    @for (section of sections(); track section.key) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ section.title }}</h3>\n        <div class=\"grid\">\n          @for (item of section.items; track item.className) {\n            <button type=\"button\" class=\"card\" [title]=\"'Copy ' + item.className\" (click)=\"copy(item.className)\">\n              <div class=\"demo\">\n                @switch (kind()) {\n                  @case ('gap') {\n                    <div class=\"gapwrap {{ item.className }}\">\n                      @for (n of BOXES; track n) {\n                        <span class=\"gbox\"></span>\n                      }\n                    </div>\n                  }\n                  @case ('margin') {\n                    <div class=\"mzone\"><span class=\"mbox {{ item.className }}\"></span></div>\n                  }\n                  @case ('padding') {\n                    <div class=\"pzone {{ item.className }}\"><span class=\"pinner\"></span></div>\n                  }\n                }\n              </div>\n              <div class=\"meta\">\n                <code class=\"meta__name\">{{ item.className }}</code>\n                <span class=\"meta__value\">{{ item.label }}</span>\n              </div>\n              <span class=\"copied\" [class.show]=\"copied() === item.className\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n\n    @if (sections().length === 0) {\n      <p class=\"empty\">No {{ kind() }} utilities found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.95rem;\n      font-weight: 600;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));\n      gap: 0.75rem;\n      align-items: start;\n    }\n    .card {\n      display: flex;\n      flex-direction: column;\n      gap: 0.5rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .card:hover {\n      border-color: #cfcfcf;\n    }\n    .demo {\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      min-height: 72px;\n      max-height: 200px;\n      overflow: auto;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 0.5rem;\n    }\n    .gapwrap {\n      display: flex;\n      flex-wrap: wrap;\n      width: 96px;\n    }\n    .gbox {\n      width: 28px;\n      height: 20px;\n      border-radius: 4px;\n      background: #7aa7ff;\n    }\n    .mzone {\n      display: inline-flex;\n      background: #dbe7ff;\n      border-radius: 4px;\n    }\n    .mbox {\n      width: 44px;\n      height: 26px;\n      border-radius: 4px;\n      background: #2563eb;\n    }\n    .pzone {\n      display: inline-block;\n      background: #dbe7ff;\n      border-radius: 4px;\n    }\n    .pinner {\n      display: block;\n      width: 44px;\n      height: 26px;\n      border-radius: 2px;\n      background: #2563eb;\n    }\n    .meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class SpacingGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  readonly kind = input.required<SpacingKind>();\n\n  protected readonly BOXES = [0, 1, 2, 3, 4, 5];\n  protected readonly sections = signal<SpacingSection[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  protected config(): KindConfig {\n    return CONFIG[this.kind()];\n  }\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected copy(className: string): void {\n    void navigator.clipboard?.writeText(className);\n    this.copied.set(className);\n\n    setTimeout(() => this.copied.update((current) => (current === className ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const config = this.config();\n    const byVariant = new Map<string, SpacingItem[]>();\n    const seen = new Set<string>();\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue;\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule)) {\n          continue;\n        }\n\n        const match = config.test.exec(rule.selectorText);\n\n        if (!match || seen.has(rule.selectorText)) {\n          continue;\n        }\n\n        seen.add(rule.selectorText);\n\n        const variant = config.variantOf(match);\n        const scale = config.scaleOf(match);\n        const property = rule.style.item(0);\n        const value = property ? rule.style.getPropertyValue(property).trim() : '';\n        const items = byVariant.get(variant) ?? [];\n\n        items.push({ className: rule.selectorText.slice(1), scale, label: this.formatLabel(value) });\n        byVariant.set(variant, items);\n      }\n    }\n\n    const sections: SpacingSection[] = [];\n\n    for (const { key, title } of config.sections) {\n      const items = byVariant.get(key);\n\n      if (items?.length) {\n        items.sort((a, b) => a.scale - b.scale);\n        sections.push({ key, title, items });\n      }\n    }\n\n    this.sections.set(sections);\n  }\n\n  private formatLabel(value: string): string {\n    if (!value) {\n      return '';\n    }\n\n    const px = value.endsWith('rem')\n      ? parseFloat(value) * 16\n      : value.endsWith('px')\n        ? parseFloat(value)\n        : Number.NaN;\n\n    return Number.isNaN(px) ? value : `${px}px · ${value}`;\n  }\n}\n",
+            "displayName": "SpacingSection",
+            "properties": [
+                {
+                    "name": "items",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "SpacingItem[]",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 14,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "key",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 12,
+                    "rawdescription": "\n"
+                },
+                {
+                    "name": "title",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 13,
+                    "rawdescription": "\n"
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 172,
+            "methods": [],
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        },
+        {
             "name": "Swatch",
             "id": "interface-Swatch-062b90e80cc1b9d1e69dad0563901416c9f8f045d6643ac1dbf42ac69166f7862f0c9b5741012e1a6c25ecd92d38caeb82731ee26d99a21ebb3212db013bf361",
             "file": "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts",
@@ -1622,9 +1814,257 @@
             }
         },
         {
+            "name": "SpacingGridComponent",
+            "id": "component-SpacingGridComponent-4d097e04ed38c482388d74289050061d5478f01f0f326a06887596cfaf2f5dddf866a74b1e2e26cd37dd5b60f0867b0c9e95f5dbe75c6d2b4c36a696450b1dba",
+            "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts",
+            "changeDetection": "ChangeDetectionStrategy.OnPush",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "egov-spacing-grid",
+            "styleUrls": [],
+            "styles": [
+                "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.95rem;\n      font-weight: 600;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));\n      gap: 0.75rem;\n      align-items: start;\n    }\n    .card {\n      display: flex;\n      flex-direction: column;\n      gap: 0.5rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .card:hover {\n      border-color: #cfcfcf;\n    }\n    .demo {\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      min-height: 72px;\n      max-height: 200px;\n      overflow: auto;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 0.5rem;\n    }\n    .gapwrap {\n      display: flex;\n      flex-wrap: wrap;\n      width: 96px;\n    }\n    .gbox {\n      width: 28px;\n      height: 20px;\n      border-radius: 4px;\n      background: #7aa7ff;\n    }\n    .mzone {\n      display: inline-flex;\n      background: #dbe7ff;\n      border-radius: 4px;\n    }\n    .mbox {\n      width: 44px;\n      height: 26px;\n      border-radius: 4px;\n      background: #2563eb;\n    }\n    .pzone {\n      display: inline-block;\n      background: #dbe7ff;\n      border-radius: 4px;\n    }\n    .pinner {\n      display: block;\n      width: 44px;\n      height: 26px;\n      border-radius: 2px;\n      background: #2563eb;\n    }\n    .meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  "
+            ],
+            "template": "<p class=\"note\">{{ config().note }}</p>\n\n@for (section of sections(); track section.key) {\n  <section class=\"group\">\n    <h3 class=\"group__title\">{{ section.title }}</h3>\n    <div class=\"grid\">\n      @for (item of section.items; track item.className) {\n        <button type=\"button\" class=\"card\" [title]=\"'Copy ' + item.className\" (click)=\"copy(item.className)\">\n          <div class=\"demo\">\n            @switch (kind()) {\n              @case ('gap') {\n                <div class=\"gapwrap {{ item.className }}\">\n                  @for (n of BOXES; track n) {\n                    <span class=\"gbox\"></span>\n                  }\n                </div>\n              }\n              @case ('margin') {\n                <div class=\"mzone\"><span class=\"mbox {{ item.className }}\"></span></div>\n              }\n              @case ('padding') {\n                <div class=\"pzone {{ item.className }}\"><span class=\"pinner\"></span></div>\n              }\n            }\n          </div>\n          <div class=\"meta\">\n            <code class=\"meta__name\">{{ item.className }}</code>\n            <span class=\"meta__value\">{{ item.label }}</span>\n          </div>\n          <span class=\"copied\" [class.show]=\"copied() === item.className\">copied ✓</span>\n        </button>\n      }\n    </div>\n  </section>\n}\n\n@if (sections().length === 0) {\n  <p class=\"empty\">No {{ kind() }} utilities found in the loaded stylesheet.</p>\n}\n",
+            "templateUrl": [],
+            "templateVariables": [],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [
+                {
+                    "name": "kind",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "SpacingKind",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 232,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        148
+                    ],
+                    "required": true
+                }
+            ],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "_document",
+                    "coverageIgnore": false,
+                    "defaultValue": "inject(DOCUMENT)",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 230,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        123,
+                        148
+                    ]
+                },
+                {
+                    "name": "BOXES",
+                    "coverageIgnore": false,
+                    "defaultValue": "[0, 1, 2, 3, 4, 5]",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "[]",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 234,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                },
+                {
+                    "name": "copied",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal<string | null>(null)",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 236,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                },
+                {
+                    "name": "sections",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal<SpacingSection[]>([])",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 235,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        124,
+                        148
+                    ]
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "config",
+                    "coverageIgnore": false,
+                    "args": [],
+                    "optional": false,
+                    "returnType": "KindConfig",
+                    "typeParameters": [],
+                    "line": 238,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        124
+                    ]
+                },
+                {
+                    "name": "copy",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "className",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 246,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        124
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "className",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "formatLabel",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "value",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "string",
+                    "typeParameters": [],
+                    "line": 305,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        123
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "value",
+                            "type": "string",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "load",
+                    "coverageIgnore": false,
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 253,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "modifierKind": [
+                        123
+                    ]
+                }
+            ],
+            "coverageIgnore": false,
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "standalone": true,
+            "imports": [],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { afterNextRender, Component, DOCUMENT, inject, input, signal } from '@angular/core';\n\nexport type SpacingKind = 'gap' | 'margin' | 'padding';\n\ninterface SpacingItem {\n  className: string;\n  scale: number;\n  label: string;\n}\n\ninterface SpacingSection {\n  key: string;\n  title: string;\n  items: SpacingItem[];\n}\n\ninterface KindConfig {\n  note: string;\n  test: RegExp;\n  variantOf: (match: RegExpExecArray) => string;\n  scaleOf: (match: RegExpExecArray) => number;\n  sections: { key: string; title: string }[];\n}\n\nconst CONFIG: Record<SpacingKind, KindConfig> = {\n  gap: {\n    note: 'Flexbox / grid gap utilities on the shared spacing scale (each step = 4px). Click a card to copy the class name.',\n    test: /^\\.(gap|row-gap|col-gap)-(\\d+)$/,\n    variantOf: (m) => m[1],\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'gap', title: 'Gap — both axes' },\n      { key: 'col-gap', title: 'Column gap — horizontal' },\n      { key: 'row-gap', title: 'Row gap — vertical' },\n    ],\n  },\n  margin: {\n    note: 'Margin utilities on the shared spacing scale (each step = 4px). The light zone is the margin around the box. Click a card to copy the class name.',\n    test: /^\\.m([trblxy]?)-(\\d+)$/,\n    variantOf: (m) => m[1] || 'a',\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'a', title: 'All sides' },\n      { key: 'x', title: 'Horizontal — x' },\n      { key: 'y', title: 'Vertical — y' },\n      { key: 't', title: 'Top' },\n      { key: 'r', title: 'Right' },\n      { key: 'b', title: 'Bottom' },\n      { key: 'l', title: 'Left' },\n    ],\n  },\n  padding: {\n    note: 'Padding utilities on the shared spacing scale (each step = 4px). The light zone is the padding inside the box. Click a card to copy the class name.',\n    test: /^\\.p([trblxy]?)-(\\d+)$/,\n    variantOf: (m) => m[1] || 'a',\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'a', title: 'All sides' },\n      { key: 'x', title: 'Horizontal — x' },\n      { key: 'y', title: 'Vertical — y' },\n      { key: 't', title: 'Top' },\n      { key: 'r', title: 'Right' },\n      { key: 'b', title: 'Bottom' },\n      { key: 'l', title: 'Left' },\n    ],\n  },\n};\n\n@Component({\n  selector: 'egov-spacing-grid',\n  template: `\n    <p class=\"note\">{{ config().note }}</p>\n\n    @for (section of sections(); track section.key) {\n      <section class=\"group\">\n        <h3 class=\"group__title\">{{ section.title }}</h3>\n        <div class=\"grid\">\n          @for (item of section.items; track item.className) {\n            <button type=\"button\" class=\"card\" [title]=\"'Copy ' + item.className\" (click)=\"copy(item.className)\">\n              <div class=\"demo\">\n                @switch (kind()) {\n                  @case ('gap') {\n                    <div class=\"gapwrap {{ item.className }}\">\n                      @for (n of BOXES; track n) {\n                        <span class=\"gbox\"></span>\n                      }\n                    </div>\n                  }\n                  @case ('margin') {\n                    <div class=\"mzone\"><span class=\"mbox {{ item.className }}\"></span></div>\n                  }\n                  @case ('padding') {\n                    <div class=\"pzone {{ item.className }}\"><span class=\"pinner\"></span></div>\n                  }\n                }\n              </div>\n              <div class=\"meta\">\n                <code class=\"meta__name\">{{ item.className }}</code>\n                <span class=\"meta__value\">{{ item.label }}</span>\n              </div>\n              <span class=\"copied\" [class.show]=\"copied() === item.className\">copied ✓</span>\n            </button>\n          }\n        </div>\n      </section>\n    }\n\n    @if (sections().length === 0) {\n      <p class=\"empty\">No {{ kind() }} utilities found in the loaded stylesheet.</p>\n    }\n  `,\n  styles: `\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.95rem;\n      font-weight: 600;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));\n      gap: 0.75rem;\n      align-items: start;\n    }\n    .card {\n      display: flex;\n      flex-direction: column;\n      gap: 0.5rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .card:hover {\n      border-color: #cfcfcf;\n    }\n    .demo {\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      min-height: 72px;\n      max-height: 200px;\n      overflow: auto;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 0.5rem;\n    }\n    .gapwrap {\n      display: flex;\n      flex-wrap: wrap;\n      width: 96px;\n    }\n    .gbox {\n      width: 28px;\n      height: 20px;\n      border-radius: 4px;\n      background: #7aa7ff;\n    }\n    .mzone {\n      display: inline-flex;\n      background: #dbe7ff;\n      border-radius: 4px;\n    }\n    .mbox {\n      width: 44px;\n      height: 26px;\n      border-radius: 4px;\n      background: #2563eb;\n    }\n    .pzone {\n      display: inline-block;\n      background: #dbe7ff;\n      border-radius: 4px;\n    }\n    .pinner {\n      display: block;\n      width: 44px;\n      height: 26px;\n      border-radius: 2px;\n      background: #2563eb;\n    }\n    .meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  `,\n})\nexport class SpacingGridComponent {\n  private readonly _document = inject(DOCUMENT);\n\n  readonly kind = input.required<SpacingKind>();\n\n  protected readonly BOXES = [0, 1, 2, 3, 4, 5];\n  protected readonly sections = signal<SpacingSection[]>([]);\n  protected readonly copied = signal<string | null>(null);\n\n  protected config(): KindConfig {\n    return CONFIG[this.kind()];\n  }\n\n  constructor() {\n    afterNextRender(() => this.load());\n  }\n\n  protected copy(className: string): void {\n    void navigator.clipboard?.writeText(className);\n    this.copied.set(className);\n\n    setTimeout(() => this.copied.update((current) => (current === className ? null : current)), 1200);\n  }\n\n  private load(): void {\n    const config = this.config();\n    const byVariant = new Map<string, SpacingItem[]>();\n    const seen = new Set<string>();\n\n    for (const sheet of Array.from(this._document.styleSheets)) {\n      let rules: CSSRuleList;\n\n      try {\n        rules = sheet.cssRules;\n      } catch {\n        continue;\n      }\n\n      for (const rule of Array.from(rules)) {\n        if (!(rule instanceof CSSStyleRule)) {\n          continue;\n        }\n\n        const match = config.test.exec(rule.selectorText);\n\n        if (!match || seen.has(rule.selectorText)) {\n          continue;\n        }\n\n        seen.add(rule.selectorText);\n\n        const variant = config.variantOf(match);\n        const scale = config.scaleOf(match);\n        const property = rule.style.item(0);\n        const value = property ? rule.style.getPropertyValue(property).trim() : '';\n        const items = byVariant.get(variant) ?? [];\n\n        items.push({ className: rule.selectorText.slice(1), scale, label: this.formatLabel(value) });\n        byVariant.set(variant, items);\n      }\n    }\n\n    const sections: SpacingSection[] = [];\n\n    for (const { key, title } of config.sections) {\n      const items = byVariant.get(key);\n\n      if (items?.length) {\n        items.sort((a, b) => a.scale - b.scale);\n        sections.push({ key, title, items });\n      }\n    }\n\n    this.sections.set(sections);\n  }\n\n  private formatLabel(value: string): string {\n    if (!value) {\n      return '';\n    }\n\n    const px = value.endsWith('rem')\n      ? parseFloat(value) * 16\n      : value.endsWith('px')\n        ? parseFloat(value)\n        : Number.NaN;\n\n    return Number.isNaN(px) ? value : `${px}px · ${value}`;\n  }\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "\n    :host {\n      display: block;\n      padding: 1.5rem 2rem;\n      font-family: system-ui, sans-serif;\n      color: #121212;\n    }\n    .note {\n      margin: 0 0 1.5rem;\n      font-size: 0.82rem;\n      color: #757575;\n    }\n    .group {\n      margin-bottom: 2rem;\n    }\n    .group__title {\n      margin: 0 0 0.75rem;\n      font-size: 0.95rem;\n      font-weight: 600;\n    }\n    .grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));\n      gap: 0.75rem;\n      align-items: start;\n    }\n    .card {\n      display: flex;\n      flex-direction: column;\n      gap: 0.5rem;\n      position: relative;\n      text-align: left;\n      border: 1px solid #ececec;\n      border-radius: 10px;\n      background: #fff;\n      padding: 0.75rem;\n      font: inherit;\n      cursor: pointer;\n    }\n    .card:hover {\n      border-color: #cfcfcf;\n    }\n    .demo {\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      min-height: 72px;\n      max-height: 200px;\n      overflow: auto;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 0.5rem;\n    }\n    .gapwrap {\n      display: flex;\n      flex-wrap: wrap;\n      width: 96px;\n    }\n    .gbox {\n      width: 28px;\n      height: 20px;\n      border-radius: 4px;\n      background: #7aa7ff;\n    }\n    .mzone {\n      display: inline-flex;\n      background: #dbe7ff;\n      border-radius: 4px;\n    }\n    .mbox {\n      width: 44px;\n      height: 26px;\n      border-radius: 4px;\n      background: #2563eb;\n    }\n    .pzone {\n      display: inline-block;\n      background: #dbe7ff;\n      border-radius: 4px;\n    }\n    .pinner {\n      display: block;\n      width: 44px;\n      height: 26px;\n      border-radius: 2px;\n      background: #2563eb;\n    }\n    .meta {\n      display: flex;\n      flex-direction: column;\n      min-width: 0;\n    }\n    .meta__name {\n      font-family: ui-monospace, monospace;\n      font-size: 0.78rem;\n    }\n    .meta__value {\n      font-size: 0.72rem;\n      color: #757575;\n    }\n    .copied {\n      position: absolute;\n      right: 0.6rem;\n      top: 0.5rem;\n      font-size: 0.7rem;\n      color: #0a7d34;\n      opacity: 0;\n      transition: opacity 0.15s;\n    }\n    .copied.show {\n      opacity: 1;\n    }\n    .empty {\n      color: #757575;\n    }\n  \n",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "args": [],
+                "line": 240,
+                "rawdescription": "\n"
+            },
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": []
+            }
+        },
+        {
             "name": "TabsInteractiveDemo",
-            "id": "component-TabsInteractiveDemo-e2e71b88bfd2bcc3d4a5d12109830ded9b927db7421a5bf829ec185bb4c18be26f76e13643d63d3e268f3f15919929199167bb5951ceab1922f1b4983060da8c",
-            "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+            "id": "component-TabsInteractiveDemo-53ca6fb2a27f662ba9358cd040ad7fd69a4bbdda8b52b828ebd2938764e75c16fe4de6ad43b09fa5f7178d1afdbcb1944df41a3014e8659daa019b144c3a5722",
+            "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
             "changeDetection": "ChangeDetectionStrategy.OnPush",
             "encapsulation": [],
             "entryComponents": [],
@@ -1764,14 +2204,14 @@
             "description": "<p>Live demo: external controls + a read-out of <code>selectedIndex</code> and the last <code>selectedTabChange</code>.</p>\n",
             "rawdescription": "\nLive demo: external controls + a read-out of `selectedIndex` and the last `selectedTabChange`.",
             "type": "component",
-            "sourceCode": "import type { Meta, StoryObj } from '@storybook/angular-vite';\nimport { applicationConfig, moduleMetadata } from '@storybook/angular-vite';\nimport { Component, signal } from '@angular/core';\nimport { EgovTab, EgovTabGroup, EgovTabLabel } from '../../tabs/src/public-api';\nimport type { EgovTabChangeEvent } from '../../tabs/src/public-api';\nimport { alarm, EgovIconComponent, lock, provideEgovIcons, search, settings } from '../../icons/src/public-api';\n\nconst COUNTER_STYLE =\n  'display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:9999px;background:var(--gray-100,#f1f1f1);color:var(--black,#121212);font-size:12px';\n\nconst meta: Meta<EgovTabGroup> = {\n  title: 'Components/Tabs',\n  component: EgovTabGroup,\n  decorators: [\n    moduleMetadata({ imports: [EgovTabGroup, EgovTab, EgovTabLabel, EgovIconComponent] }),\n    applicationConfig({ providers: [provideEgovIcons([alarm, settings, search, lock])] }),\n  ],\n  argTypes: {\n    stretchTabs: { control: 'boolean' },\n    size: { control: 'inline-radio', options: ['md', 'sm'] },\n  },\n  args: {\n    stretchTabs: false,\n    size: 'md',\n  },\n};\n\nexport default meta;\n\ntype Story = StoryObj<EgovTabGroup>;\n\n/** Plain labels, a custom `egovTabLabel` with a counter, and a disabled tab. */\nexport const Basic: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Example tabs\">\n        <egov-tab label=\"Overview\"><p style=\"padding:16px 0\">Overview content.</p></egov-tab>\n        <egov-tab label=\"Details\"><p style=\"padding:16px 0\">Details content.</p></egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel>Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts content (custom label with a counter).</p>\n        </egov-tab>\n        <egov-tab label=\"Disabled\" [disabled]=\"true\"><p style=\"padding:16px 0\">Unreachable.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** Tabs stretched to fill the header width. */\nexport const Stretched: Story = {\n  args: { stretchTabs: true },\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Stretched tabs\">\n        <egov-tab label=\"One\"><p style=\"padding:16px 0\">One.</p></egov-tab>\n        <egov-tab label=\"Two\"><p style=\"padding:16px 0\">Two.</p></egov-tab>\n        <egov-tab label=\"Three\"><p style=\"padding:16px 0\">Three.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** Custom labels with a leading `egov-icon` and a trailing counter. */\nexport const WithIconsAndCounters: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Tabs with icons\">\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"alarm\" scale=\"20\" /> Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"search\" scale=\"20\" /> Search</ng-template>\n          <p style=\"padding:16px 0\">Search.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"settings\" scale=\"20\" /> Settings</ng-template>\n          <p style=\"padding:16px 0\">Settings.</p>\n        </egov-tab>\n        <egov-tab [disabled]=\"true\">\n          <ng-template egovTabLabel><egov-icon name=\"lock\" scale=\"20\" /> Locked</ng-template>\n          <p style=\"padding:16px 0\">Unreachable (disabled tab with a custom icon label).</p>\n        </egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** First tab disabled (selection snaps to the first enabled), plus a disabled tab in the middle (keyboard skips it). */\nexport const DisabledTabs: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Disabled tabs\">\n        <egov-tab label=\"Locked\" [disabled]=\"true\"><p style=\"padding:16px 0\">Locked.</p></egov-tab>\n        <egov-tab label=\"Active\"><p style=\"padding:16px 0\">This one is selected on load.</p></egov-tab>\n        <egov-tab label=\"Skipped\" [disabled]=\"true\"><p style=\"padding:16px 0\">Skipped.</p></egov-tab>\n        <egov-tab label=\"Last\"><p style=\"padding:16px 0\">Reached by pressing → (skips the disabled one).</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** Live demo: external controls + a read-out of `selectedIndex` and the last `selectedTabChange`. */\n@Component({\n  selector: 'egov-tabs-demo',\n  imports: [EgovTabGroup, EgovTab],\n  template: `\n    <div style=\"display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-family:system-ui\">\n      <button type=\"button\" (click)=\"tabs.focusTab(0)\">focusTab(0)</button>\n      <button type=\"button\" (click)=\"selected.set(clamp(selected() - 1))\">Prev</button>\n      <button type=\"button\" (click)=\"selected.set(clamp(selected() + 1))\">Next</button>\n      <code>selectedIndex = {{ selected() }}</code>\n      <code>last selectedTabChange = {{ lastEvent() }}</code>\n    </div>\n    <egov-tab-group\n      #tabs\n      [selectedIndex]=\"selected()\"\n      (selectedIndexChange)=\"selected.set($event)\"\n      (selectedTabChange)=\"onChange($event)\"\n      aria-label=\"Interactive tabs\"\n    >\n      <egov-tab label=\"First\"><p style=\"padding:16px 0\">First content.</p></egov-tab>\n      <egov-tab label=\"Second\"><p style=\"padding:16px 0\">Second content.</p></egov-tab>\n      <egov-tab label=\"Third\"><p style=\"padding:16px 0\">Third content.</p></egov-tab>\n    </egov-tab-group>\n  `,\n})\nclass TabsInteractiveDemo {\n  readonly selected = signal(0);\n  readonly lastEvent = signal('—');\n\n  onChange(event: EgovTabChangeEvent): void {\n    this.lastEvent.set(`{ index: ${event.index} }`);\n  }\n\n  clamp(index: number): number {\n    return Math.max(0, Math.min(2, index));\n  }\n}\n\nexport const Interactive: Story = {\n  // Uses a fixed demo component, so the group-level controls don't apply here.\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [TabsInteractiveDemo] })],\n  render: () => ({ template: `<egov-tabs-demo />` }),\n};\n",
+            "sourceCode": "import type { Meta, StoryObj } from '@storybook/angular-vite';\nimport { applicationConfig, moduleMetadata } from '@storybook/angular-vite';\nimport { Component, signal } from '@angular/core';\nimport { EgovTab, EgovTabGroup, EgovTabLabel } from '../../../tabs/src/public-api';\nimport type { EgovTabChangeEvent } from '../../../tabs/src/public-api';\nimport { alarm, EgovIconComponent, lock, provideEgovIcons, search, settings } from '../../../icons/src/public-api';\n\nconst COUNTER_STYLE =\n  'display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:9999px;background:var(--gray-100,#f1f1f1);color:var(--black,#121212);font-size:12px';\n\nconst meta: Meta<EgovTabGroup> = {\n  title: 'Components/Tabs',\n  component: EgovTabGroup,\n  decorators: [\n    moduleMetadata({ imports: [EgovTabGroup, EgovTab, EgovTabLabel, EgovIconComponent] }),\n    applicationConfig({ providers: [provideEgovIcons([alarm, settings, search, lock])] }),\n  ],\n  argTypes: {\n    stretchTabs: { control: 'boolean' },\n    size: { control: 'inline-radio', options: ['md', 'sm'] },\n  },\n  args: {\n    stretchTabs: false,\n    size: 'md',\n  },\n};\n\nexport default meta;\n\ntype Story = StoryObj<EgovTabGroup>;\n\n/** Plain labels, a custom `egovTabLabel` with a counter, and a disabled tab. */\nexport const Basic: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Example tabs\">\n        <egov-tab label=\"Overview\"><p style=\"padding:16px 0\">Overview content.</p></egov-tab>\n        <egov-tab label=\"Details\"><p style=\"padding:16px 0\">Details content.</p></egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel>Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts content (custom label with a counter).</p>\n        </egov-tab>\n        <egov-tab label=\"Disabled\" [disabled]=\"true\"><p style=\"padding:16px 0\">Unreachable.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** Tabs stretched to fill the header width. */\nexport const Stretched: Story = {\n  args: { stretchTabs: true },\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Stretched tabs\">\n        <egov-tab label=\"One\"><p style=\"padding:16px 0\">One.</p></egov-tab>\n        <egov-tab label=\"Two\"><p style=\"padding:16px 0\">Two.</p></egov-tab>\n        <egov-tab label=\"Three\"><p style=\"padding:16px 0\">Three.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** Custom labels with a leading `egov-icon` and a trailing counter. */\nexport const WithIconsAndCounters: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Tabs with icons\">\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"alarm\" [scale]=\"20\" /> Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"search\" [scale]=\"20\" /> Search</ng-template>\n          <p style=\"padding:16px 0\">Search.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"settings\" [scale]=\"20\" /> Settings</ng-template>\n          <p style=\"padding:16px 0\">Settings.</p>\n        </egov-tab>\n        <egov-tab [disabled]=\"true\">\n          <ng-template egovTabLabel><egov-icon name=\"lock\" [scale]=\"20\" /> Locked</ng-template>\n          <p style=\"padding:16px 0\">Unreachable (disabled tab with a custom icon label).</p>\n        </egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** First tab disabled (selection snaps to the first enabled), plus a disabled tab in the middle (keyboard skips it). */\nexport const DisabledTabs: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Disabled tabs\">\n        <egov-tab label=\"Locked\" [disabled]=\"true\"><p style=\"padding:16px 0\">Locked.</p></egov-tab>\n        <egov-tab label=\"Active\"><p style=\"padding:16px 0\">This one is selected on load.</p></egov-tab>\n        <egov-tab label=\"Skipped\" [disabled]=\"true\"><p style=\"padding:16px 0\">Skipped.</p></egov-tab>\n        <egov-tab label=\"Last\"><p style=\"padding:16px 0\">Reached by pressing → (skips the disabled one).</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n};\n\n/** Live demo: external controls + a read-out of `selectedIndex` and the last `selectedTabChange`. */\n@Component({\n  selector: 'egov-tabs-demo',\n  imports: [EgovTabGroup, EgovTab],\n  template: `\n    <div style=\"display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-family:system-ui\">\n      <button type=\"button\" (click)=\"tabs.focusTab(0)\">focusTab(0)</button>\n      <button type=\"button\" (click)=\"selected.set(clamp(selected() - 1))\">Prev</button>\n      <button type=\"button\" (click)=\"selected.set(clamp(selected() + 1))\">Next</button>\n      <code>selectedIndex = {{ selected() }}</code>\n      <code>last selectedTabChange = {{ lastEvent() }}</code>\n    </div>\n    <egov-tab-group\n      #tabs\n      [selectedIndex]=\"selected()\"\n      (selectedIndexChange)=\"selected.set($event)\"\n      (selectedTabChange)=\"onChange($event)\"\n      aria-label=\"Interactive tabs\"\n    >\n      <egov-tab label=\"First\"><p style=\"padding:16px 0\">First content.</p></egov-tab>\n      <egov-tab label=\"Second\"><p style=\"padding:16px 0\">Second content.</p></egov-tab>\n      <egov-tab label=\"Third\"><p style=\"padding:16px 0\">Third content.</p></egov-tab>\n    </egov-tab-group>\n  `,\n})\nclass TabsInteractiveDemo {\n  readonly selected = signal(0);\n  readonly lastEvent = signal('—');\n\n  onChange(event: EgovTabChangeEvent): void {\n    this.lastEvent.set(`{ index: ${event.index} }`);\n  }\n\n  clamp(index: number): number {\n    return Math.max(0, Math.min(2, index));\n  }\n}\n\nexport const Interactive: Story = {\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [TabsInteractiveDemo] })],\n  render: () => ({ template: `<egov-tabs-demo />` }),\n};\n",
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "",
             "jsdoctags": [
                 {
-                    "pos": 4486,
-                    "end": 4587,
+                    "pos": 4503,
+                    "end": 4604,
                     "kind": 321,
                     "id": 0,
                     "flags": 16777216,
@@ -2145,7 +2585,7 @@
                 "name": "Basic",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -2166,10 +2606,21 @@
                 "defaultValue": "/^#([0-9a-f]{3,8})$|^rgba?\\(/i"
             },
             {
+                "name": "CONFIG",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Record<SpacingKind, KindConfig>",
+                "defaultValue": "{\n  gap: {\n    note: 'Flexbox / grid gap utilities on the shared spacing scale (each step = 4px). Click a card to copy the class name.',\n    test: /^\\.(gap|row-gap|col-gap)-(\\d+)$/,\n    variantOf: (m) => m[1],\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'gap', title: 'Gap — both axes' },\n      { key: 'col-gap', title: 'Column gap — horizontal' },\n      { key: 'row-gap', title: 'Row gap — vertical' },\n    ],\n  },\n  margin: {\n    note: 'Margin utilities on the shared spacing scale (each step = 4px). The light zone is the margin around the box. Click a card to copy the class name.',\n    test: /^\\.m([trblxy]?)-(\\d+)$/,\n    variantOf: (m) => m[1] || 'a',\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'a', title: 'All sides' },\n      { key: 'x', title: 'Horizontal — x' },\n      { key: 'y', title: 'Vertical — y' },\n      { key: 't', title: 'Top' },\n      { key: 'r', title: 'Right' },\n      { key: 'b', title: 'Bottom' },\n      { key: 'l', title: 'Left' },\n    ],\n  },\n  padding: {\n    note: 'Padding utilities on the shared spacing scale (each step = 4px). The light zone is the padding inside the box. Click a card to copy the class name.',\n    test: /^\\.p([trblxy]?)-(\\d+)$/,\n    variantOf: (m) => m[1] || 'a',\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'a', title: 'All sides' },\n      { key: 'x', title: 'Horizontal — x' },\n      { key: 'y', title: 'Vertical — y' },\n      { key: 't', title: 'Top' },\n      { key: 'r', title: 'Right' },\n      { key: 'b', title: 'Bottom' },\n      { key: 'l', title: 'Left' },\n    ],\n  },\n}"
+            },
+            {
                 "name": "COUNTER_STYLE",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -2191,7 +2642,7 @@
                 "name": "DisabledTabs",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -2226,12 +2677,12 @@
                 "name": "Interactive",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story",
-                "defaultValue": "{\n  // Uses a fixed demo component, so the group-level controls don't apply here.\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [TabsInteractiveDemo] })],\n  render: () => ({ template: `<egov-tabs-demo />` }),\n}"
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [TabsInteractiveDemo] })],\n  render: () => ({ template: `<egov-tabs-demo />` }),\n}"
             },
             {
                 "name": "Levels",
@@ -2245,15 +2696,15 @@
                 "defaultValue": "{\n  render: () => ({ template: `<egov-shadow-grid />` }),\n}"
             },
             {
-                "name": "meta",
+                "name": "Margin",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/margin.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "Meta<EgovTabGroup>",
-                "defaultValue": "{\n  title: 'Components/Tabs',\n  component: EgovTabGroup,\n  decorators: [\n    moduleMetadata({ imports: [EgovTabGroup, EgovTab, EgovTabLabel, EgovIconComponent] }),\n    applicationConfig({ providers: [provideEgovIcons([alarm, settings, search, lock])] }),\n  ],\n  argTypes: {\n    stretchTabs: { control: 'boolean' },\n    size: { control: 'inline-radio', options: ['md', 'sm'] },\n  },\n  args: {\n    stretchTabs: false,\n    size: 'md',\n  },\n}"
+                "type": "Story",
+                "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"margin\" />` }),\n}"
             },
             {
                 "name": "meta",
@@ -2270,23 +2721,12 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "Meta<ColorGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<ColorGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Semantic Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                "type": "Meta<EgovTabGroup>",
+                "defaultValue": "{\n  title: 'Components/Tabs',\n  component: EgovTabGroup,\n  decorators: [\n    moduleMetadata({ imports: [EgovTabGroup, EgovTab, EgovTabLabel, EgovIconComponent] }),\n    applicationConfig({ providers: [provideEgovIcons([alarm, settings, search, lock])] }),\n  ],\n  argTypes: {\n    stretchTabs: { control: 'boolean' },\n    size: { control: 'inline-radio', options: ['md', 'sm'] },\n  },\n  args: {\n    stretchTabs: false,\n    size: 'md',\n  },\n}"
             },
             {
                 "name": "meta",
@@ -2314,6 +2754,28 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<ColorGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<ColorGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Semantic Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -2336,6 +2798,39 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/margin.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<SpacingGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Margin',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<SpacingGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Padding',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<SpacingGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Spacing',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -2353,6 +2848,17 @@
                 "deprecationMessage": "",
                 "type": "[]",
                 "defaultValue": "[\n  'block',\n  'inline',\n  'inline-block',\n  'flex',\n  'inline-flex',\n  'grid',\n  'inline-grid',\n  'table',\n  'table-row',\n  'table-cell',\n  'none',\n]"
+            },
+            {
+                "name": "Padding",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"padding\" />` }),\n}"
             },
             {
                 "name": "Palette",
@@ -2443,10 +2949,21 @@
                 "defaultValue": "['background', 'text', 'border', 'icon']"
             },
             {
+                "name": "Spacing",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"gap\" />` }),\n}"
+            },
+            {
                 "name": "Stretched",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
@@ -2459,23 +2976,23 @@
                 "name": "Tokens",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Story",
-                "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
-            },
-            {
-                "name": "Tokens",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
+            },
+            {
+                "name": "Tokens",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
             },
             {
                 "name": "Utilities",
@@ -2492,12 +3009,12 @@
                 "name": "WithIconsAndCounters",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story",
-                "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Tabs with icons\">\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"alarm\" scale=\"20\" /> Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"search\" scale=\"20\" /> Search</ng-template>\n          <p style=\"padding:16px 0\">Search.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"settings\" scale=\"20\" /> Settings</ng-template>\n          <p style=\"padding:16px 0\">Settings.</p>\n        </egov-tab>\n        <egov-tab [disabled]=\"true\">\n          <ng-template egovTabLabel><egov-icon name=\"lock\" scale=\"20\" /> Locked</ng-template>\n          <p style=\"padding:16px 0\">Unreachable (disabled tab with a custom icon label).</p>\n        </egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n}",
+                "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Tabs with icons\">\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"alarm\" [scale]=\"20\" /> Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"search\" [scale]=\"20\" /> Search</ng-template>\n          <p style=\"padding:16px 0\">Search.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"settings\" [scale]=\"20\" /> Settings</ng-template>\n          <p style=\"padding:16px 0\">Settings.</p>\n        </egov-tab>\n        <egov-tab [disabled]=\"true\">\n          <ng-template egovTabLabel><egov-icon name=\"lock\" [scale]=\"20\" /> Locked</ng-template>\n          <p style=\"padding:16px 0\">Unreachable (disabled tab with a custom icon label).</p>\n        </egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n}",
                 "rawdescription": "Custom labels with a leading `egov-icon` and a trailing counter.",
                 "description": "<p>Custom labels with a leading <code>egov-icon</code> and a trailing counter.</p>\n"
             }
@@ -2544,17 +3061,17 @@
                 "kind": 193
             },
             {
-                "name": "Story",
+                "name": "SpacingKind",
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<EgovTabGroup>",
-                "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                "rawtype": "\"gap\" | \"margin\" | \"padding\"",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
                 "description": "",
-                "kind": 184
+                "kind": 193
             },
             {
                 "name": "Story",
@@ -2574,21 +3091,8 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<ColorGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "rawdescription": "",
-                "description": "",
-                "kind": 184
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "coverageIgnore": false,
-                "rawtype": "StoryObj<ColorGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "rawtype": "StoryObj<EgovTabGroup>",
+                "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -2626,6 +3130,32 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
+                "rawtype": "StoryObj<ColorGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<ColorGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
                 "rawtype": "StoryObj<DisplayGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
                 "deprecated": false,
@@ -2641,6 +3171,45 @@
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<ShadowGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<SpacingGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/margin.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<SpacingGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<SpacingGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -2722,12 +3291,12 @@
                     "defaultValue": "{}"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/tabs.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts": [
                 {
                     "name": "Basic",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -2740,7 +3309,7 @@
                     "name": "COUNTER_STYLE",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -2751,7 +3320,7 @@
                     "name": "DisabledTabs",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -2764,18 +3333,18 @@
                     "name": "Interactive",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "Story",
-                    "defaultValue": "{\n  // Uses a fixed demo component, so the group-level controls don't apply here.\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [TabsInteractiveDemo] })],\n  render: () => ({ template: `<egov-tabs-demo />` }),\n}"
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [TabsInteractiveDemo] })],\n  render: () => ({ template: `<egov-tabs-demo />` }),\n}"
                 },
                 {
                     "name": "meta",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -2786,7 +3355,7 @@
                     "name": "Stretched",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -2799,12 +3368,12 @@
                     "name": "WithIconsAndCounters",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "Story",
-                    "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Tabs with icons\">\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"alarm\" scale=\"20\" /> Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"search\" scale=\"20\" /> Search</ng-template>\n          <p style=\"padding:16px 0\">Search.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"settings\" scale=\"20\" /> Settings</ng-template>\n          <p style=\"padding:16px 0\">Settings.</p>\n        </egov-tab>\n        <egov-tab [disabled]=\"true\">\n          <ng-template egovTabLabel><egov-icon name=\"lock\" scale=\"20\" /> Locked</ng-template>\n          <p style=\"padding:16px 0\">Unreachable (disabled tab with a custom icon label).</p>\n        </egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n}",
+                    "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Tabs with icons\">\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"alarm\" [scale]=\"20\" /> Alerts <span style=\"${COUNTER_STYLE}\">3</span></ng-template>\n          <p style=\"padding:16px 0\">Alerts.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"search\" [scale]=\"20\" /> Search</ng-template>\n          <p style=\"padding:16px 0\">Search.</p>\n        </egov-tab>\n        <egov-tab>\n          <ng-template egovTabLabel><egov-icon name=\"settings\" [scale]=\"20\" /> Settings</ng-template>\n          <p style=\"padding:16px 0\">Settings.</p>\n        </egov-tab>\n        <egov-tab [disabled]=\"true\">\n          <ng-template egovTabLabel><egov-icon name=\"lock\" [scale]=\"20\" /> Locked</ng-template>\n          <p style=\"padding:16px 0\">Unreachable (disabled tab with a custom icon label).</p>\n        </egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n}",
                     "rawdescription": "Custom labels with a leading `egov-icon` and a trailing counter.",
                     "description": "<p>Custom labels with a leading <code>egov-icon</code> and a trailing counter.</p>\n"
                 }
@@ -2831,6 +3400,19 @@
                     "deprecationMessage": "",
                     "type": "[]",
                     "defaultValue": "['background', 'text', 'border', 'icon']"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts": [
+                {
+                    "name": "CONFIG",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Record<SpacingKind, KindConfig>",
+                    "defaultValue": "{\n  gap: {\n    note: 'Flexbox / grid gap utilities on the shared spacing scale (each step = 4px). Click a card to copy the class name.',\n    test: /^\\.(gap|row-gap|col-gap)-(\\d+)$/,\n    variantOf: (m) => m[1],\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'gap', title: 'Gap — both axes' },\n      { key: 'col-gap', title: 'Column gap — horizontal' },\n      { key: 'row-gap', title: 'Row gap — vertical' },\n    ],\n  },\n  margin: {\n    note: 'Margin utilities on the shared spacing scale (each step = 4px). The light zone is the margin around the box. Click a card to copy the class name.',\n    test: /^\\.m([trblxy]?)-(\\d+)$/,\n    variantOf: (m) => m[1] || 'a',\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'a', title: 'All sides' },\n      { key: 'x', title: 'Horizontal — x' },\n      { key: 'y', title: 'Vertical — y' },\n      { key: 't', title: 'Top' },\n      { key: 'r', title: 'Right' },\n      { key: 'b', title: 'Bottom' },\n      { key: 'l', title: 'Left' },\n    ],\n  },\n  padding: {\n    note: 'Padding utilities on the shared spacing scale (each step = 4px). The light zone is the padding inside the box. Click a card to copy the class name.',\n    test: /^\\.p([trblxy]?)-(\\d+)$/,\n    variantOf: (m) => m[1] || 'a',\n    scaleOf: (m) => Number(m[2]),\n    sections: [\n      { key: 'a', title: 'All sides' },\n      { key: 'x', title: 'Horizontal — x' },\n      { key: 'y', title: 'Vertical — y' },\n      { key: 't', title: 'Top' },\n      { key: 'r', title: 'Right' },\n      { key: 'b', title: 'Bottom' },\n      { key: 'l', title: 'Left' },\n    ],\n  },\n}"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/foundations/cursors/cursor-grid.component.ts": [
@@ -2894,52 +3476,28 @@
                     "defaultValue": "{\n  title: 'Foundations/Elevation',\n  component: ShadowGridComponent,\n  decorators: [moduleMetadata({ imports: [ShadowGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/spacing/margin.stories.ts": [
                 {
-                    "name": "meta",
+                    "name": "Margin",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<ColorGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Palette",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/margin.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"primitives\" />` }),\n}"
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts": [
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"margin\" />` }),\n}"
+                },
                 {
                     "name": "meta",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/margin.stories.ts",
                     "coverageIgnore": false,
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "type": "Meta<ColorGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Semantic Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Tokens",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
+                    "type": "Meta<SpacingGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Margin',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
@@ -2990,6 +3548,54 @@
                     "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}"
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<ColorGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Palette",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"primitives\" />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<ColorGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Semantic Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Tokens",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
                 {
                     "name": "meta",
@@ -3012,6 +3618,54 @@
                     "deprecationMessage": "",
                     "type": "Story",
                     "defaultValue": "{\n  render: () => ({ template: `<egov-display-grid />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<SpacingGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Padding',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Padding",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"padding\" />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<SpacingGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Spacing',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Spacing",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"gap\" />` }),\n}"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts": [
@@ -3126,19 +3780,19 @@
                     "kind": 193
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/tabs.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts": [
                 {
-                    "name": "Story",
+                    "name": "SpacingKind",
                     "ctype": "miscellaneous",
                     "subtype": "typealias",
                     "coverageIgnore": false,
-                    "rawtype": "StoryObj<EgovTabGroup>",
-                    "file": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
+                    "rawtype": "\"gap\" | \"margin\" | \"padding\"",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
                     "description": "",
-                    "kind": 184
+                    "kind": 193
                 }
             ],
             "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts": [
@@ -3156,29 +3810,14 @@
                     "kind": 184
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts": [
                 {
                     "name": "Story",
                     "ctype": "miscellaneous",
                     "subtype": "typealias",
                     "coverageIgnore": false,
-                    "rawtype": "StoryObj<ColorGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<ColorGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                    "rawtype": "StoryObj<EgovTabGroup>",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -3216,6 +3855,36 @@
                     "kind": 184
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<ColorGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<ColorGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
                 {
                     "name": "Story",
@@ -3246,6 +3915,51 @@
                     "kind": 184
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/foundations/spacing/margin.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<SpacingGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/margin.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<SpacingGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<SpacingGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts": [
                 {
                     "name": "Story",
@@ -3269,7 +3983,7 @@
         "children": []
     },
     "coverage": {
-        "count": 6,
+        "count": 5,
         "status": "low",
         "files": [
             {
@@ -3324,6 +4038,95 @@
             },
             {
                 "filePath": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "TabsInteractiveDemo",
+                "coveragePercent": 20,
+                "coverageCount": "1/5",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Basic",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "COUNTER_STYLE",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "DisabledTabs",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Interactive",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Stretched",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "WithIconsAndCounters",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                 "type": "type alias",
                 "linktype": "miscellaneous",
                 "linksubtype": "typealias",
@@ -3701,6 +4504,152 @@
                 "status": "low"
             },
             {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/margin.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Margin",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/margin.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/margin.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Padding",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "SpacingGridComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/11",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "KindConfig",
+                "coveragePercent": 0,
+                "coverageCount": "0/6",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "SpacingItem",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "SpacingSection",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "CONFIG",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "SpacingKind",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Spacing",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
                 "filePath": "projects/ngx-egov-ui/src/stories/foundations/typography/typography-grid.component.ts",
                 "type": "component",
                 "linktype": "component",
@@ -3779,95 +4728,6 @@
             },
             {
                 "filePath": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
-                "type": "type alias",
-                "linktype": "miscellaneous",
-                "linksubtype": "typealias",
-                "name": "Story",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
-                "type": "component",
-                "linktype": "component",
-                "name": "TabsInteractiveDemo",
-                "coveragePercent": 20,
-                "coverageCount": "1/5",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Basic",
-                "coveragePercent": 100,
-                "coverageCount": "1/1",
-                "status": "very-good"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "COUNTER_STYLE",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "DisabledTabs",
-                "coveragePercent": 100,
-                "coverageCount": "1/1",
-                "status": "very-good"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Interactive",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "meta",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Stretched",
-                "coveragePercent": 100,
-                "coverageCount": "1/1",
-                "status": "very-good"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "WithIconsAndCounters",
-                "coveragePercent": 100,
-                "coverageCount": "1/1",
-                "status": "very-good"
-            },
-            {
-                "filePath": "projects/ngx-egov-ui/src/stories/tabs.stories.ts",
                 "type": "type alias",
                 "linktype": "miscellaneous",
                 "linksubtype": "typealias",
