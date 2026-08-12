@@ -61,6 +61,22 @@ secondary entry point. See
 [`projects/ngx-egov-ui/icons/README.md`](projects/ngx-egov-ui/icons/README.md)
 for registration and usage.
 
+## Naming conventions
+
+The library uses **three distinct namespaces** — they intentionally do *not* share a prefix:
+
+| Layer | Prefix | Example |
+|---|---|---|
+| Angular component/directive selectors | `egov-` | `<egov-icon>` |
+| Design-system CSS utility/component classes | `mud-` | `.mud-btn`, `.mud-card` |
+| Design tokens (CSS custom properties) | *(none)* | `--color-background-brand-default`, `--gray-400` |
+
+- **`egov-`** is this library's Angular API namespace (matches the package name).
+- **`mud-`** is the upstream **Moldova Unified Design** system's own class namespace (see [mud.egov.md](https://mud.egov.md/)); it's kept as-is so class names match the design-system docs and upstream stays easy to sync. It's configurable via `$mud-prefix` in `styles/abstracts/_mud-prefix.scss` if you ever need to rebrand it.
+- **Tokens** are plain, unprefixed CSS custom properties.
+
+Angular element selectors and CSS classes live in different namespaces, so `egov-` and `mud-` can never collide — mixing them is by design, not an oversight.
+
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
