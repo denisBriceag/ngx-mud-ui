@@ -2737,7 +2737,7 @@
         },
         {
             "name": "TooltipOnboardingDemo",
-            "id": "component-TooltipOnboardingDemo-416402782dfbb2cc0aedb602ca37f6bfa8b5b0c3b77536d1a24bebcc0f3951d1c434c85497e23a2a05abc316d8b7331b180f72fe7286ad95806da430a1aa51cc",
+            "id": "component-TooltipOnboardingDemo-654ad766a4428011c3b9ef2c405f73dda58d9f79820cf199e91f63c791b5a8b4816bf92f3c8bd36954f53e5b2e0b9ec6955946ffab372c4ec1eca7c865373138",
             "file": "projects/ngx-egov-ui/src/stories/components/tooltip.stories.ts",
             "changeDetection": "ChangeDetectionStrategy.OnPush",
             "encapsulation": [],
@@ -2765,7 +2765,7 @@
                     "indexKey": "",
                     "optional": false,
                     "description": "",
-                    "line": 157,
+                    "line": 156,
                     "rawdescription": "\n",
                     "modifierKind": [
                         148
@@ -2787,14 +2787,14 @@
             "description": "<p>Onboarding-style tooltip: <code>tooltipCloseable</code> keeps it visible until the user\ncloses it (✕ button, Escape, or clicking outside) — hovering away does not\ndismiss it. <code>show()</code>/<code>hide()</code> (via <code>#ref=&quot;egovTooltip&quot;</code>) drive it from code,\ne.g. for product tours.</p>\n",
             "rawdescription": "\n\nOnboarding-style tooltip: `tooltipCloseable` keeps it visible until the user\ncloses it (✕ button, Escape, or clicking outside) — hovering away does not\ndismiss it. `show()`/`hide()` (via `#ref=\"egovTooltip\"`) drive it from code,\ne.g. for product tours.\n",
             "type": "component",
-            "sourceCode": "import type { Meta, StoryObj } from '@storybook/angular-vite';\nimport { moduleMetadata } from '@storybook/angular-vite';\nimport { Component, signal } from '@angular/core';\nimport { EgovTooltip, EGOV_TOOLTIP_PLACEMENTS } from '../../../tooltip/src/public-api';\n\nconst BTN_STYLE =\n  'padding:10px 16px;border:none;border-radius:6px;background:var(--blue-500,#20686f);color:var(--white,#fff);font-size:14px;cursor:pointer';\n\nconst meta: Meta<EgovTooltip> = {\n  title: 'Components/Tooltip',\n  component: EgovTooltip,\n  decorators: [moduleMetadata({ imports: [EgovTooltip] })],\n  argTypes: {\n    egovTooltip: { control: 'text', description: 'Tooltip message' },\n    tooltipPlacement: { control: 'select', options: [...EGOV_TOOLTIP_PLACEMENTS] },\n    tooltipSize: { control: 'inline-radio', options: ['small', 'large'] },\n    tooltipCloseable: { control: 'boolean' },\n    tooltipDisabled: { control: 'boolean' },\n    tooltipShowDelay: { control: 'number' },\n    tooltipMaxWidth: { control: 'text' },\n  },\n  args: {\n    egovTooltip: 'Moldova’s digital evolution is at the heart of seamless public service delivery.',\n    tooltipPlacement: 'top-center',\n    tooltipSize: 'small',\n    tooltipCloseable: false,\n    tooltipDisabled: false,\n    tooltipShowDelay: 300,\n    tooltipMaxWidth: '240px',\n  },\n};\n\nexport default meta;\n\ntype Story = StoryObj<EgovTooltip>;\n\n/** Hover or focus the trigger; dismiss with Escape. All inputs are adjustable via controls. */\nexport const Basic: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"display:flex;justify-content:center;padding:120px 24px\">\n        <button\n          type=\"button\"\n          style=\"${BTN_STYLE}\"\n          [egovTooltip]=\"egovTooltip\"\n          [tooltipPlacement]=\"tooltipPlacement\"\n          [tooltipSize]=\"tooltipSize\"\n          [tooltipCloseable]=\"tooltipCloseable\"\n          [tooltipDisabled]=\"tooltipDisabled\"\n          [tooltipShowDelay]=\"tooltipShowDelay\"\n          [tooltipMaxWidth]=\"tooltipMaxWidth\"\n        >\n          Hover or focus me\n        </button>\n      </div>\n    `,\n  }),\n};\n\n/** `small` (default) vs `large` bubble padding. */\nexport const Sizes: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"display:flex;gap:48px;justify-content:center;padding:120px 24px\">\n        <button type=\"button\" style=\"${BTN_STYLE}\" egovTooltip=\"Tooltip small.\" tooltipSize=\"small\" [tooltipShowDelay]=\"0\">\n          small\n        </button>\n        <button type=\"button\" style=\"${BTN_STYLE}\" egovTooltip=\"Tooltip displayed above the element.\" tooltipSize=\"large\" [tooltipShowDelay]=\"0\">\n          large\n        </button>\n      </div>\n    `,\n  }),\n};\n\n/**\n * All 12 placements: `{side}-{alignment}`. When a placement doesn't fit the\n * viewport, the tooltip flips to the opposite side and the arrow follows.\n */\nexport const Placements: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"display:grid;grid-template-columns:repeat(3,max-content);gap:56px 48px;justify-content:center;padding:140px 24px\">\n        ${EGOV_TOOLTIP_PLACEMENTS.map(\n          (placement) => `\n          <button\n            type=\"button\"\n            style=\"${BTN_STYLE}\"\n            egovTooltip=\"Moldova’s digital evolution is at the heart of seamless public service delivery.\"\n            tooltipPlacement=\"${placement}\"\n            [tooltipShowDelay]=\"0\"\n          >\n            ${placement}\n          </button>`,\n        ).join('')}\n      </div>\n    `,\n  }),\n};\n\n/** Tooltips on inline/icon triggers. Triggers must be focusable so keyboard users can reach them. */\nexport const OnIconTrigger: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"display:flex;gap:24px;align-items:center;justify-content:center;padding:120px 24px;font-size:14px\">\n        <p style=\"margin:0\">\n          Processing takes up to 5 working days\n          <button\n            type=\"button\"\n            aria-label=\"More information\"\n            style=\"border:none;background:none;cursor:pointer;font-size:16px;padding:4px\"\n            egovTooltip=\"This is an informational tooltip attached to inline content.\"\n            [tooltipShowDelay]=\"0\"\n          >ℹ️</button>\n        </p>\n      </div>\n    `,\n  }),\n};\n\n/**\n * Onboarding-style tooltip: `tooltipCloseable` keeps it visible until the user\n * closes it (✕ button, Escape, or clicking outside) — hovering away does not\n * dismiss it. `show()`/`hide()` (via `#ref=\"egovTooltip\"`) drive it from code,\n * e.g. for product tours.\n */\n@Component({\n  selector: 'egov-tooltip-onboarding-demo',\n  imports: [EgovTooltip],\n  template: `\n    <div style=\"display:flex;gap:12px;align-items:center;justify-content:center;padding:140px 24px\">\n      <button type=\"button\" (click)=\"tooltip.show()\">show()</button>\n      <button type=\"button\" (click)=\"tooltip.hide()\">hide()</button>\n      <code>tooltipDismissed × {{ dismissals() }}</code>\n      <span style=\"width:48px\"></span>\n      <button\n        #tooltip=\"egovTooltip\"\n        type=\"button\"\n        style=\"${BTN_STYLE}\"\n        egovTooltip=\"New! You can now track your application status here.\"\n        tooltipPlacement=\"top-center\"\n        tooltipSize=\"large\"\n        tooltipCloseable\n        [tooltipShowDelay]=\"0\"\n        (tooltipDismissed)=\"dismissals.set(dismissals() + 1)\"\n      >\n        Application status\n      </button>\n    </div>\n  `,\n})\nclass TooltipOnboardingDemo {\n  readonly dismissals = signal(0);\n}\n\nexport const CloseableOnboarding: Story = {\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [TooltipOnboardingDemo] })],\n  render: () => ({ template: `<egov-tooltip-onboarding-demo />` }),\n};\n",
+            "sourceCode": "import type { Meta, StoryObj } from '@storybook/angular-vite';\nimport { moduleMetadata } from '@storybook/angular-vite';\nimport { Component, signal } from '@angular/core';\nimport { EgovTooltip, EGOV_TOOLTIP_PLACEMENTS } from '../../../tooltip/src/public-api';\n\nconst BTN_STYLE =\n  'padding:10px 16px;border:none;border-radius:6px;background:var(--blue-500,#20686f);color:var(--white,#fff);font-size:14px;cursor:pointer';\n\nconst meta: Meta<EgovTooltip> = {\n  title: 'Components/Tooltip',\n  component: EgovTooltip,\n  decorators: [moduleMetadata({ imports: [EgovTooltip] })],\n  argTypes: {\n    egovTooltip: { control: 'text', description: 'Tooltip message' },\n    tooltipPlacement: { control: 'select', options: [...EGOV_TOOLTIP_PLACEMENTS] },\n    tooltipSize: { control: 'inline-radio', options: ['small', 'large'] },\n    tooltipCloseable: { control: 'boolean' },\n    tooltipDisabled: { control: 'boolean' },\n    tooltipShowDelay: { control: 'number' },\n    tooltipMaxWidth: { control: 'text' },\n  },\n  args: {\n    egovTooltip: 'Moldova’s digital evolution is at the heart of seamless public service delivery.',\n    tooltipPlacement: 'top-center',\n    tooltipSize: 'small',\n    tooltipCloseable: false,\n    tooltipDisabled: false,\n    tooltipShowDelay: 300,\n    tooltipMaxWidth: '240px',\n  },\n};\n\nexport default meta;\n\ntype Story = StoryObj<EgovTooltip>;\n\n/** Hover or focus the trigger; dismiss with Escape. All inputs are adjustable via controls. */\nexport const Basic: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"display:flex;justify-content:center;padding:120px 24px\">\n        <button\n          type=\"button\"\n          style=\"${BTN_STYLE}\"\n          [egovTooltip]=\"egovTooltip\"\n          [tooltipPlacement]=\"tooltipPlacement\"\n          [tooltipSize]=\"tooltipSize\"\n          [tooltipCloseable]=\"tooltipCloseable\"\n          [tooltipDisabled]=\"tooltipDisabled\"\n          [tooltipShowDelay]=\"tooltipShowDelay\"\n          [tooltipMaxWidth]=\"tooltipMaxWidth\"\n        >\n          Hover or focus me\n        </button>\n      </div>\n    `,\n  }),\n};\n\nexport const Sizes: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"display:flex;gap:48px;justify-content:center;padding:120px 24px\">\n        <button type=\"button\" style=\"${BTN_STYLE}\" egovTooltip=\"Tooltip small.\" tooltipSize=\"small\" [tooltipShowDelay]=\"0\">\n          small\n        </button>\n        <button type=\"button\" style=\"${BTN_STYLE}\" egovTooltip=\"Tooltip displayed above the element.\" tooltipSize=\"large\" [tooltipShowDelay]=\"0\">\n          large\n        </button>\n      </div>\n    `,\n  }),\n};\n\n/**\n * All 12 placements: `{side}-{alignment}`. When a placement doesn't fit the\n * viewport, the tooltip flips to the opposite side and the arrow follows.\n */\nexport const Placements: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"display:grid;grid-template-columns:repeat(3,max-content);gap:56px 48px;justify-content:center;padding:140px 24px\">\n        ${EGOV_TOOLTIP_PLACEMENTS.map(\n          (placement) => `\n          <button\n            type=\"button\"\n            style=\"${BTN_STYLE}\"\n            egovTooltip=\"Moldova’s digital evolution is at the heart of seamless public service delivery.\"\n            tooltipPlacement=\"${placement}\"\n            [tooltipShowDelay]=\"0\"\n          >\n            ${placement}\n          </button>`,\n        ).join('')}\n      </div>\n    `,\n  }),\n};\n\n/** Tooltips on inline/icon triggers. Triggers must be focusable so keyboard users can reach them. */\nexport const OnIconTrigger: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"display:flex;gap:24px;align-items:center;justify-content:center;padding:120px 24px;font-size:14px\">\n        <p style=\"margin:0\">\n          Processing takes up to 5 working days\n          <button\n            type=\"button\"\n            aria-label=\"More information\"\n            style=\"border:none;background:none;cursor:pointer;font-size:16px;padding:4px\"\n            egovTooltip=\"This is an informational tooltip attached to inline content.\"\n            [tooltipShowDelay]=\"0\"\n          >ℹ️</button>\n        </p>\n      </div>\n    `,\n  }),\n};\n\n/**\n * Onboarding-style tooltip: `tooltipCloseable` keeps it visible until the user\n * closes it (✕ button, Escape, or clicking outside) — hovering away does not\n * dismiss it. `show()`/`hide()` (via `#ref=\"egovTooltip\"`) drive it from code,\n * e.g. for product tours.\n */\n@Component({\n  selector: 'egov-tooltip-onboarding-demo',\n  imports: [EgovTooltip],\n  template: `\n    <div style=\"display:flex;gap:12px;align-items:center;justify-content:center;padding:140px 24px\">\n      <button type=\"button\" (click)=\"tooltip.show()\">show()</button>\n      <button type=\"button\" (click)=\"tooltip.hide()\">hide()</button>\n      <code>tooltipDismissed × {{ dismissals() }}</code>\n      <span style=\"width:48px\"></span>\n      <button\n        #tooltip=\"egovTooltip\"\n        type=\"button\"\n        style=\"${BTN_STYLE}\"\n        egovTooltip=\"New! You can now track your application status here.\"\n        tooltipPlacement=\"top-center\"\n        tooltipSize=\"large\"\n        tooltipCloseable\n        [tooltipShowDelay]=\"0\"\n        (tooltipDismissed)=\"dismissals.set(dismissals() + 1)\"\n      >\n        Application status\n      </button>\n    </div>\n  `,\n})\nclass TooltipOnboardingDemo {\n  readonly dismissals = signal(0);\n}\n\nexport const CloseableOnboarding: Story = {\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [TooltipOnboardingDemo] })],\n  render: () => ({ template: `<egov-tooltip-onboarding-demo />` }),\n};\n",
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "",
             "jsdoctags": [
                 {
-                    "pos": 4325,
-                    "end": 4597,
+                    "pos": 4273,
+                    "end": 4545,
                     "kind": 321,
                     "id": 0,
                     "flags": 16777216,
@@ -3689,17 +3689,6 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<BorderGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Borders',\n  component: BorderGridComponent,\n  decorators: [moduleMetadata({ imports: [BorderGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -3722,6 +3711,17 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<BorderGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Borders',\n  component: BorderGridComponent,\n  decorators: [moduleMetadata({ imports: [BorderGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -3733,23 +3733,23 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<DisplayGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Display',\n  component: DisplayGridComponent,\n  decorators: [moduleMetadata({ imports: [DisplayGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Meta<ShadowGridComponent>",
                 "defaultValue": "{\n  title: 'Foundations/Elevation',\n  component: ShadowGridComponent,\n  decorators: [moduleMetadata({ imports: [ShadowGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<DisplayGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Display',\n  component: DisplayGridComponent,\n  decorators: [moduleMetadata({ imports: [DisplayGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "meta",
@@ -3984,9 +3984,7 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story",
-                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"display:flex;gap:48px;justify-content:center;padding:120px 24px\">\n        <button type=\"button\" style=\"${BTN_STYLE}\" egovTooltip=\"Tooltip small.\" tooltipSize=\"small\" [tooltipShowDelay]=\"0\">\n          small\n        </button>\n        <button type=\"button\" style=\"${BTN_STYLE}\" egovTooltip=\"Tooltip displayed above the element.\" tooltipSize=\"large\" [tooltipShowDelay]=\"0\">\n          large\n        </button>\n      </div>\n    `,\n  }),\n}",
-                "rawdescription": "`small` (default) vs `large` bubble padding.",
-                "description": "<p><code>small</code> (default) vs <code>large</code> bubble padding.</p>\n"
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"display:flex;gap:48px;justify-content:center;padding:120px 24px\">\n        <button type=\"button\" style=\"${BTN_STYLE}\" egovTooltip=\"Tooltip small.\" tooltipSize=\"small\" [tooltipShowDelay]=\"0\">\n          small\n        </button>\n        <button type=\"button\" style=\"${BTN_STYLE}\" egovTooltip=\"Tooltip displayed above the element.\" tooltipSize=\"large\" [tooltipShowDelay]=\"0\">\n          large\n        </button>\n      </div>\n    `,\n  }),\n}"
             },
             {
                 "name": "Spacing",
@@ -4027,23 +4025,23 @@
                 "name": "Tokens",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Story",
-                "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
-            },
-            {
-                "name": "Tokens",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
+            },
+            {
+                "name": "Tokens",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
             },
             {
                 "name": "Utilities",
@@ -4179,19 +4177,6 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<BorderGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "rawdescription": "",
-                "description": "",
-                "kind": 184
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "coverageIgnore": false,
                 "rawtype": "StoryObj<ColorGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
                 "deprecated": false,
@@ -4218,6 +4203,19 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
+                "rawtype": "StoryObj<BorderGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
                 "rawtype": "StoryObj<CursorGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
                 "deprecated": false,
@@ -4231,8 +4229,8 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<DisplayGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                "rawtype": "StoryObj<ShadowGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -4244,8 +4242,8 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<ShadowGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                "rawtype": "StoryObj<DisplayGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -4572,9 +4570,7 @@
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "Story",
-                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"display:flex;gap:48px;justify-content:center;padding:120px 24px\">\n        <button type=\"button\" style=\"${BTN_STYLE}\" egovTooltip=\"Tooltip small.\" tooltipSize=\"small\" [tooltipShowDelay]=\"0\">\n          small\n        </button>\n        <button type=\"button\" style=\"${BTN_STYLE}\" egovTooltip=\"Tooltip displayed above the element.\" tooltipSize=\"large\" [tooltipShowDelay]=\"0\">\n          large\n        </button>\n      </div>\n    `,\n  }),\n}",
-                    "rawdescription": "`small` (default) vs `large` bubble padding.",
-                    "description": "<p><code>small</code> (default) vs <code>large</code> bubble padding.</p>\n"
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"display:flex;gap:48px;justify-content:center;padding:120px 24px\">\n        <button type=\"button\" style=\"${BTN_STYLE}\" egovTooltip=\"Tooltip small.\" tooltipSize=\"small\" [tooltipShowDelay]=\"0\">\n          small\n        </button>\n        <button type=\"button\" style=\"${BTN_STYLE}\" egovTooltip=\"Tooltip displayed above the element.\" tooltipSize=\"large\" [tooltipShowDelay]=\"0\">\n          large\n        </button>\n      </div>\n    `,\n  }),\n}"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/foundations/color/color-grid.component.ts": [
@@ -4782,30 +4778,6 @@
                     "defaultValue": "{\n  title: 'Foundations/Margin',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
-                {
-                    "name": "meta",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<BorderGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Borders',\n  component: BorderGridComponent,\n  decorators: [moduleMetadata({ imports: [BorderGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Tokens",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
                 {
                     "name": "meta",
@@ -4852,6 +4824,30 @@
                     "deprecationMessage": "",
                     "type": "Story",
                     "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<BorderGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Borders',\n  component: BorderGridComponent,\n  decorators: [moduleMetadata({ imports: [BorderGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Tokens",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts": [
@@ -5146,21 +5142,6 @@
                     "kind": 184
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<BorderGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
                 {
                     "name": "Story",
@@ -5191,6 +5172,21 @@
                     "kind": 184
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<BorderGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts": [
                 {
                     "name": "Story",
@@ -5206,21 +5202,6 @@
                     "kind": 184
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<DisplayGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts": [
                 {
                     "name": "Story",
@@ -5229,6 +5210,21 @@
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<ShadowGridComponent>",
                     "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<DisplayGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -5334,7 +5330,7 @@
         "children": []
     },
     "coverage": {
-        "count": 8,
+        "count": 7,
         "status": "low",
         "files": [
             {
@@ -5571,9 +5567,9 @@
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
                 "name": "Sizes",
-                "coveragePercent": 100,
-                "coverageCount": "1/1",
-                "status": "very-good"
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
             },
             {
                 "filePath": "projects/ngx-egov-ui/src/stories/components/tooltip.stories.ts",
