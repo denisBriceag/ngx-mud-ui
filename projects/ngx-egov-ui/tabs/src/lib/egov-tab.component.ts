@@ -1,4 +1,14 @@
-import { booleanAttribute, Component, computed, contentChild, input, signal, TemplateRef, viewChild } from '@angular/core';
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  contentChild,
+  input,
+  signal,
+  TemplateRef,
+  viewChild,
+} from '@angular/core';
 import { EgovTabLabel } from './egov-tab-label.directive';
 
 let uniqueId = 0;
@@ -14,6 +24,7 @@ let uniqueId = 0;
 @Component({
   selector: 'egov-tab',
   template: `<ng-template><ng-content /></ng-template>`,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EgovTab {
   readonly label = input('');

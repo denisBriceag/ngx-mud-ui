@@ -321,6 +321,33 @@ describe('EgovTooltip', () => {
     });
   });
 
+  it('removes its document keydown listener on hide and on destroy', async () => {
+    const added = vi.spyOn(document, 'addEventListener');
+    const removed = vi.spyOn(document, 'removeEventListener');
+    const { fixture, trigger, directive } = await renderWithDirective();
+
+    const keydownHandler = () => {
+      const call = added.mock.calls.find(([type]) => type === 'keydown');
+
+      return call?.[1];
+    };
+
+    await dispatch(fixture, trigger, mouseenter());
+
+    expect(keydownHandler()).toBeDefined();
+
+    await dispatch(fixture, trigger, mouseleave());
+
+    expect(removed.mock.calls.some(([type, fn]) => type === 'keydown' && fn === keydownHandler())).toBe(true);
+
+    removed.mockClear();
+    directive.show();
+    await tick();
+    fixture.destroy();
+
+    expect(removed.mock.calls.some(([type, fn]) => type === 'keydown' && fn === keydownHandler())).toBe(true);
+  });
+
   describe('server-side rendering', () => {
     it('show() is a no-op on non-browser platforms', async () => {
       TestBed.configureTestingModule({

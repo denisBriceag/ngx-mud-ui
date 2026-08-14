@@ -1,4 +1,12 @@
-import { afterNextRender, Component, computed, input, output, signal } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import type { EgovTooltipPlacement, EgovTooltipSize } from './tooltip-positions';
 
 /**
@@ -37,6 +45,7 @@ import type { EgovTooltipPlacement, EgovTooltipSize } from './tooltip-positions'
     '(mouseenter)': 'hovered.emit(true)',
     '(mouseleave)': 'hovered.emit(false)',
   },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EgovTooltipContainer {
   readonly tooltipId = input.required<string>();

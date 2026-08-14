@@ -1,4 +1,12 @@
-import { Component, computed, effect, inject, input, isDevMode } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  isDevMode,
+} from '@angular/core';
 import type { SafeHtml } from '@angular/platform-browser';
 import { DomSanitizer } from '@angular/platform-browser';
 import { EgovIconRegistry } from './egov-icon-registry.service';
@@ -21,6 +29,7 @@ const SCALES: readonly EgovIconScale[] = [12, 16, 20, 24];
     '[attr.aria-label]': 'ariaLabel() ?? null',
     '[attr.aria-hidden]': 'ariaLabel() ? null : "true"',
   },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EgovIconComponent {
   private readonly _registry = inject(EgovIconRegistry);

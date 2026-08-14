@@ -1,6 +1,7 @@
 import {
   afterNextRender,
   booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
   contentChildren,
   DestroyRef,
@@ -122,6 +123,7 @@ import type { EgovTabChangeEvent } from './egov-tab-change-event';
     </div>
   `,
   styleUrl: './egov-tab-group.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EgovTabGroup {
   private readonly _destroyRef = inject(DestroyRef);
