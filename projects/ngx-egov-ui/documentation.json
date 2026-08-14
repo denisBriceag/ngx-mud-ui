@@ -2081,6 +2081,95 @@
             }
         },
         {
+            "name": "LinkDarkThemeDemo",
+            "id": "component-LinkDarkThemeDemo-d9d9e1560e40c284b8349387958aff27188c22d44411a8c5b1392cc450e37795d1dab0355781f3baa20779a21545f617ff4e3338605333877a52e93a2ac802b8",
+            "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+            "changeDetection": "ChangeDetectionStrategy.OnPush",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "egov-link-dark-theme-demo",
+            "styleUrls": [],
+            "styles": [],
+            "templateUrl": [],
+            "templateVariables": [],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "_document",
+                    "coverageIgnore": false,
+                    "defaultValue": "inject(DOCUMENT)",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 112,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        123,
+                        148
+                    ]
+                }
+            ],
+            "methodsClass": [],
+            "coverageIgnore": false,
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "standalone": true,
+            "imports": [
+                {
+                    "name": "EgovLink"
+                }
+            ],
+            "description": "<p>The <code>--color-link-*</code> token chains resolve on the element that carries\n<code>data-theme</code>, so the attribute must be on the ROOT element (<code>&lt;html&gt;</code>), the\nsame contract the Foundations color grid follows — a nested\n<code>data-theme=&quot;dark&quot;</code> wrapper does NOT re-theme the links. This demo toggles\nthe attribute on <code>document.documentElement</code> while the story is open.</p>\n",
+            "rawdescription": "\n\nThe `--color-link-*` token chains resolve on the element that carries\n`data-theme`, so the attribute must be on the ROOT element (`<html>`), the\nsame contract the Foundations color grid follows — a nested\n`data-theme=\"dark\"` wrapper does NOT re-theme the links. This demo toggles\nthe attribute on `document.documentElement` while the story is open.\n",
+            "type": "component",
+            "sourceCode": "import type { Meta, StoryObj } from '@storybook/angular-vite';\nimport { moduleMetadata } from '@storybook/angular-vite';\nimport { Component, DestroyRef, DOCUMENT, inject } from '@angular/core';\nimport { EgovLink } from '../../../link/src/public-api';\n\nconst ROW = 'display:flex;gap:32px;align-items:center;flex-wrap:wrap;padding:24px';\n\nconst meta: Meta<EgovLink> = {\n  title: 'Components/Link',\n  component: EgovLink,\n  decorators: [moduleMetadata({ imports: [EgovLink] })],\n  argTypes: {\n    egovLink: { control: 'inline-radio', options: ['primary', 'strict'], description: 'Link style' },\n    size: { control: 'inline-radio', options: ['large', 'medium', 'small', 'extra-small'] },\n    underlined: { control: 'boolean' },\n    touchTarget: {\n      control: 'inline-radio',\n      options: ['auto', 'pointer', 'touch', 'none'],\n      description: 'auto = 40px target on touch devices, 32px otherwise; none = inline prose links',\n    },\n    disabled: { control: 'boolean' },\n  },\n  args: {\n    egovLink: 'primary',\n    size: 'medium',\n    underlined: true,\n    touchTarget: 'auto',\n    disabled: false,\n  },\n};\n\nexport default meta;\n\ntype Story = StoryObj<EgovLink>;\n\nexport const Playground: Story = {\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <a\n          href=\"#\"\n          [egovLink]=\"egovLink\"\n          [size]=\"size\"\n          [underlined]=\"underlined\"\n          [touchTarget]=\"touchTarget\"\n          [disabled]=\"disabled\"\n        >\n          Services catalogue\n        </a>\n      </div>\n    `,\n  }),\n};\n\nexport const Sizes: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink size=\"large\">Large</a>\n        <a href=\"#\" egovLink size=\"medium\">Medium</a>\n        <a href=\"#\" egovLink size=\"small\">Small</a>\n        <a href=\"#\" egovLink size=\"extra-small\">Extra small</a>\n      </div>\n    `,\n  }),\n};\n\nexport const Variations: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink>Underlined</a>\n        <a href=\"#\" egovLink [underlined]=\"false\">Non-underlined</a>\n      </div>\n    `,\n  }),\n};\n\nexport const Styles: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink>Primary</a>\n        <a href=\"#\" egovLink=\"strict\">Strict</a>\n      </div>\n    `,\n  }),\n};\n\n/**\n * The `--color-link-*` token chains resolve on the element that carries\n * `data-theme`, so the attribute must be on the ROOT element (`<html>`), the\n * same contract the Foundations color grid follows — a nested\n * `data-theme=\"dark\"` wrapper does NOT re-theme the links. This demo toggles\n * the attribute on `document.documentElement` while the story is open.\n */\n@Component({\n  selector: 'egov-link-dark-theme-demo',\n  imports: [EgovLink],\n  template: `\n    <div style=\"${ROW};background:var(--color-background-base-default,#121212)\">\n      <a href=\"#\" egovLink>Primary (dark theme)</a>\n      <a href=\"#\" egovLink=\"strict\">Strict (dark theme)</a>\n    </div>\n  `,\n})\nclass LinkDarkThemeDemo {\n  private readonly _document = inject(DOCUMENT);\n\n  constructor() {\n    this._document.documentElement.setAttribute('data-theme', 'dark');\n    inject(DestroyRef).onDestroy(() => this._document.documentElement.removeAttribute('data-theme'));\n  }\n}\n\n/**\n * Same markup as Styles with the dark theme active: primary becomes the\n * lighter `blue-sky-400` and strict becomes white — automatically, via the\n * theme tokens. No `white` style input is needed.\n */\nexport const StylesDarkTheme: Story = {\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [LinkDarkThemeDemo] })],\n  render: () => ({ template: `<egov-link-dark-theme-demo />` }),\n};\n\n/**\n * `auto` picks the target from the device: 40px min-height on coarse-pointer\n * (touch) devices, 32px otherwise (WCAG 2.5.5 / 2.5.8). `none` opts out for\n * links inside running prose, where the extra padding would break text flow.\n */\nexport const TouchTargets: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink touchTarget=\"pointer\" style=\"outline:1px dashed #ccc\">32px pointer target</a>\n        <a href=\"#\" egovLink touchTarget=\"touch\" style=\"outline:1px dashed #ccc\">40px touch target</a>\n      </div>\n      <p style=\"max-width:48ch;padding:0 24px\">\n        Prose with an inline\n        <a href=\"#\" egovLink touchTarget=\"none\">opted-out link</a>\n        that keeps the surrounding line height intact.\n      </p>\n    `,\n  }),\n};\n\n/** Disabled links stay in the DOM but expose `aria-disabled`, leave the tab order, and ignore clicks. */\nexport const Disabled: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink disabled>Disabled primary</a>\n        <a href=\"#\" egovLink=\"strict\" disabled>Disabled strict</a>\n      </div>\n    `,\n  }),\n};\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "",
+            "jsdoctags": [
+                {
+                    "pos": 2497,
+                    "end": 2868,
+                    "kind": 321,
+                    "id": 0,
+                    "flags": 16777216,
+                    "modifierFlagsCache": 0,
+                    "transformFlags": 0,
+                    "comment": "The `--color-link-*` token chains resolve on the element that carries\n`data-theme`, so the attribute must be on the ROOT element (`<html>`), the\nsame contract the Foundations color grid follows — a nested\n`data-theme=\"dark\"` wrapper does NOT re-theme the links. This demo toggles\nthe attribute on `document.documentElement` while the story is open."
+                }
+            ],
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "args": [],
+                "line": 112,
+                "rawdescription": "\n"
+            },
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": [
+                    {
+                        "name": "EgovLink",
+                        "type": "module"
+                    }
+                ]
+            }
+        },
+        {
             "name": "ShadowGridComponent",
             "id": "component-ShadowGridComponent-dae9c69b2e7654d3b8f4ba9292790e681275df8b724d6b945a7fc388db9a55c29e8e107ad2696cf713a06cdc4ec0cc1a45f55d0ff981655d01b284a8e0d93f8f",
             "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/shadow-grid.component.ts",
@@ -3611,6 +3700,19 @@
                 "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton disabled>Primary</button>\n        <button type=\"button\" egovButton color=\"secondary\" disabled>Secondary</button>\n        <button type=\"button\" egovButton color=\"strict\" disabled>Strict</button>\n        <button type=\"button\" egovButton color=\"neutral\" disabled>Neutral</button>\n        <button type=\"button\" egovButton color=\"destructive\" disabled>Destructive</button>\n      </div>\n    `,\n  }),\n}"
             },
             {
+                "name": "Disabled",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink disabled>Disabled primary</a>\n        <a href=\"#\" egovLink=\"strict\" disabled>Disabled strict</a>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Disabled links stay in the DOM but expose `aria-disabled`, leave the tab order, and ignore clicks.",
+                "description": "<p>Disabled links stay in the DOM but expose <code>aria-disabled</code>, leave the tab order, and ignore clicks.</p>\n"
+            },
+            {
                 "name": "DisabledTabs",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -3774,6 +3876,17 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<EgovLink>",
+                "defaultValue": "{\n  title: 'Components/Link',\n  component: EgovLink,\n  decorators: [moduleMetadata({ imports: [EgovLink] })],\n  argTypes: {\n    egovLink: { control: 'inline-radio', options: ['primary', 'strict'], description: 'Link style' },\n    size: { control: 'inline-radio', options: ['large', 'medium', 'small', 'extra-small'] },\n    underlined: { control: 'boolean' },\n    touchTarget: {\n      control: 'inline-radio',\n      options: ['auto', 'pointer', 'touch', 'none'],\n      description: 'auto = 40px target on touch devices, 32px otherwise; none = inline prose links',\n    },\n    disabled: { control: 'boolean' },\n  },\n  args: {\n    egovLink: 'primary',\n    size: 'medium',\n    underlined: true,\n    touchTarget: 'auto',\n    disabled: false,\n  },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -3791,17 +3904,6 @@
                 "deprecationMessage": "",
                 "type": "Meta<EgovTooltip>",
                 "defaultValue": "{\n  title: 'Components/Tooltip',\n  component: EgovTooltip,\n  decorators: [moduleMetadata({ imports: [EgovTooltip] })],\n  argTypes: {\n    egovTooltip: { control: 'text', description: 'Tooltip message' },\n    tooltipPlacement: { control: 'select', options: [...EGOV_TOOLTIP_PLACEMENTS] },\n    tooltipSize: { control: 'inline-radio', options: ['small', 'large'] },\n    tooltipCloseable: { control: 'boolean' },\n    tooltipDisabled: { control: 'boolean' },\n    tooltipShowDelay: { control: 'number' },\n    tooltipMaxWidth: { control: 'text' },\n  },\n  args: {\n    egovTooltip: 'Moldova’s digital evolution is at the heart of seamless public service delivery.',\n    tooltipPlacement: 'top-center',\n    tooltipSize: 'small',\n    tooltipCloseable: false,\n    tooltipDisabled: false,\n    tooltipShowDelay: 300,\n    tooltipMaxWidth: '240px',\n  },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<BorderGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Borders',\n  component: BorderGridComponent,\n  decorators: [moduleMetadata({ imports: [BorderGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "meta",
@@ -3829,23 +3931,23 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<BorderGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Borders',\n  component: BorderGridComponent,\n  decorators: [moduleMetadata({ imports: [BorderGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Meta<CursorGridComponent>",
                 "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<LayoutGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Layout Grid',\n  component: LayoutGridComponent,\n  decorators: [moduleMetadata({ imports: [LayoutGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "meta",
@@ -3868,6 +3970,17 @@
                 "deprecationMessage": "",
                 "type": "Meta<ShadowGridComponent>",
                 "defaultValue": "{\n  title: 'Foundations/Elevation',\n  component: ShadowGridComponent,\n  decorators: [moduleMetadata({ imports: [ShadowGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<LayoutGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Layout Grid',\n  component: LayoutGridComponent,\n  decorators: [moduleMetadata({ imports: [LayoutGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "meta",
@@ -3906,23 +4019,23 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<WidthGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Width',\n  component: WidthGridComponent,\n  decorators: [moduleMetadata({ imports: [WidthGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Meta<TypographyGridComponent>",
                 "defaultValue": "{\n  title: 'Foundations/Typography',\n  component: TypographyGridComponent,\n  decorators: [moduleMetadata({ imports: [TypographyGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<WidthGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Width',\n  component: WidthGridComponent,\n  decorators: [moduleMetadata({ imports: [WidthGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "OnIconTrigger",
@@ -4041,6 +4154,17 @@
                 "defaultValue": "{}"
             },
             {
+                "name": "Playground",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <a\n          href=\"#\"\n          [egovLink]=\"egovLink\"\n          [size]=\"size\"\n          [underlined]=\"underlined\"\n          [touchTarget]=\"touchTarget\"\n          [disabled]=\"disabled\"\n        >\n          Services catalogue\n        </a>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
                 "name": "preview",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -4072,6 +4196,17 @@
                 "deprecationMessage": "",
                 "type": "string",
                 "defaultValue": "'display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding:24px'"
+            },
+            {
+                "name": "ROW",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "string",
+                "defaultValue": "'display:flex;gap:32px;align-items:center;flex-wrap:wrap;padding:24px'"
             },
             {
                 "name": "SAMPLE",
@@ -4143,6 +4278,17 @@
                 "name": "Sizes",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink size=\"large\">Large</a>\n        <a href=\"#\" egovLink size=\"medium\">Medium</a>\n        <a href=\"#\" egovLink size=\"small\">Small</a>\n        <a href=\"#\" egovLink size=\"extra-small\">Extra small</a>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
+                "name": "Sizes",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/components/tooltip.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -4175,6 +4321,30 @@
                 "description": "<p>Tabs stretched to fill the header width.</p>\n"
             },
             {
+                "name": "Styles",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink>Primary</a>\n        <a href=\"#\" egovLink=\"strict\">Strict</a>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
+                "name": "StylesDarkTheme",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [LinkDarkThemeDemo] })],\n  render: () => ({ template: `<egov-link-dark-theme-demo />` }),\n}",
+                "rawdescription": "Same markup as Styles with the dark theme active: primary becomes the\nlighter `blue-sky-400` and strict becomes white — automatically, via the\ntheme tokens. No `white` style input is needed.",
+                "description": "<p>Same markup as Styles with the dark theme active: primary becomes the\nlighter <code>blue-sky-400</code> and strict becomes white — automatically, via the\ntheme tokens. No <code>white</code> style input is needed.</p>\n"
+            },
+            {
                 "name": "TextStyles",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -4200,6 +4370,17 @@
                 "name": "Tokens",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
+            },
+            {
+                "name": "Tokens",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -4208,15 +4389,17 @@
                 "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
             },
             {
-                "name": "Tokens",
+                "name": "TouchTargets",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story",
-                "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink touchTarget=\"pointer\" style=\"outline:1px dashed #ccc\">32px pointer target</a>\n        <a href=\"#\" egovLink touchTarget=\"touch\" style=\"outline:1px dashed #ccc\">40px touch target</a>\n      </div>\n      <p style=\"max-width:48ch;padding:0 24px\">\n        Prose with an inline\n        <a href=\"#\" egovLink touchTarget=\"none\">opted-out link</a>\n        that keeps the surrounding line height intact.\n      </p>\n    `,\n  }),\n}",
+                "rawdescription": "`auto` picks the target from the device: 40px min-height on coarse-pointer\n(touch) devices, 32px otherwise (WCAG 2.5.5 / 2.5.8). `none` opts out for\nlinks inside running prose, where the extra padding would break text flow.",
+                "description": "<p><code>auto</code> picks the target from the device: 40px min-height on coarse-pointer\n(touch) devices, 32px otherwise (WCAG 2.5.5 / 2.5.8). <code>none</code> opts out for\nlinks inside running prose, where the extra padding would break text flow.</p>\n"
             },
             {
                 "name": "Utilities",
@@ -4228,6 +4411,17 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  render: () => ({ template: `<egov-display-grid />` }),\n}"
+            },
+            {
+                "name": "Variations",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink>Underlined</a>\n        <a href=\"#\" egovLink [underlined]=\"false\">Non-underlined</a>\n      </div>\n    `,\n  }),\n}"
             },
             {
                 "name": "Width",
@@ -4352,6 +4546,19 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
+                "rawtype": "StoryObj<EgovLink>",
+                "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
                 "rawtype": "StoryObj<EgovTabGroup>",
                 "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
                 "deprecated": false,
@@ -4367,19 +4574,6 @@
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<EgovTooltip>",
                 "file": "projects/ngx-egov-ui/src/stories/components/tooltip.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "rawdescription": "",
-                "description": "",
-                "kind": 184
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "coverageIgnore": false,
-                "rawtype": "StoryObj<BorderGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -4417,8 +4611,8 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<CursorGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                "rawtype": "StoryObj<BorderGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -4430,8 +4624,8 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<LayoutGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
+                "rawtype": "StoryObj<CursorGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -4458,6 +4652,19 @@
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<ShadowGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<LayoutGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -4508,8 +4715,8 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<WidthGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
+                "rawtype": "StoryObj<TypographyGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -4521,8 +4728,8 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<TypographyGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
+                "rawtype": "StoryObj<WidthGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -5049,6 +5256,113 @@
                     "defaultValue": "[\n  { title: 'General', cursors: ['auto', 'default', 'pointer', 'context-menu', 'help', 'progress', 'wait', 'none'] },\n  {\n    title: 'Selection & action',\n    cursors: ['text', 'vertical-text', 'cell', 'crosshair', 'copy', 'alias', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll'],\n  },\n  { title: 'Zoom', cursors: ['zoom-in', 'zoom-out'] },\n  {\n    title: 'Resize',\n    cursors: ['col-resize', 'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize'],\n  },\n]"
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/components/link.stories.ts": [
+                {
+                    "name": "Disabled",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink disabled>Disabled primary</a>\n        <a href=\"#\" egovLink=\"strict\" disabled>Disabled strict</a>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Disabled links stay in the DOM but expose `aria-disabled`, leave the tab order, and ignore clicks.",
+                    "description": "<p>Disabled links stay in the DOM but expose <code>aria-disabled</code>, leave the tab order, and ignore clicks.</p>\n"
+                },
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<EgovLink>",
+                    "defaultValue": "{\n  title: 'Components/Link',\n  component: EgovLink,\n  decorators: [moduleMetadata({ imports: [EgovLink] })],\n  argTypes: {\n    egovLink: { control: 'inline-radio', options: ['primary', 'strict'], description: 'Link style' },\n    size: { control: 'inline-radio', options: ['large', 'medium', 'small', 'extra-small'] },\n    underlined: { control: 'boolean' },\n    touchTarget: {\n      control: 'inline-radio',\n      options: ['auto', 'pointer', 'touch', 'none'],\n      description: 'auto = 40px target on touch devices, 32px otherwise; none = inline prose links',\n    },\n    disabled: { control: 'boolean' },\n  },\n  args: {\n    egovLink: 'primary',\n    size: 'medium',\n    underlined: true,\n    touchTarget: 'auto',\n    disabled: false,\n  },\n}"
+                },
+                {
+                    "name": "Playground",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <a\n          href=\"#\"\n          [egovLink]=\"egovLink\"\n          [size]=\"size\"\n          [underlined]=\"underlined\"\n          [touchTarget]=\"touchTarget\"\n          [disabled]=\"disabled\"\n        >\n          Services catalogue\n        </a>\n      </div>\n    `,\n  }),\n}"
+                },
+                {
+                    "name": "ROW",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "defaultValue": "'display:flex;gap:32px;align-items:center;flex-wrap:wrap;padding:24px'"
+                },
+                {
+                    "name": "Sizes",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink size=\"large\">Large</a>\n        <a href=\"#\" egovLink size=\"medium\">Medium</a>\n        <a href=\"#\" egovLink size=\"small\">Small</a>\n        <a href=\"#\" egovLink size=\"extra-small\">Extra small</a>\n      </div>\n    `,\n  }),\n}"
+                },
+                {
+                    "name": "Styles",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink>Primary</a>\n        <a href=\"#\" egovLink=\"strict\">Strict</a>\n      </div>\n    `,\n  }),\n}"
+                },
+                {
+                    "name": "StylesDarkTheme",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  decorators: [moduleMetadata({ imports: [LinkDarkThemeDemo] })],\n  render: () => ({ template: `<egov-link-dark-theme-demo />` }),\n}",
+                    "rawdescription": "Same markup as Styles with the dark theme active: primary becomes the\nlighter `blue-sky-400` and strict becomes white — automatically, via the\ntheme tokens. No `white` style input is needed.",
+                    "description": "<p>Same markup as Styles with the dark theme active: primary becomes the\nlighter <code>blue-sky-400</code> and strict becomes white — automatically, via the\ntheme tokens. No <code>white</code> style input is needed.</p>\n"
+                },
+                {
+                    "name": "TouchTargets",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink touchTarget=\"pointer\" style=\"outline:1px dashed #ccc\">32px pointer target</a>\n        <a href=\"#\" egovLink touchTarget=\"touch\" style=\"outline:1px dashed #ccc\">40px touch target</a>\n      </div>\n      <p style=\"max-width:48ch;padding:0 24px\">\n        Prose with an inline\n        <a href=\"#\" egovLink touchTarget=\"none\">opted-out link</a>\n        that keeps the surrounding line height intact.\n      </p>\n    `,\n  }),\n}",
+                    "rawdescription": "`auto` picks the target from the device: 40px min-height on coarse-pointer\n(touch) devices, 32px otherwise (WCAG 2.5.5 / 2.5.8). `none` opts out for\nlinks inside running prose, where the extra padding would break text flow.",
+                    "description": "<p><code>auto</code> picks the target from the device: 40px min-height on coarse-pointer\n(touch) devices, 32px otherwise (WCAG 2.5.5 / 2.5.8). <code>none</code> opts out for\nlinks inside running prose, where the extra padding would break text flow.</p>\n"
+                },
+                {
+                    "name": "Variations",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink>Underlined</a>\n        <a href=\"#\" egovLink [underlined]=\"false\">Non-underlined</a>\n      </div>\n    `,\n  }),\n}"
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.component.ts": [
                 {
                     "name": "EXAMPLES",
@@ -5169,30 +5483,6 @@
                     "defaultValue": "{\n  title: 'Foundations/Margin',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
-                {
-                    "name": "meta",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<BorderGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Borders',\n  component: BorderGridComponent,\n  decorators: [moduleMetadata({ imports: [BorderGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Tokens",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
                 {
                     "name": "meta",
@@ -5239,6 +5529,30 @@
                     "deprecationMessage": "",
                     "type": "Story",
                     "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<BorderGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Borders',\n  component: BorderGridComponent,\n  decorators: [moduleMetadata({ imports: [BorderGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Tokens",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts": [
@@ -5337,30 +5651,6 @@
                     "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"gap\" />` }),\n}"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts": [
-                {
-                    "name": "meta",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<WidthGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Width',\n  component: WidthGridComponent,\n  decorators: [moduleMetadata({ imports: [WidthGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Width",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-width-grid />` }),\n}"
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts": [
                 {
                     "name": "meta",
@@ -5383,6 +5673,30 @@
                     "deprecationMessage": "",
                     "type": "Story",
                     "defaultValue": "{\n  render: () => ({ template: `<egov-typography-grid />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<WidthGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Width',\n  component: WidthGridComponent,\n  decorators: [moduleMetadata({ imports: [WidthGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Width",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-width-grid />` }),\n}"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/foundations/display-utilities/display-grid.component.ts": [
@@ -5518,6 +5832,21 @@
                     "kind": 184
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/components/link.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<EgovLink>",
+                    "file": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts": [
                 {
                     "name": "Story",
@@ -5541,21 +5870,6 @@
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<EgovTooltip>",
                     "file": "projects/ngx-egov-ui/src/stories/components/tooltip.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<BorderGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -5593,6 +5907,21 @@
                     "kind": 184
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<BorderGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts": [
                 {
                     "name": "Story",
@@ -5601,21 +5930,6 @@
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<CursorGridComponent>",
                     "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<LayoutGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -5646,6 +5960,21 @@
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<ShadowGridComponent>",
                     "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<LayoutGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -5698,21 +6027,6 @@
                     "kind": 184
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<WidthGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts": [
                 {
                     "name": "Story",
@@ -5721,6 +6035,21 @@
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<TypographyGridComponent>",
                     "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<WidthGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -5736,7 +6065,7 @@
         "children": []
     },
     "coverage": {
-        "count": 11,
+        "count": 12,
         "status": "low",
         "files": [
             {
@@ -5961,6 +6290,115 @@
             },
             {
                 "filePath": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "LinkDarkThemeDemo",
+                "coveragePercent": 33,
+                "coverageCount": "1/3",
+                "status": "medium"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Disabled",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Playground",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "ROW",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Sizes",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Styles",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "StylesDarkTheme",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "TouchTargets",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Variations",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
                 "type": "type alias",
                 "linktype": "miscellaneous",
                 "linksubtype": "typealias",
