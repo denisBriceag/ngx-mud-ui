@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, PLATFORM_ID, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { EgovTabGroup } from './egov-tab-group.component';
@@ -241,5 +241,17 @@ describe('EgovTabGroup', () => {
     await fixture.whenStable();
 
     expect(host.selected).toBe(0);
+  });
+
+  it('focusTab() does not touch the DOM on non-browser platforms', async () => {
+    TestBed.configureTestingModule({
+      providers: [{ provide: PLATFORM_ID, useValue: 'server' }],
+    });
+
+    const { group, tabs } = await render();
+
+    group.focusTab(1);
+
+    expect(document.activeElement).not.toBe(tabs()[1]);
   });
 });

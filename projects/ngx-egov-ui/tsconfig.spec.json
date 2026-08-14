@@ -6,5 +6,11 @@
     "outDir": "../../out-tsc/spec",
     "types": ["vitest/globals"]
   },
-  "include": ["src/**/*.d.ts", "src/**/*.spec.ts", "icons/src/**/*.spec.ts", "tabs/src/**/*.spec.ts"]
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.spec.ts",
+    "icons/src/**/*.spec.ts",
+    "tabs/src/**/*.spec.ts",
+    "tooltip/src/**/*.spec.ts"
+  ]
 }
