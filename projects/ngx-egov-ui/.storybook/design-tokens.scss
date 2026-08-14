@@ -4,6 +4,9 @@
 @use '../src/lib/styles/utilities/typography-tokens';
 @use '../src/lib/styles/base/border-utilities';
 @use '../src/lib/styles/base/drop-shadows';
+@use '../src/lib/styles/base/buttons' as button-variants;
+@use '../src/lib/styles/utilities/buttons' as button-base;
+@use '../src/lib/styles/components/forms/badge-button';
 @use '../src/lib/styles/utilities/display';
 @use '../src/lib/styles/utilities/gap';
 @use '../src/lib/styles/utilities/margin';
