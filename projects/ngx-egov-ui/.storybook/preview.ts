@@ -3,6 +3,8 @@ import { setCompodocJson } from '@storybook/addon-docs/angular';
 
 import docJson from '../documentation.json';
 
+// Structural styles for CDK overlays.
+import '@angular/cdk/overlay-prebuilt.css';
 import './design-tokens.scss';
 
 setCompodocJson(docJson);

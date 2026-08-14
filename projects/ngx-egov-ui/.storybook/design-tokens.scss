@@ -1,3 +1,4 @@
+@use '../src/lib/styles/fonts/Onest';
 @use '../src/lib/styles/abstracts/tokens';
 @use '../src/lib/styles/themes/dark';
 @use '../src/lib/styles/utilities/typography-tokens';
@@ -9,3 +10,7 @@
 @use '../src/lib/styles/utilities/padding';
 @use '../src/lib/styles/utilities/width';
 @use '../src/lib/styles/base/grid';
+
+body {
+  font-family: var(--font-family-base);
+}

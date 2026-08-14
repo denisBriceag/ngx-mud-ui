@@ -1,0 +1,164 @@
+:host {
+  position: relative;
+  display: block;
+  // The padding creates the visual gap to the trigger and hosts the arrow.
+  padding: var(--spacing-8, 8px);
+  opacity: 0;
+  transform: scale(0.95);
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
+}
+
+:host(.show) {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    transition: none;
+    transform: none;
+  }
+}
+
+.tooltip-inner {
+  background: var(--gray-900, #1e1e1e);
+  color: var(--white, #ffffff);
+  border-radius: var(--border-radius-6, 6px);
+  min-width: 150px;
+  max-width: var(--egov-tooltip-max-width, 240px);
+  font-size: var(--text-body-sm-font-size, 14px);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 15%);
+}
+
+:host(.tooltip--small) .tooltip-inner {
+  padding: var(--spacing-8, 8px) var(--spacing-12, 12px);
+}
+
+:host(.tooltip--large) .tooltip-inner {
+  padding: var(--spacing-16, 16px) var(--spacing-24, 24px);
+}
+
+:host(.tooltip--with-close) .tooltip-inner {
+  padding-right: var(--spacing-48, 48px);
+}
+
+.tooltip-close {
+  position: absolute;
+  top: var(--spacing-12, 12px);
+  right: var(--spacing-8, 8px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  // ≥32px pointer/touch target; the visible icon stays 16px.
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--border-radius-6, 6px);
+  background: transparent;
+  color: var(--white, #ffffff);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    opacity: 1;
+    outline: 2px solid var(--white, #ffffff);
+    outline-offset: 1px;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.tooltip-arrow {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: var(--gray-900, #1e1e1e);
+  transform: rotate(45deg);
+}
+
+:host(.tooltip--top-left) .tooltip-arrow {
+  bottom: 1px;
+  left: 20px;
+  border-radius: 0 0 3px 0;
+}
+
+:host(.tooltip--top-center) .tooltip-arrow {
+  bottom: 1px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  border-radius: 0 0 3px 0;
+}
+
+:host(.tooltip--top-right) .tooltip-arrow {
+  bottom: 1px;
+  right: 20px;
+  border-radius: 0 0 3px 0;
+}
+
+:host(.tooltip--bottom-left) .tooltip-arrow {
+  top: 1px;
+  left: 20px;
+  border-radius: 3px 0 0 0;
+}
+
+:host(.tooltip--bottom-center) .tooltip-arrow {
+  top: 1px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  border-radius: 3px 0 0 0;
+}
+
+:host(.tooltip--bottom-right) .tooltip-arrow {
+  top: 1px;
+  right: 20px;
+  border-radius: 3px 0 0 0;
+}
+
+:host(.tooltip--left-top) .tooltip-arrow {
+  right: 1px;
+  top: 20px;
+  border-radius: 0 3px 0 0;
+}
+
+:host(.tooltip--left-center) .tooltip-arrow {
+  right: 1px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  border-radius: 0 3px 0 0;
+}
+
+:host(.tooltip--left-bottom) .tooltip-arrow {
+  right: 1px;
+  bottom: 20px;
+  border-radius: 0 3px 0 0;
+}
+
+:host(.tooltip--right-top) .tooltip-arrow {
+  left: 1px;
+  top: 20px;
+  border-radius: 0 0 0 3px;
+}
+
+:host(.tooltip--right-center) .tooltip-arrow {
+  left: 1px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  border-radius: 0 0 0 3px;
+}
+
+:host(.tooltip--right-bottom) .tooltip-arrow {
+  left: 1px;
+  bottom: 20px;
+  border-radius: 0 0 0 3px;
+}

@@ -9,12 +9,13 @@ import {
   input,
   model,
   output,
+  PLATFORM_ID,
   signal,
   viewChild,
   viewChildren,
 } from '@angular/core';
 import type { ElementRef } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
+import { isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
 import { CdkPortalOutlet } from '@angular/cdk/portal';
 import { EgovTab } from './egov-tab.component';
 import type { EgovTabChangeEvent } from './egov-tab-change-event';
@@ -124,6 +125,7 @@ import type { EgovTabChangeEvent } from './egov-tab-change-event';
 })
 export class EgovTabGroup {
   private readonly _destroyRef = inject(DestroyRef);
+  private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly tabs = contentChildren(EgovTab);
 
@@ -217,6 +219,8 @@ export class EgovTabGroup {
   }
 
   focusTab(index: number): void {
+    if (!this._isBrowser) return;
+
     if (index >= 0 && index < this.tabs().length) {
       this.focusedIndex.set(index);
 
