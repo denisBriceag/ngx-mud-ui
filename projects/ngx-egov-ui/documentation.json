@@ -3449,6 +3449,54 @@
                 "defaultValue": "Object.values(iconData) as EgovIcon[]"
             },
             {
+                "name": "AnchorButtons",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a egovButton href=\"https://egov.md\" target=\"_blank\" rel=\"noopener\">Anchor filled</a>\n        <a egovButton=\"outlined\" href=\"https://egov.md\" target=\"_blank\" rel=\"noopener\">Anchor outlined</a>\n        <a egovButton href=\"https://egov.md\" disabled>Anchor disabled</a>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Links styled as buttons share the same API; `disabled` maps to `aria-disabled`.",
+                "description": "<p>Links styled as buttons share the same API; <code>disabled</code> maps to <code>aria-disabled</code>.</p>\n"
+            },
+            {
+                "name": "BADGE_PLATFORMS",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "unknown",
+                "defaultValue": "[\n  { code: 'mpay', logo: 'm-pay', label: 'Plătește cu mpay' },\n  { code: 'mpass', logo: 'm-pass', label: 'Autentifică-te prin mpass' },\n  { code: 'msign', logo: 'm-sign', label: 'Semnează prin msign' },\n  { code: 'mpower', logo: 'm-power', label: 'Împuternicește cu mpower' },\n  { code: 'mdelivery', logo: 'm-delivery', label: 'Livrează prin mdelivery' },\n] as const"
+            },
+            {
+                "name": "badgeButton",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "unknown",
+                "defaultValue": "(platform: (typeof BADGE_PLATFORMS)[number], style: 'primary' | 'neutral', extra = ''): string => `\n  <button class=\"mud-btn btn-badge btn-badge--${style} btn-badge--${platform.code}\" type=\"button\" ${extra}>\n    <span class=\"btn-badge__logo\" aria-hidden=\"true\"><img src=\"/logos/m-platforms/${platform.logo}.svg\" alt=\"\" /></span>\n    <span class=\"btn-badge__label\">${platform.label}</span>\n  </button>`"
+            },
+            {
+                "name": "BadgeButtons",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"display:flex;flex-direction:column;gap:16px;align-items:flex-start;padding:24px\">\n        ${BADGE_PLATFORMS.map((platform) => badgeButton(platform, 'primary')).join('')}\n      </div>\n      <div style=\"display:flex;flex-direction:column;gap:16px;align-items:flex-start;padding:24px\">\n        ${BADGE_PLATFORMS.map((platform) => badgeButton(platform, 'neutral')).join('')}\n      </div>\n      <div style=\"display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding:24px\">\n        <button class=\"mud-btn btn-badge btn-badge--primary btn-badge--mdelivery mud-btn-loading\" type=\"button\" aria-busy=\"true\" aria-label=\"Loading\"></button>\n        ${badgeButton(BADGE_PLATFORMS[0], 'primary', 'disabled')}\n        ${badgeButton(BADGE_PLATFORMS[0], 'neutral', 'disabled')}\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Badge Buttons are entry points to the trusted government platforms\n(mpay, mpass, msign, mpower, mdelivery). They are plain design-system\nmarkup for now — not yet covered by a directive — shown here for reference,\nin `primary` and `neutral` styles plus the loading and disabled states.",
+                "description": "<p>Badge Buttons are entry points to the trusted government platforms\n(mpay, mpass, msign, mpower, mdelivery). They are plain design-system\nmarkup for now — not yet covered by a directive — shown here for reference,\nin <code>primary</code> and <code>neutral</code> styles plus the loading and disabled states.</p>\n"
+            },
+            {
                 "name": "Basic",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -3552,6 +3600,17 @@
                 "defaultValue": "[\n  { title: 'General', cursors: ['auto', 'default', 'pointer', 'context-menu', 'help', 'progress', 'wait', 'none'] },\n  {\n    title: 'Selection & action',\n    cursors: ['text', 'vertical-text', 'cell', 'crosshair', 'copy', 'alias', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll'],\n  },\n  { title: 'Zoom', cursors: ['zoom-in', 'zoom-out'] },\n  {\n    title: 'Resize',\n    cursors: ['col-resize', 'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize'],\n  },\n]"
             },
             {
+                "name": "Disabled",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton disabled>Primary</button>\n        <button type=\"button\" egovButton color=\"secondary\" disabled>Secondary</button>\n        <button type=\"button\" egovButton color=\"strict\" disabled>Strict</button>\n        <button type=\"button\" egovButton color=\"neutral\" disabled>Neutral</button>\n        <button type=\"button\" egovButton color=\"destructive\" disabled>Destructive</button>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
                 "name": "DisabledTabs",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -3587,6 +3646,17 @@
                 "defaultValue": "['display', 'heading', 'body', 'caption']"
             },
             {
+                "name": "FilledStyles",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton>Primary</button>\n        <button type=\"button\" egovButton color=\"secondary\">Secondary</button>\n        <button type=\"button\" egovButton color=\"strict\">Strict</button>\n        <button type=\"button\" egovButton color=\"neutral\">Neutral</button>\n        <button type=\"button\" egovButton color=\"destructive\">Destructive</button>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
                 "name": "ICON_NAMES",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -3596,6 +3666,19 @@
                 "deprecationMessage": "",
                 "type": "unknown",
                 "defaultValue": "ALL_ICONS.map((icon) => icon.name).sort()"
+            },
+            {
+                "name": "IconButton",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovIconButton aria-label=\"Add\"><egov-icon name=\"plus-large\" [scale]=\"20\" /></button>\n        <button type=\"button\" egovIconButton aria-label=\"Add\" disabled><egov-icon name=\"plus-large\" [scale]=\"20\" /></button>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Icon-only transparent circular button. An `aria-label` is required.",
+                "description": "<p>Icon-only transparent circular button. An <code>aria-label</code> is required.</p>\n"
             },
             {
                 "name": "Interactive",
@@ -3642,6 +3725,19 @@
                 "defaultValue": "{\n  render: () => ({ template: `<egov-shadow-grid />` }),\n}"
             },
             {
+                "name": "Loading",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton loading>Primary</button>\n        <button type=\"button\" egovButton color=\"secondary\" loading>Secondary</button>\n        <button type=\"button\" egovButton color=\"strict\" loading>Strict</button>\n        <button type=\"button\" egovButton color=\"neutral\" loading>Neutral</button>\n        <button type=\"button\" egovButton color=\"destructive\" loading>Destructive</button>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Loading buttons stay focusable so keyboard users don't lose their place,\nbut expose `aria-busy` / `aria-disabled` and ignore activation.",
+                "description": "<p>Loading buttons stay focusable so keyboard users don&#39;t lose their place,\nbut expose <code>aria-busy</code> / <code>aria-disabled</code> and ignore activation.</p>\n"
+            },
+            {
                 "name": "Margin",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -3651,6 +3747,17 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"margin\" />` }),\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<EgovButton>",
+                "defaultValue": "{\n  title: 'Components/Button',\n  component: EgovButton,\n  decorators: [\n    applicationConfig({ providers: [provideEgovIcons([plusSmall, plusLarge, chevronBottom])] }),\n    moduleMetadata({ imports: [EgovButton, EgovIconButton, EgovIconComponent] }),\n  ],\n  argTypes: {\n    egovButton: { control: 'inline-radio', options: ['filled', 'outlined', 'text'], description: 'Button variant' },\n    color: { control: 'select', options: ['primary', 'secondary', 'strict', 'neutral', 'destructive'] },\n    size: { control: 'inline-radio', options: ['large', 'medium', 'small'] },\n    shape: { control: 'inline-radio', options: ['rectangular', 'circular'] },\n    disabled: { control: 'boolean' },\n    loading: { control: 'boolean' },\n  },\n  args: {\n    egovButton: 'filled',\n    color: 'primary',\n    size: 'large',\n    shape: 'rectangular',\n    disabled: false,\n    loading: false,\n  },\n}"
             },
             {
                 "name": "meta",
@@ -3733,17 +3840,6 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<ShadowGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Elevation',\n  component: ShadowGridComponent,\n  decorators: [moduleMetadata({ imports: [ShadowGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -3761,6 +3857,17 @@
                 "deprecationMessage": "",
                 "type": "Meta<DisplayGridComponent>",
                 "defaultValue": "{\n  title: 'Foundations/Display',\n  component: DisplayGridComponent,\n  decorators: [moduleMetadata({ imports: [DisplayGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<ShadowGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Elevation',\n  component: ShadowGridComponent,\n  decorators: [moduleMetadata({ imports: [ShadowGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "meta",
@@ -3842,6 +3949,17 @@
                 "defaultValue": "[\n  'block',\n  'inline',\n  'inline-block',\n  'flex',\n  'inline-flex',\n  'grid',\n  'inline-grid',\n  'table',\n  'table-row',\n  'table-cell',\n  'none',\n]"
             },
             {
+                "name": "OutlinedStyles",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton=\"outlined\">Primary</button>\n        <button type=\"button\" egovButton=\"outlined\" color=\"strict\">Strict</button>\n        <button type=\"button\" egovButton=\"outlined\" color=\"destructive\">Destructive</button>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
                 "name": "Overflowing",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -3902,6 +4020,19 @@
                 "name": "Playground",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <button\n          type=\"button\"\n          [egovButton]=\"egovButton\"\n          [color]=\"color\"\n          [size]=\"size\"\n          [shape]=\"shape\"\n          [disabled]=\"disabled\"\n          [loading]=\"loading\"\n        >\n          Button\n        </button>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "`secondary` and `neutral` are only available for the `filled` variant;\nother variants fall back to `primary` with a dev-mode warning.",
+                "description": "<p><code>secondary</code> and <code>neutral</code> are only available for the <code>filled</code> variant;\nother variants fall back to <code>primary</code> with a dev-mode warning.</p>\n"
+            },
+            {
+                "name": "Playground",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -3930,6 +4061,17 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}"
+            },
+            {
+                "name": "ROW",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "string",
+                "defaultValue": "'display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding:24px'"
             },
             {
                 "name": "SAMPLE",
@@ -3976,6 +4118,28 @@
                 "defaultValue": "['background', 'text', 'border', 'icon']"
             },
             {
+                "name": "Shapes",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton>Rectangular</button>\n        <button type=\"button\" egovButton shape=\"circular\">Circular</button>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
+                "name": "Sizes",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton size=\"large\">Large</button>\n        <button type=\"button\" egovButton size=\"medium\">Medium</button>\n        <button type=\"button\" egovButton size=\"small\">Small</button>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
                 "name": "Sizes",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -4009,6 +4173,17 @@
                 "defaultValue": "{\n  args: { stretchTabs: true },\n  render: (args) => ({\n    props: args,\n    template: `\n      <egov-tab-group [stretchTabs]=\"stretchTabs\" [size]=\"size\" aria-label=\"Stretched tabs\">\n        <egov-tab label=\"One\"><p style=\"padding:16px 0\">One.</p></egov-tab>\n        <egov-tab label=\"Two\"><p style=\"padding:16px 0\">Two.</p></egov-tab>\n        <egov-tab label=\"Three\"><p style=\"padding:16px 0\">Three.</p></egov-tab>\n      </egov-tab-group>\n    `,\n  }),\n}",
                 "rawdescription": "Tabs stretched to fill the header width.",
                 "description": "<p>Tabs stretched to fill the header width.</p>\n"
+            },
+            {
+                "name": "TextStyles",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton=\"text\">Primary</button>\n        <button type=\"button\" egovButton=\"text\" color=\"strict\">Strict</button>\n        <button type=\"button\" egovButton=\"text\" color=\"destructive\">Destructive</button>\n      </div>\n    `,\n  }),\n}"
             },
             {
                 "name": "TIERS",
@@ -4064,6 +4239,19 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  render: () => ({ template: `<egov-width-grid />` }),\n}"
+            },
+            {
+                "name": "WithIcons",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton><egov-icon name=\"plus-small\" [scale]=\"20\" /> Leading icon</button>\n        <button type=\"button\" egovButton>Trailing icon <egov-icon name=\"chevron-bottom\" [scale]=\"20\" /></button>\n        <button type=\"button\" egovButton aria-label=\"Add\"><egov-icon name=\"plus-large\" [scale]=\"20\" /></button>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Leading/trailing icons are plain projected content — no extra API needed.\nThese use the library's own `<egov-icon>` from `ngx-egov-ui/icons`\n(decorative by default: no aria-label means aria-hidden).",
+                "description": "<p>Leading/trailing icons are plain projected content — no extra API needed.\nThese use the library&#39;s own <code>&lt;egov-icon&gt;</code> from <code>ngx-egov-ui/icons</code>\n(decorative by default: no aria-label means aria-hidden).</p>\n"
             },
             {
                 "name": "WithIconsAndCounters",
@@ -4132,6 +4320,19 @@
                 "rawdescription": "",
                 "description": "",
                 "kind": 193
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<EgovButton>",
+                "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
             },
             {
                 "name": "Story",
@@ -4229,19 +4430,6 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<ShadowGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "rawdescription": "",
-                "description": "",
-                "kind": 184
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "coverageIgnore": false,
                 "rawtype": "StoryObj<LayoutGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
                 "deprecated": false,
@@ -4257,6 +4445,19 @@
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<DisplayGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<ShadowGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -4388,6 +4589,196 @@
                     "deprecationMessage": "",
                     "type": "Story",
                     "defaultValue": "{}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/components/button.stories.ts": [
+                {
+                    "name": "AnchorButtons",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a egovButton href=\"https://egov.md\" target=\"_blank\" rel=\"noopener\">Anchor filled</a>\n        <a egovButton=\"outlined\" href=\"https://egov.md\" target=\"_blank\" rel=\"noopener\">Anchor outlined</a>\n        <a egovButton href=\"https://egov.md\" disabled>Anchor disabled</a>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Links styled as buttons share the same API; `disabled` maps to `aria-disabled`.",
+                    "description": "<p>Links styled as buttons share the same API; <code>disabled</code> maps to <code>aria-disabled</code>.</p>\n"
+                },
+                {
+                    "name": "BADGE_PLATFORMS",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "defaultValue": "[\n  { code: 'mpay', logo: 'm-pay', label: 'Plătește cu mpay' },\n  { code: 'mpass', logo: 'm-pass', label: 'Autentifică-te prin mpass' },\n  { code: 'msign', logo: 'm-sign', label: 'Semnează prin msign' },\n  { code: 'mpower', logo: 'm-power', label: 'Împuternicește cu mpower' },\n  { code: 'mdelivery', logo: 'm-delivery', label: 'Livrează prin mdelivery' },\n] as const"
+                },
+                {
+                    "name": "badgeButton",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "defaultValue": "(platform: (typeof BADGE_PLATFORMS)[number], style: 'primary' | 'neutral', extra = ''): string => `\n  <button class=\"mud-btn btn-badge btn-badge--${style} btn-badge--${platform.code}\" type=\"button\" ${extra}>\n    <span class=\"btn-badge__logo\" aria-hidden=\"true\"><img src=\"/logos/m-platforms/${platform.logo}.svg\" alt=\"\" /></span>\n    <span class=\"btn-badge__label\">${platform.label}</span>\n  </button>`"
+                },
+                {
+                    "name": "BadgeButtons",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"display:flex;flex-direction:column;gap:16px;align-items:flex-start;padding:24px\">\n        ${BADGE_PLATFORMS.map((platform) => badgeButton(platform, 'primary')).join('')}\n      </div>\n      <div style=\"display:flex;flex-direction:column;gap:16px;align-items:flex-start;padding:24px\">\n        ${BADGE_PLATFORMS.map((platform) => badgeButton(platform, 'neutral')).join('')}\n      </div>\n      <div style=\"display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding:24px\">\n        <button class=\"mud-btn btn-badge btn-badge--primary btn-badge--mdelivery mud-btn-loading\" type=\"button\" aria-busy=\"true\" aria-label=\"Loading\"></button>\n        ${badgeButton(BADGE_PLATFORMS[0], 'primary', 'disabled')}\n        ${badgeButton(BADGE_PLATFORMS[0], 'neutral', 'disabled')}\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Badge Buttons are entry points to the trusted government platforms\n(mpay, mpass, msign, mpower, mdelivery). They are plain design-system\nmarkup for now — not yet covered by a directive — shown here for reference,\nin `primary` and `neutral` styles plus the loading and disabled states.",
+                    "description": "<p>Badge Buttons are entry points to the trusted government platforms\n(mpay, mpass, msign, mpower, mdelivery). They are plain design-system\nmarkup for now — not yet covered by a directive — shown here for reference,\nin <code>primary</code> and <code>neutral</code> styles plus the loading and disabled states.</p>\n"
+                },
+                {
+                    "name": "Disabled",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton disabled>Primary</button>\n        <button type=\"button\" egovButton color=\"secondary\" disabled>Secondary</button>\n        <button type=\"button\" egovButton color=\"strict\" disabled>Strict</button>\n        <button type=\"button\" egovButton color=\"neutral\" disabled>Neutral</button>\n        <button type=\"button\" egovButton color=\"destructive\" disabled>Destructive</button>\n      </div>\n    `,\n  }),\n}"
+                },
+                {
+                    "name": "FilledStyles",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton>Primary</button>\n        <button type=\"button\" egovButton color=\"secondary\">Secondary</button>\n        <button type=\"button\" egovButton color=\"strict\">Strict</button>\n        <button type=\"button\" egovButton color=\"neutral\">Neutral</button>\n        <button type=\"button\" egovButton color=\"destructive\">Destructive</button>\n      </div>\n    `,\n  }),\n}"
+                },
+                {
+                    "name": "IconButton",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovIconButton aria-label=\"Add\"><egov-icon name=\"plus-large\" [scale]=\"20\" /></button>\n        <button type=\"button\" egovIconButton aria-label=\"Add\" disabled><egov-icon name=\"plus-large\" [scale]=\"20\" /></button>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Icon-only transparent circular button. An `aria-label` is required.",
+                    "description": "<p>Icon-only transparent circular button. An <code>aria-label</code> is required.</p>\n"
+                },
+                {
+                    "name": "Loading",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton loading>Primary</button>\n        <button type=\"button\" egovButton color=\"secondary\" loading>Secondary</button>\n        <button type=\"button\" egovButton color=\"strict\" loading>Strict</button>\n        <button type=\"button\" egovButton color=\"neutral\" loading>Neutral</button>\n        <button type=\"button\" egovButton color=\"destructive\" loading>Destructive</button>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Loading buttons stay focusable so keyboard users don't lose their place,\nbut expose `aria-busy` / `aria-disabled` and ignore activation.",
+                    "description": "<p>Loading buttons stay focusable so keyboard users don&#39;t lose their place,\nbut expose <code>aria-busy</code> / <code>aria-disabled</code> and ignore activation.</p>\n"
+                },
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<EgovButton>",
+                    "defaultValue": "{\n  title: 'Components/Button',\n  component: EgovButton,\n  decorators: [\n    applicationConfig({ providers: [provideEgovIcons([plusSmall, plusLarge, chevronBottom])] }),\n    moduleMetadata({ imports: [EgovButton, EgovIconButton, EgovIconComponent] }),\n  ],\n  argTypes: {\n    egovButton: { control: 'inline-radio', options: ['filled', 'outlined', 'text'], description: 'Button variant' },\n    color: { control: 'select', options: ['primary', 'secondary', 'strict', 'neutral', 'destructive'] },\n    size: { control: 'inline-radio', options: ['large', 'medium', 'small'] },\n    shape: { control: 'inline-radio', options: ['rectangular', 'circular'] },\n    disabled: { control: 'boolean' },\n    loading: { control: 'boolean' },\n  },\n  args: {\n    egovButton: 'filled',\n    color: 'primary',\n    size: 'large',\n    shape: 'rectangular',\n    disabled: false,\n    loading: false,\n  },\n}"
+                },
+                {
+                    "name": "OutlinedStyles",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton=\"outlined\">Primary</button>\n        <button type=\"button\" egovButton=\"outlined\" color=\"strict\">Strict</button>\n        <button type=\"button\" egovButton=\"outlined\" color=\"destructive\">Destructive</button>\n      </div>\n    `,\n  }),\n}"
+                },
+                {
+                    "name": "Playground",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <button\n          type=\"button\"\n          [egovButton]=\"egovButton\"\n          [color]=\"color\"\n          [size]=\"size\"\n          [shape]=\"shape\"\n          [disabled]=\"disabled\"\n          [loading]=\"loading\"\n        >\n          Button\n        </button>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "`secondary` and `neutral` are only available for the `filled` variant;\nother variants fall back to `primary` with a dev-mode warning.",
+                    "description": "<p><code>secondary</code> and <code>neutral</code> are only available for the <code>filled</code> variant;\nother variants fall back to <code>primary</code> with a dev-mode warning.</p>\n"
+                },
+                {
+                    "name": "ROW",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "defaultValue": "'display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding:24px'"
+                },
+                {
+                    "name": "Shapes",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton>Rectangular</button>\n        <button type=\"button\" egovButton shape=\"circular\">Circular</button>\n      </div>\n    `,\n  }),\n}"
+                },
+                {
+                    "name": "Sizes",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton size=\"large\">Large</button>\n        <button type=\"button\" egovButton size=\"medium\">Medium</button>\n        <button type=\"button\" egovButton size=\"small\">Small</button>\n      </div>\n    `,\n  }),\n}"
+                },
+                {
+                    "name": "TextStyles",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton=\"text\">Primary</button>\n        <button type=\"button\" egovButton=\"text\" color=\"strict\">Strict</button>\n        <button type=\"button\" egovButton=\"text\" color=\"destructive\">Destructive</button>\n      </div>\n    `,\n  }),\n}"
+                },
+                {
+                    "name": "WithIcons",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton><egov-icon name=\"plus-small\" [scale]=\"20\" /> Leading icon</button>\n        <button type=\"button\" egovButton>Trailing icon <egov-icon name=\"chevron-bottom\" [scale]=\"20\" /></button>\n        <button type=\"button\" egovButton aria-label=\"Add\"><egov-icon name=\"plus-large\" [scale]=\"20\" /></button>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Leading/trailing icons are plain projected content — no extra API needed.\nThese use the library's own `<egov-icon>` from `ngx-egov-ui/icons`\n(decorative by default: no aria-label means aria-hidden).",
+                    "description": "<p>Leading/trailing icons are plain projected content — no extra API needed.\nThese use the library&#39;s own <code>&lt;egov-icon&gt;</code> from <code>ngx-egov-ui/icons</code>\n(decorative by default: no aria-label means aria-hidden).</p>\n"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts": [
@@ -5097,6 +5488,21 @@
                     "kind": 193
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/components/button.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<EgovButton>",
+                    "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/components/egov-icon.stories.ts": [
                 {
                     "name": "Story",
@@ -5202,21 +5608,6 @@
                     "kind": 184
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<ShadowGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts": [
                 {
                     "name": "Story",
@@ -5240,6 +5631,21 @@
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<DisplayGridComponent>",
                     "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<ShadowGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -5330,7 +5736,7 @@
         "children": []
     },
     "coverage": {
-        "count": 7,
+        "count": 11,
         "status": "low",
         "files": [
             {
@@ -5339,6 +5745,176 @@
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
                 "name": "preview",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "AnchorButtons",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "BADGE_PLATFORMS",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "badgeButton",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "BadgeButtons",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Disabled",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "FilledStyles",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "IconButton",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Loading",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "OutlinedStyles",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Playground",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "ROW",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Shapes",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Sizes",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "TextStyles",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "WithIcons",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
                 "status": "low"

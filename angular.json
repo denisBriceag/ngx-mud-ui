@@ -3,7 +3,9 @@
   "version": 1,
   "cli": {
     "packageManager": "pnpm",
-    "schematicCollections": ["angular-eslint"]
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -31,6 +33,7 @@
             "tsConfig": "projects/ngx-egov-ui/tsconfig.spec.json",
             "include": [
               "**/*.spec.ts",
+              "../button/src/**/*.spec.ts",
               "../icons/src/**/*.spec.ts",
               "../tabs/src/**/*.spec.ts",
               "../tooltip/src/**/*.spec.ts"
@@ -56,7 +59,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/ngx-egov-ui/**/*.ts", "projects/ngx-egov-ui/**/*.html"],
+            "lintFilePatterns": [
+              "projects/ngx-egov-ui/**/*.ts",
+              "projects/ngx-egov-ui/**/*.html"
+            ],
             "eslintConfig": "projects/ngx-egov-ui/eslint.config.mjs"
           }
         }
