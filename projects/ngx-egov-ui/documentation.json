@@ -3427,6 +3427,19 @@
     "miscellaneous": {
         "variables": [
             {
+                "name": "Accessibility",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button\n          egovButton=\"outlined\"\n          color=\"strict\"\n          egovBadge=\"5\"\n          badgeColor=\"danger\"\n          badgeDescription=\"5 unread notifications\"\n        >\n          Inbox\n        </button>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "`badgeDescription` hides the visual count from assistive tech (`aria-hidden`)\nand describes the host instead via `aria-describedby`, so a screen reader\nannounces \"Inbox, 5 unread notifications\" rather than \"Inbox 5\".",
+                "description": "<p><code>badgeDescription</code> hides the visual count from assistive tech (<code>aria-hidden</code>)\nand describes the host instead via <code>aria-describedby</code>, so a screen reader\nannounces &quot;Inbox, 5 unread notifications&quot; rather than &quot;Inbox 5&quot;.</p>\n"
+            },
+            {
                 "name": "ALIASES",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -3556,6 +3569,17 @@
                 "defaultValue": "/^#([0-9a-f]{3,8})$|^rgba?\\(/i"
             },
             {
+                "name": "Colors",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"dark\"></span>\n        <span style=\"${TILE};background:var(--color-background-base-inverse-default)\" egovBadge=\"1\" badgeColor=\"light\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"neutral\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"accent\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"danger\"></span>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
                 "name": "CONFIG",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -3637,6 +3661,19 @@
                 "description": "<p>First tab disabled (selection snaps to the first enabled), plus a disabled tab in the middle (keyboard skips it).</p>\n"
             },
             {
+                "name": "Dot",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <span style=\"${TILE}\" egovBadge badgeVariant=\"dot\" badgeSize=\"extra-small\" badgeColor=\"danger\" badgeDescription=\"New activity\"></span>\n        <span style=\"${TILE}\" egovBadge badgeVariant=\"dot\" badgeSize=\"small\" badgeColor=\"danger\" badgeDescription=\"New activity\"></span>\n        <span style=\"${TILE}\" egovBadge badgeVariant=\"dot\" badgeSize=\"medium\" badgeColor=\"danger\" badgeDescription=\"New activity\"></span>\n        <span style=\"${TILE}\" egovBadge badgeVariant=\"dot\" badgeSize=\"large\" badgeColor=\"danger\" badgeDescription=\"New activity\"></span>\n        <span style=\"${TILE}\" egovBadge badgeVariant=\"dot\" badgeSize=\"extra-large\" badgeColor=\"danger\" badgeDescription=\"New activity\"></span>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "The dot variant ignores content — pair it with `badgeDescription` so the\nstate is announced. From medium up the dot carries a centered core in the\ncontent color (2×2 at medium, 3×3 at large/extra-large).",
+                "description": "<p>The dot variant ignores content — pair it with <code>badgeDescription</code> so the\nstate is announced. From medium up the dot carries a centered core in the\ncontent color (2×2 at medium, 3×3 at large/extra-large).</p>\n"
+            },
+            {
                 "name": "EXAMPLES",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -3692,6 +3729,19 @@
                 "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovIconButton aria-label=\"Add\"><egov-icon name=\"plus-large\" [scale]=\"20\" /></button>\n        <button type=\"button\" egovIconButton aria-label=\"Add\" disabled><egov-icon name=\"plus-large\" [scale]=\"20\" /></button>\n      </div>\n    `,\n  }),\n}",
                 "rawdescription": "Icon-only transparent circular button. An `aria-label` is required.",
                 "description": "<p>Icon-only transparent circular button. An <code>aria-label</code> is required.</p>\n"
+            },
+            {
+                "name": "InlineNested",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button egovButton color=\"secondary\">\n          Filters <span class=\"badge badge--solid-neutral badge--lg\">3</span>\n        </button>\n        <button egovButton=\"outlined\" color=\"strict\">\n          Drafts <span class=\"badge badge--solid-accent badge--lg\">12</span>\n        </button>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Inline (non-overlay) badges nested in other components use the `.badge`\nCSS classes from the `/styles` bundle directly — no directive needed.\nMark purely decorative counts with `aria-hidden` when the text already\nconveys them.",
+                "description": "<p>Inline (non-overlay) badges nested in other components use the <code>.badge</code>\nCSS classes from the <code>/styles</code> bundle directly — no directive needed.\nMark purely decorative counts with <code>aria-hidden</code> when the text already\nconveys them.</p>\n"
             },
             {
                 "name": "Interactive",
@@ -3760,6 +3810,17 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"margin\" />` }),\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<EgovBadge>",
+                "defaultValue": "{\n  title: 'Components/Badge',\n  component: EgovBadge,\n  decorators: [moduleMetadata({ imports: [EgovBadge, EgovButton] })],\n  argTypes: {\n    egovBadge: { control: 'text', description: 'Badge content; null/empty removes the badge' },\n    badgeSize: {\n      control: 'inline-radio',\n      options: ['extra-small', 'small', 'medium', 'large', 'extra-large'],\n      description: 'extra-small is dot-only: a count at that size degrades to a dot (dev-mode warning)',\n    },\n    badgeColor: { control: 'inline-radio', options: ['dark', 'light', 'neutral', 'accent', 'danger'] },\n    badgePosition: {\n      control: 'select',\n      options: ['above after', 'above before', 'below before', 'below after', 'before', 'after', 'above', 'below'],\n      description: 'Corner overlay position; single keywords default the missing axis',\n    },\n    badgeMax: { control: 'number', description: 'Numeric content above this renders as \"<max>+\"' },\n    badgeVariant: { control: 'inline-radio', options: ['count', 'dot'] },\n    badgeDescription: {\n      control: 'text',\n      description: 'Screen-reader description wired via aria-describedby; hides the visual count from assistive tech',\n    },\n  },\n  args: {\n    egovBadge: '5',\n    badgeSize: 'medium',\n    badgeColor: 'danger',\n    badgePosition: 'above after',\n    badgeMax: null,\n    badgeVariant: 'count',\n    badgeDescription: '5 unread notifications',\n  },\n}"
             },
             {
                 "name": "meta",
@@ -3864,6 +3925,17 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<DisplayGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Display',\n  component: DisplayGridComponent,\n  decorators: [moduleMetadata({ imports: [DisplayGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -3881,6 +3953,17 @@
                 "deprecationMessage": "",
                 "type": "Meta<LayoutGridComponent>",
                 "defaultValue": "{\n  title: 'Foundations/Layout Grid',\n  component: LayoutGridComponent,\n  decorators: [moduleMetadata({ imports: [LayoutGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<TypographyGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Typography',\n  component: TypographyGridComponent,\n  decorators: [moduleMetadata({ imports: [TypographyGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "meta",
@@ -3914,28 +3997,6 @@
                 "deprecationMessage": "",
                 "type": "Meta<SpacingGridComponent>",
                 "defaultValue": "{\n  title: 'Foundations/Spacing',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<DisplayGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Display',\n  component: DisplayGridComponent,\n  decorators: [moduleMetadata({ imports: [DisplayGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<TypographyGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Typography',\n  component: TypographyGridComponent,\n  decorators: [moduleMetadata({ imports: [TypographyGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "meta",
@@ -4044,6 +4105,17 @@
                 "name": "Playground",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <button\n          egovButton=\"outlined\"\n          color=\"strict\"\n          [egovBadge]=\"egovBadge\"\n          [badgeSize]=\"badgeSize\"\n          [badgeColor]=\"badgeColor\"\n          [badgePosition]=\"badgePosition\"\n          [badgeMax]=\"badgeMax\"\n          [badgeVariant]=\"badgeVariant\"\n          [badgeDescription]=\"badgeDescription\"\n        >\n          Inbox\n        </button>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
+                "name": "Playground",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -4076,6 +4148,19 @@
                 "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <a\n          href=\"#\"\n          [egovLink]=\"egovLink\"\n          [size]=\"size\"\n          [underlined]=\"underlined\"\n          [touchTarget]=\"touchTarget\"\n          [disabled]=\"disabled\"\n        >\n          Services catalogue\n        </a>\n      </div>\n    `,\n  }),\n}"
             },
             {
+                "name": "Positions",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"danger\" badgePosition=\"above before\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"danger\" badgePosition=\"above after\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"danger\" badgePosition=\"below before\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"danger\" badgePosition=\"below after\"></span>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Single keywords default the missing axis: `above` → above after, `before` → above before.",
+                "description": "<p>Single keywords default the missing axis: <code>above</code> → above after, <code>before</code> → above before.</p>\n"
+            },
+            {
                 "name": "preview",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -4096,6 +4181,17 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}"
+            },
+            {
+                "name": "ROW",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "string",
+                "defaultValue": "'display:flex;gap:32px;align-items:center;flex-wrap:wrap;padding:24px'"
             },
             {
                 "name": "ROW",
@@ -4173,6 +4269,19 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton>Rectangular</button>\n        <button type=\"button\" egovButton shape=\"circular\">Circular</button>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
+                "name": "Sizes",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeSize=\"extra-large\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeSize=\"large\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeSize=\"medium\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeSize=\"small\"></span>\n        <span style=\"${TILE}\" egovBadge badgeVariant=\"dot\" badgeSize=\"extra-small\"></span>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Counts support small–large; extra-small is dot-only per the design system.",
+                "description": "<p>Counts support small–large; extra-small is dot-only per the design system.</p>\n"
             },
             {
                 "name": "Sizes",
@@ -4265,6 +4374,17 @@
                 "defaultValue": "[\n  { name: 'XS', min: '≥ 320px', columns: 4, gutter: '16px', container: '100% − margins' },\n  { name: 'SM', min: '≥ 576px', columns: 4, gutter: '16px', container: '544px' },\n  { name: 'MD', min: '≥ 768px', columns: 8, gutter: '24px', container: '720px' },\n  { name: 'LG', min: '≥ 992px', columns: 12, gutter: '24px', container: '944px' },\n  { name: 'XL', min: '≥ 1248px', columns: 12, gutter: '24px', container: '1200px' },\n  { name: 'XXL', min: '≥ 1440px', columns: 12, gutter: '24px', container: '1440px' },\n]"
             },
             {
+                "name": "TILE",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "unknown",
+                "defaultValue": "'display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;' +\n  'border-radius:8px;background:var(--color-background-base-secondary)'"
+            },
+            {
                 "name": "Tokens",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -4298,6 +4418,19 @@
                 "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink touchTarget=\"pointer\" style=\"outline:1px dashed #ccc\">32px pointer target</a>\n        <a href=\"#\" egovLink touchTarget=\"touch\" style=\"outline:1px dashed #ccc\">40px touch target</a>\n      </div>\n      <p style=\"max-width:48ch;padding:0 24px\">\n        Prose with an inline\n        <a href=\"#\" egovLink touchTarget=\"none\">opted-out link</a>\n        that keeps the surrounding line height intact.\n      </p>\n    `,\n  }),\n}",
                 "rawdescription": "`auto` picks the target from the device: 40px min-height on coarse-pointer\n(touch) devices, 32px otherwise (WCAG 2.5.5 / 2.5.8). `none` opts out for\nlinks inside running prose, where the extra padding would break text flow.",
                 "description": "<p><code>auto</code> picks the target from the device: 40px min-height on coarse-pointer\n(touch) devices, 32px otherwise (WCAG 2.5.5 / 2.5.8). <code>none</code> opts out for\nlinks inside running prose, where the extra padding would break text flow.</p>\n"
+            },
+            {
+                "name": "Truncation",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <span style=\"${TILE}\" egovBadge=\"4\" [badgeMax]=\"99\" badgeColor=\"danger\"></span>\n        <span style=\"${TILE}\" egovBadge=\"99\" [badgeMax]=\"99\" badgeColor=\"danger\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1204\" [badgeMax]=\"99\" badgeColor=\"danger\"></span>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Numeric content above `badgeMax` renders as `<max>+`; non-numeric content is untouched.",
+                "description": "<p>Numeric content above <code>badgeMax</code> renders as <code>&lt;max&gt;+</code>; non-numeric content is untouched.</p>\n"
             },
             {
                 "name": "Utilities",
@@ -4429,6 +4562,19 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
+                "rawtype": "StoryObj<EgovBadge>",
+                "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
                 "rawtype": "StoryObj<EgovButton>",
                 "file": "projects/ngx-egov-ui/src/stories/components/button.stories.ts",
                 "deprecated": false,
@@ -4546,6 +4692,19 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
+                "rawtype": "StoryObj<DisplayGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
                 "rawtype": "StoryObj<ShadowGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
                 "deprecated": false,
@@ -4561,6 +4720,19 @@
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<LayoutGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<TypographyGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -4611,32 +4783,6 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<DisplayGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "rawdescription": "",
-                "description": "",
-                "kind": 184
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "coverageIgnore": false,
-                "rawtype": "StoryObj<TypographyGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "rawdescription": "",
-                "description": "",
-                "kind": 184
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "coverageIgnore": false,
                 "rawtype": "StoryObj<WidthGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
                 "deprecated": false,
@@ -4648,6 +4794,141 @@
         ],
         "enumerations": [],
         "groupedVariables": {
+            "projects/ngx-egov-ui/src/stories/components/badge.stories.ts": [
+                {
+                    "name": "Accessibility",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button\n          egovButton=\"outlined\"\n          color=\"strict\"\n          egovBadge=\"5\"\n          badgeColor=\"danger\"\n          badgeDescription=\"5 unread notifications\"\n        >\n          Inbox\n        </button>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "`badgeDescription` hides the visual count from assistive tech (`aria-hidden`)\nand describes the host instead via `aria-describedby`, so a screen reader\nannounces \"Inbox, 5 unread notifications\" rather than \"Inbox 5\".",
+                    "description": "<p><code>badgeDescription</code> hides the visual count from assistive tech (<code>aria-hidden</code>)\nand describes the host instead via <code>aria-describedby</code>, so a screen reader\nannounces &quot;Inbox, 5 unread notifications&quot; rather than &quot;Inbox 5&quot;.</p>\n"
+                },
+                {
+                    "name": "Colors",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"dark\"></span>\n        <span style=\"${TILE};background:var(--color-background-base-inverse-default)\" egovBadge=\"1\" badgeColor=\"light\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"neutral\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"accent\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"danger\"></span>\n      </div>\n    `,\n  }),\n}"
+                },
+                {
+                    "name": "Dot",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <span style=\"${TILE}\" egovBadge badgeVariant=\"dot\" badgeSize=\"extra-small\" badgeColor=\"danger\" badgeDescription=\"New activity\"></span>\n        <span style=\"${TILE}\" egovBadge badgeVariant=\"dot\" badgeSize=\"small\" badgeColor=\"danger\" badgeDescription=\"New activity\"></span>\n        <span style=\"${TILE}\" egovBadge badgeVariant=\"dot\" badgeSize=\"medium\" badgeColor=\"danger\" badgeDescription=\"New activity\"></span>\n        <span style=\"${TILE}\" egovBadge badgeVariant=\"dot\" badgeSize=\"large\" badgeColor=\"danger\" badgeDescription=\"New activity\"></span>\n        <span style=\"${TILE}\" egovBadge badgeVariant=\"dot\" badgeSize=\"extra-large\" badgeColor=\"danger\" badgeDescription=\"New activity\"></span>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "The dot variant ignores content — pair it with `badgeDescription` so the\nstate is announced. From medium up the dot carries a centered core in the\ncontent color (2×2 at medium, 3×3 at large/extra-large).",
+                    "description": "<p>The dot variant ignores content — pair it with <code>badgeDescription</code> so the\nstate is announced. From medium up the dot carries a centered core in the\ncontent color (2×2 at medium, 3×3 at large/extra-large).</p>\n"
+                },
+                {
+                    "name": "InlineNested",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button egovButton color=\"secondary\">\n          Filters <span class=\"badge badge--solid-neutral badge--lg\">3</span>\n        </button>\n        <button egovButton=\"outlined\" color=\"strict\">\n          Drafts <span class=\"badge badge--solid-accent badge--lg\">12</span>\n        </button>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Inline (non-overlay) badges nested in other components use the `.badge`\nCSS classes from the `/styles` bundle directly — no directive needed.\nMark purely decorative counts with `aria-hidden` when the text already\nconveys them.",
+                    "description": "<p>Inline (non-overlay) badges nested in other components use the <code>.badge</code>\nCSS classes from the <code>/styles</code> bundle directly — no directive needed.\nMark purely decorative counts with <code>aria-hidden</code> when the text already\nconveys them.</p>\n"
+                },
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<EgovBadge>",
+                    "defaultValue": "{\n  title: 'Components/Badge',\n  component: EgovBadge,\n  decorators: [moduleMetadata({ imports: [EgovBadge, EgovButton] })],\n  argTypes: {\n    egovBadge: { control: 'text', description: 'Badge content; null/empty removes the badge' },\n    badgeSize: {\n      control: 'inline-radio',\n      options: ['extra-small', 'small', 'medium', 'large', 'extra-large'],\n      description: 'extra-small is dot-only: a count at that size degrades to a dot (dev-mode warning)',\n    },\n    badgeColor: { control: 'inline-radio', options: ['dark', 'light', 'neutral', 'accent', 'danger'] },\n    badgePosition: {\n      control: 'select',\n      options: ['above after', 'above before', 'below before', 'below after', 'before', 'after', 'above', 'below'],\n      description: 'Corner overlay position; single keywords default the missing axis',\n    },\n    badgeMax: { control: 'number', description: 'Numeric content above this renders as \"<max>+\"' },\n    badgeVariant: { control: 'inline-radio', options: ['count', 'dot'] },\n    badgeDescription: {\n      control: 'text',\n      description: 'Screen-reader description wired via aria-describedby; hides the visual count from assistive tech',\n    },\n  },\n  args: {\n    egovBadge: '5',\n    badgeSize: 'medium',\n    badgeColor: 'danger',\n    badgePosition: 'above after',\n    badgeMax: null,\n    badgeVariant: 'count',\n    badgeDescription: '5 unread notifications',\n  },\n}"
+                },
+                {
+                    "name": "Playground",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <button\n          egovButton=\"outlined\"\n          color=\"strict\"\n          [egovBadge]=\"egovBadge\"\n          [badgeSize]=\"badgeSize\"\n          [badgeColor]=\"badgeColor\"\n          [badgePosition]=\"badgePosition\"\n          [badgeMax]=\"badgeMax\"\n          [badgeVariant]=\"badgeVariant\"\n          [badgeDescription]=\"badgeDescription\"\n        >\n          Inbox\n        </button>\n      </div>\n    `,\n  }),\n}"
+                },
+                {
+                    "name": "Positions",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"danger\" badgePosition=\"above before\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"danger\" badgePosition=\"above after\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"danger\" badgePosition=\"below before\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"danger\" badgePosition=\"below after\"></span>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Single keywords default the missing axis: `above` → above after, `before` → above before.",
+                    "description": "<p>Single keywords default the missing axis: <code>above</code> → above after, <code>before</code> → above before.</p>\n"
+                },
+                {
+                    "name": "ROW",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "defaultValue": "'display:flex;gap:32px;align-items:center;flex-wrap:wrap;padding:24px'"
+                },
+                {
+                    "name": "Sizes",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeSize=\"extra-large\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeSize=\"large\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeSize=\"medium\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeSize=\"small\"></span>\n        <span style=\"${TILE}\" egovBadge badgeVariant=\"dot\" badgeSize=\"extra-small\"></span>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Counts support small–large; extra-small is dot-only per the design system.",
+                    "description": "<p>Counts support small–large; extra-small is dot-only per the design system.</p>\n"
+                },
+                {
+                    "name": "TILE",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "defaultValue": "'display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;' +\n  'border-radius:8px;background:var(--color-background-base-secondary)'"
+                },
+                {
+                    "name": "Truncation",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <span style=\"${TILE}\" egovBadge=\"4\" [badgeMax]=\"99\" badgeColor=\"danger\"></span>\n        <span style=\"${TILE}\" egovBadge=\"99\" [badgeMax]=\"99\" badgeColor=\"danger\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1204\" [badgeMax]=\"99\" badgeColor=\"danger\"></span>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Numeric content above `badgeMax` renders as `<max>+`; non-numeric content is untouched.",
+                    "description": "<p>Numeric content above <code>badgeMax</code> renders as <code>&lt;max&gt;+</code>; non-numeric content is untouched.</p>\n"
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/elevation/shadow-grid.component.ts": [
                 {
                     "name": "ALIASES",
@@ -5475,54 +5756,6 @@
                     "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts": [
-                {
-                    "name": "meta",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<SpacingGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Padding',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Padding",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"padding\" />` }),\n}"
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts": [
-                {
-                    "name": "meta",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<SpacingGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Spacing',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Spacing",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"gap\" />` }),\n}"
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
                 {
                     "name": "meta",
@@ -5569,6 +5802,54 @@
                     "deprecationMessage": "",
                     "type": "Story",
                     "defaultValue": "{\n  render: () => ({ template: `<egov-typography-grid />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<SpacingGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Padding',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Padding",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"padding\" />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<SpacingGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Spacing',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Spacing",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"gap\" />` }),\n}"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts": [
@@ -5709,6 +5990,21 @@
                     "kind": 193
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/components/badge.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<EgovBadge>",
+                    "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/components/button.stories.ts": [
                 {
                     "name": "Story",
@@ -5844,6 +6140,21 @@
                     "kind": 184
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<DisplayGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts": [
                 {
                     "name": "Story",
@@ -5867,6 +6178,21 @@
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<LayoutGridComponent>",
                     "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<TypographyGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -5919,36 +6245,6 @@
                     "kind": 184
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<DisplayGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<TypographyGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts": [
                 {
                     "name": "Story",
@@ -5972,7 +6268,7 @@
         "children": []
     },
     "coverage": {
-        "count": 12,
+        "count": 15,
         "status": "low",
         "files": [
             {
@@ -5991,6 +6287,126 @@
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
                 "name": "withTheme",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Accessibility",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Colors",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Dot",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "InlineNested",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Playground",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Positions",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "ROW",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Sizes",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "TILE",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Truncation",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
                 "status": "low"

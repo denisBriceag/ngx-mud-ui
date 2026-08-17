@@ -9,6 +9,7 @@
   "include": [
     "src/**/*.d.ts",
     "src/**/*.spec.ts",
+    "badge/src/**/*.spec.ts",
     "button/src/**/*.spec.ts",
     "icons/src/**/*.spec.ts",
     "link/src/**/*.spec.ts",
