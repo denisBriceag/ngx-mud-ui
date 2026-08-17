@@ -17,4 +17,17 @@
 
 body {
   font-family: var(--font-family-base);
+  background: var(--color-background-base-default, #ffffff);
+  color: var(--color-text-base-default, #121212);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+// Docs pages: the inline story preview cards follow the theme; the
+// surrounding prose keeps Storybook's own (light) docs styling.
+[data-theme='dark'] .docs-story,
+[data-theme='dark'] .sbdocs-preview {
+  background: var(--color-background-base-default, #1e1e1e);
 }

@@ -1,0 +1,141 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Dark Mode" />
+
+# Dark Mode
+
+The library ships a dark theme as part of the `ngx-egov-ui/styles` entry point.
+It works by remapping **semantic color tokens** (`--color-*`) under a
+`[data-theme='dark']` selector — components that read semantic tokens adapt
+automatically, with zero JavaScript in the components themselves.
+
+## How it works
+
+The stylesheet defines three layers of custom properties:
+
+1. **Palette** — raw colors like `--blue-sky-600: #0058D2` or
+   `--gray-900: #1E1E1E`. These **never change with the theme**.
+2. **Semantic tokens** — meanings like `--color-text-base-default` or
+   `--color-background-base-default`, defined on `:root` and pointing into the
+   palette.
+3. **Theme overrides** — `themes/_dark.scss` re-points the semantic tokens
+   under `[data-theme='dark']` (e.g. `--color-text-base-default` becomes
+   `var(--white)`, `--color-text-brand-default` becomes the lighter
+   `var(--blue-sky-400)` for contrast on dark backgrounds).
+
+A component styled with `color: var(--color-text-base-default)` is dark-mode
+compatible for free. A component styled with `color: var(--gray-900)` is
+frozen to one appearance forever.
+
+## Wiring it up
+
+### 1. Load the library styles
+
+The dark overrides ship inside the main stylesheet — if you load
+`ngx-egov-ui/styles`' `main.scss` (or the compiled CSS), the theme is already
+present and dormant.
+
+### 2. Toggle `data-theme` on the ROOT element
+
+Activate dark mode by setting the attribute **on `<html>`** — i.e.
+`document.documentElement`:
+
+```ts
+import { DOCUMENT, Injectable, PLATFORM_ID, effect, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+
+export type EgovTheme = 'light' | 'dark';
+
+@Injectable({ providedIn: 'root' })
+export class ThemeService {
+  private readonly _document = inject(DOCUMENT);
+  private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  /** Start from the OS preference; fall back to light on the server. */
+  readonly theme = signal<EgovTheme>(
+    this._isBrowser && typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light',
+  );
+
+  constructor() {
+    effect(() => {
+      const root = this._document.documentElement;
+
+      if (this.theme() === 'dark') {
+        root.setAttribute('data-theme', 'dark');
+      } else {
+        root.removeAttribute('data-theme');
+      }
+    });
+  }
+
+  toggle(): void {
+    this.theme.update((current) => (current === 'dark' ? 'light' : 'dark'));
+  }
+}
+```
+
+To also *follow* OS changes live, subscribe to the media query and call
+`this.theme.set(...)` from its `change` listener (browser only).
+
+### 3. Tell the browser about it
+
+Add this to your app's global styles so native UI (form controls, scrollbars)
+matches the theme:
+
+```css
+:root { color-scheme: light; }
+[data-theme='dark'] { color-scheme: dark; }
+```
+
+### 4. Paint your own surfaces with semantic tokens
+
+The theme recolors *tokens*, not your page. Use the semantic background and
+text tokens for app surfaces so they flip too:
+
+```css
+body {
+  background: var(--color-background-base-default);
+  color: var(--color-text-base-default);
+}
+```
+
+## ⚠️ Pitfall: `data-theme` must be on the root element
+
+It is tempting to dark-theme just a section of a page:
+
+```html
+<!-- ❌ DOES NOT WORK for library components -->
+<div data-theme="dark">
+  <a egovLink="strict" href="...">Invisible link</a>
+</div>
+```
+
+Semantic tokens are often **chains** — `--color-link-strict-default` is
+defined on `:root` as `var(--color-text-base-default)`. CSS resolves the
+`var()` inside a custom property **on the element where that property is
+declared**, and descendants inherit the *already-resolved* value. So the link
+token bakes in its light-mode color at the root; the nested wrapper only
+remaps base tokens that nothing reads anymore. Result: black link on your
+dark section.
+
+On `<html>` the override and the chain cascade on the same element, so
+everything resolves correctly. **Scoped/partial theming is not supported** —
+if you need a permanently dark band (hero, footer), style it with explicit
+colors rather than `data-theme`.
+
+## What adapts today
+
+Every component consumes semantic tokens, so **all of them adapt**:
+
+| Component | Dark-mode behavior |
+| --- | --- |
+| `egovLink` (`/link`) | ✅ Colors, hover, visited and focus ring all adapt. |
+| `egov-icon` (`/icons`) | ✅ `currentColor` — inherits whatever the surrounding text does. |
+| `egovTooltip` (`/tooltip`) | ✅ Inverse surface — dark bubble on light pages, light bubble on dark pages. |
+| `egovButton` / `egovIconButton` (`/button`) | ✅ All variants adapt. `strict` is an inverse surface: dark button in light mode, white button in dark mode. |
+| `egov-tab-group` (`/tabs`) | ✅ Labels, active indicator, borders and focus ring all adapt. |
+
+Use the **Theme** toolbar switch in this Storybook to preview any story in
+either mode.

@@ -1,12 +1,12 @@
 .btn-badge {
   --badge-button-width: auto;
-  --badge-button-bg: var(--blue-sky-600, #0058D2);
-  --badge-button-color: var(--white, #ffffff);
-  --badge-button-hover-bg: var(--blue-sky-700, #0046A8);
-  --badge-button-hover-color: var(--white, #ffffff);
-  --badge-button-active-bg: var(--blue-sky-800, #003380);
-  --badge-button-active-color: var(--white, #ffffff);
-  --badge-button-spinner-color: var(--white, #ffffff);
+  --badge-button-bg: var(--color-background-brand-default, #0058D2);
+  --badge-button-color: var(--color-text-base-inverse-on-color, #ffffff);
+  --badge-button-hover-bg: var(--color-background-brand-default-hover, #0046A8);
+  --badge-button-hover-color: var(--color-text-base-inverse-on-color, #ffffff);
+  --badge-button-active-bg: var(--color-background-brand-default-active, #003380);
+  --badge-button-active-color: var(--color-text-base-inverse-on-color, #ffffff);
+  --badge-button-spinner-color: var(--color-text-base-inverse-on-color, #ffffff);
   min-height: var(--spacing-48, 48px);
   min-width: 72px;
   width: min(100%, var(--badge-button-width));
@@ -33,7 +33,7 @@
   &:focus:not(:disabled),
   &:focus-visible:not(:disabled),
   &.is-focus:not(:disabled) {
-    outline: 2px solid var(--white, #ffffff);
+    outline: 2px solid var(--color-background-base-default, #ffffff);
     box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379DB));
   }
 
@@ -98,23 +98,23 @@
 }
 
 .btn-badge--primary {
-  --badge-button-bg: var(--blue-sky-600, #0058D2);
-  --badge-button-color: var(--white, #ffffff);
-  --badge-button-hover-bg: var(--blue-sky-700, #0046A8);
-  --badge-button-hover-color: var(--white, #ffffff);
-  --badge-button-active-bg: var(--blue-sky-800, #003380);
-  --badge-button-active-color: var(--white, #ffffff);
-  --badge-button-spinner-color: var(--white, #ffffff);
+  --badge-button-bg: var(--color-background-brand-default, #0058D2);
+  --badge-button-color: var(--color-text-base-inverse-on-color, #ffffff);
+  --badge-button-hover-bg: var(--color-background-brand-default-hover, #0046A8);
+  --badge-button-hover-color: var(--color-text-base-inverse-on-color, #ffffff);
+  --badge-button-active-bg: var(--color-background-brand-default-active, #003380);
+  --badge-button-active-color: var(--color-text-base-inverse-on-color, #ffffff);
+  --badge-button-spinner-color: var(--color-text-base-inverse-on-color, #ffffff);
 }
 
 .btn-badge--neutral {
-  --badge-button-bg: var(--gray-100, #F5F5F5);
-  --badge-button-color: var(--black, #121212);
-  --badge-button-hover-bg: var(--gray-250, #E0E0E0);
-  --badge-button-hover-color: var(--black, #121212);
-  --badge-button-active-bg: var(--gray-300, #D9D9D9);
-  --badge-button-active-color: var(--black, #121212);
-  --badge-button-spinner-color: var(--black, #121212);
+  --badge-button-bg: var(--color-background-base-secondary, #F5F5F5);
+  --badge-button-color: var(--color-text-base-default, #121212);
+  --badge-button-hover-bg: var(--color-background-base-secondary-hover, #F1F1F1);
+  --badge-button-hover-color: var(--color-text-base-default, #121212);
+  --badge-button-active-bg: var(--color-background-base-secondary-active, #D9D9D9);
+  --badge-button-active-color: var(--color-text-base-default, #121212);
+  --badge-button-spinner-color: var(--color-text-base-default, #121212);
 }
 
 .badge-button-docs {

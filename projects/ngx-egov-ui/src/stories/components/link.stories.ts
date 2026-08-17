@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { moduleMetadata } from '@storybook/angular-vite';
-import { Component, DestroyRef, DOCUMENT, inject } from '@angular/core';
 import { EgovLink } from '../../../link/src/public-api';
 
 const ROW = 'display:flex;gap:32px;align-items:center;flex-wrap:wrap;padding:24px';
@@ -89,43 +88,6 @@ export const Styles: Story = {
       </div>
     `,
   }),
-};
-
-/**
- * The `--color-link-*` token chains resolve on the element that carries
- * `data-theme`, so the attribute must be on the ROOT element (`<html>`), the
- * same contract the Foundations color grid follows — a nested
- * `data-theme="dark"` wrapper does NOT re-theme the links. This demo toggles
- * the attribute on `document.documentElement` while the story is open.
- */
-@Component({
-  selector: 'egov-link-dark-theme-demo',
-  imports: [EgovLink],
-  template: `
-    <div style="${ROW};background:var(--color-background-base-default,#121212)">
-      <a href="#" egovLink>Primary (dark theme)</a>
-      <a href="#" egovLink="strict">Strict (dark theme)</a>
-    </div>
-  `,
-})
-class LinkDarkThemeDemo {
-  private readonly _document = inject(DOCUMENT);
-
-  constructor() {
-    this._document.documentElement.setAttribute('data-theme', 'dark');
-    inject(DestroyRef).onDestroy(() => this._document.documentElement.removeAttribute('data-theme'));
-  }
-}
-
-/**
- * Same markup as Styles with the dark theme active: primary becomes the
- * lighter `blue-sky-400` and strict becomes white — automatically, via the
- * theme tokens. No `white` style input is needed.
- */
-export const StylesDarkTheme: Story = {
-  parameters: { controls: { disable: true } },
-  decorators: [moduleMetadata({ imports: [LinkDarkThemeDemo] })],
-  render: () => ({ template: `<egov-link-dark-theme-demo />` }),
 };
 
 /**

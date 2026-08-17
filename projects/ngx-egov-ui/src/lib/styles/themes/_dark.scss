@@ -9,9 +9,6 @@
   --color-text-base-inverse-default: var(--black-1000);
   --color-text-base-inverse-on-color: var(--white-1000);
 
-  --color-background-base-inverse-default: var(--black-1000);
-  --color-background-base-inverse-on-color: var(--white-1000);
-
   --color-text-brand-default: var(--blue-sky-400);
   --color-text-brand-default-hover: var(--blue-sky-700);
   --color-text-brand-on-secondary: var(--blue-sky-700);
@@ -29,8 +26,31 @@
   --color-text-danger-default: var(--red-500);
   --color-text-danger-on-secondary: var(--red-800);
 
+  --color-icon-base-default: var(--white-1000);
+  --color-icon-base-secondary: var(--gray-200);
+  --color-icon-base-tertiary: var(--gray-300);
+
+  --color-icon-base-default-on-color: var(--black-1000);
+  --color-icon-base-secondary-on-color: var(--gray-600);
+
   --color-icon-base-inverse-default: var(--black-1000);
   --color-icon-base-inverse-on-color: var(--white-1000);
+
+  --color-icon-brand-default: var(--blue-sky-400);
+  --color-icon-brand-on-secondary: var(--blue-sky-700);
+  --color-icon-brand-visited: var(--magenta-400);
+
+  --color-icon-disabled-default: var(--gray-600);
+  --color-icon-disabled-on-disabled: var(--gray-400);
+
+  --color-icon-positive-default: var(--green-500);
+  --color-icon-positive-on-secondary: var(--green-800);
+
+  --color-icon-warning-default: var(--apricot-500);
+  --color-icon-warning-on-secondary: var(--apricot-800);
+
+  --color-icon-danger-default: var(--red-500);
+  --color-icon-danger-on-secondary: var(--red-800);
 }
 
 [data-theme='dark'] {
@@ -85,6 +105,10 @@
   --color-background-danger-secondary: var(--red-200);
   --color-background-danger-secondary-hover: var(--red-300);
   --color-background-danger-secondary-active: var(--red-400);
+
+  --color-background-alpha-overlay-dark: var(--black-200-alpha);
+  --color-background-alpha-overlay-light: var(--white-200-alpha);
+  --color-background-alpha-large-surface: var(--gray-200-alpha);
 }
 
 [data-theme='dark'] {
@@ -92,6 +116,7 @@
   --color-border-base-secondary: var(--gray-400);
   --color-border-base-tertiary: var(--gray-250);
   --color-border-base-strong: var(--gray-100);
+  --color-border-base-subtle: var(--black-1000);
 
   --color-border-brand-default: var(--blue-sky-500);
 

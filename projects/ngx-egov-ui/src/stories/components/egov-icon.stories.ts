@@ -38,7 +38,7 @@ const meta: Meta<EgovIconComponent> = {
   render: (args) => ({
     props: args,
     template: `
-      <div style="display:inline-flex;align-items:center;gap:1rem;padding:1.5rem;color:#121212;font-family:monospace">
+      <div style="display:inline-flex;align-items:center;gap:1rem;padding:1.5rem;color:var(--color-icon-base-default, #121212);font-family:monospace">
         <egov-icon [name]="name" [variant]="variant" [scale]="scale" [aria-label]="ariaLabel" />
         <span>&lt;egov-icon name="{{ name }}" variant="{{ variant }}" scale="{{ scale }}" /&gt;</span>
       </div>

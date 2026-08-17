@@ -119,13 +119,32 @@ component degrades gracefully and **never throws**:
 Each fallback (and an unregistered name) logs a `console.warn` **in dev mode
 only** — production is silent.
 
-## Recoloring
+## Recoloring & dark mode
 
-Icon fills are `currentColor`, so recolor with plain CSS `color`:
+Icon fills are `currentColor`, so an icon is exactly as adaptive as the CSS
+`color` it inherits. That's the whole theming story:
 
-```css
-.danger-icon { color: var(--color-error, red); }
-```
+- **Inside components** (buttons, tabs, links…) do nothing — the icon picks up
+  the component's text color, including its dark-theme value.
+- **Standalone icons**: color them with the semantic `--color-icon-*` tokens,
+  which remap automatically under `[data-theme='dark']`:
+
+  ```css
+  .toolbar-icon { color: var(--color-icon-base-default); }   /* black ⇄ white */
+  .danger-icon  { color: var(--color-icon-danger-default); } /* red-600 ⇄ red-500 */
+  ```
+
+- **Never hardcode a hex** (`color: #121212`) on an icon or its wrapper — that
+  pins the icon to one theme forever. If an icon "ignores dark mode", the cause
+  is almost always a fixed `color` somewhere up its ancestor chain.
+
+### Known exceptions
+
+Six icons contain baked-in `#fff` accents inside their SVG paths and
+`upload-icon` uses a gradient fill — those parts don't follow `currentColor`
+in either theme: `circle-download`, `qr-code`, `group`, `education`,
+`upload-icon`, `id-card`. Fixing them requires regenerating the source SVGs
+with `currentColor` accents (`pnpm icons:generate`).
 
 ## Types
 

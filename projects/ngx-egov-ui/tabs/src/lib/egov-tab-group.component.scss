@@ -5,7 +5,7 @@
 .tab-header {
   display: flex;
   align-items: stretch;
-  border-bottom: 1px solid var(--gray-300, #b2b2b2);
+  border-bottom: 1px solid var(--color-border-base-secondary, #b2b2b2);
 }
 
 .tab-viewport {
@@ -75,7 +75,7 @@
   padding: 0;
   background: transparent;
   border: none;
-  color: var(--gray-900, #121212);
+  color: var(--color-text-base-default, #121212);
   cursor: pointer;
   transition: color 0.2s ease;
 }
@@ -86,7 +86,7 @@
 }
 
 .tab-scroll:hover {
-  color: var(--blue-sky-600, #0058d2);
+  color: var(--color-text-brand-default, #0058d2);
 }
 
 .tab-button {
@@ -98,7 +98,7 @@
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
-  color: var(--gray-700, #383838);
+  color: var(--color-text-base-secondary, #383838);
   font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
   font-size: var(--text-body-md-font-size, 16px);
   line-height: 1.375;
@@ -108,18 +108,18 @@
     border-color 0.2s ease;
 
   &.active {
-    color: var(--blue-sky-600, #0058d2);
-    border-color: var(--blue-sky-600, #0058d2);
+    color: var(--color-text-brand-default, #0058d2);
+    border-color: var(--color-text-brand-default, #0058d2);
     font-weight: 600;
   }
 
   &:focus-visible {
-    outline: 2px solid var(--blue-sky-600, #0058d2);
+    outline: 2px solid var(--color-border-brand-default, #0058d2);
     outline-offset: -3px;
   }
 
   &:disabled {
-    color: var(--gray-400, #757575);
+    color: var(--color-text-disabled-default, #B2B2B2);
     opacity: 0.6;
     cursor: not-allowed;
   }

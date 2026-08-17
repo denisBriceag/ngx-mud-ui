@@ -1,4 +1,4 @@
-import type { Preview } from '@storybook/angular-vite';
+import type { Decorator, Preview } from '@storybook/angular-vite';
 import { setCompodocJson } from '@storybook/addon-docs/angular';
 
 import docJson from '../documentation.json';
@@ -9,11 +9,39 @@ import './design-tokens.scss';
 
 setCompodocJson(docJson);
 
+// Theme must live on the ROOT element — nested data-theme wrappers don't
+// re-resolve the chained --color-* tokens (see Foundations/Dark Mode).
+const withTheme: Decorator = (story, context) => {
+  if (context.globals['theme'] === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+
+  return story();
+};
+
 const preview: Preview = {
+  decorators: [withTheme],
+  globalTypes: {
+    theme: {
+      description: 'Design-system color theme',
+      toolbar: {
+        title: 'Theme',
+        icon: 'mirror',
+        items: ['light', 'dark'],
+        dynamicTitle: true,
+      },
+    },
+  },
+  initialGlobals: { theme: 'light' },
   parameters: {
     options: {
       storySort: { order: ['Introduction', 'Foundations', 'Components', '*'] },
     },
+    // The Theme toolbar owns the canvas background (via body tokens);
+    // the Backgrounds picker would fight it.
+    backgrounds: { disable: true },
     controls: {
       matchers: {
         color: /(background|color)$/i,
