@@ -3580,6 +3580,17 @@
                 "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"dark\"></span>\n        <span style=\"${TILE};background:var(--color-background-base-inverse-default)\" egovBadge=\"1\" badgeColor=\"light\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"neutral\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"accent\"></span>\n        <span style=\"${TILE}\" egovBadge=\"1\" badgeColor=\"danger\"></span>\n      </div>\n    `,\n  }),\n}"
             },
             {
+                "name": "COLORS",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "unknown",
+                "defaultValue": "['muted', 'neutral', 'accent', 'success', 'brand', 'danger', 'info'] as const"
+            },
+            {
                 "name": "CONFIG",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -3777,6 +3788,19 @@
                 "defaultValue": "{\n  render: () => ({ template: `<egov-layout-grid />` }),\n}"
             },
             {
+                "name": "LeadingIcon",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <egov-tag color=\"success\">\n          <egov-icon name=\"checkmark-small\" scale=\"16\" /> Approved\n        </egov-tag>\n        <egov-tag color=\"info\" type=\"strong\">\n          <egov-icon name=\"circle-info\" scale=\"16\" /> In review\n        </egov-tag>\n        <egov-tag color=\"danger\" type=\"outlined\" size=\"small\">\n          <egov-icon name=\"circle-info\" scale=\"16\" /> Rejected\n        </egov-tag>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "A leading icon tightens the left padding (6px on medium, 4px on small) and\nis forced to 16px (medium) / 14px (small). Pass `scale=\"16\"` so the icon\ngeometry matches the rendered size.",
+                "description": "<p>A leading icon tightens the left padding (6px on medium, 4px on small) and\nis forced to 16px (medium) / 14px (small). Pass <code>scale=&quot;16&quot;</code> so the icon\ngeometry matches the rendered size.</p>\n"
+            },
+            {
                 "name": "Levels",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -3810,6 +3834,17 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"margin\" />` }),\n}"
+            },
+            {
+                "name": "Matrix",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    props: { colors: COLORS },\n    template: `\n      @for (color of colors; track color) {\n        <div style=\"${ROW};padding:8px 24px\">\n          <egov-tag [color]=\"color\" type=\"subtle\">Label</egov-tag>\n          <egov-tag [color]=\"color\" type=\"strong\">Label</egov-tag>\n          @if (color !== 'info') {\n            <egov-tag [color]=\"color\" type=\"outlined\">Label</egov-tag>\n          }\n          <span style=\"width:8ch;color:var(--color-text-base-secondary)\">{{ color }}</span>\n        </div>\n      }\n    `,\n  }),\n}"
             },
             {
                 "name": "meta",
@@ -3865,6 +3900,17 @@
                 "deprecationMessage": "",
                 "type": "Meta<EgovTabGroup>",
                 "defaultValue": "{\n  title: 'Components/Tabs',\n  component: EgovTabGroup,\n  decorators: [\n    moduleMetadata({ imports: [EgovTabGroup, EgovTab, EgovTabLabel, EgovIconComponent] }),\n    applicationConfig({ providers: [provideEgovIcons([alarm, settings, search, lock])] }),\n  ],\n  argTypes: {\n    stretchTabs: { control: 'boolean' },\n    size: { control: 'inline-radio', options: ['md', 'sm'] },\n  },\n  args: {\n    stretchTabs: false,\n    size: 'md',\n  },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<EgovTag>",
+                "defaultValue": "{\n  title: 'Components/Tag',\n  component: EgovTag,\n  decorators: [\n    applicationConfig({ providers: [provideEgovIcons([checkmarkSmall, circleInfo])] }),\n    moduleMetadata({ imports: [EgovTag, EgovIconComponent] }),\n  ],\n  argTypes: {\n    color: { control: 'select', options: [...COLORS] },\n    type: {\n      control: 'inline-radio',\n      options: ['subtle', 'strong', 'outlined'],\n      description: 'info supports only subtle and strong; outlined falls back to subtle with a dev warning',\n    },\n    size: { control: 'inline-radio', options: ['medium', 'small'] },\n  },\n  args: {\n    color: 'success',\n    type: 'subtle',\n    size: 'medium',\n  },\n}"
             },
             {
                 "name": "meta",
@@ -4148,6 +4194,17 @@
                 "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <a\n          href=\"#\"\n          [egovLink]=\"egovLink\"\n          [size]=\"size\"\n          [underlined]=\"underlined\"\n          [touchTarget]=\"touchTarget\"\n          [disabled]=\"disabled\"\n        >\n          Services catalogue\n        </a>\n      </div>\n    `,\n  }),\n}"
             },
             {
+                "name": "Playground",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <egov-tag [color]=\"color\" [type]=\"type\" [size]=\"size\">Label</egov-tag>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
                 "name": "Positions",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -4214,6 +4271,17 @@
                 "deprecationMessage": "",
                 "type": "string",
                 "defaultValue": "'display:flex;gap:32px;align-items:center;flex-wrap:wrap;padding:24px'"
+            },
+            {
+                "name": "ROW",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "string",
+                "defaultValue": "'display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:24px'"
             },
             {
                 "name": "SAMPLE",
@@ -4304,6 +4372,19 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink size=\"large\">Large</a>\n        <a href=\"#\" egovLink size=\"medium\">Medium</a>\n        <a href=\"#\" egovLink size=\"small\">Small</a>\n        <a href=\"#\" egovLink size=\"extra-small\">Extra small</a>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
+                "name": "Sizes",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <egov-tag color=\"brand\" type=\"strong\">Medium</egov-tag>\n        <egov-tag color=\"brand\" type=\"strong\" size=\"small\">Small</egov-tag>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Medium is 24px tall (14/20 text), small is 20px (12/16 text).",
+                "description": "<p>Medium is 24px tall (14/20 text), small is 20px (12/16 text).</p>\n"
             },
             {
                 "name": "Sizes",
@@ -4616,6 +4697,19 @@
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<EgovTabGroup>",
                 "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<EgovTag>",
+                "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -5385,6 +5479,89 @@
                     "defaultValue": "['background', 'text', 'border', 'icon']"
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/components/tag.stories.ts": [
+                {
+                    "name": "COLORS",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "defaultValue": "['muted', 'neutral', 'accent', 'success', 'brand', 'danger', 'info'] as const"
+                },
+                {
+                    "name": "LeadingIcon",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <egov-tag color=\"success\">\n          <egov-icon name=\"checkmark-small\" scale=\"16\" /> Approved\n        </egov-tag>\n        <egov-tag color=\"info\" type=\"strong\">\n          <egov-icon name=\"circle-info\" scale=\"16\" /> In review\n        </egov-tag>\n        <egov-tag color=\"danger\" type=\"outlined\" size=\"small\">\n          <egov-icon name=\"circle-info\" scale=\"16\" /> Rejected\n        </egov-tag>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "A leading icon tightens the left padding (6px on medium, 4px on small) and\nis forced to 16px (medium) / 14px (small). Pass `scale=\"16\"` so the icon\ngeometry matches the rendered size.",
+                    "description": "<p>A leading icon tightens the left padding (6px on medium, 4px on small) and\nis forced to 16px (medium) / 14px (small). Pass <code>scale=&quot;16&quot;</code> so the icon\ngeometry matches the rendered size.</p>\n"
+                },
+                {
+                    "name": "Matrix",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    props: { colors: COLORS },\n    template: `\n      @for (color of colors; track color) {\n        <div style=\"${ROW};padding:8px 24px\">\n          <egov-tag [color]=\"color\" type=\"subtle\">Label</egov-tag>\n          <egov-tag [color]=\"color\" type=\"strong\">Label</egov-tag>\n          @if (color !== 'info') {\n            <egov-tag [color]=\"color\" type=\"outlined\">Label</egov-tag>\n          }\n          <span style=\"width:8ch;color:var(--color-text-base-secondary)\">{{ color }}</span>\n        </div>\n      }\n    `,\n  }),\n}"
+                },
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<EgovTag>",
+                    "defaultValue": "{\n  title: 'Components/Tag',\n  component: EgovTag,\n  decorators: [\n    applicationConfig({ providers: [provideEgovIcons([checkmarkSmall, circleInfo])] }),\n    moduleMetadata({ imports: [EgovTag, EgovIconComponent] }),\n  ],\n  argTypes: {\n    color: { control: 'select', options: [...COLORS] },\n    type: {\n      control: 'inline-radio',\n      options: ['subtle', 'strong', 'outlined'],\n      description: 'info supports only subtle and strong; outlined falls back to subtle with a dev warning',\n    },\n    size: { control: 'inline-radio', options: ['medium', 'small'] },\n  },\n  args: {\n    color: 'success',\n    type: 'subtle',\n    size: 'medium',\n  },\n}"
+                },
+                {
+                    "name": "Playground",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <egov-tag [color]=\"color\" [type]=\"type\" [size]=\"size\">Label</egov-tag>\n      </div>\n    `,\n  }),\n}"
+                },
+                {
+                    "name": "ROW",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "defaultValue": "'display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:24px'"
+                },
+                {
+                    "name": "Sizes",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <egov-tag color=\"brand\" type=\"strong\">Medium</egov-tag>\n        <egov-tag color=\"brand\" type=\"strong\" size=\"small\">Small</egov-tag>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Medium is 24px tall (14/20 text), small is 20px (12/16 text).",
+                    "description": "<p>Medium is 24px tall (14/20 text), small is 20px (12/16 text).</p>\n"
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing-grid.component.ts": [
                 {
                     "name": "CONFIG",
@@ -6058,6 +6235,21 @@
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<EgovTabGroup>",
                     "file": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/components/tag.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<EgovTag>",
+                    "file": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -6812,6 +7004,86 @@
             },
             {
                 "filePath": "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "COLORS",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "LeadingIcon",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Matrix",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Playground",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "ROW",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Sizes",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/tag.stories.ts",
                 "type": "type alias",
                 "linktype": "miscellaneous",
                 "linksubtype": "typealias",

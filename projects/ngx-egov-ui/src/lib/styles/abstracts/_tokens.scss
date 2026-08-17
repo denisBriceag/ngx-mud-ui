@@ -342,5 +342,11 @@ $input-sizes: (
   --color-link-strict-hover: var(--color-text-base-secondary);
 
   --color-link-white-default: var(--color-text-base-inverse-default);
+
+  // Tag (status-tag) outlined text: the on-secondary shades are right on the
+  // light theme but too dark against dark surfaces, so the dark theme
+  // overrides these with lighter shades.
+  --color-tag-outlined-success: var(--color-text-positive-on-secondary);
+  --color-tag-outlined-danger: var(--color-text-danger-default);
 }
 

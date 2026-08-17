@@ -128,3 +128,10 @@
 
   --color-border-danger-default: var(--red-500);
 }
+
+[data-theme='dark'] {
+  // Tag outlined text needs lighter shades on dark surfaces (WCAG 4.5:1
+  // against --gray-900: green-500 = 5.87, red-400 = 5.98; red-500 fails at 4.44).
+  --color-tag-outlined-success: var(--color-text-positive-default);
+  --color-tag-outlined-danger: var(--red-400);
+}
