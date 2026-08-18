@@ -37,6 +37,7 @@
               "../button/src/**/*.spec.ts",
               "../icons/src/**/*.spec.ts",
               "../link/src/**/*.spec.ts",
+              "../spinner/src/**/*.spec.ts",
               "../tabs/src/**/*.spec.ts",
               "../tag/src/**/*.spec.ts",
               "../tooltip/src/**/*.spec.ts"

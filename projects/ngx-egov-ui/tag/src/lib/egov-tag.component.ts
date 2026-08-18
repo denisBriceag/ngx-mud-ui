@@ -18,7 +18,6 @@ const isDevMode = (): boolean => typeof ngDevMode === 'undefined' || !!ngDevMode
  */
 @Component({
   selector: 'egov-tag',
-  exportAs: 'egovTag',
   template: '<ng-content />',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
