@@ -33,6 +33,7 @@
             "tsConfig": "projects/ngx-egov-ui/tsconfig.spec.json",
             "include": [
               "**/*.spec.ts",
+              "../accordion/src/**/*.spec.ts",
               "../avatar/src/**/*.spec.ts",
               "../badge/src/**/*.spec.ts",
               "../button/src/**/*.spec.ts",
