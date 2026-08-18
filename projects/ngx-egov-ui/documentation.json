@@ -3475,6 +3475,19 @@
                 "description": "<p>Links styled as buttons share the same API; <code>disabled</code> maps to <code>aria-disabled</code>.</p>\n"
             },
             {
+                "name": "AvatarStack",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    props: { portraits: PORTRAITS },\n    template: `\n      <div style=\"${ROW}\">\n        <div class=\"avatar-stack\">\n          @for (src of portraits; track src) {\n            <egov-avatar><img [src]=\"src\" alt=\"\" /></egov-avatar>\n          }\n          <egov-avatar>+5</egov-avatar>\n        </div>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "The stack is CSS-only — wrap avatars in `.avatar-stack`; no Angular API.\nOverflow is a plain initials avatar (e.g. `+5`).",
+                "description": "<p>The stack is CSS-only — wrap avatars in <code>.avatar-stack</code>; no Angular API.\nOverflow is a plain initials avatar (e.g. <code>+5</code>).</p>\n"
+            },
+            {
                 "name": "BADGE_PLATFORMS",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -3624,6 +3637,19 @@
                 "defaultValue": "['min-w-0', 'min-w-full', 'max-w-sm', 'max-w-md', 'max-w-lg', 'max-w-xl', 'max-w-xxl']"
             },
             {
+                "name": "ContentTypes",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    props: { src: PORTRAITS[0] },\n    template: `\n      <div style=\"${ROW}\">\n        <egov-avatar><img [src]=\"src\" alt=\"Olga Popescu\" /></egov-avatar>\n        <egov-avatar>OP</egov-avatar>\n        <egov-avatar><egov-icon name=\"person\" [scale]=\"20\" /></egov-avatar>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "The content kind is detected from the projected content — an `img` crops to\nthe circle, an `egov-icon`/`svg` gets the icon tint, anything else renders\nas uppercase initials. Image avatars need an `alt` text.",
+                "description": "<p>The content kind is detected from the projected content — an <code>img</code> crops to\nthe circle, an <code>egov-icon</code>/<code>svg</code> gets the icon tint, anything else renders\nas uppercase initials. Image avatars need an <code>alt</code> text.</p>\n"
+            },
+            {
                 "name": "COUNTER_STYLE",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -3751,6 +3777,19 @@
                 "defaultValue": "ALL_ICONS.map((icon) => icon.name).sort()"
             },
             {
+                "name": "ICON_SCALE",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Record<typeof SIZES['number'], number>",
+                "defaultValue": "{\n  'extra-small': 16,\n  small: 20,\n  medium: 20,\n  large: 24,\n  'extra-large': 24,\n}",
+                "rawdescription": "Icon avatars force the svg to 16px (xs), 20px (sm/md) or 24px (lg/xl).",
+                "description": "<p>Icon avatars force the svg to 16px (xs), 20px (sm/md) or 24px (lg/xl).</p>\n"
+            },
+            {
                 "name": "IconButton",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -3872,6 +3911,17 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<EgovAvatar>",
+                "defaultValue": "{\n  title: 'Components/Avatar',\n  component: EgovAvatar,\n  decorators: [\n    applicationConfig({ providers: [provideEgovIcons([person])] }),\n    moduleMetadata({ imports: [EgovAvatar, EgovIconComponent] }),\n  ],\n  argTypes: {\n    size: { control: 'select', options: [...SIZES] },\n  },\n  args: {\n    size: 'medium',\n  },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -3971,17 +4021,6 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<CursorGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -4004,12 +4043,23 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "Meta<LayoutGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Layout Grid',\n  component: LayoutGridComponent,\n  decorators: [moduleMetadata({ imports: [LayoutGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                "type": "Meta<CursorGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<DisplayGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Display',\n  component: DisplayGridComponent,\n  decorators: [moduleMetadata({ imports: [DisplayGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "meta",
@@ -4026,12 +4076,34 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "Meta<DisplayGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Display',\n  component: DisplayGridComponent,\n  decorators: [moduleMetadata({ imports: [DisplayGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                "type": "Meta<LayoutGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Layout Grid',\n  component: LayoutGridComponent,\n  decorators: [moduleMetadata({ imports: [LayoutGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<TypographyGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Typography',\n  component: TypographyGridComponent,\n  decorators: [moduleMetadata({ imports: [TypographyGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<WidthGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Width',\n  component: WidthGridComponent,\n  decorators: [moduleMetadata({ imports: [WidthGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "meta",
@@ -4065,28 +4137,6 @@
                 "deprecationMessage": "",
                 "type": "Meta<SpacingGridComponent>",
                 "defaultValue": "{\n  title: 'Foundations/Spacing',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<TypographyGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Typography',\n  component: TypographyGridComponent,\n  decorators: [moduleMetadata({ imports: [TypographyGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<WidthGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Width',\n  component: WidthGridComponent,\n  decorators: [moduleMetadata({ imports: [WidthGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "OnIconTrigger",
@@ -4184,6 +4234,17 @@
                 "name": "Playground",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <egov-avatar [size]=\"size\">OP</egov-avatar>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
+                "name": "Playground",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -4249,6 +4310,28 @@
                 "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <egov-tag [color]=\"color\" [type]=\"type\" [size]=\"size\">Label</egov-tag>\n      </div>\n    `,\n  }),\n}"
             },
             {
+                "name": "portrait",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "unknown",
+                "defaultValue": "(bg: string, fg: string): string =>\n  'data:image/svg+xml,' +\n  encodeURIComponent(\n    `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\">` +\n      `<rect width=\"100\" height=\"100\" fill=\"${bg}\"/>` +\n      `<circle cx=\"50\" cy=\"38\" r=\"18\" fill=\"${fg}\"/>` +\n      `<circle cx=\"50\" cy=\"98\" r=\"34\" fill=\"${fg}\"/>` +\n      `</svg>`,\n  )"
+            },
+            {
+                "name": "PORTRAITS",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "[]",
+                "defaultValue": "[portrait('#BFDBFE', '#1D4ED8'), portrait('#FDE68A', '#B45309'), portrait('#BBF7D0', '#15803D')]"
+            },
+            {
                 "name": "Positions",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -4282,6 +4365,17 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}"
+            },
+            {
+                "name": "ROW",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "string",
+                "defaultValue": "'display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:24px'"
             },
             {
                 "name": "ROW",
@@ -4397,6 +4491,19 @@
                 "name": "Sizes",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    props: {\n      sizes: SIZES.map((size) => ({ size, icon: ICON_SCALE[size] })),\n      src: PORTRAITS[0],\n    },\n    template: `\n      @for (s of sizes; track s.size) {\n        <div style=\"${ROW};padding:8px 24px\">\n          <egov-avatar [size]=\"s.size\"><img [src]=\"src\" alt=\"Olga Popescu\" /></egov-avatar>\n          <egov-avatar [size]=\"s.size\">OP</egov-avatar>\n          <egov-avatar [size]=\"s.size\"><egov-icon name=\"person\" [scale]=\"s.icon\" /></egov-avatar>\n          <span style=\"width:12ch;color:var(--color-text-base-secondary)\">{{ s.size }}</span>\n        </div>\n      }\n    `,\n  }),\n}",
+                "rawdescription": "extra-small 24px (12/16 text, 16px icon), small 32px (14/20, 20px icon),\nmedium 40px (14/20, 20px icon), large 48px (16/24, 24px icon),\nextra-large 72px (18/28, 24px icon). Pass a matching `scale` to the icon\nso its geometry stays crisp.",
+                "description": "<p>extra-small 24px (12/16 text, 16px icon), small 32px (14/20, 20px icon),\nmedium 40px (14/20, 20px icon), large 48px (16/24, 24px icon),\nextra-large 72px (18/28, 24px icon). Pass a matching <code>scale</code> to the icon\nso its geometry stays crisp.</p>\n"
+            },
+            {
+                "name": "Sizes",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -4464,6 +4571,17 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"display:flex;gap:48px;justify-content:center;padding:120px 24px\">\n        <button type=\"button\" style=\"${BTN_STYLE}\" egovTooltip=\"Tooltip small.\" tooltipSize=\"small\" [tooltipShowDelay]=\"0\">\n          small\n        </button>\n        <button type=\"button\" style=\"${BTN_STYLE}\" egovTooltip=\"Tooltip displayed above the element.\" tooltipSize=\"large\" [tooltipShowDelay]=\"0\">\n          large\n        </button>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
+                "name": "SIZES",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "unknown",
+                "defaultValue": "['extra-small', 'small', 'medium', 'large', 'extra-large'] as const"
             },
             {
                 "name": "Spacing",
@@ -4724,6 +4842,19 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
+                "rawtype": "StoryObj<EgovAvatar>",
+                "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
                 "rawtype": "StoryObj<EgovBadge>",
                 "file": "projects/ngx-egov-ui/src/stories/components/badge.stories.ts",
                 "deprecated": false,
@@ -4841,19 +4972,6 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<CursorGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "rawdescription": "",
-                "description": "",
-                "kind": 184
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "coverageIgnore": false,
                 "rawtype": "StoryObj<ColorGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
                 "deprecated": false,
@@ -4880,8 +4998,21 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<LayoutGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
+                "rawtype": "StoryObj<CursorGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<DisplayGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -4906,8 +5037,34 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<DisplayGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                "rawtype": "StoryObj<LayoutGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<TypographyGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<WidthGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -4947,32 +5104,6 @@
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<SpacingGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "rawdescription": "",
-                "description": "",
-                "kind": 184
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "coverageIgnore": false,
-                "rawtype": "StoryObj<TypographyGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "rawdescription": "",
-                "description": "",
-                "kind": 184
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "coverageIgnore": false,
-                "rawtype": "StoryObj<WidthGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -5364,6 +5495,126 @@
                     "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <button type=\"button\" egovButton><egov-icon name=\"plus-small\" [scale]=\"20\" /> Leading icon</button>\n        <button type=\"button\" egovButton>Trailing icon <egov-icon name=\"chevron-bottom\" [scale]=\"20\" /></button>\n        <button type=\"button\" egovButton aria-label=\"Add\"><egov-icon name=\"plus-large\" [scale]=\"20\" /></button>\n      </div>\n    `,\n  }),\n}",
                     "rawdescription": "Leading/trailing icons are plain projected content — no extra API needed.\nThese use the library's own `<egov-icon>` from `ngx-egov-ui/icons`\n(decorative by default: no aria-label means aria-hidden).",
                     "description": "<p>Leading/trailing icons are plain projected content — no extra API needed.\nThese use the library&#39;s own <code>&lt;egov-icon&gt;</code> from <code>ngx-egov-ui/icons</code>\n(decorative by default: no aria-label means aria-hidden).</p>\n"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts": [
+                {
+                    "name": "AvatarStack",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    props: { portraits: PORTRAITS },\n    template: `\n      <div style=\"${ROW}\">\n        <div class=\"avatar-stack\">\n          @for (src of portraits; track src) {\n            <egov-avatar><img [src]=\"src\" alt=\"\" /></egov-avatar>\n          }\n          <egov-avatar>+5</egov-avatar>\n        </div>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "The stack is CSS-only — wrap avatars in `.avatar-stack`; no Angular API.\nOverflow is a plain initials avatar (e.g. `+5`).",
+                    "description": "<p>The stack is CSS-only — wrap avatars in <code>.avatar-stack</code>; no Angular API.\nOverflow is a plain initials avatar (e.g. <code>+5</code>).</p>\n"
+                },
+                {
+                    "name": "ContentTypes",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    props: { src: PORTRAITS[0] },\n    template: `\n      <div style=\"${ROW}\">\n        <egov-avatar><img [src]=\"src\" alt=\"Olga Popescu\" /></egov-avatar>\n        <egov-avatar>OP</egov-avatar>\n        <egov-avatar><egov-icon name=\"person\" [scale]=\"20\" /></egov-avatar>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "The content kind is detected from the projected content — an `img` crops to\nthe circle, an `egov-icon`/`svg` gets the icon tint, anything else renders\nas uppercase initials. Image avatars need an `alt` text.",
+                    "description": "<p>The content kind is detected from the projected content — an <code>img</code> crops to\nthe circle, an <code>egov-icon</code>/<code>svg</code> gets the icon tint, anything else renders\nas uppercase initials. Image avatars need an <code>alt</code> text.</p>\n"
+                },
+                {
+                    "name": "ICON_SCALE",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Record<typeof SIZES['number'], number>",
+                    "defaultValue": "{\n  'extra-small': 16,\n  small: 20,\n  medium: 20,\n  large: 24,\n  'extra-large': 24,\n}",
+                    "rawdescription": "Icon avatars force the svg to 16px (xs), 20px (sm/md) or 24px (lg/xl).",
+                    "description": "<p>Icon avatars force the svg to 16px (xs), 20px (sm/md) or 24px (lg/xl).</p>\n"
+                },
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<EgovAvatar>",
+                    "defaultValue": "{\n  title: 'Components/Avatar',\n  component: EgovAvatar,\n  decorators: [\n    applicationConfig({ providers: [provideEgovIcons([person])] }),\n    moduleMetadata({ imports: [EgovAvatar, EgovIconComponent] }),\n  ],\n  argTypes: {\n    size: { control: 'select', options: [...SIZES] },\n  },\n  args: {\n    size: 'medium',\n  },\n}"
+                },
+                {
+                    "name": "Playground",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <egov-avatar [size]=\"size\">OP</egov-avatar>\n      </div>\n    `,\n  }),\n}"
+                },
+                {
+                    "name": "portrait",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "defaultValue": "(bg: string, fg: string): string =>\n  'data:image/svg+xml,' +\n  encodeURIComponent(\n    `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\">` +\n      `<rect width=\"100\" height=\"100\" fill=\"${bg}\"/>` +\n      `<circle cx=\"50\" cy=\"38\" r=\"18\" fill=\"${fg}\"/>` +\n      `<circle cx=\"50\" cy=\"98\" r=\"34\" fill=\"${fg}\"/>` +\n      `</svg>`,\n  )"
+                },
+                {
+                    "name": "PORTRAITS",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "[]",
+                    "defaultValue": "[portrait('#BFDBFE', '#1D4ED8'), portrait('#FDE68A', '#B45309'), portrait('#BBF7D0', '#15803D')]"
+                },
+                {
+                    "name": "ROW",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "defaultValue": "'display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:24px'"
+                },
+                {
+                    "name": "Sizes",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    props: {\n      sizes: SIZES.map((size) => ({ size, icon: ICON_SCALE[size] })),\n      src: PORTRAITS[0],\n    },\n    template: `\n      @for (s of sizes; track s.size) {\n        <div style=\"${ROW};padding:8px 24px\">\n          <egov-avatar [size]=\"s.size\"><img [src]=\"src\" alt=\"Olga Popescu\" /></egov-avatar>\n          <egov-avatar [size]=\"s.size\">OP</egov-avatar>\n          <egov-avatar [size]=\"s.size\"><egov-icon name=\"person\" [scale]=\"s.icon\" /></egov-avatar>\n          <span style=\"width:12ch;color:var(--color-text-base-secondary)\">{{ s.size }}</span>\n        </div>\n      }\n    `,\n  }),\n}",
+                    "rawdescription": "extra-small 24px (12/16 text, 16px icon), small 32px (14/20, 20px icon),\nmedium 40px (14/20, 20px icon), large 48px (16/24, 24px icon),\nextra-large 72px (18/28, 24px icon). Pass a matching `scale` to the icon\nso its geometry stays crisp.",
+                    "description": "<p>extra-small 24px (12/16 text, 16px icon), small 32px (14/20, 20px icon),\nmedium 40px (14/20, 20px icon), large 48px (16/24, 24px icon),\nextra-large 72px (18/28, 24px icon). Pass a matching <code>scale</code> to the icon\nso its geometry stays crisp.</p>\n"
+                },
+                {
+                    "name": "SIZES",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "defaultValue": "['extra-small', 'small', 'medium', 'large', 'extra-large'] as const"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/components/tabs.stories.ts": [
@@ -6038,30 +6289,6 @@
                     "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts": [
-                {
-                    "name": "meta",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<CursorGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Reference",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}"
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
                 {
                     "name": "meta",
@@ -6110,6 +6337,30 @@
                     "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<CursorGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Cursors',\n  component: CursorGridComponent,\n  decorators: [moduleMetadata({ imports: [CursorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Reference",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}"
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
                 {
                     "name": "meta",
@@ -6132,54 +6383,6 @@
                     "deprecationMessage": "",
                     "type": "Story",
                     "defaultValue": "{\n  render: () => ({ template: `<egov-display-grid />` }),\n}"
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts": [
-                {
-                    "name": "meta",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<SpacingGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Padding',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Padding",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"padding\" />` }),\n}"
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts": [
-                {
-                    "name": "meta",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<SpacingGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Spacing',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Spacing",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"gap\" />` }),\n}"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts": [
@@ -6228,6 +6431,54 @@
                     "deprecationMessage": "",
                     "type": "Story",
                     "defaultValue": "{\n  render: () => ({ template: `<egov-width-grid />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<SpacingGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Padding',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Padding",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/padding.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"padding\" />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<SpacingGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Spacing',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Spacing",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/spacing/spacing.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"gap\" />` }),\n}"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/foundations/display-utilities/display-grid.component.ts": [
@@ -6342,6 +6593,21 @@
                     "rawdescription": "",
                     "description": "",
                     "kind": 193
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<EgovAvatar>",
+                    "file": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
                 }
             ],
             "projects/ngx-egov-ui/src/stories/components/badge.stories.ts": [
@@ -6479,21 +6745,6 @@
                     "kind": 184
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<CursorGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
                 {
                     "name": "Story",
@@ -6524,14 +6775,29 @@
                     "kind": 184
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts": [
                 {
                     "name": "Story",
                     "ctype": "miscellaneous",
                     "subtype": "typealias",
                     "coverageIgnore": false,
-                    "rawtype": "StoryObj<LayoutGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
+                    "rawtype": "StoryObj<CursorGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/cursors/cursors.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<DisplayGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -6554,14 +6820,44 @@
                     "kind": 184
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
+            "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts": [
                 {
                     "name": "Story",
                     "ctype": "miscellaneous",
                     "subtype": "typealias",
                     "coverageIgnore": false,
-                    "rawtype": "StoryObj<DisplayGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                    "rawtype": "StoryObj<LayoutGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/layout-grid/layout-grid.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<TypographyGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<WidthGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -6613,36 +6909,6 @@
                     "description": "",
                     "kind": 184
                 }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<TypographyGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<WidthGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
             ]
         }
     },
@@ -6652,7 +6918,7 @@
         "children": []
     },
     "coverage": {
-        "count": 16,
+        "count": 17,
         "status": "low",
         "files": [
             {
@@ -6671,6 +6937,116 @@
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
                 "name": "withTheme",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "AvatarStack",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "ContentTypes",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "ICON_SCALE",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Playground",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "portrait",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "PORTRAITS",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "ROW",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Sizes",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "SIZES",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/avatar.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
                 "status": "low"
