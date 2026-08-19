@@ -16,7 +16,6 @@
   line-height: 20px;
   font-weight: 500;
   white-space: nowrap;
-  text-transform: capitalize;
   -webkit-user-select: none;
   user-select: none;
 
@@ -55,6 +54,8 @@ $tag-colors: (
   muted: (
     subtle-bg: var(--color-background-base-default),
     subtle-color: var(--color-text-base-tertiary),
+    // Raw palette on purpose: no semantic "muted strong" token exists yet;
+    // gray-600 is the Figma value (white on gray-600 passes AA at 9.7:1).
     strong-bg: var(--gray-600),
     strong-color: var(--color-text-base-inverse-on-color),
     outlined-border: var(--color-border-base-default),

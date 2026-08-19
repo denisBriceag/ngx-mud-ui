@@ -100,6 +100,21 @@ export async function generateIcons({ sourceDir, outDir }) {
   }
 
   const names = [...byName.keys()].sort();
+
+  // safeIdent can alias two distinct names onto one export identifier
+  // ("delete" -> deleteIcon, "delete-icon" -> deleteIcon); fail loudly
+  // instead of emitting duplicate exports in the generated barrel.
+  const identOwner = new Map();
+  for (const name of names) {
+    const ident = safeIdent(camel(name));
+    const other = identOwner.get(ident);
+    if (other) {
+      throw new Error(
+        `generate-icons: icons "${other}" and "${name}" both produce the export identifier "${ident}"; rename one of the SVGs.`,
+      );
+    }
+    identOwner.set(ident, name);
+  }
   const dataDir = join(outDir, 'data');
   await fs.rm(dataDir, { recursive: true, force: true });
   await fs.mkdir(dataDir, { recursive: true });

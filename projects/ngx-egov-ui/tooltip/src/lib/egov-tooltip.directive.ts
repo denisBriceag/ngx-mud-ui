@@ -3,12 +3,14 @@ import {
   DestroyRef,
   Directive,
   DOCUMENT,
+  effect,
   ElementRef,
   inject,
   input,
   numberAttribute,
   output,
   PLATFORM_ID,
+  signal,
 } from '@angular/core';
 import type { ComponentRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
@@ -59,16 +61,41 @@ export class EgovTooltip {
   private readonly _id = `egov-tooltip-${nextUniqueId++}`;
 
   private _overlayRef: OverlayRef | null = null;
+  private readonly _containerRef = signal<ComponentRef<EgovTooltipContainer> | null>(null);
   private _showTimeout: ReturnType<typeof setTimeout> | null = null;
   private _hideTimeout: ReturnType<typeof setTimeout> | null = null;
   private _pinned = false;
 
+  /**
+   * @description Registered in the capture phase (only while the tooltip is open) so a
+   * consumed Escape closes just the tooltip, not an enclosing dialog too.
+   * */
   private readonly _onDocumentKeydown = (event: KeyboardEvent): void => {
-    if (event.key === 'Escape') this._dismiss();
+    if (event.key !== 'Escape') return;
+
+    event.stopPropagation();
+    this._dismiss();
   };
 
   constructor() {
     inject(DestroyRef).onDestroy(() => this._detach());
+
+    /**
+     * @description The attach-time setInput calls are one-shot snapshots; this keeps an
+     * open tooltip in sync when its inputs change (e.g. "Copy" → "Copied!").
+     * Placement stays attach-time - the position strategy is built from it.
+     * */
+    effect(() => {
+      const container = this._containerRef();
+
+      if (!container) return;
+
+      container.setInput('message', this.egovTooltip());
+      container.setInput('size', this.tooltipSize());
+      container.setInput('closeable', this.tooltipCloseable());
+      container.setInput('closeAriaLabel', this.tooltipCloseAriaLabel());
+      container.setInput('maxWidth', this.tooltipMaxWidth());
+    });
   }
 
   show(): void {
@@ -155,6 +182,13 @@ export class EgovTooltip {
       scrollStrategy: this._overlay.scrollStrategies.close(),
     });
 
+    /**
+     * The close scroll strategy detaches the overlay behind our back, so the
+     * trigger cleanup (aria-describedby, keydown listener, pinned state) must
+     * follow every detachment, not only the ones this directive initiates.
+     * */
+    this._overlayRef.detachments().subscribe(() => this._detach());
+
     const containerRef: ComponentRef<EgovTooltipContainer> = this._overlayRef.attach(
       new ComponentPortal(EgovTooltipContainer),
     );
@@ -166,6 +200,7 @@ export class EgovTooltip {
     containerRef.setInput('closeable', this.tooltipCloseable());
     containerRef.setInput('closeAriaLabel', this.tooltipCloseAriaLabel());
     containerRef.setInput('maxWidth', this.tooltipMaxWidth());
+    this._containerRef.set(containerRef);
 
     /**
      * When the preferred placement doesn't fit, CDK falls back to another
@@ -194,8 +229,18 @@ export class EgovTooltip {
     });
 
     this._pinned = this.tooltipCloseable();
-    this._trigger.setAttribute('aria-describedby', this._id);
-    this._document.addEventListener('keydown', this._onDocumentKeydown);
+
+    /**
+     * aria-describedby is a token list the trigger may already use (form hints etc.)
+     * append rather than replace, and remove only our own token again on detach.
+     * */
+    const describedby = this._trigger.getAttribute('aria-describedby');
+
+    this._trigger.setAttribute(
+      'aria-describedby',
+      describedby ? `${describedby} ${this._id}` : this._id,
+    );
+    this._document.addEventListener('keydown', this._onDocumentKeydown, { capture: true });
   }
 
   private _dismiss(): void {
@@ -208,8 +253,24 @@ export class EgovTooltip {
   private _detach(): void {
     this._clearTimeouts();
     this._pinned = false;
-    this._document.removeEventListener('keydown', this._onDocumentKeydown);
-    this._trigger.removeAttribute('aria-describedby');
+    this._containerRef.set(null);
+    this._document.removeEventListener('keydown', this._onDocumentKeydown, { capture: true });
+
+    const describedby = this._trigger.getAttribute('aria-describedby');
+
+    if (describedby !== null) {
+      const rest = describedby
+        .split(/\s+/)
+        .filter((token: string) => token && token !== this._id)
+        .join(' ');
+
+      if (rest) {
+        this._trigger.setAttribute('aria-describedby', rest);
+      } else {
+        this._trigger.removeAttribute('aria-describedby');
+      }
+    }
+
     this._overlayRef?.dispose();
     this._overlayRef = null;
   }

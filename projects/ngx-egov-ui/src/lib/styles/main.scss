@@ -1,11 +1,9 @@
 @use 'sass:math';
 @use 'sass:map' as map;
 @use 'abstracts/variables' as vars;
-@use 'abstracts/functions';
 @use 'abstracts/tokens';
 
 @use 'abstracts/colors';
-@use 'themes/light';
 @use 'themes/dark';
 
 @use 'abstracts/mixins/media' as media;

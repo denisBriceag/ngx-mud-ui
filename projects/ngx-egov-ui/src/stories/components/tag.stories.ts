@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
 import { EgovTag } from '../../../tag/src/public-api';
 import { EgovIconComponent, provideEgovIcons } from '../../../icons/src/public-api';
-import { checkmarkSmall, circleInfo } from '../../../icons/src/lib/data';
+import { checkmarkSmall, circleInfo } from '../../../icons/src/public-api';
 
 const ROW = 'display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:24px';
 const COLORS = ['muted', 'neutral', 'accent', 'success', 'brand', 'danger', 'info'] as const;

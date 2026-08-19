@@ -53,7 +53,6 @@ $select-sizes: (
   --select-focus-ring: #{map.get($c, focus)};
   --select-text: #{map.get($c, text)};
   --select-bg: #{map.get($c, background)};
-  --select-placeholder: #{map.get($c, placeholder)};
   --select-disabled-bg: #{map.get($c, disabled-bg)};
   --select-disabled-border: #{map.get($c, disabled-border)};
   --select-disabled-text: #{map.get($c, disabled-text)};

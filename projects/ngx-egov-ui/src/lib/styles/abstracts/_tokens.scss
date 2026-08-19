@@ -238,32 +238,53 @@ $icon-sizes: (
   extra-small: 12px
 );
 
+// Input surfaces flip with the theme via these tokens (dark overrides in
+// themes/_dark.scss). Light values are the original input palette.
+:root {
+  --color-input-background: var(--white);
+  --color-input-text: var(--gray-900);
+  --color-input-placeholder: var(--gray-500);
+  --color-input-border: var(--gray-250);
+  --color-input-border-hover: var(--gray-600);
+  --color-input-focus-ring: var(--blue-sky-200);
+  --color-input-focus-border: var(--blue-sky-600);
+  --color-input-disabled-background: var(--gray-100);
+  --color-input-disabled-border: var(--gray-250);
+  --color-input-disabled-text: var(--gray-500);
+  --color-input-readonly-background: var(--gray-100);
+  --color-input-readonly-border: var(--gray-200);
+  --color-input-readonly-text: var(--gray-700);
+}
+
+// Status accents (warning/destructive/success borders, focus rings and
+// readonly tints) intentionally stay on palette primitives until dark values
+// are specified in Figma; they remain legible on dark surfaces.
 $input-colors: (
   default: (
-    border: var(--gray-250),
-    border-hover: var(--gray-600),
-    focus: var(--blue-sky-200),
-    focus-border: var(--blue-sky-600),
-    placeholder: var(--gray-500),
-    text: var(--gray-900),
-    background: var(--white),
-    disabled-bg: var(--gray-100),
-    disabled-border: var(--gray-250),
-    disabled-text: var(--gray-500),
-    readonly-bg: var(--gray-100),
-    readonly-border: var(--gray-200),
-    readonly-text: var(--gray-700)
+    border: var(--color-input-border),
+    border-hover: var(--color-input-border-hover),
+    focus: var(--color-input-focus-ring),
+    focus-border: var(--color-input-focus-border),
+    placeholder: var(--color-input-placeholder),
+    text: var(--color-input-text),
+    background: var(--color-input-background),
+    disabled-bg: var(--color-input-disabled-background),
+    disabled-border: var(--color-input-disabled-border),
+    disabled-text: var(--color-input-disabled-text),
+    readonly-bg: var(--color-input-readonly-background),
+    readonly-border: var(--color-input-readonly-border),
+    readonly-text: var(--color-input-readonly-text)
   ),
   warning: (
     border: var(--apricot-500),
     border-hover: var(--apricot-600),
     focus: var(--apricot-200),
     focus-border: var(--apricot-500),
-    text: var(--gray-900),
-    background: var(--white),
-    disabled-bg: var(--gray-100),
-    disabled-border: var(--gray-250),
-    disabled-text: var(--gray-500),
+    text: var(--color-input-text),
+    background: var(--color-input-background),
+    disabled-bg: var(--color-input-disabled-background),
+    disabled-border: var(--color-input-disabled-border),
+    disabled-text: var(--color-input-disabled-text),
     readonly-bg: var(--apricot-100),
     readonly-border: var(--apricot-300),
     readonly-text: var(--apricot-700)
@@ -273,11 +294,11 @@ $input-colors: (
     border-hover: var(--red-600),
     focus: var(--red-200),
     focus-border: var(--red-500),
-    text: var(--gray-900),
-    background: var(--white),
-    disabled-bg: var(--gray-100),
-    disabled-border: var(--gray-250),
-    disabled-text: var(--gray-500),
+    text: var(--color-input-text),
+    background: var(--color-input-background),
+    disabled-bg: var(--color-input-disabled-background),
+    disabled-border: var(--color-input-disabled-border),
+    disabled-text: var(--color-input-disabled-text),
     readonly-bg: var(--red-100),
     readonly-border: var(--red-300),
     readonly-text: var(--red-700)
@@ -287,11 +308,11 @@ $input-colors: (
     border-hover: var(--green-700),
     focus: var(--green-200),
     focus-border: var(--green-600),
-    text: var(--gray-900),
-    background: var(--white),
-    disabled-bg: var(--gray-100),
-    disabled-border: var(--gray-250),
-    disabled-text: var(--gray-500),
+    text: var(--color-input-text),
+    background: var(--color-input-background),
+    disabled-bg: var(--color-input-disabled-background),
+    disabled-border: var(--color-input-disabled-border),
+    disabled-text: var(--color-input-disabled-text),
     readonly-bg: var(--green-100),
     readonly-border: var(--green-300),
     readonly-text: var(--green-800)
@@ -324,7 +345,7 @@ $input-sizes: (
   --modal-width-md: 590px;   
   --modal-width-lg: 720px;
   --modal-width-full: 100vw;
-  --z-modal: 1000px;
+  --z-modal: 1000;
 
   --motion-duration-md: 0.3s;
   --motion-duration-lg: 0.5s;
@@ -340,8 +361,6 @@ $input-sizes: (
 
   --color-link-strict-default: var(--color-text-base-default);
   --color-link-strict-hover: var(--color-text-base-secondary);
-
-  --color-link-white-default: var(--color-text-base-inverse-default);
 
   // Tag (status-tag) outlined text: the on-secondary shades are right on the
   // light theme but too dark against dark surfaces, so the dark theme

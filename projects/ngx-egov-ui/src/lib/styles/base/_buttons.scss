@@ -158,10 +158,11 @@
   var(--color-background-danger-secondary-active, #FDA19B)
 );
 
+// "large" is the .mud-btn base look itself (EgovButton adds no size class
+// for it), so only the smaller sizes need modifiers.
 $button-sizes: (
   sm: (padding: var(--spacing-4, 0.25rem) var(--spacing-12, 0.5rem), font-size: 14px),
-  md: (padding: var(--spacing-8, 0.5rem) var(--spacing-16, 1rem), font-size: 16px),
-  lg: (padding: var(--spacing-12, 0.75rem) var(--spacing-24, 1.5rem), font-size: 18px)
+  md: (padding: var(--spacing-8, 0.5rem) var(--spacing-16, 1rem), font-size: 16px)
 );
 
 @each $size, $values in $button-sizes {
@@ -174,20 +175,25 @@ $button-sizes: (
 .#{mud.mud-class('btn-pill')} { border-radius: 9999px; }
 .#{mud.mud-class('btn-rounded')} { border-radius: var(--border-radius-full, 9999px); }
 
+// The button keeps its own footprint while loading - no explicit sizing here,
+// otherwise toggling `loading` shifts the surrounding layout.
 .#{mud.mud-class('btn-loading')} {
   position: relative;
   pointer-events: none;
-  height: var(--spacing-48);
-  width: 92px;
 }
 
-.#{mud.mud-class('btn-loading')} .#{mud.mud-class('btn-label')} {
+// Projected content (icons, wrapped labels) keeps its space but is hidden
+// while loading; bare text nodes are hidden by the variant mixin's
+// transparent color instead.
+.#{mud.mud-class('btn-loading')} > * {
   visibility: hidden;
 }
 
 .#{mud.mud-class('btn-loading')}::after {
   content: '';
   position: absolute;
+  inset: 0;
+  margin: auto;
 
   width: 16px;
   height: 16px;
@@ -196,18 +202,20 @@ $button-sizes: (
   border: 2px solid currentColor;
   border-right-color: transparent;
 
-  transform: translate(-50%, -50%);
-  animation: spin 0.75s linear infinite;
+  // spinner-rotate is the shared keyframes from components/_spinner.scss —
+  // a namespaced name a consumer app's own "spin" keyframes can't retime.
+  animation: spinner-rotate 0.75s linear infinite;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@media (prefers-reduced-motion: reduce) {
+  .#{mud.mud-class('btn-loading')}::after {
+    animation-duration: 2s;
+  }
 }
 
 // The outline paints the "gap" between button and ring, so it must match the
 // page background in both themes.
-.#{mud.mud-class('btn')}:focus:not(:disabled) {
+.#{mud.mud-class('btn')}:focus-visible:not(:disabled):not([aria-disabled='true']) {
   outline: 2px solid var(--color-background-base-default, #ffffff);
   box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379DB));
 }

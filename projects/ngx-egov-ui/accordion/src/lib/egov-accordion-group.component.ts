@@ -32,11 +32,22 @@ export class EgovAccordionGroup extends CdkAccordion {
 
     if (key !== 'ArrowDown' && key !== 'ArrowUp' && key !== 'Home' && key !== 'End') return;
 
+    /**
+     * @description Items may be wrapped in intermediate elements, so a child-combinator
+     * query would silently miss them. Instead take every descendant trigger
+     * that (a) belongs to this group rather than a nested one and (b) is not
+     * inside an item's panel (an accordion nested in another's content).
+     * */
+    const host = this._el.nativeElement;
     const triggers = Array.from(
-      this._el.nativeElement.querySelectorAll<HTMLButtonElement>(
-        ':scope > egov-accordion > egov-accordion-header .accordion__trigger',
-      ),
-    );
+      host.querySelectorAll<HTMLButtonElement>('egov-accordion-header .accordion__trigger'),
+    ).filter((trigger) => {
+      if (trigger.closest('egov-accordion-group') !== host) return false;
+
+      const panel = trigger.closest('.accordion__body');
+
+      return !panel || !host.contains(panel);
+    });
     const index = triggers.indexOf(event.target as HTMLButtonElement);
 
     if (index < 0 || triggers.length === 0) return;

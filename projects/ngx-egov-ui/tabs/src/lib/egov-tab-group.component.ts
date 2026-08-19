@@ -153,19 +153,6 @@ export class EgovTabGroup {
 
   constructor() {
     afterNextRender(() => {
-      const tabs = this.tabs();
-      const current = this.selectedIndex();
-
-      if (!tabs[current] || tabs[current].disabled()) {
-        const firstEnabled = tabs.findIndex((tab) => !tab.disabled());
-
-        if (firstEnabled >= 0) {
-          this.selectedIndex.set(firstEnabled);
-        }
-      }
-    });
-
-    afterNextRender(() => {
       this.updateOverflow();
 
       if (typeof ResizeObserver === 'undefined') {
@@ -191,9 +178,27 @@ export class EgovTabGroup {
       const tabs = this.tabs();
       const index = this.selectedIndex();
 
+      /**
+       * The selected tab can disappear (an @if/@for removes it) or become
+       * disabled (programmatic selectedIndex writes bypass the interactive
+       * guard; a selected tab's [disabled] can flip). Either way the
+       * selection must land on an enabled tab, otherwise no panel is shown —
+       * or a disabled tab is presented as active — and every tab button
+       * keeps tabindex="-1", making the tablist unreachable by keyboard.
+       * */
+      if (tabs.length > 0 && (!tabs[index] || tabs[index].disabled())) {
+        const fallback = this._closestEnabled(tabs[index] ? index : tabs.length - 1);
+
+        if (fallback >= 0 && fallback !== index) {
+          this.selectedIndex.set(fallback);
+
+          return;
+        }
+      }
+
       tabs.forEach((tab, i) => {
-        tab.position.set(i);
-        tab.isActive.set(i === index);
+        tab._position.set(i);
+        tab._isActive.set(i === index);
       });
 
       const tab = tabs[index];
@@ -285,6 +290,20 @@ export class EgovTabGroup {
     }
 
     event.preventDefault();
+  }
+
+  private _closestEnabled(from: number): number {
+    const tabs = this.tabs();
+
+    for (let i = Math.min(from, tabs.length - 1); i >= 0; i--) {
+      if (!tabs[i].disabled()) return i;
+    }
+
+    for (let i = from + 1; i < tabs.length; i++) {
+      if (!tabs[i].disabled()) return i;
+    }
+
+    return -1;
   }
 
   private _nextEnabled(from: number, direction: 1 | -1): number {

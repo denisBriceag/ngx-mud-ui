@@ -43,10 +43,9 @@ export class EgovAvatar {
   readonly size = input<EgovAvatarSize>('medium');
 
   /**
-   * Accessible name for the avatar. When set, the host becomes `role="img"`
+   * @description Accessible name for the avatar. When set, the host becomes `role="img"`
    * with this label and the projected content (initials, icon or image) turns
-   * presentational for assistive tech. Without it the avatar is decorative:
-   * initials read as-is and images rely on their own `alt` text.
+   * presentational for assistive tech.
    */
   readonly label = input<string | undefined>(undefined);
 

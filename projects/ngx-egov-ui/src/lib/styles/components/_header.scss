@@ -93,8 +93,8 @@
   .mud-btn-menu {
     background-color: transparent;
     padding: var(--spacing-8) var(--spacing-12);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
+    border-radius: var(--border-radius-8);
+    font-size: var(--text-body-sm-font-size);
     cursor: pointer;
     border: none; 
     color: var(--gray-800);
@@ -419,11 +419,11 @@
   pointer-events: auto;
 }
 
-@media (prefers-color-scheme: dark) {
-  .platform-grid__item:focus-within {
-    outline-color: #66aaff;
-    box-shadow: 0 0 0 4px rgba(102, 170, 255, 0.3);
-  }
+// Theme switching runs on [data-theme] (see themes/_dark.scss), never on the
+// OS-level prefers-color-scheme query.
+[data-theme='dark'] .platform-grid__item:focus-within {
+  outline-color: var(--color-text-brand-default, #66aaff);
+  box-shadow: 0 0 0 4px rgba(102, 170, 255, 0.3);
 }
 
 .profile-dropdown {

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
 import { EgovAvatar } from '../../../avatar/src/public-api';
 import { EgovIconComponent, provideEgovIcons } from '../../../icons/src/public-api';
-import { person } from '../../../icons/src/lib/data';
+import { person } from '../../../icons/src/public-api';
 
 const ROW = 'display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:24px';
 const SIZES = ['extra-small', 'small', 'medium', 'large', 'extra-large'] as const;

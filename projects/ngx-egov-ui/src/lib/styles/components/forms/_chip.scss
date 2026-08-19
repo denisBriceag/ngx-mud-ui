@@ -59,13 +59,13 @@
 
   
   &:has(.chip__avatar) {
-    background-color: var(--color-white, #fff);
+    background-color: var(--white, #fff);
     border-color: var(--gray-300);
     padding: var(--spacing-8, 8px) var(--spacing-16, 16px) var(--spacing-8, 8px) var(--spacing-8, 8px);
 
     &.is-selected {
-      background-color: var(--color-gray-100, #f1f1f1);
-      color: var(--color-gray-900, #111827);
+      background-color: var(--gray-200, #f1f1f1);
+      color: var(--gray-900, #1E1E1E);
     }
   }
 
@@ -75,7 +75,7 @@
     justify-content: center;
     width: var(--spacing-20, 20px);
     height: var(--spacing-20, 20px);
-    border-radius: var(--radius-full, 9999px);
+    border-radius: var(--border-radius-full, 9999px);
     overflow: hidden;
     background-color: var(--gray-300);
     flex-shrink: 0;
@@ -116,7 +116,7 @@
     height: var(--spacing-16, 16px);
     min-width: var(--spacing-16, 16px);
     border-radius: var(--border-radius-full, 9999px);
-    background-color: var(--color-white, #fff);
+    background-color: var(--white, #fff);
     color: var(--gray-900);
     margin-left: 4px;
     line-height: 1;
@@ -124,7 +124,7 @@
 
   &.is-selected {
     .chip__badge {
-      background-color: var(--color-white, #fff);
+      background-color: var(--white, #fff);
       color: var(--black);
     }
   }
@@ -141,7 +141,7 @@
     justify-content: center;
     width: var(--spacing-20, 20px);
     height: var(--spacing-20, 20px);
-    border-radius: var(--radius-full, 9999px);
+    border-radius: var(--border-radius-full, 9999px);
     background-color: transparent;
     border: none;
     color: var(--gray-600);

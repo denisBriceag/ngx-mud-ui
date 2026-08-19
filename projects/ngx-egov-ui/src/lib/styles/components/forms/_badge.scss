@@ -9,7 +9,7 @@
   font-weight: 500;
   font-size: var(--text-body-sm-500-font-size);
   line-height: 1;
-  border-radius: var(--radius-full, 9999px);
+  border-radius: var(--border-radius-full, 9999px);
   white-space: nowrap;
   padding: var(--spacing-4, 4px) var(--spacing-8, 8px);
 
@@ -55,7 +55,7 @@
 
     &::after {
       content: '';
-      border-radius: var(--radius-full, 9999px);
+      border-radius: var(--border-radius-full, 9999px);
       background-color: currentColor;
     }
 
@@ -130,10 +130,6 @@ $badge-colors: (
     color: var(--color-text-base-default-on-color),
   ),
   danger: (
-    bg: var(--color-background-danger-default),
-    color: var(--color-text-base-inverse-on-color),
-  ),
-  notification: (
     bg: var(--color-background-danger-default),
     color: var(--color-text-base-inverse-on-color),
   ),

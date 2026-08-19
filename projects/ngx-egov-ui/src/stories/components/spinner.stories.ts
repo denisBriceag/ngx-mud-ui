@@ -39,11 +39,15 @@ export default meta;
 type Story = StoryObj<EgovSpinner>;
 
 export const Playground: Story = {
-  render: (args) => ({
-    props: args,
+  // `ariaLabel` is renamed before it reaches the template props — Storybook's
+  // Angular wrapper direct-assigns props that don't match an input TEMPLATE
+  // name (the alias is "aria-label") onto the component instance, which would
+  // overwrite the input signal ("ctx.ariaLabel is not a function").
+  render: ({ ariaLabel, ...args }) => ({
+    props: { ...args, ariaLabelText: ariaLabel },
     template: `
       <div style="${ROW}">
-        <egov-spinner [size]="size" [variant]="variant" [aria-label]="ariaLabel" />
+        <egov-spinner [size]="size" [variant]="variant" [aria-label]="ariaLabelText" />
       </div>
     `,
   }),

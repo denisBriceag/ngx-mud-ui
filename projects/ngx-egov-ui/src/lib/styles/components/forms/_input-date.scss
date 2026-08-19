@@ -13,7 +13,7 @@
     width: 100%;
     padding: var(--spacing-12) var(--spacing-16);
     border: 1.5px solid var(--color-border-base-default);
-    border-radius: var(--radius-md);
+    border-radius: var(--border-radius-8);
     font-size: var(--font-size-16);
     color: var(--color-text-base-default);
     background-color: var(--color-background-base-default);
@@ -40,8 +40,8 @@
 
     
     &:disabled {
-      background-color: var(--color-background-base-disabled);
-      border-color: var(--color-border-base-disabled);
+      background-color: var(--color-background-disabled-default);
+      border-color: var(--color-border-disabled-default);
       color: var(--color-text-base-disabled);
       cursor: not-allowed;
     }

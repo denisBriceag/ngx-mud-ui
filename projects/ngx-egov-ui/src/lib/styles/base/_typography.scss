@@ -4,7 +4,7 @@ html { font-size: 100%; }
 
 body {
   @include typ.apply-text-style('body-md');
-  color: var(--color-text-primary);
+  color: var(--color-text-base-default);
   margin: 0;
 }
 
@@ -29,7 +29,7 @@ small { @include typ.apply-text-style('caption-sm'); }
 strong { font-weight: 600; }
 
 a {
-  color: var(--color-primary);
+  color: var(--color-link-primary-default);
   text-decoration: none;
   &:hover,
   &:focus { text-decoration: underline; }
@@ -45,5 +45,5 @@ div.descriptor {
     font-family: var(--font-family-descriptor);
     font-size: var(--text-font-size-16);
     line-height: var(--text-line-height-24);
-    letter-spacing: -1%;
+    letter-spacing: -0.01em;
 }

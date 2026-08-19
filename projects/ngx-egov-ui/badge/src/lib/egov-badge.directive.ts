@@ -1,4 +1,5 @@
-import { computed, Directive, effect, ElementRef, inject, input, Renderer2 } from '@angular/core';
+import { computed, Directive, effect, ElementRef, inject, input, PLATFORM_ID, Renderer2 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 export type EgovBadgeSize = 'extra-small' | 'small' | 'medium' | 'large' | 'extra-large';
 export type EgovBadgeColor = 'dark' | 'light' | 'neutral' | 'accent' | 'danger';
@@ -47,7 +48,21 @@ export class EgovBadge {
   readonly badgeColor = input<EgovBadgeColor>('neutral');
   readonly badgePosition = input<EgovBadgePosition>('above after');
   readonly badgeMax = input<number | null, number | string | null | undefined>(null, {
-    transform: (value) => (value == null || value === '' ? null : Number(value)),
+    transform: (value) => {
+      if (value == null || value === '') return null;
+
+      const parsed = Number(value);
+
+      if (Number.isNaN(parsed)) {
+        if (isDevMode()) {
+          console.warn(`egovBadge: badgeMax "${value}" is not a number; the badge count will not be truncated.`);
+        }
+
+        return null;
+      }
+
+      return parsed;
+    },
   });
   readonly badgeVariant = input<EgovBadgeVariant>('count');
   readonly badgeDescription = input<string | null>(null);
@@ -102,6 +117,13 @@ export class EgovBadge {
   });
 
   constructor() {
+    /**
+     * @description The badge span is created imperatively, so a server-rendered copy
+     * could never be claimed during hydration - it would end up duplicated
+     * next to the client-created one. Browser-only keeps SSR markup clean.
+     * */
+    if (!isPlatformBrowser(inject(PLATFORM_ID))) return;
+
     effect(() => {
       const content = this._content();
 

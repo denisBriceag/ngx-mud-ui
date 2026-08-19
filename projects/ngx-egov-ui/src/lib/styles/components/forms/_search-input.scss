@@ -8,7 +8,7 @@
   width: var(--w-100, 100%);
 
   &.rectangular {
-    border-radius: var(--radius-md, 8px);
+    border-radius: var(--border-radius-8, 8px);
   }
 
   &.circular {
@@ -136,15 +136,5 @@
     svg {
       transform: rotate(180deg);
     }
-  }
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
   }
 }

@@ -73,7 +73,7 @@
 
     &:hover,
     &.is-hover { 
-      color: var(--brand-600);
+      color: var(--blue-sky-600);
       text-decoration: underline;
     }
 
@@ -133,8 +133,8 @@
 
   .breadcrumbs-demo {
     padding: var(--spacing-16, 16px);
-    border-radius: var(--radius-md, 8px);
-    background: var(--gray-50);
+    border-radius: var(--border-radius-8, 8px);
+    background: var(--gray-100);
   }
 
   h4 {

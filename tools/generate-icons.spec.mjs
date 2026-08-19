@@ -57,6 +57,19 @@ describe('generateIcons', () => {
     expect(src).not.toContain('#121212');
   });
 
+  it('fails loudly when two icon names alias to the same export identifier', async () => {
+    const src = join(OUT, 'collision-src');
+    const svg = '<svg viewBox="0 0 24 24" fill="none"><path d="M0 0h24v24H0z" fill="#121212"/></svg>';
+
+    await fs.mkdir(src, { recursive: true });
+    await fs.writeFile(join(src, 'delete.svg'), svg);
+    await fs.writeFile(join(src, 'delete-icon.svg'), svg);
+
+    await expect(generateIcons({ sourceDir: src, outDir: join(OUT, 'collision-out') })).rejects.toThrow(
+      /deleteIcon/,
+    );
+  });
+
   it('emits a barrel and a name union', async () => {
     const barrel = await fs.readFile(join(OUT, 'data', 'index.ts'), 'utf8');
     expect(barrel).toContain("export * from './arrow-left'");

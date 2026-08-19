@@ -12,13 +12,13 @@
   fill: currentColor;
   width: var(--icon-size-default);
   height: var(--icon-size-default);
-}
 
-@each $name, $size in $icon-sizes {
-  @if $name != default {
-    .#{$name} {
-      width: var(--icon-size-#{$name});
-      height: var(--icon-size-#{$name});
+  @each $name, $size in $icon-sizes {
+    @if $name != default {
+      &.#{$name} {
+        width: var(--icon-size-#{$name});
+        height: var(--icon-size-#{$name});
+      }
     }
   }
 }

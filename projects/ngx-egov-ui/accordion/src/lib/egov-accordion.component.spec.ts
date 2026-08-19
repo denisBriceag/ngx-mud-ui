@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { EgovAccordionGroup } from './egov-accordion-group.component';
 import { EgovAccordion } from './egov-accordion.component';
 import { EgovAccordionHeader } from './egov-accordion-header.component';
-import { EgovAccordionDescription, EgovAccordionTitle } from './egov-accordion-content.components';
+import { EgovAccordionDescription, EgovAccordionTitle } from './egov-accordion-content.component';
 
 @Component({
   imports: [EgovAccordion, EgovAccordionHeader, EgovAccordionTitle, EgovAccordionDescription],
@@ -154,6 +154,61 @@ describe('EgovAccordion', () => {
     expect(host.events).toContain('afterCollapse');
   });
 
+  describe('after-events when a declared transition never runs', () => {
+    /** jsdom reports no transitions; pretend the stylesheet declares the real 225ms one. */
+    function declareTransition() {
+      const original = window.getComputedStyle.bind(window);
+
+      vi.spyOn(window, 'getComputedStyle').mockImplementation((el: Element, pseudo?: string | null) => {
+        const style = original(el, pseudo);
+
+        if ((el as HTMLElement).classList?.contains('accordion__body')) {
+          Object.defineProperty(style, 'transitionDuration', { value: '0.225s', configurable: true });
+          Object.defineProperty(style, 'transitionDelay', { value: '0s', configurable: true });
+        }
+
+        return style;
+      });
+    }
+
+    it('emits afterExpand via the fallback timer when transitionend never fires', async () => {
+      declareTransition();
+      const { fixture, host, trigger } = await render();
+
+      trigger.click();
+      await fixture.whenStable();
+
+      // No transition runs in jsdom (as inside display:none subtrees) — the
+      // event must still arrive once the declared duration has elapsed.
+      expect(host.events).not.toContain('afterExpand');
+
+      await new Promise((resolve) => setTimeout(resolve, 350));
+
+      expect(host.events).toContain('afterExpand');
+    });
+
+    it('does not double-emit when transitionend fires before the fallback timer', async () => {
+      declareTransition();
+      const { fixture, host, trigger, item } = await render();
+
+      trigger.click();
+      await fixture.whenStable();
+
+      const body = item.querySelector('.accordion__body') as HTMLElement;
+      const event = new Event('transitionend') as TransitionEvent;
+
+      Object.defineProperty(event, 'propertyName', { value: 'grid-template-rows' });
+      body.dispatchEvent(event);
+      await fixture.whenStable();
+
+      expect(host.events.filter((e) => e === 'afterExpand')).toHaveLength(1);
+
+      await new Promise((resolve) => setTimeout(resolve, 350));
+
+      expect(host.events.filter((e) => e === 'afterExpand')).toHaveLength(1);
+    });
+  });
+
   it('honors the expanded input', async () => {
     const { fixture, host, trigger } = await render();
 
@@ -271,6 +326,46 @@ describe('EgovAccordionGroup', () => {
     expect(document.activeElement).toBe(triggers[2]);
 
     triggers[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+    expect(document.activeElement).toBe(triggers[1]);
+  });
+
+  it('keeps arrow-key navigation working when items are wrapped in intermediate elements', async () => {
+    @Component({
+      imports: [EgovAccordionGroup, EgovAccordion, EgovAccordionHeader, EgovAccordionTitle],
+      template: `
+        <egov-accordion-group>
+          <div class="card">
+            <egov-accordion>
+              <egov-accordion-header>
+                <egov-accordion-title>First</egov-accordion-title>
+              </egov-accordion-header>
+              one
+            </egov-accordion>
+          </div>
+          <div class="card">
+            <egov-accordion>
+              <egov-accordion-header>
+                <egov-accordion-title>Second</egov-accordion-title>
+              </egov-accordion-header>
+              two
+            </egov-accordion>
+          </div>
+        </egov-accordion-group>
+      `,
+    })
+    class WrappedHost {}
+
+    const fixture = TestBed.createComponent(WrappedHost);
+
+    await fixture.whenStable();
+
+    const triggers = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('.accordion__trigger'),
+    );
+
+    triggers[0].focus();
+    triggers[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+
     expect(document.activeElement).toBe(triggers[1]);
   });
 

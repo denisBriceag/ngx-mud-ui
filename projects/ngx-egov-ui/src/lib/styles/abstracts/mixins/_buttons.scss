@@ -8,45 +8,32 @@
     position: relative;
     box-sizing: border-box;
 
-    &:hover:not(:disabled) {
+    &:hover:not(:disabled):not([aria-disabled='true']) {
       background-color: #{$hover-bg};
       color: #{$hover-color};
     }
 
-    &:active:not(:disabled) {
+    &:active:not(:disabled):not([aria-disabled='true']) {
       background-color: #{$active-bg};
     }
 
     @if $focus-ring {
-      &:focus:not(:disabled) {
+      &:focus-visible:not(:disabled):not([aria-disabled='true']) {
         outline: 2px solid var(--color-background-base-default, #ffffff);
         box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379DB ));
       }
     }
 
+    // Spinner geometry and animation come from the shared .mud-btn-loading
+    // rules (base/_buttons.scss); the variant only supplies the color, since
+    // the transparent text trick below makes currentColor unusable.
     &.#{mud.mud-class('btn-loading')} {
-      position: relative;
-      pointer-events: none;
       color: transparent !important;
 
       &::after {
-        content: '';
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        border: 2px solid #{$spinner-color};
-        border-top-color: transparent;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
+        border-color: #{$spinner-color};
+        border-right-color: transparent;
       }
-    }
-
-    &:disabled {
-      background-color: var(--color-background-disabled-default, #F1F1F1);
-      color: var(--color-text-disabled-on-disabled, #B2B2B2);
-      border-color: var(--color-background-disabled-default, #F1F1F1);
-      cursor: not-allowed;
-      opacity: 0.6;
     }
   }
 }

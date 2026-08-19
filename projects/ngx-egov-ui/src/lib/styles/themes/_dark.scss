@@ -129,6 +129,25 @@
   --color-border-danger-default: var(--red-500);
 }
 
+// Input surface tokens (abstracts/_tokens.scss). Each flip follows the shade
+// mapping the semantic tokens above already use for the same primitive
+// (e.g. gray-250 borders -> gray-600, gray-100 surfaces -> gray-800).
+[data-theme='dark'] {
+  --color-input-background: var(--gray-900);
+  --color-input-text: var(--white);
+  --color-input-placeholder: var(--gray-400);
+  --color-input-border: var(--gray-600);
+  --color-input-border-hover: var(--gray-250);
+  --color-input-focus-ring: var(--blue-sky-300);
+  --color-input-focus-border: var(--blue-sky-500);
+  --color-input-disabled-background: var(--gray-700);
+  --color-input-disabled-border: var(--gray-600);
+  --color-input-disabled-text: var(--gray-400);
+  --color-input-readonly-background: var(--gray-800);
+  --color-input-readonly-border: var(--gray-700);
+  --color-input-readonly-text: var(--gray-200);
+}
+
 [data-theme='dark'] {
   // Tag outlined text needs lighter shades on dark surfaces (WCAG 4.5:1
   // against --gray-900: green-500 = 5.87, red-400 = 5.98; red-500 fails at 4.44).

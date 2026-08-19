@@ -34,6 +34,25 @@ class Host {
   lastChange?: EgovTabChangeEvent;
 }
 
+@Component({
+  imports: [EgovTabGroup, EgovTab],
+  template: `
+    <egov-tab-group [(selectedIndex)]="selected" (selectedTabChange)="lastChange = $event">
+      <egov-tab label="One">Content 1</egov-tab>
+      <egov-tab label="Two" [disabled]="twoDisabled()">Content 2</egov-tab>
+      @if (showThird()) {
+        <egov-tab label="Three">Content 3</egov-tab>
+      }
+    </egov-tab-group>
+  `,
+})
+class DynamicHost {
+  selected = 0;
+  readonly showThird = signal(true);
+  readonly twoDisabled = signal(false);
+  lastChange?: EgovTabChangeEvent;
+}
+
 async function render() {
   const fixture = TestBed.createComponent(Host);
 
@@ -168,6 +187,53 @@ describe('EgovTabGroup', () => {
     expect(panels()[2].hasAttribute('hidden')).toBe(false);
   });
 
+  it('ArrowLeft moves focus backwards, wrapping and skipping disabled tabs', async () => {
+    const { fixture, host, tabs } = await render();
+
+    host.twoDisabled.set(true);
+    await fixture.whenStable();
+
+    tabs()[0].dispatchEvent(new FocusEvent('focus'));
+    tabs()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+    await fixture.whenStable();
+
+    expect(document.activeElement).toBe(tabs()[2]);
+
+    tabs()[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+    await fixture.whenStable();
+
+    expect(document.activeElement).toBe(tabs()[0]);
+  });
+
+  it('Home and End move focus to the first / last enabled tab', async () => {
+    const { fixture, tabs } = await render();
+
+    tabs()[1].dispatchEvent(new FocusEvent('focus'));
+    tabs()[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+    await fixture.whenStable();
+
+    expect(document.activeElement).toBe(tabs()[2]);
+
+    tabs()[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+    await fixture.whenStable();
+
+    expect(document.activeElement).toBe(tabs()[0]);
+  });
+
+  it('Space activates the focused tab', async () => {
+    const { fixture, host, tabs, panels } = await render();
+
+    tabs()[0].dispatchEvent(new FocusEvent('focus'));
+    tabs()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    await fixture.whenStable();
+
+    tabs()[1].dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+    await fixture.whenStable();
+
+    expect(host.selected).toBe(1);
+    expect(panels()[1].hasAttribute('hidden')).toBe(false);
+  });
+
   it('applies the stretch modifier class', async () => {
     const { fixture, host } = await render();
 
@@ -241,6 +307,99 @@ describe('EgovTabGroup', () => {
     await fixture.whenStable();
 
     expect(host.selected).toBe(0);
+  });
+
+  describe('disabled tabs and selection', () => {
+    it('does not activate a disabled tab on programmatic selectedIndex writes', async () => {
+      const { fixture, host, group, tabs } = await render();
+
+      host.twoDisabled.set(true);
+      await fixture.whenStable();
+
+      group.selectedIndex.set(1);
+      await fixture.whenStable();
+
+      expect(group.selectedIndex()).toBe(0);
+      expect(tabs()[1].getAttribute('aria-selected')).toBe('false');
+      expect(tabs()[0].getAttribute('aria-selected')).toBe('true');
+    });
+
+    it('moves selection to the nearest enabled tab when the selected tab becomes disabled', async () => {
+      const { fixture, host, tabs, panels } = await render();
+
+      tabs()[1].click();
+      await fixture.whenStable();
+
+      host.twoDisabled.set(true);
+      await fixture.whenStable();
+
+      expect(tabs()[1].getAttribute('aria-selected')).toBe('false');
+      expect(tabs()[0].getAttribute('aria-selected')).toBe('true');
+      expect(panels()[0].hasAttribute('hidden')).toBe(false);
+    });
+
+    it('does not emit selectedTabChange when correcting an initially disabled selection', async () => {
+      const fixture = TestBed.createComponent(Host);
+
+      fixture.componentInstance.twoDisabled.set(true);
+      fixture.componentInstance.selected = 1;
+      await fixture.whenStable();
+
+      const el: HTMLElement = fixture.nativeElement;
+      const tabs = Array.from(el.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+
+      expect(fixture.componentInstance.lastChange).toBeUndefined();
+      expect(tabs[0].getAttribute('aria-selected')).toBe('true');
+    });
+  });
+
+  describe('removing the selected tab', () => {
+    async function renderDynamic() {
+      const fixture = TestBed.createComponent(DynamicHost);
+
+      await fixture.whenStable();
+      const el: HTMLElement = fixture.nativeElement;
+
+      return {
+        fixture,
+        host: fixture.componentInstance,
+        tabs: () => Array.from(el.querySelectorAll<HTMLButtonElement>('[role="tab"]')),
+        panels: () => Array.from(el.querySelectorAll<HTMLElement>('[role="tabpanel"]')),
+      };
+    }
+
+    it('falls back to the nearest remaining tab so a panel stays active and focusable', async () => {
+      const { fixture, host, tabs, panels } = await renderDynamic();
+
+      tabs()[2].click();
+      await fixture.whenStable();
+
+      expect(host.selected).toBe(2);
+
+      host.showThird.set(false);
+      await fixture.whenStable();
+
+      expect(host.selected).toBe(1);
+      expect(tabs()[1].getAttribute('aria-selected')).toBe('true');
+      expect(tabs()[1].getAttribute('tabindex')).toBe('0');
+      expect(panels()[1].hasAttribute('hidden')).toBe(false);
+    });
+
+    it('skips a disabled tab when falling back', async () => {
+      const { fixture, host, tabs } = await renderDynamic();
+
+      host.twoDisabled.set(true);
+      await fixture.whenStable();
+
+      tabs()[2].click();
+      await fixture.whenStable();
+
+      host.showThird.set(false);
+      await fixture.whenStable();
+
+      expect(host.selected).toBe(0);
+      expect(tabs()[0].getAttribute('aria-selected')).toBe('true');
+    });
   });
 
   it('focusTab() does not touch the DOM on non-browser platforms', async () => {

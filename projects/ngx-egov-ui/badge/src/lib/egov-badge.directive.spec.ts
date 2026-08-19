@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, PLATFORM_ID, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { EgovBadge } from './egov-badge.directive';
 import type { EgovBadgeColor, EgovBadgePosition, EgovBadgeSize, EgovBadgeVariant } from './egov-badge.directive';
@@ -26,7 +26,7 @@ class Host {
   readonly size = signal<EgovBadgeSize>('medium');
   readonly color = signal<EgovBadgeColor>('neutral');
   readonly position = signal<EgovBadgePosition>('above after');
-  readonly max = signal<number | null>(null);
+  readonly max = signal<number | string | null>(null);
   readonly variant = signal<EgovBadgeVariant>('count');
   readonly description = signal<string | null>(null);
 }
@@ -133,6 +133,23 @@ describe('EgovBadge', () => {
     host.content.set('New');
     await fixture.whenStable();
     expect(badge()!.textContent).toBe('New');
+  });
+
+  it('warns in dev mode and ignores a non-numeric badgeMax', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    try {
+      const { fixture, host, badge } = await render();
+
+      host.content.set(1204);
+      host.max.set('ten');
+      await fixture.whenStable();
+
+      expect(badge()!.textContent).toBe('1204');
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('badgeMax'));
+    } finally {
+      warn.mockRestore();
+    }
   });
 
   it('removes the badge when content is null or empty and restores it after', async () => {
@@ -254,5 +271,15 @@ describe('EgovBadge', () => {
     await fixture.whenStable();
 
     expect(el.getAttribute('aria-describedby')).toBe('existing-hint');
+  });
+
+  it('does not create the badge span on non-browser platforms', async () => {
+    TestBed.configureTestingModule({
+      providers: [{ provide: PLATFORM_ID, useValue: 'server' }],
+    });
+
+    const { badge } = await render();
+
+    expect(badge()).toBeNull();
   });
 });

@@ -14,9 +14,6 @@ import { EgovTabLabel } from './egov-tab-label.directive';
 let uniqueId = 0;
 
 /**
- * A single tab. Its projected content is captured as a lazy template and
- * rendered by the parent `egov-tab-group` into the active panel.
- *
  * ```html
  * <egov-tab label="Overview">…content…</egov-tab>
  * ```
@@ -36,8 +33,16 @@ export class EgovTab {
   readonly content = viewChild.required(TemplateRef);
   readonly templateLabel = contentChild(EgovTabLabel);
 
-  readonly isActive = signal(false);
-  readonly position = signal(0);
+  /** @docs-private Written by EgovTabGroup only. */
+  readonly _isActive = signal(false);
+  /** @docs-private Written by EgovTabGroup only. */
+  readonly _position = signal(0);
+
+  /** Whether this tab is the group's selected tab. */
+  readonly isActive = this._isActive.asReadonly();
+
+  /** This tab's index within the group. */
+  readonly position = this._position.asReadonly();
 
   private readonly _uid = `egov-tab-${uniqueId++}`;
 

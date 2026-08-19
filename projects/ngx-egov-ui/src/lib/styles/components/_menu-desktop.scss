@@ -36,7 +36,7 @@ $-nav-menu-shadow:
 
   &__item {
     position: relative;
-    border-radius: var(--radius-md);
+    border-radius: var(--border-radius-8);
     font-size: var(--text-body-md-500-font-size);
     color: var(--gray-800);
     transition:

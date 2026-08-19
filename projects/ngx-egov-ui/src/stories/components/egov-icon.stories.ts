@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
 import { EgovIconComponent, provideEgovIcons } from '../../../icons/src/public-api';
-import type { EgovIcon } from '../../../icons/src/lib/types';
+import type { EgovIcon } from '../../../icons/src/public-api';
+// Deep import on purpose: the data barrel contains only icon objects, so
+// Object.values() enumerates icons without sweeping in the component/provider
+// exports of the public API.
 import * as iconData from '../../../icons/src/lib/data';
 
 const ALL_ICONS = Object.values(iconData) as EgovIcon[];
@@ -35,11 +38,17 @@ const meta: Meta<EgovIconComponent> = {
     scale: 24,
     ariaLabel: '',
   },
-  render: (args) => ({
-    props: args,
+  // The `ariaLabel` arg is renamed to `ariaLabelText` before it reaches the
+  // template props: Storybook's Angular wrapper assigns any prop whose key is
+  // not an input TEMPLATE name (here the alias "aria-label") directly onto
+  // the component instance, and `instance.ariaLabel = '...'` would overwrite
+  // the input signal and crash the host bindings ("ctx.ariaLabel is not a
+  // function").
+  render: ({ ariaLabel, ...args }) => ({
+    props: { ...args, ariaLabelText: ariaLabel },
     template: `
       <div style="display:inline-flex;align-items:center;gap:1rem;padding:1.5rem;color:var(--color-icon-base-default, #121212);font-family:monospace">
-        <egov-icon [name]="name" [variant]="variant" [scale]="scale" [aria-label]="ariaLabel" />
+        <egov-icon [name]="name" [variant]="variant" [scale]="scale" [aria-label]="ariaLabelText" />
         <span>&lt;egov-icon name="{{ name }}" variant="{{ variant }}" scale="{{ scale }}" /&gt;</span>
       </div>
     `,

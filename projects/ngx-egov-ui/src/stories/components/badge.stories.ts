@@ -17,19 +17,33 @@ const meta: Meta<EgovBadge> = {
     badgeSize: {
       control: 'inline-radio',
       options: ['extra-small', 'small', 'medium', 'large', 'extra-large'],
-      description: 'extra-small is dot-only: a count at that size degrades to a dot (dev-mode warning)',
+      description:
+        'extra-small is dot-only: a count at that size degrades to a dot (dev-mode warning)',
     },
-    badgeColor: { control: 'inline-radio', options: ['dark', 'light', 'neutral', 'accent', 'danger'] },
+    badgeColor: {
+      control: 'inline-radio',
+      options: ['dark', 'light', 'neutral', 'accent', 'danger'],
+    },
     badgePosition: {
       control: 'select',
-      options: ['above after', 'above before', 'below before', 'below after', 'before', 'after', 'above', 'below'],
+      options: [
+        'above after',
+        'above before',
+        'below before',
+        'below after',
+        'before',
+        'after',
+        'above',
+        'below',
+      ],
       description: 'Corner overlay position; single keywords default the missing axis',
     },
     badgeMax: { control: 'number', description: 'Numeric content above this renders as "<max>+"' },
     badgeVariant: { control: 'inline-radio', options: ['count', 'dot'] },
     badgeDescription: {
       control: 'text',
-      description: 'Screen-reader description wired via aria-describedby; hides the visual count from assistive tech',
+      description:
+        'Screen-reader description wired via aria-describedby; hides the visual count from assistive tech',
     },
   },
   args: {
@@ -48,6 +62,10 @@ export default meta;
 type Story = StoryObj<EgovBadge>;
 
 export const Playground: Story = {
+  args: {
+    badgeSize: 'small',
+  },
+
   render: (args) => ({
     props: args,
     template: `

@@ -1,6 +1,0 @@
-@function breakpoint-infix($name, $breakpoints) {
-  @if $name == null or $name == "" {
-    @return "";
-  }
-  @return "-#{$name}";
-}

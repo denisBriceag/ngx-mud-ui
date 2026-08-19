@@ -33,6 +33,15 @@ class Host {
   dismissals = 0;
 }
 
+@Component({
+  imports: [EgovTooltip],
+  template: `
+    <input egovTooltip="Tip" [tooltipShowDelay]="0" aria-describedby="external-hint" />
+    <span id="external-hint">Format: DD.MM.YYYY</span>
+  `,
+})
+class DescribedHost {}
+
 function tick(ms = 0): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -60,7 +69,7 @@ async function renderWithDirective() {
   return { ...rendered, directive };
 }
 
-async function dispatch(fixture: ComponentFixture<Host>, el: HTMLElement, ...events: Event[]) {
+async function dispatch(fixture: ComponentFixture<unknown>, el: HTMLElement, ...events: Event[]) {
   for (const event of events) el.dispatchEvent(event);
 
   await tick();
@@ -229,6 +238,22 @@ describe('EgovTooltip', () => {
     expect(tooltip()).toBeNull();
   });
 
+  it('consumes Escape so listeners on enclosing surfaces do not also react', async () => {
+    const outer = vi.fn();
+
+    document.addEventListener('keydown', outer);
+
+    const { fixture, trigger, tooltip } = await render();
+
+    await dispatch(fixture, trigger, focus());
+    await dispatch(fixture, document.body, new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+
+    expect(tooltip()).toBeNull();
+    expect(outer).not.toHaveBeenCalled();
+
+    document.removeEventListener('keydown', outer);
+  });
+
   describe('closeable / persistent', () => {
     it('renders a close button and stays open on mouseleave and blur', async () => {
       const { fixture, host, trigger, tooltip } = await render();
@@ -287,6 +312,88 @@ describe('EgovTooltip', () => {
 
       expect(tooltip()).toBeNull();
       expect(host.dismissals).toBe(1);
+    });
+  });
+
+  it('appends to a pre-existing aria-describedby and restores it on hide', async () => {
+    const fixture = TestBed.createComponent(DescribedHost);
+
+    await fixture.whenStable();
+    const trigger = (fixture.nativeElement as HTMLElement).querySelector('input')!;
+
+    await dispatch(fixture, trigger, focus());
+
+    const tokens = trigger.getAttribute('aria-describedby')!.split(/\s+/);
+
+    expect(tokens).toContain('external-hint');
+    expect(tokens).toHaveLength(2);
+
+    await dispatch(fixture, trigger, blur());
+
+    expect(trigger.getAttribute('aria-describedby')).toBe('external-hint');
+  });
+
+  describe('input changes while open', () => {
+    it('updates the visible message of an open tooltip', async () => {
+      const { fixture, host, trigger, tooltip } = await render();
+
+      await dispatch(fixture, trigger, mouseenter());
+
+      expect(tooltip()!.textContent).toContain('Tooltip message');
+
+      host.message.set('Copied!');
+      await fixture.whenStable();
+
+      expect(tooltip()!.textContent).toContain('Copied!');
+    });
+
+    it('updates maxWidth and closeable of an open tooltip', async () => {
+      const { fixture, host, trigger, tooltip } = await render();
+
+      await dispatch(fixture, trigger, mouseenter());
+
+      host.maxWidth.set('320px');
+      host.closeable.set(true);
+      await fixture.whenStable();
+
+      expect(tooltip()!.style.getPropertyValue('--egov-tooltip-max-width')).toBe('320px');
+      expect(tooltip()!.querySelector('button[aria-label="Close"]')).not.toBeNull();
+    });
+  });
+
+  describe('closed by scrolling (CDK close scroll strategy)', () => {
+    async function scrollPage(fixture: ComponentFixture<Host>) {
+      document.dispatchEvent(new Event('scroll'));
+      await tick(30);
+      await fixture.whenStable();
+    }
+
+    it('cleans up aria-describedby and the document keydown listener', async () => {
+      const removed = vi.spyOn(document, 'removeEventListener');
+      const { fixture, trigger, tooltip } = await render();
+
+      await dispatch(fixture, trigger, new MouseEvent('click', { bubbles: true }));
+
+      expect(tooltip()).not.toBeNull();
+
+      await scrollPage(fixture);
+
+      expect(tooltip()).toBeNull();
+      expect(trigger.getAttribute('aria-describedby')).toBeNull();
+      expect(removed.mock.calls.some(([type]) => type === 'keydown')).toBe(true);
+    });
+
+    it('can be pinned open again by click afterwards', async () => {
+      const { fixture, trigger, tooltip } = await render();
+
+      await dispatch(fixture, trigger, new MouseEvent('click', { bubbles: true }));
+      await scrollPage(fixture);
+
+      expect(tooltip()).toBeNull();
+
+      await dispatch(fixture, trigger, new MouseEvent('click', { bubbles: true }));
+
+      expect(tooltip()).not.toBeNull();
     });
   });
 

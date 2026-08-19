@@ -1,10 +1,25 @@
 {
   "name": "ngx-egov-ui",
   "version": "0.0.1",
+  "description": "Angular component library implementing the eGov Moldova design system",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/denisBriceag/ngx-egov-ui.git"
+  },
+  "exports": {
+    "./styles/*": {
+      "sass": "./styles/*",
+      "default": "./styles/*"
+    },
+    "./assets/*": {
+      "default": "./assets/*"
+    }
+  },
   "peerDependencies": {
     "@angular/cdk": "^22.1.0",
     "@angular/common": "^22.1.0",
-    "@angular/core": "^22.1.0"
+    "@angular/core": "^22.1.0",
+    "@angular/platform-browser": "^22.1.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

@@ -1,7 +1,7 @@
 
 
 .link {
-  --_link-color: var(--color-link-primary-hover);
+  --_link-color: var(--color-link-primary-default);
   --_link-hover: var(--color-link-primary-hover);
   --_link-visited: var(--color-link-primary-visited);
   --_link-underline: underline;
@@ -80,12 +80,6 @@
   --_link-color: var(--color-link-strict-default);
   --_link-hover: var(--color-link-strict-hover);
   --_link-visited: var(--color-link-strict-default);
-}
-
-.link-white {
-  --_link-color: var(--white);
-  --_link-hover: var(--white);
-  --_link-visited: var(--white);
 }
 
 .link-target-pointer {

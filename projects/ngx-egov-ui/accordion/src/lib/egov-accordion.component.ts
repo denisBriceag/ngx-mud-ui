@@ -6,6 +6,7 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   Injector,
   input,
@@ -75,10 +76,9 @@ export class EgovAccordion extends CdkAccordionItem {
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly _body = viewChild.required<ElementRef<HTMLElement>>('body');
 
-  // The after* events describe animations, so an initially-expanded panel
-  // (rendered without animating, like mat-expansion-panel) must not emit.
   private _viewReady = false;
   private _pendingAfterEvent: 'expand' | 'collapse' | null = null;
+  private _fallbackTimer: ReturnType<typeof setTimeout> | null = null;
 
   override get expanded(): boolean {
     return super.expanded;
@@ -104,6 +104,7 @@ export class EgovAccordion extends CdkAccordionItem {
 
   constructor() {
     super();
+    inject(DestroyRef).onDestroy(() => this._clearFallbackTimer());
     afterNextRender(() => {
       this._viewReady = true;
     });
@@ -119,28 +120,52 @@ export class EgovAccordion extends CdkAccordionItem {
     if (!this._isBrowser || !this._viewReady) return;
 
     this._pendingAfterEvent = expanded ? 'expand' : 'collapse';
+    this._clearFallbackTimer();
 
-    // When no transition will run (prefers-reduced-motion, or styles not
-    // loaded), transitionend never fires — emit right after the render.
+    /**
+     * When no transition will run (prefers-reduced-motion, or styles not
+     * loaded), transitionend never fires — emit right after the render.
+     * */
     afterNextRender(
       () => {
         if (!this._pendingAfterEvent) return;
 
-        const duration = getComputedStyle(this._body().nativeElement).transitionDuration || '0s';
-        const animates = duration.split(',').some((part) => parseFloat(part) > 0);
+        const style = getComputedStyle(this._body().nativeElement);
+        const durations = (style.transitionDuration || '0s').split(',');
+        const delays = (style.transitionDelay || '0s').split(',');
+        const total = durations.reduce(
+          (max, part, i) =>
+            Math.max(max, (parseFloat(part) || 0) + (parseFloat(delays[i] ?? delays[0]) || 0)),
+          0,
+        );
 
-        if (!animates) this._flushAfterEvent();
+        if (total <= 0) {
+          this._flushAfterEvent();
+
+          return;
+        }
+
+        this._fallbackTimer = setTimeout(() => this._flushAfterEvent(), total * 1000 + 50);
       },
       { injector: this._injector },
     );
   }
 
   private _flushAfterEvent(): void {
+    this._clearFallbackTimer();
+
     const pending = this._pendingAfterEvent;
 
     this._pendingAfterEvent = null;
 
     if (pending === 'expand') this.afterExpand.emit();
     else if (pending === 'collapse') this.afterCollapse.emit();
+  }
+
+  private _clearFallbackTimer(): void {
+    if (this._fallbackTimer !== null) {
+      clearTimeout(this._fallbackTimer);
+      this._fallbackTimer = null;
+    }
   }
 }
