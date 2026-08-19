@@ -1,0 +1,286 @@
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  contentChildren,
+  effect,
+  ElementRef,
+  forwardRef,
+  inject,
+  input,
+  model,
+  output,
+  PLATFORM_ID,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+
+/**
+ * @description A segment created inside @for receives its [value] binding one change-
+ * detection pass AFTER the group's content query already sees the segment,
+ * so reading the required input in that window throws NG0950. Reads from
+ * the group go through {@link EgovSegment._valueOrUnset} instead, which
+ * reports this sentinel until the binding is applied.
+ * */
+const VALUE_UNSET = Symbol('egov-segment-value-unset');
+
+/** Emitted by {@link EgovSegmentedControl.selectionChange} whenever the selection lands on a segment. */
+export interface EgovSegmentedControlChange<T> {
+  value: T;
+  segment: EgovSegment<T>;
+}
+
+/**
+ * One choice inside an {@link EgovSegmentedControl}. Applied to a native
+ * button so the DOM matches the design-system CSS contract
+ * (`.segmented-control > .segment-item`).
+ *
+ * Keep labels short; an unavoidable long label truncates to one line with
+ * an ellipsis. Truncation is visual-only (the full text stays in the
+ * accessible name). If you want a tooltip on a truncated segment, compose
+ * `egovTooltip` from `ngx-egov-ui/tooltip` on the same button element —
+ * this component deliberately doesn't add one itself.
+ *
+ * ```html
+ * <button egov-segment value="list"><egov-icon name="list" />List</button>
+ * ```
+ */
+@Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
+  selector: 'button[egov-segment]',
+  template: `
+    <ng-content select="egov-icon,svg" />
+    <span class="segment-label"><ng-content /></span>
+  `,
+  host: {
+    class: 'segment-item',
+    type: 'button',
+    role: 'radio',
+    '[class.is-selected]': '_selected()',
+    '[attr.aria-checked]': '_selected()',
+    '[disabled]': '_isDisabled()',
+    '[attr.tabindex]': '_tabIndex()',
+    '(click)': '_onClick()',
+    '(keydown)': '_onKeydown($event)',
+  },
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class EgovSegment<T = unknown> {
+  private readonly _group = inject<EgovSegmentedControl<T>>(forwardRef(() => EgovSegmentedControl));
+  private readonly _elementRef = inject<ElementRef<HTMLButtonElement>>(ElementRef);
+
+  readonly value = input.required<T>();
+  readonly disabled = input(false, { transform: booleanAttribute });
+
+  protected readonly _selected = computed(() => this._group._isSelected(this));
+  protected readonly _isDisabled = computed(() => this.disabled() || this._group.disabled());
+  protected readonly _tabIndex = computed(() => this._group._tabIndexFor(this));
+
+  /** @docs-private */
+  _focus(): void {
+    this._elementRef.nativeElement.focus();
+  }
+
+  /**
+   * @docs-private The read still registers the reactive dependency before NG0950 is
+   * thrown, so effects/computeds using this re-run once the binding lands.
+   * */
+  _valueOrUnset(): T | typeof VALUE_UNSET {
+    try {
+      return this.value();
+    } catch {
+      return VALUE_UNSET;
+    }
+  }
+
+  protected _onClick(): void {
+    this._group._select(this);
+  }
+
+  protected _onKeydown(event: KeyboardEvent): void {
+    this._group._handleKeydown(event, this);
+  }
+}
+
+/**
+ * ```html
+ * <egov-segmented-control [(value)]="view" aria-label="View">
+ *   <button egov-segment value="list">List</button>
+ *   <button egov-segment value="grid">Grid</button>
+ * </egov-segmented-control>
+ * ```
+ */
+@Component({
+  selector: 'egov-segmented-control',
+  template: '<ng-content />',
+  host: {
+    class: 'segmented-control',
+    role: 'radiogroup',
+    '[class.segmented-control--full-width]': 'fullWidth()',
+    '[attr.aria-label]': 'ariaLabel()',
+    '[attr.aria-labelledby]': 'ariaLabelledby()',
+  },
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class EgovSegmentedControl<T = unknown> {
+  private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  readonly segments = contentChildren<EgovSegment<T>>(EgovSegment);
+
+  readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
+  readonly ariaLabelledby = input<string | undefined>(undefined, { alias: 'aria-labelledby' });
+  readonly disabled = input(false, { transform: booleanAttribute });
+  readonly fullWidth = input(false, { transform: booleanAttribute });
+  readonly value = model<T | undefined>(undefined);
+
+  readonly selectionChange = output<EgovSegmentedControlChange<T>>();
+
+  private _lastEmitted: T | undefined;
+  private _lastIndex = 0;
+  private _initialized = false;
+
+  constructor() {
+    effect(() => {
+      const segments = this.segments();
+      const value = this.value();
+
+      if (segments.length === 0) {
+        return;
+      }
+
+      const values = segments.map((segment) => segment._valueOrUnset());
+
+      if (values.includes(VALUE_UNSET)) {
+        return;
+      }
+
+      const index = values.findIndex((segmentValue) => Object.is(segmentValue, value));
+      const current = index >= 0 ? segments[index] : undefined;
+
+      if (value !== undefined && !this.disabled() && (!current || current.disabled())) {
+        const fallback = this._closestEnabled(current ? index : this._lastIndex);
+
+        if (fallback >= 0 && fallback !== index) {
+          this.value.set(segments[fallback].value());
+
+          return;
+        }
+      }
+
+      const first = !this._initialized;
+
+      this._initialized = true;
+
+      if (current) {
+        this._lastIndex = index;
+
+        if (!first && !Object.is(this._lastEmitted, value)) {
+          this.selectionChange.emit({ value: current.value(), segment: current });
+        }
+      }
+
+      this._lastEmitted = value;
+    });
+  }
+
+  /** @docs-private */
+  _isSelected(segment: EgovSegment<T>): boolean {
+    return Object.is(this.value(), segment._valueOrUnset());
+  }
+
+  /** @docs-private */
+  _tabIndexFor(segment: EgovSegment<T>): number {
+    const segments = this.segments();
+    const value = this.value();
+    let target = segments.find((s) => !s.disabled() && Object.is(s._valueOrUnset(), value));
+
+    target ??= segments.find((s) => !s.disabled());
+
+    return segment === target ? 0 : -1;
+  }
+
+  /** @docs-private */
+  _select(segment: EgovSegment<T>): void {
+    if (segment.disabled() || this.disabled()) {
+      return;
+    }
+
+    this.value.set(segment.value());
+  }
+
+  /** @docs-private */
+  _handleKeydown(event: KeyboardEvent, segment: EgovSegment<T>): void {
+    const segments = this.segments();
+    const count = segments.length;
+
+    if (count === 0) {
+      return;
+    }
+
+    const from = segments.indexOf(segment);
+    let target: number;
+
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        target = this._nextEnabled(from, 1);
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        target = this._nextEnabled(from, -1);
+        break;
+      case 'Home':
+        target = this._nextEnabled(-1, 1);
+        break;
+      case 'End':
+        target = this._nextEnabled(count, -1);
+        break;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+
+    const next = segments[target];
+
+    if (!next || next.disabled() || this.disabled()) {
+      return;
+    }
+
+    this.value.set(next.value());
+
+    if (this._isBrowser) {
+      next._focus();
+    }
+  }
+
+  private _closestEnabled(from: number): number {
+    const segments = this.segments();
+
+    for (let i = Math.min(from, segments.length - 1); i >= 0; i--) {
+      if (!segments[i].disabled()) return i;
+    }
+
+    for (let i = from + 1; i < segments.length; i++) {
+      if (!segments[i].disabled()) return i;
+    }
+
+    return -1;
+  }
+
+  private _nextEnabled(from: number, direction: 1 | -1): number {
+    const segments = this.segments();
+    const count = segments.length;
+    let index = from;
+
+    for (let step = 0; step < count; step++) {
+      index = (index + direction + count) % count;
+
+      if (!segments[index].disabled()) {
+        return index;
+      }
+    }
+
+    return Math.max(0, Math.min(from, count - 1));
+  }
+}
