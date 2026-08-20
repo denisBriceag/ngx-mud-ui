@@ -2081,6 +2081,232 @@
             }
         },
         {
+            "name": "ProgressTrackerLinearReactiveDemo",
+            "id": "component-ProgressTrackerLinearReactiveDemo-ddc064840892ac82a8f5168e29df07842942fe205ca4223cb01dabfee9180a99e525ca3fd015c76a6d330ab905808f3fd957c18455343173adad7b2582278ed5",
+            "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+            "changeDetection": "ChangeDetectionStrategy.OnPush",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "egov-progress-tracker-linear-reactive-demo",
+            "styleUrls": [],
+            "styles": [],
+            "template": "<egov-progress-tracker #tracker [linear]=\"true\">\n  <egov-step label=\"Identity\" supportingText=\"Who you are\" errorMessage=\"Complete your identity\" [stepControl]=\"identity\">\n    <form [formGroup]=\"identity\" style=\"display:grid;gap:8px;max-width:320px\">\n      <label for=\"pt-name\">Full name (required)</label>\n      <input id=\"pt-name\" formControlName=\"name\" />\n    </form>\n  </egov-step>\n  <egov-step label=\"Address\" supportingText=\"Where you live\" [stepControl]=\"address\">\n    <form [formGroup]=\"address\" style=\"display:grid;gap:8px;max-width:320px\">\n      <label for=\"pt-street\">Street (required)</label>\n      <input id=\"pt-street\" formControlName=\"street\" />\n    </form>\n  </egov-step>\n  <egov-step label=\"Review\" supportingText=\"Check and submit\">\n    <p>All done — review your data.</p>\n  </egov-step>\n</egov-progress-tracker>\n<div style=\"margin-top:16px;display:flex;gap:8px\">\n  <button type=\"button\" (click)=\"tracker.previous()\">Back</button>\n  <button type=\"button\" (click)=\"tracker.next()\">Next</button>\n</div>\n",
+            "templateUrl": [],
+            "templateVariables": [],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "address",
+                    "coverageIgnore": false,
+                    "defaultValue": "new FormGroup({ street: new FormControl('', Validators.required) })",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 39,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        148
+                    ]
+                },
+                {
+                    "name": "identity",
+                    "coverageIgnore": false,
+                    "defaultValue": "new FormGroup({ name: new FormControl('', Validators.required) })",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 38,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        148
+                    ]
+                }
+            ],
+            "methodsClass": [],
+            "coverageIgnore": false,
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "standalone": true,
+            "imports": [
+                {
+                    "name": "EgovProgressTracker"
+                },
+                {
+                    "name": "EgovStep"
+                },
+                {
+                    "name": "ReactiveFormsModule",
+                    "type": "module"
+                }
+            ],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { Component, signal } from '@angular/core';\nimport { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';\nimport { form, required } from '@angular/forms/signals';\nimport type { Meta, StoryObj } from '@storybook/angular-vite';\nimport { moduleMetadata } from '@storybook/angular-vite';\nimport { EgovIndicatorStep, EgovProgressTracker, EgovStep, EgovStepIndicator } from '../../../progress-tracker/src/public-api';\n\nconst PAD = 'padding:24px';\n\n@Component({\n  selector: 'egov-progress-tracker-linear-reactive-demo',\n  imports: [EgovProgressTracker, EgovStep, ReactiveFormsModule],\n  template: `\n    <egov-progress-tracker #tracker [linear]=\"true\">\n      <egov-step label=\"Identity\" supportingText=\"Who you are\" errorMessage=\"Complete your identity\" [stepControl]=\"identity\">\n        <form [formGroup]=\"identity\" style=\"display:grid;gap:8px;max-width:320px\">\n          <label for=\"pt-name\">Full name (required)</label>\n          <input id=\"pt-name\" formControlName=\"name\" />\n        </form>\n      </egov-step>\n      <egov-step label=\"Address\" supportingText=\"Where you live\" [stepControl]=\"address\">\n        <form [formGroup]=\"address\" style=\"display:grid;gap:8px;max-width:320px\">\n          <label for=\"pt-street\">Street (required)</label>\n          <input id=\"pt-street\" formControlName=\"street\" />\n        </form>\n      </egov-step>\n      <egov-step label=\"Review\" supportingText=\"Check and submit\">\n        <p>All done — review your data.</p>\n      </egov-step>\n    </egov-progress-tracker>\n    <div style=\"margin-top:16px;display:flex;gap:8px\">\n      <button type=\"button\" (click)=\"tracker.previous()\">Back</button>\n      <button type=\"button\" (click)=\"tracker.next()\">Next</button>\n    </div>\n  `,\n})\nclass ProgressTrackerLinearReactiveDemo {\n  readonly identity = new FormGroup({ name: new FormControl('', Validators.required) });\n  readonly address = new FormGroup({ street: new FormControl('', Validators.required) });\n}\n\n@Component({\n  selector: 'egov-progress-tracker-linear-signal-forms-demo',\n  imports: [EgovProgressTracker, EgovStep],\n  template: `\n    <egov-progress-tracker #tracker [linear]=\"true\">\n      <egov-step label=\"Identity\" [stepControl]=\"identity\">\n        <div style=\"display:grid;gap:8px;max-width:320px\">\n          <label for=\"pt-sf-name\">Full name (required)</label>\n          <input id=\"pt-sf-name\" [value]=\"model().name\" (input)=\"setName($event)\" />\n        </div>\n      </egov-step>\n      <egov-step label=\"Review\">\n        <p>Signal-forms flow complete.</p>\n      </egov-step>\n    </egov-progress-tracker>\n    <div style=\"margin-top:16px;display:flex;gap:8px\">\n      <button type=\"button\" (click)=\"tracker.previous()\">Back</button>\n      <button type=\"button\" (click)=\"tracker.next()\">Next</button>\n    </div>\n  `,\n})\nclass ProgressTrackerLinearSignalFormsDemo {\n  readonly model = signal({ name: '' });\n  readonly identity = form(this.model, (path) => {\n    required(path.name);\n  });\n\n  setName(event: Event): void {\n    this.model.set({ name: (event.target as HTMLInputElement).value });\n  }\n}\n\nconst meta: Meta<EgovProgressTracker> = {\n  title: 'Components/Progress Tracker',\n  component: EgovProgressTracker,\n  decorators: [\n    moduleMetadata({\n      imports: [\n        EgovProgressTracker,\n        EgovStep,\n        EgovStepIndicator,\n        EgovIndicatorStep,\n        ProgressTrackerLinearReactiveDemo,\n        ProgressTrackerLinearSignalFormsDemo,\n      ],\n    }),\n  ],\n  argTypes: {\n    linear: { control: 'boolean', description: 'Gate navigation on completing previous steps' },\n    orientation: { control: 'inline-radio', options: ['horizontal', 'vertical'] },\n    selectedIndex: { control: { type: 'number', min: 0, max: 3, step: 1 } },\n  },\n  args: {\n    linear: false,\n    orientation: 'horizontal',\n    selectedIndex: 0,\n  },\n};\n\nexport default meta;\n\ntype Story = StoryObj<EgovProgressTracker>;\n\n/**\n * Interactive tracker driven by the controls panel. Non-linear by\n * default, so every step is reachable — click a circle or use\n * Arrow keys + Enter on a focused header to navigate; completed and\n * blocked states derive from each step's control once visited. Toggle\n * `linear` to see unvisited steps become `incomplete` and unreachable.\n */\nexport const Playground: Story = {\n  render: (args) => ({\n    props: { ...args },\n    template: `\n      <div style=\"${PAD}\">\n        <egov-progress-tracker\n          [linear]=\"linear\"\n          [orientation]=\"orientation\"\n          [selectedIndex]=\"selectedIndex\"\n        >\n          <egov-step label=\"Step\" supportingText=\"Supporting Text\"><p>One</p></egov-step>\n          <egov-step label=\"Step\" supportingText=\"Supporting Text\"><p>Two</p></egov-step>\n          <egov-step label=\"Step\"><p>Three</p></egov-step>\n          <egov-step label=\"Step\"><p>Four</p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n};\n\n/** All five visual states, forced via the `state` override input. */\nexport const States: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD}\">\n        <egov-progress-tracker selectedIndex=\"0\">\n          <egov-step label=\"Current\"><p></p></egov-step>\n          <egov-step label=\"Completed\" state=\"completed\"><p></p></egov-step>\n          <egov-step label=\"Available\" state=\"available\"><p></p></egov-step>\n          <egov-step label=\"Blocked\" state=\"blocked\"><p></p></egov-step>\n          <egov-step label=\"Incomplete\" state=\"incomplete\"><p></p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n};\n\n/** Linear + reactive forms: Next is gated by each step's FormGroup. */\nexport const LinearReactiveForms: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `<div style=\"${PAD}\"><egov-progress-tracker-linear-reactive-demo /></div>`,\n  }),\n};\n\n/** Linear + signal forms: same gating driven by a signal-forms field. */\nexport const LinearSignalForms: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `<div style=\"${PAD}\"><egov-progress-tracker-linear-signal-forms-demo /></div>`,\n  }),\n};\n\n/** Vertical orientation renders each panel inline under its header. */\nexport const Vertical: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD};max-width:480px\">\n        <egov-progress-tracker orientation=\"vertical\">\n          <egov-step label=\"Identity\" supportingText=\"Who you are\"><p>Identity form</p></egov-step>\n          <egov-step label=\"Address\"><p>Address form</p></egov-step>\n          <egov-step label=\"Review\"><p>Review</p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n};\n\n/**\n * ≤991px: 20px empty circles, labels visually hidden (still announced).\n * The container below is narrow for layout purposes only — the compact\n * look is actually driven by a viewport media query, so to see it for\n * real, resize the Storybook preview (or the browser) to ≤991px wide.\n */\nexport const Mobile: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD};max-width:360px\">\n        <egov-progress-tracker>\n          <egov-step label=\"One\" state=\"completed\"><p></p></egov-step>\n          <egov-step label=\"Two\"><p></p></egov-step>\n          <egov-step label=\"Three\"><p></p></egov-step>\n          <egov-step label=\"Four\"><p></p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n};\n\n/** Static instructional list — no current step, no interaction. */\nexport const StepIndicator: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD};max-width:480px\">\n        <egov-step-indicator>\n          <egov-indicator-step heading=\"Create account\">\n            Register using your government ID.\n            <button type=\"button\">Start</button>\n          </egov-indicator-step>\n          <egov-indicator-step heading=\"Verify identity\">\n            Upload the requested documents.\n          </egov-indicator-step>\n          <egov-indicator-step heading=\"Submit application\" />\n        </egov-step-indicator>\n      </div>\n    `,\n  }),\n};\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "",
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": [
+                    {
+                        "name": "EgovProgressTracker",
+                        "type": "module"
+                    },
+                    {
+                        "name": "EgovStep",
+                        "type": "module"
+                    },
+                    {
+                        "name": "ReactiveFormsModule",
+                        "type": "module"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "ProgressTrackerLinearSignalFormsDemo",
+            "id": "component-ProgressTrackerLinearSignalFormsDemo-ddc064840892ac82a8f5168e29df07842942fe205ca4223cb01dabfee9180a99e525ca3fd015c76a6d330ab905808f3fd957c18455343173adad7b2582278ed5",
+            "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+            "changeDetection": "ChangeDetectionStrategy.OnPush",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "egov-progress-tracker-linear-signal-forms-demo",
+            "styleUrls": [],
+            "styles": [],
+            "template": "<egov-progress-tracker #tracker [linear]=\"true\">\n  <egov-step label=\"Identity\" [stepControl]=\"identity\">\n    <div style=\"display:grid;gap:8px;max-width:320px\">\n      <label for=\"pt-sf-name\">Full name (required)</label>\n      <input id=\"pt-sf-name\" [value]=\"model().name\" (input)=\"setName($event)\" />\n    </div>\n  </egov-step>\n  <egov-step label=\"Review\">\n    <p>Signal-forms flow complete.</p>\n  </egov-step>\n</egov-progress-tracker>\n<div style=\"margin-top:16px;display:flex;gap:8px\">\n  <button type=\"button\" (click)=\"tracker.previous()\">Back</button>\n  <button type=\"button\" (click)=\"tracker.next()\">Next</button>\n</div>\n",
+            "templateUrl": [],
+            "templateVariables": [],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "identity",
+                    "coverageIgnore": false,
+                    "defaultValue": "form(this.model, (path) => {\n    required(path.name);\n  })",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 65,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        148
+                    ]
+                },
+                {
+                    "name": "model",
+                    "coverageIgnore": false,
+                    "defaultValue": "signal({ name: '' })",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "unknown",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 64,
+                    "rawdescription": "\n",
+                    "modifierKind": [
+                        148
+                    ]
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "setName",
+                    "coverageIgnore": false,
+                    "args": [
+                        {
+                            "name": "event",
+                            "type": "Event",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 69,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "\n",
+                    "description": "",
+                    "jsdoctags": [
+                        {
+                            "name": "event",
+                            "type": "Event",
+                            "optional": false,
+                            "dotDotDotToken": false,
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "coverageIgnore": false,
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "standalone": true,
+            "imports": [
+                {
+                    "name": "EgovProgressTracker"
+                },
+                {
+                    "name": "EgovStep"
+                }
+            ],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { Component, signal } from '@angular/core';\nimport { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';\nimport { form, required } from '@angular/forms/signals';\nimport type { Meta, StoryObj } from '@storybook/angular-vite';\nimport { moduleMetadata } from '@storybook/angular-vite';\nimport { EgovIndicatorStep, EgovProgressTracker, EgovStep, EgovStepIndicator } from '../../../progress-tracker/src/public-api';\n\nconst PAD = 'padding:24px';\n\n@Component({\n  selector: 'egov-progress-tracker-linear-reactive-demo',\n  imports: [EgovProgressTracker, EgovStep, ReactiveFormsModule],\n  template: `\n    <egov-progress-tracker #tracker [linear]=\"true\">\n      <egov-step label=\"Identity\" supportingText=\"Who you are\" errorMessage=\"Complete your identity\" [stepControl]=\"identity\">\n        <form [formGroup]=\"identity\" style=\"display:grid;gap:8px;max-width:320px\">\n          <label for=\"pt-name\">Full name (required)</label>\n          <input id=\"pt-name\" formControlName=\"name\" />\n        </form>\n      </egov-step>\n      <egov-step label=\"Address\" supportingText=\"Where you live\" [stepControl]=\"address\">\n        <form [formGroup]=\"address\" style=\"display:grid;gap:8px;max-width:320px\">\n          <label for=\"pt-street\">Street (required)</label>\n          <input id=\"pt-street\" formControlName=\"street\" />\n        </form>\n      </egov-step>\n      <egov-step label=\"Review\" supportingText=\"Check and submit\">\n        <p>All done — review your data.</p>\n      </egov-step>\n    </egov-progress-tracker>\n    <div style=\"margin-top:16px;display:flex;gap:8px\">\n      <button type=\"button\" (click)=\"tracker.previous()\">Back</button>\n      <button type=\"button\" (click)=\"tracker.next()\">Next</button>\n    </div>\n  `,\n})\nclass ProgressTrackerLinearReactiveDemo {\n  readonly identity = new FormGroup({ name: new FormControl('', Validators.required) });\n  readonly address = new FormGroup({ street: new FormControl('', Validators.required) });\n}\n\n@Component({\n  selector: 'egov-progress-tracker-linear-signal-forms-demo',\n  imports: [EgovProgressTracker, EgovStep],\n  template: `\n    <egov-progress-tracker #tracker [linear]=\"true\">\n      <egov-step label=\"Identity\" [stepControl]=\"identity\">\n        <div style=\"display:grid;gap:8px;max-width:320px\">\n          <label for=\"pt-sf-name\">Full name (required)</label>\n          <input id=\"pt-sf-name\" [value]=\"model().name\" (input)=\"setName($event)\" />\n        </div>\n      </egov-step>\n      <egov-step label=\"Review\">\n        <p>Signal-forms flow complete.</p>\n      </egov-step>\n    </egov-progress-tracker>\n    <div style=\"margin-top:16px;display:flex;gap:8px\">\n      <button type=\"button\" (click)=\"tracker.previous()\">Back</button>\n      <button type=\"button\" (click)=\"tracker.next()\">Next</button>\n    </div>\n  `,\n})\nclass ProgressTrackerLinearSignalFormsDemo {\n  readonly model = signal({ name: '' });\n  readonly identity = form(this.model, (path) => {\n    required(path.name);\n  });\n\n  setName(event: Event): void {\n    this.model.set({ name: (event.target as HTMLInputElement).value });\n  }\n}\n\nconst meta: Meta<EgovProgressTracker> = {\n  title: 'Components/Progress Tracker',\n  component: EgovProgressTracker,\n  decorators: [\n    moduleMetadata({\n      imports: [\n        EgovProgressTracker,\n        EgovStep,\n        EgovStepIndicator,\n        EgovIndicatorStep,\n        ProgressTrackerLinearReactiveDemo,\n        ProgressTrackerLinearSignalFormsDemo,\n      ],\n    }),\n  ],\n  argTypes: {\n    linear: { control: 'boolean', description: 'Gate navigation on completing previous steps' },\n    orientation: { control: 'inline-radio', options: ['horizontal', 'vertical'] },\n    selectedIndex: { control: { type: 'number', min: 0, max: 3, step: 1 } },\n  },\n  args: {\n    linear: false,\n    orientation: 'horizontal',\n    selectedIndex: 0,\n  },\n};\n\nexport default meta;\n\ntype Story = StoryObj<EgovProgressTracker>;\n\n/**\n * Interactive tracker driven by the controls panel. Non-linear by\n * default, so every step is reachable — click a circle or use\n * Arrow keys + Enter on a focused header to navigate; completed and\n * blocked states derive from each step's control once visited. Toggle\n * `linear` to see unvisited steps become `incomplete` and unreachable.\n */\nexport const Playground: Story = {\n  render: (args) => ({\n    props: { ...args },\n    template: `\n      <div style=\"${PAD}\">\n        <egov-progress-tracker\n          [linear]=\"linear\"\n          [orientation]=\"orientation\"\n          [selectedIndex]=\"selectedIndex\"\n        >\n          <egov-step label=\"Step\" supportingText=\"Supporting Text\"><p>One</p></egov-step>\n          <egov-step label=\"Step\" supportingText=\"Supporting Text\"><p>Two</p></egov-step>\n          <egov-step label=\"Step\"><p>Three</p></egov-step>\n          <egov-step label=\"Step\"><p>Four</p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n};\n\n/** All five visual states, forced via the `state` override input. */\nexport const States: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD}\">\n        <egov-progress-tracker selectedIndex=\"0\">\n          <egov-step label=\"Current\"><p></p></egov-step>\n          <egov-step label=\"Completed\" state=\"completed\"><p></p></egov-step>\n          <egov-step label=\"Available\" state=\"available\"><p></p></egov-step>\n          <egov-step label=\"Blocked\" state=\"blocked\"><p></p></egov-step>\n          <egov-step label=\"Incomplete\" state=\"incomplete\"><p></p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n};\n\n/** Linear + reactive forms: Next is gated by each step's FormGroup. */\nexport const LinearReactiveForms: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `<div style=\"${PAD}\"><egov-progress-tracker-linear-reactive-demo /></div>`,\n  }),\n};\n\n/** Linear + signal forms: same gating driven by a signal-forms field. */\nexport const LinearSignalForms: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `<div style=\"${PAD}\"><egov-progress-tracker-linear-signal-forms-demo /></div>`,\n  }),\n};\n\n/** Vertical orientation renders each panel inline under its header. */\nexport const Vertical: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD};max-width:480px\">\n        <egov-progress-tracker orientation=\"vertical\">\n          <egov-step label=\"Identity\" supportingText=\"Who you are\"><p>Identity form</p></egov-step>\n          <egov-step label=\"Address\"><p>Address form</p></egov-step>\n          <egov-step label=\"Review\"><p>Review</p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n};\n\n/**\n * ≤991px: 20px empty circles, labels visually hidden (still announced).\n * The container below is narrow for layout purposes only — the compact\n * look is actually driven by a viewport media query, so to see it for\n * real, resize the Storybook preview (or the browser) to ≤991px wide.\n */\nexport const Mobile: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD};max-width:360px\">\n        <egov-progress-tracker>\n          <egov-step label=\"One\" state=\"completed\"><p></p></egov-step>\n          <egov-step label=\"Two\"><p></p></egov-step>\n          <egov-step label=\"Three\"><p></p></egov-step>\n          <egov-step label=\"Four\"><p></p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n};\n\n/** Static instructional list — no current step, no interaction. */\nexport const StepIndicator: Story = {\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD};max-width:480px\">\n        <egov-step-indicator>\n          <egov-indicator-step heading=\"Create account\">\n            Register using your government ID.\n            <button type=\"button\">Start</button>\n          </egov-indicator-step>\n          <egov-indicator-step heading=\"Verify identity\">\n            Upload the requested documents.\n          </egov-indicator-step>\n          <egov-indicator-step heading=\"Submit application\" />\n        </egov-step-indicator>\n      </div>\n    `,\n  }),\n};\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "",
+            "extends": [],
+            "relationships": {
+                "incoming": [],
+                "outgoing": [
+                    {
+                        "name": "EgovProgressTracker",
+                        "type": "module"
+                    },
+                    {
+                        "name": "EgovStep",
+                        "type": "module"
+                    }
+                ]
+            }
+        },
+        {
             "name": "ShadowGridComponent",
             "id": "component-ShadowGridComponent-dae9c69b2e7654d3b8f4ba9292790e681275df8b724d6b945a7fc388db9a55c29e8e107ad2696cf713a06cdc4ec0cc1a45f55d0ff981655d01b284a8e0d93f8f",
             "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/shadow-grid.component.ts",
@@ -3938,6 +4164,32 @@
                 "defaultValue": "{\n  render: () => ({ template: `<egov-shadow-grid />` }),\n}"
             },
             {
+                "name": "LinearReactiveForms",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `<div style=\"${PAD}\"><egov-progress-tracker-linear-reactive-demo /></div>`,\n  }),\n}",
+                "rawdescription": "Linear + reactive forms: Next is gated by each step's FormGroup.",
+                "description": "<p>Linear + reactive forms: Next is gated by each step&#39;s FormGroup.</p>\n"
+            },
+            {
+                "name": "LinearSignalForms",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `<div style=\"${PAD}\"><egov-progress-tracker-linear-signal-forms-demo /></div>`,\n  }),\n}",
+                "rawdescription": "Linear + signal forms: same gating driven by a signal-forms field.",
+                "description": "<p>Linear + signal forms: same gating driven by a signal-forms field.</p>\n"
+            },
+            {
                 "name": "Loading",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -4055,6 +4307,17 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<EgovProgressTracker>",
+                "defaultValue": "{\n  title: 'Components/Progress Tracker',\n  component: EgovProgressTracker,\n  decorators: [\n    moduleMetadata({\n      imports: [\n        EgovProgressTracker,\n        EgovStep,\n        EgovStepIndicator,\n        EgovIndicatorStep,\n        ProgressTrackerLinearReactiveDemo,\n        ProgressTrackerLinearSignalFormsDemo,\n      ],\n    }),\n  ],\n  argTypes: {\n    linear: { control: 'boolean', description: 'Gate navigation on completing previous steps' },\n    orientation: { control: 'inline-radio', options: ['horizontal', 'vertical'] },\n    selectedIndex: { control: { type: 'number', min: 0, max: 3, step: 1 } },\n  },\n  args: {\n    linear: false,\n    orientation: 'horizontal',\n    selectedIndex: 0,\n  },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/components/segmented-control.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -4110,28 +4373,6 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<ColorGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<ColorGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Semantic Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
@@ -4154,23 +4395,34 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<ColorGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<ColorGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Semantic Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Meta<DisplayGridComponent>",
                 "defaultValue": "{\n  title: 'Foundations/Display',\n  component: DisplayGridComponent,\n  decorators: [moduleMetadata({ imports: [DisplayGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-            },
-            {
-                "name": "meta",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Meta<ShadowGridComponent>",
-                "defaultValue": "{\n  title: 'Foundations/Elevation',\n  component: ShadowGridComponent,\n  decorators: [moduleMetadata({ imports: [ShadowGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
             },
             {
                 "name": "meta",
@@ -4231,12 +4483,36 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Meta<ShadowGridComponent>",
+                "defaultValue": "{\n  title: 'Foundations/Elevation',\n  component: ShadowGridComponent,\n  decorators: [moduleMetadata({ imports: [ShadowGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "meta",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Meta<WidthGridComponent>",
                 "defaultValue": "{\n  title: 'Foundations/Width',\n  component: WidthGridComponent,\n  decorators: [moduleMetadata({ imports: [WidthGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+            },
+            {
+                "name": "Mobile",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD};max-width:360px\">\n        <egov-progress-tracker>\n          <egov-step label=\"One\" state=\"completed\"><p></p></egov-step>\n          <egov-step label=\"Two\"><p></p></egov-step>\n          <egov-step label=\"Three\"><p></p></egov-step>\n          <egov-step label=\"Four\"><p></p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "≤991px: 20px empty circles, labels visually hidden (still announced).\nThe container below is narrow for layout purposes only — the compact\nlook is actually driven by a viewport media query, so to see it for\nreal, resize the Storybook preview (or the browser) to ≤991px wide.",
+                "description": "<p>≤991px: 20px empty circles, labels visually hidden (still announced).\nThe container below is narrow for layout purposes only — the compact\nlook is actually driven by a viewport media query, so to see it for\nreal, resize the Storybook preview (or the browser) to ≤991px wide.</p>\n"
             },
             {
                 "name": "OnIconTrigger",
@@ -4283,6 +4559,17 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"max-width:520px;border:1px dashed #d0d0d0;border-radius:8px;padding:12px\">\n        <egov-tab-group aria-label=\"Many tabs\">\n          <egov-tab label=\"Overview\"><p style=\"padding:16px 0\">Overview.</p></egov-tab>\n          <egov-tab label=\"Details\"><p style=\"padding:16px 0\">Details.</p></egov-tab>\n          <egov-tab label=\"Documents\"><p style=\"padding:16px 0\">Documents.</p></egov-tab>\n          <egov-tab label=\"History\"><p style=\"padding:16px 0\">History.</p></egov-tab>\n          <egov-tab label=\"Payments\"><p style=\"padding:16px 0\">Payments.</p></egov-tab>\n          <egov-tab label=\"Notifications\"><p style=\"padding:16px 0\">Notifications.</p></egov-tab>\n          <egov-tab label=\"Permissions\"><p style=\"padding:16px 0\">Permissions.</p></egov-tab>\n          <egov-tab label=\"Settings\"><p style=\"padding:16px 0\">Settings.</p></egov-tab>\n          <egov-tab label=\"Advanced\"><p style=\"padding:16px 0\">Advanced.</p></egov-tab>\n        </egov-tab-group>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
+                "name": "PAD",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "string",
+                "defaultValue": "'padding:24px'"
             },
             {
                 "name": "PAD",
@@ -4408,6 +4695,19 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  render: (args) => ({\n    props: args,\n    template: `\n      <div style=\"${ROW}\">\n        <a\n          href=\"#\"\n          [egovLink]=\"egovLink\"\n          [size]=\"size\"\n          [underlined]=\"underlined\"\n          [touchTarget]=\"touchTarget\"\n          [disabled]=\"disabled\"\n        >\n          Services catalogue\n        </a>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
+                "name": "Playground",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: (args) => ({\n    props: { ...args },\n    template: `\n      <div style=\"${PAD}\">\n        <egov-progress-tracker\n          [linear]=\"linear\"\n          [orientation]=\"orientation\"\n          [selectedIndex]=\"selectedIndex\"\n        >\n          <egov-step label=\"Step\" supportingText=\"Supporting Text\"><p>One</p></egov-step>\n          <egov-step label=\"Step\" supportingText=\"Supporting Text\"><p>Two</p></egov-step>\n          <egov-step label=\"Step\"><p>Three</p></egov-step>\n          <egov-step label=\"Step\"><p>Four</p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Interactive tracker driven by the controls panel. Non-linear by\ndefault, so every step is reachable — click a circle or use\nArrow keys + Enter on a focused header to navigate; completed and\nblocked states derive from each step's control once visited. Toggle\n`linear` to see unvisited steps become `incomplete` and unreachable.",
+                "description": "<p>Interactive tracker driven by the controls panel. Non-linear by\ndefault, so every step is reachable — click a circle or use\nArrow keys + Enter on a focused header to navigate; completed and\nblocked states derive from each step&#39;s control once visited. Toggle\n<code>linear</code> to see unvisited steps become <code>incomplete</code> and unreachable.</p>\n"
             },
             {
                 "name": "Playground",
@@ -4756,6 +5056,32 @@
                 "defaultValue": "{\n  render: () => ({ template: `<egov-spacing-grid kind=\"gap\" />` }),\n}"
             },
             {
+                "name": "States",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD}\">\n        <egov-progress-tracker selectedIndex=\"0\">\n          <egov-step label=\"Current\"><p></p></egov-step>\n          <egov-step label=\"Completed\" state=\"completed\"><p></p></egov-step>\n          <egov-step label=\"Available\" state=\"available\"><p></p></egov-step>\n          <egov-step label=\"Blocked\" state=\"blocked\"><p></p></egov-step>\n          <egov-step label=\"Incomplete\" state=\"incomplete\"><p></p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "All five visual states, forced via the `state` override input.",
+                "description": "<p>All five visual states, forced via the <code>state</code> override input.</p>\n"
+            },
+            {
+                "name": "StepIndicator",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD};max-width:480px\">\n        <egov-step-indicator>\n          <egov-indicator-step heading=\"Create account\">\n            Register using your government ID.\n            <button type=\"button\">Start</button>\n          </egov-indicator-step>\n          <egov-indicator-step heading=\"Verify identity\">\n            Upload the requested documents.\n          </egov-indicator-step>\n          <egov-indicator-step heading=\"Submit application\" />\n        </egov-step-indicator>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Static instructional list — no current step, no interaction.",
+                "description": "<p>Static instructional list — no current step, no interaction.</p>\n"
+            },
+            {
                 "name": "Stretched",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -4816,23 +5142,23 @@
                 "name": "Tokens",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
-                "coverageIgnore": false,
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Story",
-                "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
-            },
-            {
-                "name": "Tokens",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                 "coverageIgnore": false,
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  render: () => ({ template: `<egov-border-grid />` }),\n}"
+            },
+            {
+                "name": "Tokens",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
             },
             {
                 "name": "TouchTargets",
@@ -4907,6 +5233,19 @@
                 "deprecationMessage": "",
                 "type": "Story",
                 "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${ROW}\">\n        <a href=\"#\" egovLink>Underlined</a>\n        <a href=\"#\" egovLink [underlined]=\"false\">Non-underlined</a>\n      </div>\n    `,\n  }),\n}"
+            },
+            {
+                "name": "Vertical",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "coverageIgnore": false,
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story",
+                "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD};max-width:480px\">\n        <egov-progress-tracker orientation=\"vertical\">\n          <egov-step label=\"Identity\" supportingText=\"Who you are\"><p>Identity form</p></egov-step>\n          <egov-step label=\"Address\"><p>Address form</p></egov-step>\n          <egov-step label=\"Review\"><p>Review</p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n}",
+                "rawdescription": "Vertical orientation renders each panel inline under its header.",
+                "description": "<p>Vertical orientation renders each panel inline under its header.</p>\n"
             },
             {
                 "name": "Width",
@@ -5105,6 +5444,19 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
+                "rawtype": "StoryObj<EgovProgressTracker>",
+                "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
                 "rawtype": "StoryObj<EgovSegmentedControl<string>>",
                 "file": "projects/ngx-egov-ui/src/stories/components/segmented-control.stories.ts",
                 "deprecated": false,
@@ -5170,32 +5522,6 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<ColorGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "rawdescription": "",
-                "description": "",
-                "kind": 184
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "coverageIgnore": false,
-                "rawtype": "StoryObj<ColorGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "rawdescription": "",
-                "description": "",
-                "kind": 184
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "coverageIgnore": false,
                 "rawtype": "StoryObj<BorderGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts",
                 "deprecated": false,
@@ -5222,8 +5548,8 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<DisplayGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
+                "rawtype": "StoryObj<ColorGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -5235,8 +5561,21 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "coverageIgnore": false,
-                "rawtype": "StoryObj<ShadowGridComponent>",
-                "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                "rawtype": "StoryObj<ColorGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<DisplayGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -5302,6 +5641,19 @@
                 "coverageIgnore": false,
                 "rawtype": "StoryObj<TypographyGridComponent>",
                 "file": "projects/ngx-egov-ui/src/stories/foundations/typography/typography.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "rawdescription": "",
+                "description": "",
+                "kind": 184
+            },
+            {
+                "name": "Story",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "coverageIgnore": false,
+                "rawtype": "StoryObj<ShadowGridComponent>",
+                "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "rawdescription": "",
@@ -6641,6 +6993,121 @@
                     "defaultValue": "{\n  title: 'Foundations/Elevation',\n  component: ShadowGridComponent,\n  decorators: [moduleMetadata({ imports: [ShadowGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts": [
+                {
+                    "name": "LinearReactiveForms",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `<div style=\"${PAD}\"><egov-progress-tracker-linear-reactive-demo /></div>`,\n  }),\n}",
+                    "rawdescription": "Linear + reactive forms: Next is gated by each step's FormGroup.",
+                    "description": "<p>Linear + reactive forms: Next is gated by each step&#39;s FormGroup.</p>\n"
+                },
+                {
+                    "name": "LinearSignalForms",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `<div style=\"${PAD}\"><egov-progress-tracker-linear-signal-forms-demo /></div>`,\n  }),\n}",
+                    "rawdescription": "Linear + signal forms: same gating driven by a signal-forms field.",
+                    "description": "<p>Linear + signal forms: same gating driven by a signal-forms field.</p>\n"
+                },
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<EgovProgressTracker>",
+                    "defaultValue": "{\n  title: 'Components/Progress Tracker',\n  component: EgovProgressTracker,\n  decorators: [\n    moduleMetadata({\n      imports: [\n        EgovProgressTracker,\n        EgovStep,\n        EgovStepIndicator,\n        EgovIndicatorStep,\n        ProgressTrackerLinearReactiveDemo,\n        ProgressTrackerLinearSignalFormsDemo,\n      ],\n    }),\n  ],\n  argTypes: {\n    linear: { control: 'boolean', description: 'Gate navigation on completing previous steps' },\n    orientation: { control: 'inline-radio', options: ['horizontal', 'vertical'] },\n    selectedIndex: { control: { type: 'number', min: 0, max: 3, step: 1 } },\n  },\n  args: {\n    linear: false,\n    orientation: 'horizontal',\n    selectedIndex: 0,\n  },\n}"
+                },
+                {
+                    "name": "Mobile",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD};max-width:360px\">\n        <egov-progress-tracker>\n          <egov-step label=\"One\" state=\"completed\"><p></p></egov-step>\n          <egov-step label=\"Two\"><p></p></egov-step>\n          <egov-step label=\"Three\"><p></p></egov-step>\n          <egov-step label=\"Four\"><p></p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "≤991px: 20px empty circles, labels visually hidden (still announced).\nThe container below is narrow for layout purposes only — the compact\nlook is actually driven by a viewport media query, so to see it for\nreal, resize the Storybook preview (or the browser) to ≤991px wide.",
+                    "description": "<p>≤991px: 20px empty circles, labels visually hidden (still announced).\nThe container below is narrow for layout purposes only — the compact\nlook is actually driven by a viewport media query, so to see it for\nreal, resize the Storybook preview (or the browser) to ≤991px wide.</p>\n"
+                },
+                {
+                    "name": "PAD",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "defaultValue": "'padding:24px'"
+                },
+                {
+                    "name": "Playground",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: (args) => ({\n    props: { ...args },\n    template: `\n      <div style=\"${PAD}\">\n        <egov-progress-tracker\n          [linear]=\"linear\"\n          [orientation]=\"orientation\"\n          [selectedIndex]=\"selectedIndex\"\n        >\n          <egov-step label=\"Step\" supportingText=\"Supporting Text\"><p>One</p></egov-step>\n          <egov-step label=\"Step\" supportingText=\"Supporting Text\"><p>Two</p></egov-step>\n          <egov-step label=\"Step\"><p>Three</p></egov-step>\n          <egov-step label=\"Step\"><p>Four</p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Interactive tracker driven by the controls panel. Non-linear by\ndefault, so every step is reachable — click a circle or use\nArrow keys + Enter on a focused header to navigate; completed and\nblocked states derive from each step's control once visited. Toggle\n`linear` to see unvisited steps become `incomplete` and unreachable.",
+                    "description": "<p>Interactive tracker driven by the controls panel. Non-linear by\ndefault, so every step is reachable — click a circle or use\nArrow keys + Enter on a focused header to navigate; completed and\nblocked states derive from each step&#39;s control once visited. Toggle\n<code>linear</code> to see unvisited steps become <code>incomplete</code> and unreachable.</p>\n"
+                },
+                {
+                    "name": "States",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD}\">\n        <egov-progress-tracker selectedIndex=\"0\">\n          <egov-step label=\"Current\"><p></p></egov-step>\n          <egov-step label=\"Completed\" state=\"completed\"><p></p></egov-step>\n          <egov-step label=\"Available\" state=\"available\"><p></p></egov-step>\n          <egov-step label=\"Blocked\" state=\"blocked\"><p></p></egov-step>\n          <egov-step label=\"Incomplete\" state=\"incomplete\"><p></p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "All five visual states, forced via the `state` override input.",
+                    "description": "<p>All five visual states, forced via the <code>state</code> override input.</p>\n"
+                },
+                {
+                    "name": "StepIndicator",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD};max-width:480px\">\n        <egov-step-indicator>\n          <egov-indicator-step heading=\"Create account\">\n            Register using your government ID.\n            <button type=\"button\">Start</button>\n          </egov-indicator-step>\n          <egov-indicator-step heading=\"Verify identity\">\n            Upload the requested documents.\n          </egov-indicator-step>\n          <egov-indicator-step heading=\"Submit application\" />\n        </egov-step-indicator>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Static instructional list — no current step, no interaction.",
+                    "description": "<p>Static instructional list — no current step, no interaction.</p>\n"
+                },
+                {
+                    "name": "Vertical",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  parameters: { controls: { disable: true } },\n  render: () => ({\n    template: `\n      <div style=\"${PAD};max-width:480px\">\n        <egov-progress-tracker orientation=\"vertical\">\n          <egov-step label=\"Identity\" supportingText=\"Who you are\"><p>Identity form</p></egov-step>\n          <egov-step label=\"Address\"><p>Address form</p></egov-step>\n          <egov-step label=\"Review\"><p>Review</p></egov-step>\n        </egov-progress-tracker>\n      </div>\n    `,\n  }),\n}",
+                    "rawdescription": "Vertical orientation renders each panel inline under its header.",
+                    "description": "<p>Vertical orientation renders each panel inline under its header.</p>\n"
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/spacing/margin.stories.ts": [
                 {
                     "name": "Margin",
@@ -6663,54 +7130,6 @@
                     "deprecationMessage": "",
                     "type": "Meta<SpacingGridComponent>",
                     "defaultValue": "{\n  title: 'Foundations/Margin',\n  component: SpacingGridComponent,\n  decorators: [moduleMetadata({ imports: [SpacingGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
-                {
-                    "name": "meta",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<ColorGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Palette",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"primitives\" />` }),\n}"
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts": [
-                {
-                    "name": "meta",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<ColorGridComponent>",
-                    "defaultValue": "{\n  title: 'Foundations/Semantic Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
-                },
-                {
-                    "name": "Tokens",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
-                    "coverageIgnore": false,
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
@@ -6759,6 +7178,54 @@
                     "deprecationMessage": "",
                     "type": "Story",
                     "defaultValue": "{\n  render: () => ({ template: `<egov-cursor-grid />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<ColorGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Palette",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"primitives\" />` }),\n}"
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<ColorGridComponent>",
+                    "defaultValue": "{\n  title: 'Foundations/Semantic Colors',\n  component: ColorGridComponent,\n  decorators: [moduleMetadata({ imports: [ColorGridComponent] })],\n  parameters: { layout: 'fullscreen' },\n}"
+                },
+                {
+                    "name": "Tokens",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                    "coverageIgnore": false,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story",
+                    "defaultValue": "{\n  render: () => ({ template: `<egov-color-grid mode=\"semantic\" />` }),\n}"
                 }
             ],
             "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
@@ -7085,6 +7552,21 @@
                     "kind": 184
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<EgovProgressTracker>",
+                    "file": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/components/segmented-control.stories.ts": [
                 {
                     "name": "Story",
@@ -7160,36 +7642,6 @@
                     "kind": 184
                 }
             ],
-            "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<ColorGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<ColorGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
             "projects/ngx-egov-ui/src/stories/foundations/border/borders.stories.ts": [
                 {
                     "name": "Story",
@@ -7220,6 +7672,36 @@
                     "kind": 184
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<ColorGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/colors.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
+            "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<ColorGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/color/semantic-colors.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts": [
                 {
                     "name": "Story",
@@ -7228,21 +7710,6 @@
                     "coverageIgnore": false,
                     "rawtype": "StoryObj<DisplayGridComponent>",
                     "file": "projects/ngx-egov-ui/src/stories/foundations/display-utilities/displays.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "",
-                    "description": "",
-                    "kind": 184
-                }
-            ],
-            "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "coverageIgnore": false,
-                    "rawtype": "StoryObj<ShadowGridComponent>",
-                    "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "rawdescription": "",
@@ -7325,6 +7792,21 @@
                     "kind": 184
                 }
             ],
+            "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts": [
+                {
+                    "name": "Story",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "coverageIgnore": false,
+                    "rawtype": "StoryObj<ShadowGridComponent>",
+                    "file": "projects/ngx-egov-ui/src/stories/foundations/elevation/elevation.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "rawdescription": "",
+                    "description": "",
+                    "kind": 184
+                }
+            ],
             "projects/ngx-egov-ui/src/stories/foundations/width/width.stories.ts": [
                 {
                     "name": "Story",
@@ -7348,7 +7830,7 @@
         "children": []
     },
     "coverage": {
-        "count": 21,
+        "count": 23,
         "status": "low",
         "files": [
             {
@@ -7973,6 +8455,124 @@
             },
             {
                 "filePath": "projects/ngx-egov-ui/src/stories/components/link.stories.ts",
+                "type": "type alias",
+                "linktype": "miscellaneous",
+                "linksubtype": "typealias",
+                "name": "Story",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ProgressTrackerLinearReactiveDemo",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ProgressTrackerLinearSignalFormsDemo",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "LinearReactiveForms",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "LinearSignalForms",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "meta",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Mobile",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "PAD",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Playground",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "States",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "StepIndicator",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Vertical",
+                "coveragePercent": 100,
+                "coverageCount": "1/1",
+                "status": "very-good"
+            },
+            {
+                "filePath": "projects/ngx-egov-ui/src/stories/components/progress-tracker.stories.ts",
                 "type": "type alias",
                 "linktype": "miscellaneous",
                 "linksubtype": "typealias",
