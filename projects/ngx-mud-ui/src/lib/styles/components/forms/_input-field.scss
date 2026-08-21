@@ -200,7 +200,9 @@
 
   .input-field__native,
   .input-field__affix {
-    opacity: 0.6;
+    // 0.7 is the floor for WCAG 1.4.3: gray-900 value text dimmed at 0.6
+    // blends to #787878 on white - 4.41:1, under the 4.5:1 minimum.
+    opacity: 0.7;
   }
 }
 
@@ -383,6 +385,89 @@ input[type='search'].input-field__native::-webkit-search-decoration {
 
 @media (prefers-reduced-motion: reduce) {
   .select-field__chevron svg {
+    transition: none;
+  }
+}
+
+// ----- numeric-input additions ---------------------------------------------
+
+.numeric-field__affix {
+  flex-shrink: 0;
+  font-size: var(--_if-font-size);
+  line-height: var(--_if-line-height);
+  color: var(--color-text-base-tertiary);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.input-field.is-readonly .numeric-field__affix {
+  color: var(--color-text-base-secondary);
+}
+
+.input-field.is-disabled .numeric-field__affix {
+  color: var(--color-text-disabled-on-disabled, var(--color-text-disabled-default));
+}
+
+// The trailing stepper pair: 24px (md) / 32px (lg) wide, inset 4px from the
+// control edge per the official with-stepper padding.
+.numeric-field__control--steppers {
+  padding-right: var(--spacing-4, 4px);
+}
+
+.numeric-field__steppers {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4, 4px);
+}
+
+.numeric-field__stepper {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--_if-stepper-size, 24px);
+  height: calc((var(--_if-height) - 12px) / 2);
+  padding: 0;
+  border: 1px solid var(--color-border-base-default);
+  border-radius: var(--border-radius-4, 4px);
+  background: var(--color-background-base-default);
+  color: var(--color-icon-base-secondary);
+  cursor: pointer;
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out;
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-background-base-secondary);
+    color: var(--color-icon-base-default);
+  }
+
+  &:disabled {
+    color: var(--color-icon-disabled-default);
+    border-color: var(--color-border-disabled-default);
+    cursor: not-allowed;
+  }
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.input-field--lg .numeric-field__stepper {
+  --_if-stepper-size: 32px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .numeric-field__stepper {
     transition: none;
   }
 }
