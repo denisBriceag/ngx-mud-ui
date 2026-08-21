@@ -1,0 +1,230 @@
+.input-field {
+  --_if-height: 40px;
+  --_if-padding-inline: var(--spacing-12, 12px);
+  --_if-font-size: 14px;
+  --_if-line-height: 20px;
+  --_if-icon-size: 20px;
+  --_if-clear-size: 16px;
+  --_if-border: var(--color-border-base-default);
+  --_if-border-hover: var(--color-border-base-tertiary);
+  --_if-border-focus: var(--color-border-brand-default);
+  --_if-focus-ring: var(--color-input-focus-ring, var(--blue-sky-200));
+  --_if-bg: var(--color-input-background, var(--color-background-base-default));
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8, 8px);
+  font-family: var(--font-family-primary, inherit);
+}
+
+.input-field--lg {
+  --_if-height: 48px;
+  --_if-padding-inline: var(--spacing-16, 16px);
+  --_if-font-size: 16px;
+  --_if-line-height: 24px;
+  --_if-icon-size: 24px;
+  --_if-clear-size: 20px;
+}
+
+.input-field--warning {
+  --_if-border: var(--color-border-warning-default);
+  --_if-border-hover: var(--color-border-warning-default);
+  --_if-border-focus: var(--color-border-warning-default);
+  --_if-focus-ring: var(--apricot-200);
+}
+
+.input-field--destructive {
+  --_if-border: var(--color-border-danger-default);
+  --_if-border-hover: var(--color-border-danger-default);
+  --_if-border-focus: var(--color-border-danger-default);
+  --_if-focus-ring: var(--red-200);
+}
+
+.input-field--success {
+  --_if-border: var(--color-border-positive-default);
+  --_if-border-hover: var(--color-border-positive-default);
+  --_if-border-focus: var(--color-border-positive-default);
+  --_if-focus-ring: var(--green-200);
+}
+
+.input-field__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4, 4px);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--color-text-base-secondary);
+  cursor: pointer;
+}
+
+.input-field__required {
+  color: var(--color-text-danger-default);
+  font-size: 12px;
+}
+
+.input-field__control {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8, 8px);
+  height: var(--_if-height);
+  padding: 0 var(--_if-padding-inline);
+  background-color: var(--_if-bg);
+  border: 1px solid var(--_if-border);
+  border-radius: var(--border-radius-8, 8px);
+  transition:
+    border-color 150ms ease-out,
+    box-shadow 150ms ease-out,
+    background-color 150ms ease-out;
+
+  &:hover {
+    border-color: var(--_if-border-hover);
+  }
+}
+
+.input-field.is-focused .input-field__control {
+  border-color: var(--_if-border-focus);
+  box-shadow: 0 0 0 2px var(--_if-focus-ring);
+}
+
+.input-field__native {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-input-text, var(--color-text-base-default));
+  font-family: inherit;
+  font-size: var(--_if-font-size);
+  line-height: var(--_if-line-height);
+  font-weight: 400;
+
+  &::placeholder {
+    color: var(--color-input-placeholder, var(--color-text-base-tertiary));
+  }
+
+  // The wrapper draws the readonly/disabled treatments.
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+// Projected icons; an empty affix collapses so it adds no gap.
+.input-field__affix {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-icon-base-secondary);
+
+  &:empty {
+    display: none;
+  }
+
+  mud-icon svg,
+  svg {
+    width: var(--_if-icon-size);
+    height: var(--_if-icon-size);
+  }
+}
+
+.input-field__clear {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--_if-clear-size) + 8px);
+  height: calc(var(--_if-clear-size) + 8px);
+  margin: 0 -4px;
+  padding: 0;
+  border: none;
+  border-radius: var(--border-radius-full, 9999px);
+  background: transparent;
+  color: var(--color-icon-base-secondary);
+  cursor: pointer;
+  transition:
+    color 150ms ease-out,
+    background-color 150ms ease-out;
+
+  &:hover {
+    color: var(--color-icon-base-default);
+    background-color: var(--color-background-base-tertiary);
+  }
+
+  svg {
+    width: var(--_if-clear-size);
+    height: var(--_if-clear-size);
+  }
+}
+
+// Loading arc, sharing the spinner-rotate keyframes with mud-spinner/button.
+.input-field__spinner {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  display: inline-block;
+  width: var(--_if-clear-size);
+  height: var(--_if-clear-size);
+  border-radius: 50%;
+  border: 2px solid var(--color-background-brand-default, var(--blue-sky-600));
+  border-top-color: transparent;
+  rotate: 45deg;
+  animation: spinner-rotate 0.8s linear infinite;
+}
+
+// ----- states -----------------------------------------------------------
+
+.input-field.is-readonly .input-field__control {
+  background-color: var(--color-input-readonly-background, var(--color-background-base-secondary));
+
+  &:hover {
+    border-color: var(--_if-border);
+  }
+}
+
+.input-field.is-loading .input-field__control {
+  pointer-events: none;
+
+  .input-field__native,
+  .input-field__affix {
+    opacity: 0.6;
+  }
+}
+
+.input-field.is-disabled {
+  .input-field__label {
+    color: var(--color-text-disabled-on-disabled, var(--color-text-disabled-default));
+    cursor: not-allowed;
+  }
+
+  .input-field__control {
+    background-color: var(--color-input-disabled-background, var(--color-background-disabled-default));
+    border-color: var(--color-input-disabled-border, var(--color-border-disabled-default));
+
+    .input-field__native {
+      color: var(--color-input-disabled-text, var(--color-text-disabled-on-disabled));
+
+      &::placeholder {
+        color: var(--color-input-disabled-text, var(--color-text-disabled-on-disabled));
+      }
+    }
+
+    .input-field__affix {
+      color: var(--color-icon-disabled-on-disabled, var(--color-icon-disabled-default));
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .input-field__control,
+  .input-field__clear {
+    transition: none;
+  }
+
+  .input-field__spinner {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}
