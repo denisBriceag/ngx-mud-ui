@@ -15,6 +15,11 @@ const meta: Meta<MudTextarea> = {
     rows: { control: 'number' },
     maxLength: { control: 'number' },
     showCounter: { control: 'boolean' },
+    counterLabel: {
+      control: 'text',
+      description:
+        'Consumer-owned screen-reader sentence for the counter (compute it yourself, e.g. `value.length + " din 500 de caractere"`); unset = the visible digits are announced as-is',
+    },
     disabled: { control: 'boolean' },
     required: { control: 'boolean' },
     readonly: { control: 'boolean' },
@@ -31,6 +36,7 @@ const meta: Meta<MudTextarea> = {
     rows: 4,
     maxLength: 500,
     showCounter: true,
+    counterLabel: undefined,
     disabled: false,
     required: false,
     readonly: false,
@@ -57,6 +63,7 @@ export const Playground: Story = {
           [rows]="rows"
           [maxLength]="maxLength"
           [showCounter]="showCounter"
+          [counterLabel]="counterLabel"
           [disabled]="disabled"
           [required]="required"
           [readonly]="readonly"
@@ -77,7 +84,13 @@ export const CounterAndStates: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-textarea label="Cu contor" [maxLength]="200" helperText="Maxim 200 de caractere." value="Un început de mesaj." />
+        <mud-textarea
+          label="Cu contor"
+          [maxLength]="200"
+          helperText="Maxim 200 de caractere."
+          value="Un început de mesaj."
+          counterLabel="20 din 200 de caractere"
+        />
         <mud-textarea label="Eroare" [maxLength]="200" invalid errorText="Mesajul este obligatoriu." />
         <mud-textarea label="Doar contor" [maxLength]="200" value="Fără helper." />
         <mud-textarea label="Dezactivat" [maxLength]="200" disabled value="Nu poate fi editat." />

@@ -69,8 +69,17 @@ describe('MudTextarea', () => {
 
     host.maxLength.set(100);
     await fixture.whenStable();
-    expect(el.querySelector('.input-field__counter')?.textContent).toContain('0 / 100');
+
+    const counter = el.querySelector('.input-field__counter')!;
+
+    expect(counter.textContent).toContain('0 / 100');
     expect(native.maxLength).toBe(100);
+    // The counter is announced via the accessible description, not hidden.
+    expect(counter.getAttribute('aria-hidden')).toBeNull();
+    expect(native.getAttribute('aria-describedby')).toContain(counter.id);
+    // Without a consumer-provided counterLabel the digits are announced as-is.
+    expect(counter.getAttribute('aria-label')).toBeNull();
+    expect(counter.querySelector('.input-field__sr-only')).toBeNull();
 
     await type(fixture, native, 'salut');
     expect(host.value()).toBe('salut');
@@ -103,6 +112,20 @@ describe('MudTextarea', () => {
     expect(el.textContent).not.toContain('Maxim 500');
     expect(el.classList.contains('input-field--destructive')).toBe(true);
     expect(native.getAttribute('aria-invalid')).toBe('true');
+  });
+
+  it('renders a consumer-provided counterLabel as the announced sr-only text', async () => {
+    const fixture = TestBed.createComponent(CounterLabelHost);
+
+    await fixture.whenStable();
+    const el = fixture.nativeElement.querySelector('mud-textarea') as HTMLElement;
+    const counter = el.querySelector('.input-field__counter')!;
+
+    // aria-label stays prohibited on generic spans (axe aria-prohibited-attr);
+    // the consumer's sentence lives in visually-hidden content, digits are
+    // hidden from AT.
+    expect(counter.querySelector('.input-field__sr-only')?.textContent).toBe('2 din 100 de caractere');
+    expect(counter.querySelector('[aria-hidden="true"]')?.textContent).toContain('2 / 100');
   });
 
   it('maps resize none to the modifier class', async () => {
@@ -168,6 +191,21 @@ describe('MudTextarea', () => {
     expect(error.querySelector('mud-inline-message.custom-error')).toBeTruthy();
   });
 });
+
+@Component({
+  imports: [MudTextarea],
+  template: `
+    <mud-textarea
+      label="Mesaj"
+      [(value)]="value"
+      [maxLength]="100"
+      [counterLabel]="value().length + ' din 100 de caractere'"
+    />
+  `,
+})
+class CounterLabelHost {
+  readonly value = signal('ab');
+}
 
 @Component({
   imports: [MudTextarea, ReactiveFormsModule],

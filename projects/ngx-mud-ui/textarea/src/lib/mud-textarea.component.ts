@@ -83,6 +83,12 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
   readonly showCounter = input(true, { transform: booleanAttribute });
 
   /**
+   * @description Optional screen-reader text for the counter, fully owned by the
+   * consumer
+   */
+  readonly counterLabel = input<string | undefined>(undefined);
+
+  /**
    * @description Validation errors pushed by signal forms. When present the field turns
    * destructive and the first error's message renders as the error line
    * (unless `errorText` overrides it).
@@ -122,6 +128,7 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
   protected readonly _labelId = `${this._id}-label`;
   protected readonly _helperId = `${this._id}-helper`;
   protected readonly _errorId = `${this._id}-error`;
+  protected readonly _counterId = `${this._id}-counter`;
 
   protected readonly _focused = signal(false);
   private readonly _cvaDisabled = signal(false);
@@ -174,6 +181,8 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
 
     if (this._showError()) ids.push(this._errorId);
     else if (this._showHelper()) ids.push(this._helperId);
+
+    if (this._showCounter()) ids.push(this._counterId);
 
     const external = this.ariaDescribedby()?.trim();
 

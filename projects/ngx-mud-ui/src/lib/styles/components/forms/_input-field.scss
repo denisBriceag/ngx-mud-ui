@@ -228,6 +228,102 @@
   }
 }
 
+// ----- search-input additions (mud-search-input shares the contract) -----
+
+// Circular silhouette: full pill container; the submit button rounds with it.
+.input-field--circular {
+  .input-field__control {
+    border-radius: var(--border-radius-full, 9999px);
+  }
+
+  .input-field__submit {
+    border-radius: var(--border-radius-full, 9999px);
+  }
+}
+
+input[type='search'].input-field__native::-webkit-search-cancel-button,
+input[type='search'].input-field__native::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
+.input-field__search-clear {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--_if-icon-size) + 8px);
+  height: calc(var(--_if-icon-size) + 8px);
+  padding: var(--spacing-4, 4px);
+  border: none;
+  border-radius: var(--border-radius-full, 9999px);
+  background: var(--color-background-base-tertiary);
+  color: var(--color-icon-base-secondary);
+  cursor: pointer;
+  transition:
+    color 150ms ease-out,
+    background-color 150ms ease-out;
+
+  &:hover {
+    color: var(--color-icon-base-default);
+    background-color: var(--color-background-base-tertiary-hover);
+  }
+
+  &:active {
+    background-color: var(--color-background-base-tertiary-active);
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// Integrated brand submit button: 32px (md) / 40px (lg) square with a
+// 16/20px glyph, inset on the trailing edge.
+.input-field__submit {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--_if-submit-size, 32px);
+  height: var(--_if-submit-size, 32px);
+  margin-right: calc((var(--_if-height) - var(--_if-submit-size, 32px)) / 2 - var(--_if-padding-inline));
+  padding: 0;
+  border: none;
+  border-radius: var(--border-radius-6, 6px);
+  background: var(--color-background-brand-default);
+  color: var(--color-icon-base-inverse-on-color, #fff);
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-background-brand-default-hover);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--color-background-brand-default-active);
+  }
+
+  &:disabled {
+    background-color: var(--color-background-disabled-default);
+    color: var(--color-icon-disabled-on-disabled, var(--color-icon-disabled-default));
+    cursor: not-allowed;
+  }
+
+  svg {
+    width: var(--_if-submit-icon, 16px);
+    height: var(--_if-submit-icon, 16px);
+  }
+}
+
+.input-field--lg .input-field__submit {
+  --_if-submit-size: 40px;
+  --_if-submit-icon: 20px;
+}
+
 // ----- textarea additions (mud-textarea shares the whole contract) -------
 
 .input-field__control--textarea {
@@ -272,6 +368,19 @@ textarea.input-field__native {
   color: var(--color-text-base-tertiary);
 }
 
+// Screen-reader-only text (the counter's announced sentence).
+.input-field__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 .input-field.is-invalid .input-field__counter {
   color: var(--color-text-danger-default);
 }
@@ -292,7 +401,9 @@ textarea.input-field__native {
 
 @media (prefers-reduced-motion: reduce) {
   .input-field__control,
-  .input-field__clear {
+  .input-field__clear,
+  .input-field__search-clear,
+  .input-field__submit {
     transition: none;
   }
 

@@ -18,6 +18,7 @@
     "input/src/**/*.spec.ts",
     "link/src/**/*.spec.ts",
     "progress-tracker/src/**/*.spec.ts",
+    "search-input/src/**/*.spec.ts",
     "segmented-control/src/**/*.spec.ts",
     "spinner/src/**/*.spec.ts",
     "tabs/src/**/*.spec.ts",

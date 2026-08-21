@@ -1,0 +1,114 @@
+@if (_showLabel()) {
+  <label class="input-field__label" [attr.for]="_id" [id]="_labelId">
+    <span class="input-field__label-text"><ng-content select="[mudLabel]">{{ label() }}</ng-content></span>
+    @if (required()) {
+      <span class="input-field__required" aria-hidden="true">*</span>
+    }
+  </label>
+}
+
+<div class="input-field__control">
+  <span class="input-field__affix input-field__affix--start" aria-hidden="true">
+    <ng-content select="[icon-start]">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false">
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M9.167 4.083a5.083 5.083 0 1 0 0 10.167 5.083 5.083 0 0 0 0-10.167M2.583 9.167a6.583 6.583 0 1 1 11.74 4.094l2.874 2.875a.75.75 0 0 1-1.06 1.061l-2.876-2.875A6.583 6.583 0 0 1 2.583 9.167"
+        />
+      </svg>
+    </ng-content>
+  </span>
+
+  <input
+    #native
+    type="search"
+    class="input-field__native"
+    [id]="_id"
+    [value]="value()"
+    [attr.name]="name() || null"
+    [attr.placeholder]="placeholder() ?? null"
+    [disabled]="_effectiveDisabled()"
+    [readOnly]="readonly() || loading()"
+    [required]="required()"
+    [attr.autocomplete]="autocomplete() ?? null"
+    [attr.minlength]="minLength() ?? null"
+    [attr.maxlength]="maxLength() ?? null"
+    [attr.aria-label]="_ariaLabel()"
+    [attr.aria-labelledby]="_showLabel() ? _labelId : null"
+    [attr.aria-describedby]="_describedBy()"
+    [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
+    (input)="_onInput($event)"
+    (keydown)="_onKeydown($event)"
+    (focus)="_onFocus()"
+    (blur)="_onBlur()"
+  />
+
+  @if (_showClear()) {
+    <button
+      type="button"
+      class="input-field__search-clear"
+      [attr.aria-label]="clearLabel()"
+      tabindex="-1"
+      (mousedown)="$event.preventDefault()"
+      (click)="_onClear()"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false" aria-hidden="true">
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M4.41 4.41a.833.833 0 0 1 1.18 0L10 8.821l4.41-4.41a.833.833 0 1 1 1.18 1.178L11.178 10l4.41 4.41a.833.833 0 0 1-1.178 1.18L10 11.178l-4.41 4.41a.833.833 0 0 1-1.18-1.178L8.821 10l-4.41-4.41a.833.833 0 0 1 0-1.18"
+        />
+      </svg>
+    </button>
+  }
+
+  @if (loading()) {
+    <span class="input-field__spinner" aria-hidden="true"></span>
+  }
+
+  @if (withButton()) {
+    <button
+      type="button"
+      class="input-field__submit"
+      [attr.aria-label]="submitLabel()"
+      [disabled]="_inert()"
+      (click)="_onSubmitClick()"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false" aria-hidden="true">
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M9.167 4.083a5.083 5.083 0 1 0 0 10.167 5.083 5.083 0 0 0 0-10.167M2.583 9.167a6.583 6.583 0 1 1 11.74 4.094l2.874 2.875a.75.75 0 0 1-1.06 1.061l-2.876-2.875A6.583 6.583 0 0 1 2.583 9.167"
+        />
+      </svg>
+    </button>
+  }
+</div>
+
+@if (_showError()) {
+  <div class="input-field__assistive" role="alert" [id]="_errorId">
+    <ng-content select="[mudError]">
+      <div class="inline-message inline-message--error">
+        <span class="inline-message__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false">
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M10 1.667a8.333 8.333 0 1 0 0 16.666 8.333 8.333 0 0 0 0-16.666m-.833 7.5c0-.459.416-.834.833-.834s.833.373.833.834v4.166a.833.833 0 0 1-1.666 0zM10 5.833A.833.833 0 1 0 10 7.5a.833.833 0 0 0 0-1.667"
+            />
+          </svg>
+        </span>
+        <span class="inline-message__text">{{ _errorMessage() }}</span>
+      </div>
+    </ng-content>
+  </div>
+} @else if (_showHelper()) {
+  <div class="input-field__assistive" [id]="_helperId">
+    <ng-content select="[mudHelper]">
+      <div class="inline-message">
+        <span class="inline-message__text">{{ _helperMessage() }}</span>
+      </div>
+    </ng-content>
+  </div>
+}
