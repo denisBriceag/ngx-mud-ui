@@ -1,5 +1,5 @@
 {
-  "name": "ngx-egov-ui",
+  "name": "ngx-mud-ui",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -8,9 +8,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:tools": "vitest run tools",
-    "icons:generate": "node tools/generate-icons.mjs projects/ngx-egov-ui/icons-source projects/ngx-egov-ui/icons/src/lib",
-    "storybook": "ng run ngx-egov-ui:storybook",
-    "build-storybook": "ng run ngx-egov-ui:build-storybook",
+    "icons:generate": "node tools/generate-icons.mjs projects/ngx-mud-ui/icons-source projects/ngx-mud-ui/icons/src/lib",
+    "storybook": "ng run ngx-mud-ui:storybook",
+    "build-storybook": "ng run ngx-mud-ui:build-storybook",
     "lint": "ng lint"
   },
   "private": true,

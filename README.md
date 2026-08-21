@@ -1,4 +1,4 @@
-# NgxEgovUi
+# NgxMudUi
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.3.
 
@@ -56,26 +56,23 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 
 ## Icons
 
-Tree-shakeable icon components and data live in the `ngx-egov-ui/icons`
+Tree-shakeable icon components and data live in the `ngx-mud-ui/icons`
 secondary entry point. See
-[`projects/ngx-egov-ui/icons/README.md`](projects/ngx-egov-ui/icons/README.md)
+[`projects/ngx-mud-ui/icons/README.md`](projects/ngx-mud-ui/icons/README.md)
 for registration and usage.
 
 ## Naming conventions
 
-The library uses **three distinct namespaces** — they intentionally do *not* share a prefix:
+The library uses **two namespaces that deliberately share a prefix**, plus a third that stays unprefixed:
 
 | Layer | Prefix | Example |
 |---|---|---|
-| Angular component/directive selectors | `egov-` | `<egov-icon>` |
+| Angular component/directive selectors | `mud-` | `<mud-icon>`, `[mudButton]` |
 | Design-system CSS utility/component classes | `mud-` | `.mud-btn`, `.mud-card` |
 | Design tokens (CSS custom properties) | *(none)* | `--color-background-brand-default`, `--gray-400` |
 
-- **`egov-`** is this library's Angular API namespace (matches the package name).
-- **`mud-`** is the upstream **Moldova Unified Design** system's own class namespace (see [mud.egov.md](https://mud.egov.md/)); it's kept as-is so class names match the design-system docs and upstream stays easy to sync. It's configurable via `$mud-prefix` in `styles/abstracts/_mud-prefix.scss` if you ever need to rebrand it.
-- **Tokens** are plain, unprefixed CSS custom properties.
-
-Angular element selectors and CSS classes live in different namespaces, so `egov-` and `mud-` can never collide — mixing them is by design, not an oversight.
+- **`mud-`** is both this library's Angular API namespace (matches the package name, `ngx-mud-ui`) and the upstream **Moldova Unified Design** system's own CSS class namespace (see [mud.egov.md](https://mud.egov.md/)). Sharing the prefix is intentional, not a collision risk: Angular selectors and CSS classes are resolved in different contexts (the component compiler vs. the stylesheet), and having `<mud-avatar>`/`[mudButton]` line up with `.mud-btn`/`.mud-card` means markup matches the design-system docs with nothing to translate. The CSS-utility side stays configurable via `$mud-prefix` in `styles/abstracts/_mud-prefix.scss` if a consumer ever needs to rebrand it.
+- **Tokens** are plain, unprefixed CSS custom properties — they're consumed as CSS variables rather than classes or selectors, so they sit outside both namespaces above.
 
 ## Additional Resources
 

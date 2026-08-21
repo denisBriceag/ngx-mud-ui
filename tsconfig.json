@@ -9,7 +9,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "ngx-egov-ui": ["./dist/ngx-egov-ui"]
+      "ngx-mud-ui": ["./dist/ngx-mud-ui"]
     },
     "skipLibCheck": true,
     "isolatedModules": true,
@@ -27,10 +27,10 @@
   "files": [],
   "references": [
     {
-      "path": "./projects/ngx-egov-ui/tsconfig.lib.json"
+      "path": "./projects/ngx-mud-ui/tsconfig.lib.json"
     },
     {
-      "path": "./projects/ngx-egov-ui/tsconfig.spec.json"
+      "path": "./projects/ngx-mud-ui/tsconfig.spec.json"
     }
   ]
 }

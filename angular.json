@@ -9,20 +9,20 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "ngx-egov-ui": {
+    "ngx-mud-ui": {
       "projectType": "library",
-      "root": "projects/ngx-egov-ui",
-      "sourceRoot": "projects/ngx-egov-ui/src",
-      "prefix": "egov",
+      "root": "projects/ngx-mud-ui",
+      "sourceRoot": "projects/ngx-mud-ui/src",
+      "prefix": "mud",
       "architect": {
         "build": {
           "builder": "@angular/build:ng-packagr",
           "configurations": {
             "production": {
-              "tsConfig": "projects/ngx-egov-ui/tsconfig.lib.prod.json"
+              "tsConfig": "projects/ngx-mud-ui/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "projects/ngx-egov-ui/tsconfig.lib.json"
+              "tsConfig": "projects/ngx-mud-ui/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -30,7 +30,7 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/ngx-egov-ui/tsconfig.spec.json",
+            "tsConfig": "projects/ngx-mud-ui/tsconfig.spec.json",
             "include": [
               "**/*.spec.ts",
               "../accordion/src/**/*.spec.ts",
@@ -51,16 +51,16 @@
         "storybook": {
           "builder": "@storybook/angular-vite:start-storybook",
           "options": {
-            "configDir": "projects/ngx-egov-ui/.storybook",
-            "browserTarget": "ngx-egov-ui:build",
+            "configDir": "projects/ngx-mud-ui/.storybook",
+            "browserTarget": "ngx-mud-ui:build",
             "port": 6006
           }
         },
         "build-storybook": {
           "builder": "@storybook/angular-vite:build-storybook",
           "options": {
-            "configDir": "projects/ngx-egov-ui/.storybook",
-            "browserTarget": "ngx-egov-ui:build",
+            "configDir": "projects/ngx-mud-ui/.storybook",
+            "browserTarget": "ngx-mud-ui:build",
             "outputDir": "storybook-static"
           }
         },
@@ -68,10 +68,10 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "projects/ngx-egov-ui/**/*.ts",
-              "projects/ngx-egov-ui/**/*.html"
+              "projects/ngx-mud-ui/**/*.ts",
+              "projects/ngx-mud-ui/**/*.html"
             ],
-            "eslintConfig": "projects/ngx-egov-ui/eslint.config.mjs"
+            "eslintConfig": "projects/ngx-mud-ui/eslint.config.mjs"
           }
         }
       }

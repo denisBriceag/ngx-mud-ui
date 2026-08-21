@@ -1,0 +1,76 @@
+import { computed, Directive, input } from '@angular/core';
+import { MudButtonBase, isDevMode } from './mud-button-base';
+
+export type MudButtonVariant = 'filled' | 'outlined' | 'text';
+export type MudButtonColor = 'primary' | 'secondary' | 'strict' | 'neutral' | 'destructive';
+export type MudButtonSize = 'large' | 'medium' | 'small';
+export type MudButtonShape = 'rectangular' | 'circular';
+
+const VARIANT_CLASS_INFIX: Record<MudButtonVariant, string> = {
+  filled: '',
+  outlined: '-outline',
+  text: '-text',
+};
+
+const SIZE_CLASSES: Record<MudButtonSize, string> = {
+  large: '',
+  medium: 'mud-btn-md',
+  small: 'mud-btn-sm',
+};
+
+const SUPPORTED_COLORS: Record<MudButtonVariant, readonly MudButtonColor[]> = {
+  filled: ['primary', 'secondary', 'strict', 'neutral', 'destructive'],
+  outlined: ['primary', 'strict', 'destructive'],
+  text: ['primary', 'strict', 'destructive'],
+};
+
+/**
+ * ```html
+ * <button mudButton>Save</button>
+ * <button mudButton="outlined" color="destructive" size="small">Delete</button>
+ * <a mudButton="text" color="strict" shape="circular" href="/back">Back</a>
+ * ```
+ */
+@Directive({
+  selector: 'button[mudButton], a[mudButton]',
+  exportAs: 'mudButton',
+})
+export class MudButton extends MudButtonBase {
+  readonly mudButton = input.required<MudButtonVariant, MudButtonVariant | ''>({
+    transform: (value) => value || 'filled',
+  });
+  readonly color = input<MudButtonColor>('primary');
+  readonly size = input<MudButtonSize>('large');
+  readonly shape = input<MudButtonShape>('rectangular');
+
+  private readonly _effectiveColor = computed(() => {
+    const variant = this.mudButton();
+    const color = this.color();
+
+    if (!SUPPORTED_COLORS[variant].includes(color)) {
+      if (isDevMode()) {
+        console.warn(
+          `mudButton: color "${color}" is not supported by the "${variant}" variant; falling back to "primary". ` +
+            `Supported colors: ${SUPPORTED_COLORS[variant].join(', ')}.`,
+        );
+      }
+
+      return 'primary';
+    }
+
+    return color;
+  });
+
+  protected override readonly _hostClasses = computed(() => {
+    const classes = ['mud-btn', `mud-btn${VARIANT_CLASS_INFIX[this.mudButton()]}-${this._effectiveColor()}`];
+    const sizeClass = SIZE_CLASSES[this.size()];
+
+    if (sizeClass) classes.push(sizeClass);
+
+    if (this.shape() === 'circular') classes.push('mud-btn-rounded');
+
+    if (this.loading()) classes.push('mud-btn-loading');
+
+    return classes.join(' ');
+  });
+}

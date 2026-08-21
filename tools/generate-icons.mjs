@@ -123,8 +123,8 @@ export async function generateIcons({ sourceDir, outDir }) {
     const icon = byName.get(name);
     const src =
       `// GENERATED FILE — do not edit. Regenerate with \`pnpm icons:generate\`.\n` +
-      `import type { EgovIcon } from '../types';\n\n` +
-      `export const ${safeIdent(camel(name))}: EgovIcon = ${serialize(icon)};\n`;
+      `import type { MudIcon } from '../types';\n\n` +
+      `export const ${safeIdent(camel(name))}: MudIcon = ${serialize(icon)};\n`;
     await fs.writeFile(join(dataDir, `${name}.ts`), src);
   }
 
@@ -137,7 +137,7 @@ export async function generateIcons({ sourceDir, outDir }) {
   await fs.writeFile(
     join(outDir, 'icon-name.ts'),
     `// GENERATED FILE — do not edit. Regenerate with \`pnpm icons:generate\`.\n` +
-      `export type EgovIconName =\n  ` + names.map((n) => `'${n}'`).join(' | ') + ';\n',
+      `export type MudIconName =\n  ` + names.map((n) => `'${n}'`).join(' | ') + ';\n',
   );
 
   return { names, count: names.length };

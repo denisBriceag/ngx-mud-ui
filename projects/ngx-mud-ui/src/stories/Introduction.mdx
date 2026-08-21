@@ -1,0 +1,51 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+<img src="/age-badge.svg" alt="eGov Moldova" width="96" />
+
+# ngx-mud-ui
+
+Angular v22 component library implementing the **eGov Moldova** design system —
+icons, styles, and typography, packaged for reuse across eGov products.
+
+## What's inside
+
+- **Icons** — 156 tree-shakeable SVG icons rendered by a single `<mud-icon>`
+  component, shipped from the `ngx-mud-ui/icons` entry point.
+- **Styles** — the design-system SCSS (abstracts, themes, utilities) shipped
+  from `ngx-mud-ui/styles`, with light/dark theming via CSS custom properties.
+- **Typography** — the **Onest** font, bundled with the styles.
+
+## Icons quick start
+
+Register the icons you use once (only registered icons are bundled), then use
+`<mud-icon>` anywhere:
+
+```ts
+// bootstrap
+import { provideMudIcons, alarm, arrowLeft } from 'ngx-mud-ui/icons';
+
+bootstrapApplication(App, {
+  providers: [provideMudIcons([alarm, arrowLeft])],
+});
+```
+
+```ts
+// component
+import { MudIconComponent } from 'ngx-mud-ui/icons';
+
+@Component({
+  imports: [MudIconComponent],
+  template: `<mud-icon name="alarm" variant="outlined" scale="24" />`,
+})
+export class Demo {}
+```
+
+Full guide: see the `ngx-mud-ui/icons` README. Icons default to
+`variant="outlined"`, `scale="24"`, recolor via CSS `color`, and expose an
+`aria-label` for semantic (non-decorative) use.
+
+## Links
+
+- Design system: [egov-moldova/design-system](https://github.com/egov-moldova/design-system)

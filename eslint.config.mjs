@@ -21,7 +21,7 @@ export default defineConfig([
         'error',
         {
           type: 'attribute',
-          prefix: 'egov',
+          prefix: 'mud',
           style: 'camelCase',
         },
       ],
@@ -29,7 +29,7 @@ export default defineConfig([
         'error',
         {
           type: 'element',
-          prefix: 'egov',
+          prefix: 'mud',
           style: 'kebab-case',
         },
       ],

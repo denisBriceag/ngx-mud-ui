@@ -18,7 +18,7 @@ describe('generateIcons', () => {
 
   it('sanitizes a reserved-word icon name into a safe export identifier, keeping the real kebab `name`', async () => {
     const src = await fs.readFile(join(OUT, 'data', 'delete.ts'), 'utf8');
-    expect(src).toContain('export const deleteIcon: EgovIcon');
+    expect(src).toContain('export const deleteIcon: MudIcon');
     expect(src).not.toMatch(/export const delete\b/);
     expect(src).toContain("name: 'delete'");
   });
