@@ -324,6 +324,69 @@ input[type='search'].input-field__native::-webkit-search-decoration {
   --_if-submit-icon: 20px;
 }
 
+// ----- select additions (mud-select-input) --------------------------------
+
+.select-field__trigger {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8, 8px);
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-input-text, var(--color-text-base-default));
+  font-family: inherit;
+  font-size: var(--_if-font-size);
+  line-height: var(--_if-line-height);
+  font-weight: 400;
+  text-align: left;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    color: var(--color-input-disabled-text, var(--color-text-disabled-on-disabled));
+  }
+}
+
+.select-field__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+
+  &.is-placeholder {
+    color: var(--color-input-placeholder, var(--color-text-base-tertiary));
+  }
+}
+
+.select-field__chevron svg {
+  transition: transform 150ms ease-out;
+}
+
+.select-field.is-open .select-field__chevron svg {
+  transform: rotate(180deg);
+}
+
+.select-field.is-readonly .input-field__control {
+  cursor: default;
+
+  .select-field__trigger {
+    cursor: default;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .select-field__chevron svg {
+    transition: none;
+  }
+}
+
 // ----- textarea additions (mud-textarea shares the whole contract) -------
 
 .input-field__control--textarea {
