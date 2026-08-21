@@ -315,17 +315,19 @@ describe('MudAccordionGroup', () => {
     expect(triggers[1].getAttribute('aria-expanded')).toBe('true');
   });
 
-  it('moves focus between headers with arrow keys, wrapping included disabled ones', async () => {
+  it('moves focus with arrow keys, wrapping around and skipping disabled headers', async () => {
     const { triggers } = await renderGroup();
 
     triggers[0].focus();
     triggers[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
     expect(document.activeElement).toBe(triggers[1]);
 
+    // Third header is disabled: ArrowDown skips it and wraps to the first.
     triggers[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
-    expect(document.activeElement).toBe(triggers[2]);
+    expect(document.activeElement).toBe(triggers[0]);
 
-    triggers[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+    // ArrowUp wraps backwards, also skipping the disabled header.
+    triggers[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
     expect(document.activeElement).toBe(triggers[1]);
   });
 
@@ -414,14 +416,82 @@ describe('MudAccordionGroup', () => {
     expect(document.activeElement).toBe(outerSecond);
   });
 
-  it('supports Home and End to jump to the first and last header', async () => {
+  it('supports Home and End, landing on the first and last enabled header', async () => {
     const { triggers } = await renderGroup();
 
-    triggers[1].focus();
-    triggers[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
-    expect(document.activeElement).toBe(triggers[2]);
+    triggers[0].focus();
+    // The last header is disabled, so End lands on the last enabled one.
+    triggers[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+    expect(document.activeElement).toBe(triggers[1]);
 
-    triggers[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+    triggers[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
     expect(document.activeElement).toBe(triggers[0]);
   });
 });
+
+describe('MudAccordionGroup appearance / size / iconPosition', () => {
+  it('propagates the group axes to item modifier classes', async () => {
+    const fixture = TestBed.createComponent(StyledGroupHost);
+
+    await fixture.whenStable();
+    const item = fixture.nativeElement.querySelector('mud-accordion') as HTMLElement;
+
+    expect(item.classList.contains('accordion__item--trail-sites')).toBe(true);
+    expect(item.classList.contains('accordion__item--sm')).toBe(true);
+    expect(item.classList.contains('accordion__item--icon-left')).toBe(true);
+  });
+
+  it('marks open items with the open modifier and morphs the icon', async () => {
+    const fixture = TestBed.createComponent(StyledGroupHost);
+
+    await fixture.whenStable();
+    const item = fixture.nativeElement.querySelector('mud-accordion') as HTMLElement;
+    const trigger = item.querySelector('.accordion__trigger') as HTMLButtonElement;
+
+    expect(item.classList.contains('accordion__item--open')).toBe(false);
+    expect(trigger.querySelector('.accordion__icon-vertical')).toBeTruthy();
+
+    trigger.click();
+    await fixture.whenStable();
+    expect(item.classList.contains('accordion__item--open')).toBe(true);
+  });
+
+  it('defaults the axes when an item is used without a group', async () => {
+    const fixture = TestBed.createComponent(SoloItemHost);
+
+    await fixture.whenStable();
+    const item = fixture.nativeElement.querySelector('mud-accordion') as HTMLElement;
+
+    expect(item.classList.contains('accordion__item--trail-sites')).toBe(false);
+    expect(item.classList.contains('accordion__item--sm')).toBe(false);
+    expect(item.classList.contains('accordion__item--icon-left')).toBe(false);
+  });
+});
+
+@Component({
+  imports: [MudAccordionGroup, MudAccordion, MudAccordionHeader, MudAccordionTitle],
+  template: `
+    <mud-accordion-group appearance="trail-sites" size="small" iconPosition="left">
+      <mud-accordion>
+        <mud-accordion-header>
+          <mud-accordion-title>First</mud-accordion-title>
+        </mud-accordion-header>
+        one
+      </mud-accordion>
+    </mud-accordion-group>
+  `,
+})
+class StyledGroupHost {}
+
+@Component({
+  imports: [MudAccordion, MudAccordionHeader, MudAccordionTitle],
+  template: `
+    <mud-accordion>
+      <mud-accordion-header>
+        <mud-accordion-title>Solo</mud-accordion-title>
+      </mud-accordion-header>
+      body
+    </mud-accordion>
+  `,
+})
+class SoloItemHost {}

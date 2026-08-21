@@ -11,6 +11,9 @@ import type { MudTooltipPlacement, MudTooltipSize } from './tooltip-positions';
     <button
       [mudTooltip]="message()"
       [tooltipShowDelay]="showDelay()"
+      [tooltipHideDelay]="0"
+      [tooltipTrigger]="trigger()"
+      [tooltipInteractive]="interactive()"
       [tooltipPlacement]="placement()"
       [tooltipSize]="size()"
       [tooltipCloseable]="closeable()"
@@ -25,6 +28,8 @@ import type { MudTooltipPlacement, MudTooltipSize } from './tooltip-positions';
 class Host {
   readonly message = signal('Tooltip message');
   readonly showDelay = signal(0);
+  readonly trigger = signal<'hover' | 'click' | 'focus' | 'manual'>('hover');
+  readonly interactive = signal(true);
   readonly placement = signal<MudTooltipPlacement>('top-center');
   readonly size = signal<MudTooltipSize>('small');
   readonly closeable = signal(false);
@@ -36,7 +41,7 @@ class Host {
 @Component({
   imports: [MudTooltip],
   template: `
-    <input mudTooltip="Tip" [tooltipShowDelay]="0" aria-describedby="external-hint" />
+    <input mudTooltip="Tip" [tooltipShowDelay]="0" [tooltipHideDelay]="0" aria-describedby="external-hint" />
     <span id="external-hint">Format: DD.MM.YYYY</span>
   `,
 })
@@ -284,8 +289,11 @@ describe('MudTooltip', () => {
       expect(host.dismissals).toBe(1);
     });
 
-    it('pins on trigger click so mouseleave no longer hides, and unpins on second click', async () => {
+    it('click trigger mode: opens on click, ignores mouseleave, closes on second click', async () => {
       const { fixture, host, trigger, tooltip } = await render();
+
+      host.trigger.set('click');
+      await fixture.whenStable();
 
       await dispatch(fixture, trigger, new MouseEvent('click', { bubbles: true }));
 
@@ -301,8 +309,11 @@ describe('MudTooltip', () => {
       expect(host.dismissals).toBe(1);
     });
 
-    it('dismisses a pinned tooltip when clicking outside trigger and bubble', async () => {
+    it('dismisses a click-opened tooltip when clicking outside trigger and bubble', async () => {
       const { fixture, host, trigger, tooltip } = await render();
+
+      host.trigger.set('click');
+      await fixture.whenStable();
 
       await dispatch(fixture, trigger, new MouseEvent('click', { bubbles: true }));
 
@@ -370,7 +381,10 @@ describe('MudTooltip', () => {
 
     it('cleans up aria-describedby and the document keydown listener', async () => {
       const removed = vi.spyOn(document, 'removeEventListener');
-      const { fixture, trigger, tooltip } = await render();
+      const { fixture, host, trigger, tooltip } = await render();
+
+      host.trigger.set('click');
+      await fixture.whenStable();
 
       await dispatch(fixture, trigger, new MouseEvent('click', { bubbles: true }));
 
@@ -383,8 +397,11 @@ describe('MudTooltip', () => {
       expect(removed.mock.calls.some(([type]) => type === 'keydown')).toBe(true);
     });
 
-    it('can be pinned open again by click afterwards', async () => {
-      const { fixture, trigger, tooltip } = await render();
+    it('can be opened again by click afterwards (click trigger mode)', async () => {
+      const { fixture, host, trigger, tooltip } = await render();
+
+      host.trigger.set('click');
+      await fixture.whenStable();
 
       await dispatch(fixture, trigger, new MouseEvent('click', { bubbles: true }));
       await scrollPage(fixture);
@@ -490,3 +507,108 @@ describe('MudTooltip', () => {
     expect(tooltip()).toBeNull();
   });
 });
+
+describe('MudTooltip official features', () => {
+  it('non-interactive tooltips ignore bubble hover (official default)', async () => {
+    const { fixture, host, trigger, tooltip } = await render();
+
+    host.interactive.set(false);
+    await fixture.whenStable();
+
+    await dispatch(fixture, trigger, mouseenter());
+    const bubble = tooltip()!;
+
+    await dispatch(fixture, bubble, mouseenter());
+    await dispatch(fixture, trigger, mouseleave());
+
+    expect(tooltip()).toBeNull();
+  });
+
+  it('emits the close reason on tooltipDismissed', async () => {
+    const fixture = TestBed.createComponent(ReasonHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const trigger = (fixture.nativeElement as HTMLElement).querySelector('button')!;
+
+    await dispatch(fixture, trigger, mouseenter());
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    await tick();
+    await fixture.whenStable();
+
+    expect(host.reasons).toEqual(['escape']);
+
+    await dispatch(fixture, trigger, mouseenter());
+    await dispatch(fixture, trigger, mouseleave());
+
+    expect(host.reasons).toEqual(['escape', 'blur']);
+  });
+
+  it('coach variant: persists across mouseleave, shows title/hint/close, closes on Escape', async () => {
+    const fixture = TestBed.createComponent(CoachHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const trigger = (fixture.nativeElement as HTMLElement).querySelector('button')!;
+
+    // Coach ignores hover: mouseenter must not open it.
+    await dispatch(fixture, trigger, mouseenter());
+    expect(document.querySelector('[role="tooltip"]')).toBeNull();
+
+    // Opens on click (coach behaves click-triggered).
+    await dispatch(fixture, trigger, new MouseEvent('click', { bubbles: true }));
+    const bubble = document.querySelector<HTMLElement>('[role="tooltip"]')!;
+
+    expect(bubble.classList.contains('tooltip--coach')).toBe(true);
+    expect(bubble.querySelector('.tooltip-title')?.textContent).toContain('New!');
+    expect(bubble.querySelector('.tooltip-hint')?.textContent).toContain('Press Esc to close');
+    expect(bubble.querySelector('.tooltip-close')).not.toBeNull();
+
+    // Ignores mouseleave.
+    await dispatch(fixture, trigger, mouseleave());
+    expect(document.querySelector('[role="tooltip"]')).not.toBeNull();
+
+    // Esc dismisses with its reason.
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    await tick();
+    await fixture.whenStable();
+    expect(document.querySelector('[role="tooltip"]')).toBeNull();
+    expect(host.reasons).toEqual(['escape']);
+  });
+});
+
+@Component({
+  imports: [MudTooltip],
+  template: `
+    <button
+      mudTooltip="Reason message"
+      [tooltipShowDelay]="0"
+      [tooltipHideDelay]="0"
+      (tooltipDismissed)="reasons.push($event)"
+    >
+      Trigger
+    </button>
+  `,
+})
+class ReasonHost {
+  readonly reasons: string[] = [];
+}
+
+@Component({
+  imports: [MudTooltip],
+  template: `
+    <button
+      mudTooltip="Try the new filters."
+      tooltipVariant="coach"
+      tooltipTitle="New!"
+      [tooltipShowDelay]="0"
+      [tooltipHideDelay]="0"
+      (tooltipDismissed)="reasons.push($event)"
+    >
+      Filters
+    </button>
+  `,
+})
+class CoachHost {
+  readonly reasons: string[] = [];
+}

@@ -78,10 +78,22 @@ describe('MudBadge', () => {
     }
   });
 
-  it('maps all five colors to the solid design-system classes', async () => {
+  it('maps official and legacy colors to the solid design-system classes', async () => {
     const { fixture, host, badge } = await render();
 
-    for (const color of ['dark', 'light', 'neutral', 'accent', 'danger'] as const) {
+    const colors = [
+      'default',
+      'brand',
+      'positive',
+      'warning',
+      'danger',
+      'dark',
+      'light',
+      'neutral',
+      'accent',
+    ] as const;
+
+    for (const color of colors) {
       host.color.set(color);
       await fixture.whenStable();
       expect(badge()!.classList.contains(`badge--solid-${color}`)).toBe(true);
@@ -249,6 +261,18 @@ describe('MudBadge', () => {
     expect(describedby).toContain('existing-hint');
     expect(descriptionId).toBeDefined();
     expect(document.getElementById(descriptionId!)?.textContent).toBe('5 unread notifications');
+  });
+
+  it('makes the description a polite status live region', async () => {
+    const { fixture, host, el } = await render();
+
+    host.description.set('5 unread notifications');
+    await fixture.whenStable();
+
+    const description = el.querySelector('.mud-badge-description')!;
+
+    expect(description.getAttribute('role')).toBe('status');
+    expect(description.getAttribute('aria-live')).toBe('polite');
   });
 
   it('restores host and badge semantics when the description is cleared', async () => {

@@ -167,24 +167,32 @@ describe('MudTabGroup', () => {
     expect(document.activeElement).toBe(tabs()[1]);
   });
 
-  it('Enter activates the focused tab; ArrowRight moves focus skipping disabled', async () => {
+  it('ArrowRight moves focus AND selection (automatic activation), skipping disabled', async () => {
     const { fixture, host, tabs, panels } = await render();
 
     host.twoDisabled.set(true);
     await fixture.whenStable();
 
-    // Focus tab 0, then ArrowRight should skip the disabled tab 1 and land on tab 2.
+    // Focus tab 0, then ArrowRight should skip the disabled tab 1, land on
+    // tab 2, and select it immediately (official automatic activation).
     tabs()[0].dispatchEvent(new FocusEvent('focus'));
     tabs()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
     await fixture.whenStable();
 
     expect(document.activeElement).toBe(tabs()[2]);
-
-    tabs()[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-    await fixture.whenStable();
-
     expect(host.selected).toBe(2);
     expect(panels()[2].hasAttribute('hidden')).toBe(false);
+  });
+
+  it('ArrowDown behaves like ArrowRight in the horizontal tablist', async () => {
+    const { fixture, host, tabs } = await render();
+
+    tabs()[0].dispatchEvent(new FocusEvent('focus'));
+    tabs()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    await fixture.whenStable();
+
+    expect(document.activeElement).toBe(tabs()[1]);
+    expect(host.selected).toBe(1);
   });
 
   it('ArrowLeft moves focus backwards, wrapping and skipping disabled tabs', async () => {
@@ -414,3 +422,33 @@ describe('MudTabGroup', () => {
     expect(document.activeElement).not.toBe(tabs()[1]);
   });
 });
+
+describe('MudTab badgeCount', () => {
+  it('renders the count pill after the label and hides it when null', async () => {
+    const fixture = TestBed.createComponent(BadgeHost);
+
+    await fixture.whenStable();
+    const buttons = fixture.nativeElement.querySelectorAll('.tab-button');
+
+    expect(buttons[0].querySelector('.tab-badge')?.textContent?.trim()).toBe('12');
+    expect(buttons[0].textContent).toContain('Inbox');
+    expect(buttons[1].querySelector('.tab-badge')).toBeNull();
+
+    fixture.componentInstance.count.set(null);
+    await fixture.whenStable();
+    expect(buttons[0].querySelector('.tab-badge')).toBeNull();
+  });
+});
+
+@Component({
+  imports: [MudTabGroup, MudTab],
+  template: `
+    <mud-tab-group>
+      <mud-tab label="Inbox" [badgeCount]="count()">one</mud-tab>
+      <mud-tab label="Archive">two</mud-tab>
+    </mud-tab-group>
+  `,
+})
+class BadgeHost {
+  readonly count = signal<number | null>(12);
+}

@@ -88,11 +88,11 @@ async function renderLabelHost() {
 }
 
 describe('MudAvatar accessibility', () => {
-  it('is decorative by default: no role and no aria-label', async () => {
+  it('is always a labelled image, defaulting to "User avatar" (official chain)', async () => {
     const { el } = await renderLabelHost();
 
-    expect(el.hasAttribute('role')).toBe(false);
-    expect(el.hasAttribute('aria-label')).toBe(false);
+    expect(el.getAttribute('role')).toBe('img');
+    expect(el.getAttribute('aria-label')).toBe('User avatar');
   });
 
   it('exposes role="img" with the accessible name when label is set', async () => {
@@ -105,7 +105,7 @@ describe('MudAvatar accessibility', () => {
     expect(el.getAttribute('aria-label')).toBe('Olga Popescu');
   });
 
-  it('drops role and aria-label again when the label is cleared', async () => {
+  it('falls back to "User avatar" again when the label is cleared', async () => {
     const { fixture, host, el } = await renderLabelHost();
 
     host.label.set('Olga Popescu');
@@ -113,8 +113,7 @@ describe('MudAvatar accessibility', () => {
     host.label.set(undefined);
     await fixture.whenStable();
 
-    expect(el.hasAttribute('role')).toBe(false);
-    expect(el.hasAttribute('aria-label')).toBe(false);
+    expect(el.getAttribute('aria-label')).toBe('User avatar');
   });
 
   it('warns in dev mode when a projected img has no alt attribute and no label', async () => {
@@ -176,3 +175,76 @@ describe('MudAvatar accessibility', () => {
     }
   });
 });
+
+describe('MudAvatar initials derivation and photo fallback', () => {
+  it('derives two initials from a full name (official rules)', async () => {
+    const fixture = TestBed.createComponent(NameHost);
+
+    await fixture.whenStable();
+    const el = fixture.nativeElement.querySelector('mud-avatar') as HTMLElement;
+    const initials = () => el.querySelector('.avatar-initials')!.textContent?.trim();
+
+    expect(initials()).toBe('IP');
+    expect(el.getAttribute('aria-label')).toBe('Ion Popescu');
+
+    fixture.componentInstance.name.set('Maria-Andreea Pop');
+    await fixture.whenStable();
+    expect(initials()).toBe('MP');
+
+    fixture.componentInstance.name.set('Ștefan');
+    await fixture.whenStable();
+    expect(initials()).toBe('Ș');
+  });
+
+  it('prefers explicit initials, trimmed to two uppercase characters', async () => {
+    const fixture = TestBed.createComponent(NameHost);
+
+    fixture.componentInstance.initials.set(' opq ');
+    await fixture.whenStable();
+    const el = fixture.nativeElement.querySelector('mud-avatar') as HTMLElement;
+
+    expect(el.querySelector('.avatar-initials')!.textContent?.trim()).toBe('OP');
+  });
+
+  it('labels an initials-only avatar as "Avatar for {initials}"', async () => {
+    const fixture = TestBed.createComponent(NameHost);
+
+    fixture.componentInstance.name.set(undefined);
+    fixture.componentInstance.initials.set('OP');
+    await fixture.whenStable();
+    const el = fixture.nativeElement.querySelector('mud-avatar') as HTMLElement;
+
+    expect(el.getAttribute('aria-label')).toBe('Avatar for OP');
+  });
+
+  it('collapses a projected img that fails to load so initials can show', async () => {
+    const fixture = TestBed.createComponent(PhotoHost);
+
+    await fixture.whenStable();
+    const el = fixture.nativeElement.querySelector('mud-avatar') as HTMLElement;
+    const img = el.querySelector('img')!;
+
+    expect(img.classList.contains('avatar-img-failed')).toBe(false);
+
+    img.dispatchEvent(new Event('error'));
+    await fixture.whenStable();
+
+    expect(img.classList.contains('avatar-img-failed')).toBe(true);
+    expect(el.querySelector('.avatar-initials')!.textContent?.trim()).toBe('IP');
+  });
+});
+
+@Component({
+  imports: [MudAvatar],
+  template: `<mud-avatar [name]="name()" [initials]="initials()" />`,
+})
+class NameHost {
+  readonly name = signal<string | undefined>('Ion Popescu');
+  readonly initials = signal<string | undefined>(undefined);
+}
+
+@Component({
+  imports: [MudAvatar],
+  template: `<mud-avatar name="Ion Popescu"><img src="/missing.jpg" alt="Ion Popescu" /></mud-avatar>`,
+})
+class PhotoHost {}

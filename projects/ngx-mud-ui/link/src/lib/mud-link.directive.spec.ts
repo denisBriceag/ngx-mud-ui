@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MudLink } from './mud-link.directive';
-import type { MudLinkSize, MudLinkStyle, MudLinkTouchTarget } from './mud-link.directive';
+import type { MudLinkSize, MudLinkStyle, MudLinkTouchTarget, MudLinkUnderline } from './mud-link.directive';
 
 @Component({
   imports: [MudLink],
@@ -10,7 +10,7 @@ import type { MudLinkSize, MudLinkStyle, MudLinkTouchTarget } from './mud-link.d
       href="#"
       [mudLink]="style()"
       [size]="size()"
-      [underlined]="underlined()"
+      [underline]="underline()"
       [touchTarget]="touchTarget()"
       [disabled]="disabled()"
       (click)="clicks = clicks + 1"
@@ -22,7 +22,7 @@ import type { MudLinkSize, MudLinkStyle, MudLinkTouchTarget } from './mud-link.d
 class Host {
   readonly style = signal<MudLinkStyle | ''>('');
   readonly size = signal<MudLinkSize>('medium');
-  readonly underlined = signal(true);
+  readonly underline = signal<MudLinkUnderline>('always');
   readonly touchTarget = signal<MudLinkTouchTarget>('auto');
   readonly disabled = signal(false);
   clicks = 0;
@@ -73,13 +73,44 @@ describe('MudLink', () => {
     }
   });
 
-  it('switches to link-no-underline when underlined is false', async () => {
+  it('maps the three underline modes to their classes', async () => {
     const { fixture, host, el } = await render();
 
-    host.underlined.set(false);
+    expect(el.classList.contains('link-underline')).toBe(true);
+
+    host.underline.set('hover');
+    await fixture.whenStable();
+    expect(el.classList.contains('link-underline-hover')).toBe(true);
+    expect(el.classList.contains('link-underline')).toBe(false);
+
+    host.underline.set('none');
     await fixture.whenStable();
     expect(el.classList.contains('link-no-underline')).toBe(true);
-    expect(el.classList.contains('link-underline')).toBe(false);
+    expect(el.classList.contains('link-underline-hover')).toBe(false);
+  });
+
+  it('marks links as external by default and honors external=false', async () => {
+    const { fixture, el } = await render();
+
+    expect(el.classList.contains('link-external')).toBe(true);
+
+    const external = TestBed.createComponent(NotExternalHost);
+
+    await external.whenStable();
+    const a = external.nativeElement.querySelector('a') as HTMLAnchorElement;
+
+    expect(a.classList.contains('link-external')).toBe(false);
+    expect(fixture).toBeDefined();
+  });
+
+  it('adds rel="noopener noreferrer" to target=_blank anchors without rel', async () => {
+    const fixture = TestBed.createComponent(BlankTargetHost);
+
+    await fixture.whenStable();
+    const anchors = fixture.nativeElement.querySelectorAll('a');
+
+    expect(anchors[0].getAttribute('rel')).toBe('noopener noreferrer');
+    expect(anchors[1].getAttribute('rel')).toBe('me');
   });
 
   it('applies the 32px pointer target by default on fine-pointer devices', async () => {
@@ -143,3 +174,18 @@ describe('MudLink', () => {
     expect(host.clicks).toBe(1);
   });
 });
+
+@Component({
+  imports: [MudLink],
+  template: `<a href="#" mudLink [external]="false">Internal</a>`,
+})
+class NotExternalHost {}
+
+@Component({
+  imports: [MudLink],
+  template: `
+    <a href="https://gov.md" mudLink target="_blank">Portal</a>
+    <a href="https://gov.md" mudLink target="_blank" rel="me">Profile</a>
+  `,
+})
+class BlankTargetHost {}

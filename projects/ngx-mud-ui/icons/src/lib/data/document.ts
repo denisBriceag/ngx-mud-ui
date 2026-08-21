@@ -12,12 +12,12 @@ export const document: MudIcon = {
     },
     filled: {
       20: {
-        viewBox: '0 0 21 20',
-        body: '<path fill="currentColor" fill-rule="evenodd" d="M10.4 2.1H6.45a2.37 2.37 0 0 0-2.37 2.37v11.06a2.37 2.37 0 0 0 2.37 2.37h7.9a2.37 2.37 0 0 0 2.37-2.37V8.42h-3.95a2.37 2.37 0 0 1-2.37-2.37zm-3.16 9.48a.79.79 0 0 1 .79-.79h2.37a.79.79 0 0 1 0 1.58H8.03a.79.79 0 0 1-.79-.79m.79 2.37a.79.79 0 1 0 0 1.58h5.135a.79.79 0 0 0 0-1.58z" clip-rule="evenodd"/><path fill="currentColor" d="M16.257 6.84 11.98 2.562V6.05c0 .436.354.79.79.79z"/>'
+        viewBox: '0 0 20 20',
+        body: '<g fill="currentColor"><path fill-rule="evenodd" d="M10 2.1H6.05a2.37 2.37 0 0 0-2.37 2.37v11.06a2.37 2.37 0 0 0 2.37 2.37h7.9a2.37 2.37 0 0 0 2.37-2.37V8.42h-3.95A2.37 2.37 0 0 1 10 6.05zm-3.16 9.48a.79.79 0 0 1 .79-.79H10a.79.79 0 1 1 0 1.58H7.63a.79.79 0 0 1-.79-.79m.79 2.37a.79.79 0 0 0 0 1.58h5.135a.79.79 0 0 0 0-1.58z" clip-rule="evenodd"/><path d="M15.857 6.84 11.58 2.563V6.05c0 .436.354.79.79.79z"/></g>'
       },
       24: {
-        viewBox: '0 0 25 24',
-        body: '<path fill="currentColor" fill-rule="evenodd" d="M12.6 2h-5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-9h-5a3 3 0 0 1-3-3zm-4 12a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1m1 3a1 1 0 1 0 0 2h6.5a1 1 0 1 0 0-2z" clip-rule="evenodd"/><path fill="currentColor" d="M20.014 8 14.6 2.586V7a1 1 0 0 0 1 1z"/>'
+        viewBox: '0 0 24 24',
+        body: '<g fill="currentColor"><path fill-rule="evenodd" d="M12 2H7a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-9h-5a3 3 0 0 1-3-3zM8 14a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2H9a1 1 0 0 1-1-1m1 3a1 1 0 1 0 0 2h6.5a1 1 0 1 0 0-2z" clip-rule="evenodd"/><path d="M19.414 8 14 2.586V7a1 1 0 0 0 1 1z"/></g>'
       }
     }
   }

@@ -3,6 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 
 export type MudLinkStyle = 'primary' | 'strict';
 export type MudLinkSize = 'large' | 'medium' | 'small' | 'extra-small';
+export type MudLinkUnderline = 'always' | 'hover' | 'none';
 export type MudLinkTouchTarget = 'auto' | 'pointer' | 'touch' | 'none';
 
 const SIZE_CLASSES: Record<MudLinkSize, string> = {
@@ -12,10 +13,17 @@ const SIZE_CLASSES: Record<MudLinkSize, string> = {
   'extra-small': 'link-xs',
 };
 
+const UNDERLINE_CLASSES: Record<MudLinkUnderline, string> = {
+  always: 'link-underline',
+  hover: 'link-underline-hover',
+  none: 'link-no-underline',
+};
+
 /**
  * ```html
  * <a mudLink href="/services">Services</a>
- * <a mudLink="strict" size="small" [underlined]="false" href="/terms">Terms</a>
+ * <a mudLink="strict" size="small" underline="none" href="/terms">Terms</a>
+ * <a mudLink href="https://gov.md" target="_blank">Portal</a> <!-- auto external icon + rel -->
  * ```
  */
 @Directive({
@@ -35,9 +43,14 @@ export class MudLink {
     transform: (value) => value || 'primary',
   });
   readonly size = input<MudLinkSize>('medium');
-  readonly underlined = input(true, { transform: booleanAttribute });
+  readonly underline = input<MudLinkUnderline>('always');
   readonly touchTarget = input<MudLinkTouchTarget>('auto');
   readonly disabled = input(false, { transform: booleanAttribute });
+  /**
+   * @description When true (the default), anchors with `target="_blank"` and no trailing
+   * icon get the external-link indicator glyph after the label.
+   */
+  readonly external = input(true, { transform: booleanAttribute });
 
   // SSR has no media queries; assume fine pointer until the browser hydrates.
   private readonly _coarsePointer =
@@ -56,7 +69,9 @@ export class MudLink {
   protected readonly _hostClasses = computed(() => {
     const classes = ['link', `link-${this.mudLink()}`, SIZE_CLASSES[this.size()]];
 
-    classes.push(this.underlined() ? 'link-underline' : 'link-no-underline');
+    classes.push(UNDERLINE_CLASSES[this.underline()]);
+
+    if (this.external()) classes.push('link-external');
 
     const targetClass = this._targetClass();
 
@@ -66,6 +81,13 @@ export class MudLink {
   });
 
   constructor() {
+    // New-tab anchors get the official safety rel unless the consumer set one.
+    const anchor = this._element as HTMLAnchorElement;
+
+    if (anchor.getAttribute?.('target') === '_blank' && !anchor.getAttribute('rel')) {
+      anchor.setAttribute('rel', 'noopener noreferrer');
+    }
+
     // Capture phase so the block runs before any consumer (click) listener.
     this._element.addEventListener(
       'click',

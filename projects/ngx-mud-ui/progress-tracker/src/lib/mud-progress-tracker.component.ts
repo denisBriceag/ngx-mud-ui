@@ -1,12 +1,18 @@
 import { NgTemplateOutlet } from '@angular/common';
-import type { QueryList } from '@angular/core';
+import type { ElementRef, QueryList } from '@angular/core';
 import {
+  afterNextRender,
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   ViewChildren,
   inject,
+  input,
+  output,
   signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CdkStepper } from '@angular/cdk/stepper';
@@ -16,6 +22,17 @@ import { startWith } from 'rxjs/operators';
 import type { MudStep } from './mud-step.component';
 import type { MudStepState } from './mud-step-header.component';
 import { MUD_STEP_STATES, MudStepHeader } from './mud-step-header.component';
+
+/** Container width below which a horizontal tracker auto-switches to the compact dot rail. */
+const AUTO_COMPACT_MAX_WIDTH = 600;
+
+/** Cancelable payload of {@link MudProgressTracker.stepClick}. */
+export interface MudProgressTrackerStepClick {
+  index: number;
+  step: MudStep;
+  readonly defaultPrevented: boolean;
+  preventDefault(): void;
+}
 
 /**
  * ```html
@@ -31,8 +48,10 @@ import { MUD_STEP_STATES, MudStepHeader } from './mud-step-header.component';
   providers: [{ provide: CdkStepper, useExisting: MudProgressTracker }],
   template: `
     <div
+      #track
       class="progress-tracker"
       [class.progress-tracker--vertical]="orientation === 'vertical'"
+      [class.progress-tracker--compact]="_isCompact()"
       role="list"
     >
       @for (step of _stepList(); track step; let i = $index) {
@@ -101,12 +120,50 @@ export class MudProgressTracker extends CdkStepper {
    */
   @ViewChildren(MudStepHeader) declare _stepHeader: QueryList<MudStepHeader>;
 
+  /**
+   * @description Forces the number-less dot rail (labels visually hidden but still
+   * announced). Horizontal trackers also switch to it automatically when
+   * their container is narrower than 600px, matching the official tracker.
+   */
+  readonly compact = input(false, { transform: booleanAttribute });
+
+  /**
+   * Emitted before a click on an actionable header selects the step. Call
+   * `preventDefault()` on the event to keep the selection unchanged
+   * (official mudStepClick contract).
+   */
+  readonly stepClick = output<MudProgressTrackerStepClick>();
+
   protected readonly _stepList = signal<readonly MudStep[]>([]);
+
+  private readonly _autoCompact = signal(false);
+  protected readonly _isCompact = computed(
+    () => this.compact() || (this.orientation === 'horizontal' && this._autoCompact()),
+  );
+
+  private readonly _track = viewChild.required<ElementRef<HTMLElement>>('track');
 
   /** Bumped on reactive-forms statusChanges so _stateOf re-evaluates. */
   private readonly _controlStatus = signal(0);
   private readonly _destroyRef = inject(DestroyRef);
   private _statusSub: Subscription | null = null;
+
+  constructor() {
+    super();
+
+    afterNextRender(() => {
+      if (typeof ResizeObserver === 'undefined') return;
+
+      const observer = new ResizeObserver((entries) => {
+        const width = entries[0]?.contentRect.width ?? Number.POSITIVE_INFINITY;
+
+        this._autoCompact.set(width < AUTO_COMPACT_MAX_WIDTH);
+      });
+
+      observer.observe(this._track().nativeElement);
+      this._destroyRef.onDestroy(() => observer.disconnect());
+    });
+  }
 
   override ngAfterContentInit(): void {
     super.ngAfterContentInit();
@@ -160,9 +217,23 @@ export class MudProgressTracker extends CdkStepper {
 
   /** @docs-private */
   protected _onHeaderClick(step: MudStep): void {
-    if (step.isNavigable()) {
-      step.select();
-    }
+    if (!step.isNavigable()) return;
+
+    let prevented = false;
+    const event: MudProgressTrackerStepClick = {
+      index: this._stepList().indexOf(step),
+      step,
+      get defaultPrevented() {
+        return prevented;
+      },
+      preventDefault() {
+        prevented = true;
+      },
+    };
+
+    this.stepClick.emit(event);
+
+    if (!prevented) step.select();
   }
 
   /**

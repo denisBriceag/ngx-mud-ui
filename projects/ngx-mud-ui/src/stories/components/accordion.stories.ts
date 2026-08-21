@@ -138,3 +138,52 @@ export const Disabled: Story = {
     `,
   }),
 };
+
+/**
+ * The official trail-sites appearance: OPEN items tint with the
+ * brand-secondary surface and on-secondary text colors.
+ */
+export const TrailSites: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <mud-accordion-group appearance="trail-sites">
+        <mud-accordion [expanded]="true">
+          <mud-accordion-header>
+            <mud-accordion-title>Cum obțin o semnătură electronică?</mud-accordion-title>
+          </mud-accordion-header>
+          Semnătura electronică se obține prin serviciul MSign.
+        </mud-accordion>
+        <mud-accordion>
+          <mud-accordion-header>
+            <mud-accordion-title>Cum achit serviciile publice?</mud-accordion-title>
+          </mud-accordion-header>
+          Plățile se efectuează prin MPay.
+        </mud-accordion>
+      </mud-accordion-group>
+    `,
+  }),
+};
+
+/** The compact rung (22/30 heading, 24px padding at any viewport) with the trigger leading the row. */
+export const SmallIconLeft: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <mud-accordion-group size="small" iconPosition="left">
+        <mud-accordion>
+          <mud-accordion-header>
+            <mud-accordion-title>Compact item</mud-accordion-title>
+          </mud-accordion-header>
+          Dense-surface content.
+        </mud-accordion>
+        <mud-accordion>
+          <mud-accordion-header>
+            <mud-accordion-title>Another item</mud-accordion-title>
+          </mud-accordion-header>
+          More content.
+        </mud-accordion>
+      </mud-accordion-group>
+    `,
+  }),
+};

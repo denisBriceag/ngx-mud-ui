@@ -5,7 +5,7 @@
 .tab-header {
   display: flex;
   align-items: stretch;
-  border-bottom: 1px solid var(--color-border-base-secondary, #b2b2b2);
+  border-bottom: 1px solid var(--color-border-base-default, #d9d9d9);
 }
 
 .tab-viewport {
@@ -37,10 +37,18 @@
 }
 
 .tab-header--overflow-start .tab-viewport {
-  --fade-start: 32px;
+  --fade-start: 48px;
 }
 
 .tab-header--overflow-end .tab-viewport {
+  --fade-end: 48px;
+}
+
+.tabs--sm .tab-header--overflow-start .tab-viewport {
+  --fade-start: 32px;
+}
+
+.tabs--sm .tab-header--overflow-end .tab-viewport {
   --fade-end: 32px;
 }
 
@@ -72,69 +80,119 @@
   justify-content: center;
   align-self: stretch;
   width: 32px;
-  padding: 0;
-  background: transparent;
+  padding: 12px 4px;
+  background: var(--color-background-base-default, #fff);
   border: none;
-  color: var(--color-text-base-default, #121212);
+  color: var(--color-icon-base-secondary, #383838);
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: color 150ms ease-out;
 }
 
 .tab-scroll svg {
+  width: 24px;
+  height: 24px;
+}
+
+.tabs--sm .tab-scroll {
+  padding: 8px 4px;
+}
+
+.tabs--sm .tab-scroll svg {
   width: 20px;
   height: 20px;
 }
 
 .tab-scroll:hover {
-  color: var(--color-text-brand-default, #0058d2);
+  color: var(--color-icon-base-default, #121212);
 }
 
 .tab-button {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   white-space: nowrap;
-  padding: 12px 16px;
+  height: 48px;
+  min-width: 40px;
+  padding: 0 16px;
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
   color: var(--color-text-base-secondary, #383838);
-  font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
-  font-size: var(--text-body-md-font-size, 16px);
-  line-height: 1.375;
+  font-family: var(--font-family-primary, 'Onest', system-ui, sans-serif);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
   cursor: pointer;
   transition:
-    color 0.2s ease,
-    border-color 0.2s ease;
+    color 150ms ease-out,
+    border-color 150ms ease-out;
+
+  mud-icon svg,
+  > svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  &:hover:not(.active):not(:disabled) {
+    color: var(--color-text-base-default, #121212);
+  }
 
   &.active {
     color: var(--color-text-brand-default, #0058d2);
-    border-color: var(--color-text-brand-default, #0058d2);
-    font-weight: 600;
+    border-color: var(--color-border-brand-default, #0058d2);
+    font-weight: 500;
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-border-brand-default, #0058d2);
-    outline-offset: -3px;
+    outline: none;
+    box-shadow:
+      inset 0 0 0 var(--focus-ring-inner-width, 2px) var(--focus-ring-inner-color, #fff),
+      inset 0 0 0 calc(var(--focus-ring-inner-width, 2px) + var(--focus-ring-outer-width, 3px))
+        var(--focus-ring-outer-color, var(--blue-sky-500, #3379db));
   }
 
   &:disabled {
     color: var(--color-text-disabled-default, #B2B2B2);
-    opacity: 0.6;
     cursor: not-allowed;
   }
+}
 
-  // Auto-shrink on mobile (≤ the `sm` breakpoint, 576px).
-  @media (max-width: 576px) {
-    font-size: var(--text-body-sm-font-size, 14px);
-  }
+// The official count pill after the label.
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: var(--border-radius-full, 9999px);
+  background: var(--color-background-base-tertiary, #f1f1f1);
+  color: var(--color-text-base-default, #121212);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+
+.tab-button:disabled .tab-badge {
+  color: var(--color-text-disabled-default, #B2B2B2);
 }
 
 // Explicit compact variant (size="sm").
 .tabs--sm .tab-button {
-  padding: 8px 12px;
-  font-size: var(--text-body-sm-font-size, 14px);
-  line-height: 1.25;
+  height: 40px;
+  padding: 0 12px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.tabs--sm .tab-badge {
+  min-width: 20px;
+  min-height: 20px;
+  padding: 0 4px;
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .tab-panels {
@@ -146,5 +204,12 @@
 
   &.active {
     display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-button,
+  .tab-scroll {
+    transition: none;
   }
 }

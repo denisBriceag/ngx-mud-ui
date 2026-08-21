@@ -1,5 +1,6 @@
 import { Component, PLATFORM_ID, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MudSegment, MudSegmentedControl } from './mud-segmented-control.component';
 import type { MudSegmentedControlChange } from './mud-segmented-control.component';
 
@@ -319,3 +320,81 @@ describe('MudSegmentedControl', () => {
     expect(document.activeElement).toBe(document.body);
   });
 });
+
+describe('MudSegmentedControl size and forms integration', () => {
+  it('maps size small to the sm modifier class', async () => {
+    const fixture = TestBed.createComponent(SizedHost);
+
+    await fixture.whenStable();
+    const group = fixture.nativeElement.querySelector('mud-segmented-control') as HTMLElement;
+
+    expect(group.classList.contains('segmented-control--sm')).toBe(true);
+  });
+
+  it('works as a form control: writeValue, user changes, and disabling', async () => {
+    const fixture = TestBed.createComponent(FormHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const group = fixture.nativeElement.querySelector('mud-segmented-control') as HTMLElement;
+    const buttons = Array.from(group.querySelectorAll('button')) as HTMLButtonElement[];
+
+    expect(buttons[0].getAttribute('aria-checked')).toBe('true');
+
+    buttons[1].click();
+    await fixture.whenStable();
+    expect(host.control.value).toBe('grid');
+
+    host.control.setValue('list');
+    await fixture.whenStable();
+    expect(buttons[0].getAttribute('aria-checked')).toBe('true');
+
+    host.control.disable();
+    await fixture.whenStable();
+    expect(group.classList.contains('segmented-control--disabled')).toBe(true);
+    expect(buttons[1].disabled).toBe(true);
+
+    host.control.enable();
+    host.control.reset('grid');
+    await fixture.whenStable();
+    expect(buttons[1].getAttribute('aria-checked')).toBe('true');
+  });
+
+  it('marks the control touched on blur', async () => {
+    const fixture = TestBed.createComponent(FormHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+
+    expect(host.control.touched).toBe(false);
+
+    button.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+    await fixture.whenStable();
+    expect(host.control.touched).toBe(true);
+  });
+});
+
+@Component({
+  imports: [MudSegmentedControl, MudSegment],
+  template: `
+    <mud-segmented-control value="list" size="small" aria-label="View">
+      <button mud-segment value="list">List</button>
+      <button mud-segment value="grid">Grid</button>
+    </mud-segmented-control>
+  `,
+})
+class SizedHost {}
+
+@Component({
+  imports: [MudSegmentedControl, MudSegment, ReactiveFormsModule],
+  template: `
+    <mud-segmented-control [formControl]="control" aria-label="View">
+      <button mud-segment value="list">List</button>
+      <button mud-segment value="grid">Grid</button>
+    </mud-segmented-control>
+  `,
+})
+class FormHost {
+  readonly control = new FormControl<string | null>('list');
+}

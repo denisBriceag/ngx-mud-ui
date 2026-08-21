@@ -11,7 +11,7 @@ const meta: Meta<MudLink> = {
   argTypes: {
     mudLink: { control: 'inline-radio', options: ['primary', 'strict'], description: 'Link style' },
     size: { control: 'inline-radio', options: ['large', 'medium', 'small', 'extra-small'] },
-    underlined: { control: 'boolean' },
+    underline: { control: 'inline-radio', options: ['always', 'hover', 'none'] },
     touchTarget: {
       control: 'inline-radio',
       options: ['auto', 'pointer', 'touch', 'none'],
@@ -22,7 +22,7 @@ const meta: Meta<MudLink> = {
   args: {
     mudLink: 'primary',
     size: 'medium',
-    underlined: true,
+    underline: 'always',
     touchTarget: 'auto',
     disabled: false,
   },
@@ -41,7 +41,7 @@ export const Playground: Story = {
           href="#"
           [mudLink]="mudLink"
           [size]="size"
-          [underlined]="underlined"
+          [underline]="underline"
           [touchTarget]="touchTarget"
           [disabled]="disabled"
         >
@@ -72,7 +72,8 @@ export const Variations: Story = {
     template: `
       <div style="${ROW}">
         <a href="#" mudLink>Underlined</a>
-        <a href="#" mudLink [underlined]="false">Non-underlined</a>
+        <a href="#" mudLink underline="hover">Underline on hover</a>
+        <a href="#" mudLink underline="none">Non-underlined</a>
       </div>
     `,
   }),
@@ -120,6 +121,23 @@ export const Disabled: Story = {
       <div style="${ROW}">
         <a href="#" mudLink disabled>Disabled primary</a>
         <a href="#" mudLink="strict" disabled>Disabled strict</a>
+      </div>
+    `,
+  }),
+};
+
+/**
+ * Anchors with `target="_blank"` automatically get the external-link glyph
+ * (suppress with `[external]="false"` or by projecting your own trailing
+ * icon) and `rel="noopener noreferrer"` when no rel is set.
+ */
+export const External: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <div style="${ROW}">
+        <a href="https://gov.md" mudLink target="_blank">Opens in a new tab</a>
+        <a href="https://gov.md" mudLink target="_blank" [external]="false">No indicator</a>
       </div>
     `,
   }),

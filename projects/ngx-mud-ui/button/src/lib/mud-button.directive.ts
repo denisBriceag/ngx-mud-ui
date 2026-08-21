@@ -1,4 +1,4 @@
-import { computed, Directive, input } from '@angular/core';
+import { booleanAttribute, computed, Directive, input } from '@angular/core';
 import { MudButtonBase, isDevMode } from './mud-button-base';
 
 export type MudButtonVariant = 'filled' | 'outlined' | 'text';
@@ -42,6 +42,8 @@ export class MudButton extends MudButtonBase {
   readonly color = input<MudButtonColor>('primary');
   readonly size = input<MudButtonSize>('large');
   readonly shape = input<MudButtonShape>('rectangular');
+  /** @description Stretches the button to fill its container's width. */
+  readonly fullWidth = input(false, { transform: booleanAttribute });
 
   private readonly _effectiveColor = computed(() => {
     const variant = this.mudButton();
@@ -68,6 +70,8 @@ export class MudButton extends MudButtonBase {
     if (sizeClass) classes.push(sizeClass);
 
     if (this.shape() === 'circular') classes.push('mud-btn-rounded');
+
+    if (this.fullWidth()) classes.push('mud-btn-full');
 
     if (this.loading()) classes.push('mud-btn-loading');
 

@@ -22,12 +22,21 @@ const isDevMode = (): boolean => typeof ngDevMode === 'undefined' || !!ngDevMode
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class]': '_hostClasses()',
+    '[attr.aria-label]': 'ariaLabel() ?? null',
+    '[attr.role]': 'ariaLabel() ? "status" : null',
+    '[attr.aria-live]': 'ariaLabel() ? "polite" : null',
   },
 })
 export class MudTag {
   readonly color = input<MudTagColor>('neutral');
   readonly type = input<MudTagType>('subtle');
   readonly size = input<MudTagSize>('medium');
+  /**
+   * Accessible name for tags whose state change should be announced. Only when
+   * set does the tag become a polite live region (role="status"); unlabelled
+   * tags stay a11y-silent, matching the official design system.
+   */
+  readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
   private readonly _effectiveType = computed<MudTagType>(() => {
     if (this.color() === 'info' && this.type() === 'outlined') {

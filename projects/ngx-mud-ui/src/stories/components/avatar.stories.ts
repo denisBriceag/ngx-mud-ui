@@ -82,6 +82,7 @@ export const ContentTypes: Story = {
       <div style="${ROW}">
         <mud-avatar><img [src]="src" alt="Olga Popescu" /></mud-avatar>
         <mud-avatar label="Olga Popescu">OP</mud-avatar>
+        <mud-avatar name="Olga Popescu"></mud-avatar>
         <mud-avatar><mud-icon name="person" [scale]="20" /></mud-avatar>
       </div>
     `,
@@ -89,7 +90,25 @@ export const ContentTypes: Story = {
 };
 
 /**
- * extra-small 24px (12/16 text, 16px icon), small 32px (14/20, 20px icon),
+ * With `name`, the avatar derives its own initials (first + last word) and
+ * accessible label. A projected photo that fails to load collapses, so the
+ * derived initials take over — the official photo -> initials fallback.
+ */
+export const NameFallback: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <div style="${ROW}">
+        <mud-avatar name="Ion Popescu"></mud-avatar>
+        <mud-avatar name="Maria-Andreea Pop" initials="MA"></mud-avatar>
+        <mud-avatar name="Ion Popescu"><img src="/broken-portrait.jpg" alt="Ion Popescu" /></mud-avatar>
+      </div>
+    `,
+  }),
+};
+
+/**
+ * extra-small 24px (12/16 text, 12px icon), small 32px (14/20, 16px icon),
  * medium 40px (14/20, 20px icon), large 48px (16/24, 24px icon),
  * extra-large 72px (18/28, 24px icon). Pass a matching `scale` to the icon
  * so its geometry stays crisp.

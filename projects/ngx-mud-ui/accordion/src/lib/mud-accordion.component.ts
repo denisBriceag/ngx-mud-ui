@@ -6,6 +6,7 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   inject,
   Injector,
@@ -16,6 +17,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { CdkAccordionItem } from '@angular/cdk/accordion';
+import { MudAccordionGroup } from './mud-accordion-group.component';
 
 /**
  * ```html
@@ -32,6 +34,10 @@ import { CdkAccordionItem } from '@angular/cdk/accordion';
   selector: 'mud-accordion',
   host: {
     class: 'accordion__item',
+    '[class.accordion__item--open]': '_expandedState()',
+    '[class.accordion__item--sm]': "_size() === 'small'",
+    '[class.accordion__item--icon-left]': "_iconPosition() === 'left'",
+    '[class.accordion__item--trail-sites]': "_appearance() === 'trail-sites'",
   },
   template: `
     <ng-content select="mud-accordion-header" />
@@ -75,6 +81,14 @@ export class MudAccordion extends CdkAccordionItem {
   private readonly _injector = inject(Injector);
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly _body = viewChild.required<ElementRef<HTMLElement>>('body');
+  private readonly _group = inject(MudAccordionGroup, { optional: true });
+
+  /** @docs-private Appearance/size/iconPosition come from the owning group. */
+  readonly _appearance = computed(() => this._group?.appearance() ?? 'default');
+  /** @docs-private */
+  readonly _size = computed(() => this._group?.size() ?? 'medium');
+  /** @docs-private */
+  readonly _iconPosition = computed(() => this._group?.iconPosition() ?? 'right');
 
   private _viewReady = false;
   private _pendingAfterEvent: 'expand' | 'collapse' | null = null;

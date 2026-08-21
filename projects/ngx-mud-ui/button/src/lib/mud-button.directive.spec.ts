@@ -12,6 +12,7 @@ import { MudIconButton } from './mud-icon-button.directive';
       [color]="color()"
       [size]="size()"
       [shape]="shape()"
+      [fullWidth]="fullWidth()"
       [disabled]="disabled()"
       [loading]="loading()"
       (click)="clicks = clicks + 1"
@@ -25,6 +26,7 @@ class ButtonHost {
   readonly color = signal<MudButtonColor>('primary');
   readonly size = signal<MudButtonSize>('large');
   readonly shape = signal<MudButtonShape>('rectangular');
+  readonly fullWidth = signal(false);
   readonly disabled = signal(false);
   readonly loading = signal(false);
   clicks = 0;
@@ -127,6 +129,16 @@ describe('MudButton', () => {
     host.shape.set('rectangular');
     await fixture.whenStable();
     expect(el.classList.contains('mud-btn-rounded')).toBe(false);
+  });
+
+  it('applies mud-btn-full when fullWidth is set', async () => {
+    const { fixture, host, el } = await render(ButtonHost, 'button');
+
+    expect(el.classList.contains('mud-btn-full')).toBe(false);
+
+    host.fullWidth.set(true);
+    await fixture.whenStable();
+    expect(el.classList.contains('mud-btn-full')).toBe(true);
   });
 
   it('falls back to primary and warns in dev mode for unsupported variant/color combos', async () => {

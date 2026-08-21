@@ -85,6 +85,9 @@ import type { MudTabChangeEvent } from './mud-tab-change-event';
                 } @else {
                   {{ tab.label() }}
                 }
+                @if (tab.badgeCount() !== null) {
+                  <span class="tab-badge">{{ tab.badgeCount() }}</span>
+                }
               </button>
             }
           </div>
@@ -268,18 +271,21 @@ export class MudTabGroup {
       return;
     }
 
+    // Automatic activation (official): arrows move focus AND selection.
     switch (event.key) {
       case 'ArrowRight':
-        this.focusTab(this._nextEnabled(this.focusedIndex(), 1));
+      case 'ArrowDown':
+        this._activate(this._nextEnabled(this.focusedIndex(), 1));
         break;
       case 'ArrowLeft':
-        this.focusTab(this._nextEnabled(this.focusedIndex(), -1));
+      case 'ArrowUp':
+        this._activate(this._nextEnabled(this.focusedIndex(), -1));
         break;
       case 'Home':
-        this.focusTab(this._nextEnabled(-1, 1));
+        this._activate(this._nextEnabled(-1, 1));
         break;
       case 'End':
-        this.focusTab(this._nextEnabled(count, -1));
+        this._activate(this._nextEnabled(count, -1));
         break;
       case 'Enter':
       case ' ':
@@ -290,6 +296,11 @@ export class MudTabGroup {
     }
 
     event.preventDefault();
+  }
+
+  private _activate(index: number): void {
+    this.selectTab(index);
+    this.focusTab(index);
   }
 
   private _closestEnabled(from: number): number {

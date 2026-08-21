@@ -247,6 +247,13 @@ $icon-sizes: (
   --color-input-border: var(--gray-250);
   --color-input-border-hover: var(--gray-600);
   --color-input-focus-ring: var(--blue-sky-200);
+
+  // Official focusRing tokens: a white inner ring + brand outer ring drawn as
+  // stacked box-shadows (same values in both themes upstream).
+  --focus-ring-inner-color: var(--color-text-base-inverse-on-color);
+  --focus-ring-outer-color: var(--blue-sky-500);
+  --focus-ring-inner-width: 2px;
+  --focus-ring-outer-width: 3px;
   --color-input-focus-border: var(--blue-sky-600);
   --color-input-disabled-background: var(--gray-100);
   --color-input-disabled-border: var(--gray-250);
@@ -357,15 +364,18 @@ $input-sizes: (
 :root {
   --color-link-primary-default: var(--color-text-brand-default);
   --color-link-primary-hover: var(--color-text-brand-default-hover);
+  --color-link-primary-active: var(--color-background-brand-default-active);
   --color-link-primary-visited: var(--color-text-brand-visited);
 
   --color-link-strict-default: var(--color-text-base-default);
   --color-link-strict-hover: var(--color-text-base-secondary);
+  --color-link-strict-active: var(--color-text-base-default);
+  --color-link-strict-visited: var(--color-text-brand-visited);
 
   // Tag (status-tag) outlined text: the on-secondary shades are right on the
   // light theme but too dark against dark surfaces, so the dark theme
   // overrides these with lighter shades.
   --color-tag-outlined-success: var(--color-text-positive-on-secondary);
-  --color-tag-outlined-danger: var(--color-text-danger-default);
+  --color-tag-outlined-danger: var(--color-text-danger-on-secondary);
 }
 

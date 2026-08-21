@@ -180,10 +180,10 @@ export const Vertical: Story = {
 };
 
 /**
- * ≤991px: 20px empty circles, labels visually hidden (still announced).
- * The container below is narrow for layout purposes only — the compact
- * look is actually driven by a viewport media query, so to see it for
- * real, resize the Storybook preview (or the browser) to ≤991px wide.
+ * Containers narrower than 600px auto-switch to the compact dot rail
+ * (numbers gone, labels visually hidden but still announced) — driven by a
+ * ResizeObserver on the container, not a viewport media query, so this
+ * 360px-wide container shows it directly.
  */
 export const Mobile: Story = {
   parameters: { controls: { disable: true } },
@@ -217,6 +217,26 @@ export const StepIndicator: Story = {
           </mud-indicator-step>
           <mud-indicator-step heading="Submit application" />
         </mud-step-indicator>
+      </div>
+    `,
+  }),
+};
+
+/**
+ * The number-less dot rail. Forced here via `compact`; horizontal trackers
+ * also switch to it automatically when their container is narrower than
+ * 600px. Labels stay in the DOM for assistive tech.
+ */
+export const Compact: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <div style="max-width:420px">
+        <mud-progress-tracker compact>
+          <mud-step label="Identity">Step one content</mud-step>
+          <mud-step label="Documents">Step two content</mud-step>
+          <mud-step label="Review">Step three content</mud-step>
+        </mud-progress-tracker>
       </div>
     `,
   }),

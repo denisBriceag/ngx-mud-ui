@@ -22,12 +22,14 @@ const meta: Meta<MudSegmentedControl<string>> = {
   argTypes: {
     disabled: { control: 'boolean' },
     fullWidth: { control: 'boolean' },
+    size: { control: 'inline-radio', options: ['medium', 'small'] },
     ariaLabel: { control: 'text', description: 'Accessible name of the radiogroup' },
     value: { control: 'inline-radio', options: ['list', 'grid', 'map'] },
   },
   args: {
     disabled: false,
     fullWidth: false,
+    size: 'medium',
     ariaLabel: 'View',
     value: 'list',
   },
@@ -53,6 +55,7 @@ export const Playground: Story = {
           [(value)]="value"
           [disabled]="disabled"
           [fullWidth]="fullWidth"
+          [size]="size"
           [aria-label]="ariaLabelText"
         >
           <button mud-segment value="list">List</button>
@@ -69,6 +72,21 @@ export const Playground: Story = {
  * Segments are always equal-width (the widest label sizes every column).
  * Keep it to 5 segments at most — more causes cognitive overload.
  */
+/** The small rung: 32px segments with 12px inline padding (labels stay 14/20). */
+export const Small: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    props: { view: 'list' },
+    template: `
+      <mud-segmented-control size="small" [(value)]="view" aria-label="View">
+        <button mud-segment value="list">List</button>
+        <button mud-segment value="grid">Grid</button>
+        <button mud-segment value="map">Map</button>
+      </mud-segmented-control>
+    `,
+  }),
+};
+
 export const SegmentCounts: Story = {
   parameters: { controls: { disable: true } },
   render: () => ({

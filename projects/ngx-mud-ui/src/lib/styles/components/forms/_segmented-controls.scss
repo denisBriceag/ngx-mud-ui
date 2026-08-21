@@ -1,21 +1,9 @@
-/**
- * Segmented control - pick one choice from a linear set and apply it
- * immediately. Consumed by the `ngx-mud-ui/segmented-control` entry point
- * (`<mud-segmented-control>` + `button[mud-segment]`) and usable CSS-only
- * with the same markup contract: `.segmented-control > .segment-item`.
- *
- * Metrics come from Figma (they override the upstream docs-site values):
- * 40px segment height, font-size 16 / line-height 24, 8x16 padding.
- * Segment widths are equal BY CONSTRUCTION (grid, 1fr columns) - the widest
- * label sizes every column; labels never wrap (single line + ellipsis via
- * .segment-label, which the Angular component renders around its content).
- */
 .segmented-control {
   display: inline-grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
   align-items: center;
-  background-color: var(--color-background-base-secondary);
+  background-color: var(--color-background-base-tertiary);
   border-radius: var(--border-radius-full, 9999px);
   padding: var(--spacing-6, 6px);
   gap: var(--spacing-6, 6px);
@@ -32,18 +20,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-8, 8px);
-  min-width: 0;
+  gap: var(--spacing-6, 6px);
+  min-width: 68px;
   height: 40px;
   cursor: pointer;
-  padding: var(--spacing-8, 8px) var(--spacing-16, 16px);
+  padding: 0 var(--spacing-16, 16px);
   border-radius: var(--border-radius-full, 9999px);
-  font-family: inherit;
-  font-size: 16px;
+  font-family: var(--font-family-primary, inherit);
+  font-size: 14px;
   font-weight: var(--font-weight-regular, 400);
-  line-height: 24px;
+  line-height: 20px;
   white-space: nowrap;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 150ms ease-out, color 150ms ease-out, box-shadow 150ms ease-out;
   color: var(--color-text-base-secondary);
   position: relative;
   background-color: transparent;
@@ -53,36 +41,54 @@
     flex-shrink: 0;
   }
 
+  mud-icon svg,
+  > svg {
+    width: 20px;
+    height: 20px;
+  }
+
   &:not(:last-child)::after {
     content: '';
     display: block;
     width: 1px;
     height: var(--spacing-16, 16px);
-    background-color: var(--color-border-base-secondary);
+    background-color: var(--color-border-base-default);
     position: absolute;
     right: -3px;
     top: 50%;
     transform: translateY(-50%);
-    transition: opacity 0.2s ease;
+    transition: opacity 150ms ease-out;
     opacity: 1;
   }
 
   &:hover:not(.is-selected, :disabled) {
-    background-color: var(--color-background-base-secondary-hover);
+    background-color: var(--color-background-base-tertiary-hover);
+    color: var(--color-text-base-default);
   }
 
   &:active:not(.is-selected, :disabled) {
-    background-color: var(--color-background-base-secondary-active);
+    background-color: var(--color-background-base-tertiary-active);
   }
 
   &:focus-visible {
-    outline: var(--border-width-2, 2px) solid var(--color-border-brand-default);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow:
+      0 0 0 var(--focus-ring-inner-width, 2px) var(--focus-ring-inner-color, #fff),
+      0 0 0 calc(var(--focus-ring-inner-width, 2px) + var(--focus-ring-outer-width, 3px))
+        var(--focus-ring-outer-color, var(--blue-sky-500));
   }
 
   &.is-selected {
     background-color: var(--color-background-base-inverse-default);
     color: var(--color-text-base-inverse-default);
+    font-weight: var(--font-weight-medium, 500);
+    box-shadow:
+      0 0 0.25px rgba(0, 0, 0, 0.3),
+      0 1px 1.5px rgba(0, 0, 0, 0.16);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-background-base-inverse-default-hover);
+    }
 
     &::after {
       opacity: 0;
@@ -94,8 +100,28 @@
   }
 
   &:disabled {
-    opacity: 0.5;
+    color: var(--color-text-disabled-default);
     cursor: not-allowed;
+  }
+}
+
+.segmented-control--sm .segment-item {
+  height: 32px;
+  padding: 0 var(--spacing-12, 12px);
+}
+
+.segmented-control--disabled {
+  background-color: var(--color-background-disabled-default);
+
+  .segment-item,
+  .segment-item.is-selected {
+    color: var(--color-text-disabled-default);
+    cursor: not-allowed;
+  }
+
+  .segment-item.is-selected {
+    background-color: var(--color-background-base-default);
+    box-shadow: none;
   }
 }
 
@@ -115,5 +141,12 @@
   .segment-item.is-selected {
     outline: 2px solid Highlight;
     outline-offset: -2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .segment-item,
+  .segment-item::after {
+    transition: none;
   }
 }

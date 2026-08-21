@@ -5,9 +5,6 @@ import { MudTab, MudTabGroup, MudTabLabel } from '../../../tabs/src/public-api';
 import type { MudTabChangeEvent } from '../../../tabs/src/public-api';
 import { alarm, MudIconComponent, lock, provideMudIcons, search, settings } from '../../../icons/src/public-api';
 
-const COUNTER_STYLE =
-  'display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:9999px;background:var(--gray-100,#f1f1f1);color:var(--black,#121212);font-size:12px';
-
 const meta: Meta<MudTabGroup> = {
   title: 'Components/Tabs',
   component: MudTabGroup,
@@ -37,9 +34,8 @@ export const Basic: Story = {
       <mud-tab-group [stretchTabs]="stretchTabs" [size]="size" aria-label="Example tabs">
         <mud-tab label="Overview"><p style="padding:16px 0">Overview content.</p></mud-tab>
         <mud-tab label="Details"><p style="padding:16px 0">Details content.</p></mud-tab>
-        <mud-tab>
-          <ng-template mudTabLabel>Alerts <span style="${COUNTER_STYLE}">3</span></ng-template>
-          <p style="padding:16px 0">Alerts content (custom label with a counter).</p>
+        <mud-tab label="Alerts" [badgeCount]="3">
+          <p style="padding:16px 0">Alerts content (label with the official count pill).</p>
         </mud-tab>
         <mud-tab label="Disabled" [disabled]="true"><p style="padding:16px 0">Unreachable.</p></mud-tab>
       </mud-tab-group>
@@ -89,8 +85,8 @@ export const WithIconsAndCounters: Story = {
     props: args,
     template: `
       <mud-tab-group [stretchTabs]="stretchTabs" [size]="size" aria-label="Tabs with icons">
-        <mud-tab>
-          <ng-template mudTabLabel><mud-icon name="alarm" [scale]="20" /> Alerts <span style="${COUNTER_STYLE}">3</span></ng-template>
+        <mud-tab [badgeCount]="3">
+          <ng-template mudTabLabel><mud-icon name="alarm" [scale]="20" /> Alerts</ng-template>
           <p style="padding:16px 0">Alerts.</p>
         </mud-tab>
         <mud-tab>
@@ -167,4 +163,18 @@ export const Interactive: Story = {
   parameters: { controls: { disable: true } },
   decorators: [moduleMetadata({ imports: [TabsInteractiveDemo] })],
   render: () => ({ template: `<mud-tabs-demo />` }),
+};
+
+/** `badgeCount` renders the official count pill after the label. */
+export const WithBadges: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <mud-tab-group aria-label="Mailbox">
+        <mud-tab label="Inbox" [badgeCount]="12">Inbox content</mud-tab>
+        <mud-tab label="Sent">Sent content</mud-tab>
+        <mud-tab label="Spam" [badgeCount]="3" [disabled]="true">Spam content</mud-tab>
+      </mud-tab-group>
+    `,
+  }),
 };

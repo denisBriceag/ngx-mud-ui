@@ -8,8 +8,8 @@
   opacity: 0;
   transform: scale(0.95);
   transition:
-    opacity 0.12s ease,
-    transform 0.12s ease;
+    opacity 150ms ease-out,
+    transform 150ms ease-out;
 }
 
 :host(.show) {
@@ -27,10 +27,11 @@
 .tooltip-inner {
   background: var(--color-background-base-inverse-default, #1e1e1e);
   color: var(--color-text-base-inverse-default, #ffffff);
-  border-radius: var(--border-radius-6, 6px);
-  min-width: 150px;
-  max-width: var(--mud-tooltip-max-width, 240px);
-  font-size: var(--text-body-sm-font-size, 14px);
+  border-radius: var(--border-radius-4, 4px);
+  max-width: var(--mud-tooltip-max-width, 280px);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
   box-shadow: 0 4px 10px rgb(0 0 0 / 15%);
 }
 
@@ -39,7 +40,21 @@
 }
 
 :host(.tooltip--large) .tooltip-inner {
-  padding: var(--spacing-16, 16px) var(--spacing-24, 24px);
+  border-radius: var(--border-radius-6, 6px);
+  padding: var(--spacing-12, 12px) var(--spacing-16, 16px);
+}
+
+.tooltip-title {
+  font-weight: 500;
+  margin-bottom: var(--spacing-2, 2px);
+}
+
+// Coach hint line (official: 12/16 at 0.72 opacity, 6px above).
+.tooltip-hint {
+  margin-top: var(--spacing-6, 6px);
+  font-size: 12px;
+  line-height: 16px;
+  opacity: 0.72;
 }
 
 :host(.tooltip--with-close) .tooltip-inner {
@@ -63,10 +78,13 @@
   color: var(--color-text-base-inverse-default, #ffffff);
   cursor: pointer;
   opacity: 0.7;
-  transition: opacity 0.2s;
+  transition:
+    opacity 150ms ease-out,
+    background-color 150ms ease-out;
 
   &:hover {
     opacity: 1;
+    background: var(--color-background-base-inverse-default-hover, #383838);
   }
 
   &:focus-visible {
@@ -81,10 +99,12 @@
   }
 }
 
-// The arrow is a rotated square, so its visible tip pokes (14·√2 − 14) / 2 ≈ 2.9px
-// past its own box. Inset the box by that plus 2px so the tip always sits
-// exactly 2px away from the trigger, whichever side the tooltip is on.
-$arrow-size: 12px;
+// The arrow is a rotated square whose diagonal is the official triangle
+// width (16px small / 24px large -> 8px / 12px visible height). Its tip
+// pokes (s·√2 − s)/2 past its own box; inset by that plus 2px so the tip
+// always sits exactly 2px away from the trigger, whichever side it's on.
+$arrow-size: 11.31px; // 16px / sqrt(2)
+$arrow-size-lg: 16.97px; // 24px / sqrt(2)
 $arrow-inset: 2px + math.div($arrow-size * (math.sqrt(2) - 1), 2);
 
 .tooltip-arrow {
@@ -95,9 +115,14 @@ $arrow-inset: 2px + math.div($arrow-size * (math.sqrt(2) - 1), 2);
   transform: rotate(45deg);
 }
 
+:host(.tooltip--large) .tooltip-arrow {
+  width: $arrow-size-lg;
+  height: $arrow-size-lg;
+}
+
 :host(.tooltip--top-left) .tooltip-arrow {
   bottom: $arrow-inset;
-  left: 20px;
+  left: 12px;
   border-radius: 0 0 3px 0;
 }
 
@@ -110,13 +135,13 @@ $arrow-inset: 2px + math.div($arrow-size * (math.sqrt(2) - 1), 2);
 
 :host(.tooltip--top-right) .tooltip-arrow {
   bottom: $arrow-inset;
-  right: 20px;
+  right: 12px;
   border-radius: 0 0 3px 0;
 }
 
 :host(.tooltip--bottom-left) .tooltip-arrow {
   top: $arrow-inset;
-  left: 20px;
+  left: 12px;
   border-radius: 3px 0 0 0;
 }
 
@@ -129,13 +154,13 @@ $arrow-inset: 2px + math.div($arrow-size * (math.sqrt(2) - 1), 2);
 
 :host(.tooltip--bottom-right) .tooltip-arrow {
   top: $arrow-inset;
-  right: 20px;
+  right: 12px;
   border-radius: 3px 0 0 0;
 }
 
 :host(.tooltip--left-top) .tooltip-arrow {
   right: $arrow-inset;
-  top: 20px;
+  top: 12px;
   border-radius: 0 3px 0 0;
 }
 
@@ -148,13 +173,13 @@ $arrow-inset: 2px + math.div($arrow-size * (math.sqrt(2) - 1), 2);
 
 :host(.tooltip--left-bottom) .tooltip-arrow {
   right: $arrow-inset;
-  bottom: 20px;
+  bottom: 12px;
   border-radius: 0 3px 0 0;
 }
 
 :host(.tooltip--right-top) .tooltip-arrow {
   left: $arrow-inset;
-  top: 20px;
+  top: 12px;
   border-radius: 0 0 0 3px;
 }
 
@@ -167,6 +192,6 @@ $arrow-inset: 2px + math.div($arrow-size * (math.sqrt(2) - 1), 2);
 
 :host(.tooltip--right-bottom) .tooltip-arrow {
   left: $arrow-inset;
-  bottom: 20px;
+  bottom: 12px;
   border-radius: 0 0 0 3px;
 }

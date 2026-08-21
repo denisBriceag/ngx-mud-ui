@@ -23,10 +23,22 @@ import type { MudTooltipPlacement, MudTooltipSize } from './tooltip-positions';
 
 let nextUniqueId = 0;
 
+export type MudTooltipTrigger = 'hover' | 'click' | 'focus' | 'manual';
+export type MudTooltipVariant = 'default' | 'coach';
+export type MudTooltipCloseReason =
+  | 'blur'
+  | 'escape'
+  | 'close-button'
+  | 'click-outside'
+  | 'click-trigger';
+
 /**
  * ```html
  * <button mudTooltip="Saved successfully!" tooltipPlacement="top-center" tooltipSize="large">
  *   Save
+ * </button>
+ * <button mudTooltip="Try the new filters here." tooltipVariant="coach" tooltipTitle="New!">
+ *   Filters
  * </button>
  * ```
  */
@@ -50,13 +62,34 @@ export class MudTooltip {
   readonly mudTooltip = input.required<string>();
   readonly tooltipPlacement = input<MudTooltipPlacement>('top-center');
   readonly tooltipSize = input<MudTooltipSize>('small');
+  /**
+   * @description What opens the tooltip. `hover` also opens on focus; `manual`
+   * only reacts to `show()`/`hide()`. Coach tooltips ignore hover/focus paths.
+   */
+  readonly tooltipTrigger = input<MudTooltipTrigger>('hover');
+  /**
+   * @description `coach` is the persistent onboarding bubble: it stays open until
+   * Escape, the close button, or an outside click, and shows a hint line.
+   */
+  readonly tooltipVariant = input<MudTooltipVariant>('default');
+  /** @description Optional bold title line rendered above the message. */
+  readonly tooltipTitle = input<string | undefined>(undefined);
+  /** @description Hint line shown by coach tooltips. Localize per app. */
+  readonly tooltipCoachHint = input('Press Esc to close');
+  /**
+   * @description Keeps the bubble open while the pointer is over it (so links inside
+   * stay reachable). Off by default, matching the official tooltip.
+   */
+  readonly tooltipInteractive = input(false, { transform: booleanAttribute });
   readonly tooltipCloseable = input(false, { transform: booleanAttribute });
   readonly tooltipDisabled = input(false, { transform: booleanAttribute });
-  readonly tooltipMaxWidth = input('240px');
-  readonly tooltipShowDelay = input(300, { transform: numberAttribute });
+  readonly tooltipMaxWidth = input('280px');
+  readonly tooltipShowDelay = input(200, { transform: numberAttribute });
+  readonly tooltipHideDelay = input(150, { transform: numberAttribute });
   readonly tooltipCloseAriaLabel = input('Close');
 
-  readonly tooltipDismissed = output<void>();
+  /** Emitted when the tooltip closes for a user-initiated reason. */
+  readonly tooltipDismissed = output<MudTooltipCloseReason>();
 
   private readonly _id = `mud-tooltip-${nextUniqueId++}`;
 
@@ -74,8 +107,17 @@ export class MudTooltip {
     if (event.key !== 'Escape') return;
 
     event.stopPropagation();
-    this._dismiss();
+    this._dismiss('escape');
   };
+
+  private get _isCoach(): boolean {
+    return this.tooltipVariant() === 'coach';
+  }
+
+  /** Coach tooltips behave like click-triggered ones regardless of trigger. */
+  private get _effectiveTrigger(): MudTooltipTrigger {
+    return this._isCoach ? 'click' : this.tooltipTrigger();
+  }
 
   constructor() {
     inject(DestroyRef).onDestroy(() => this._detach());
@@ -92,9 +134,12 @@ export class MudTooltip {
 
       container.setInput('message', this.mudTooltip());
       container.setInput('size', this.tooltipSize());
-      container.setInput('closeable', this.tooltipCloseable());
+      container.setInput('closeable', this.tooltipCloseable() || this._isCoach);
       container.setInput('closeAriaLabel', this.tooltipCloseAriaLabel());
       container.setInput('maxWidth', this.tooltipMaxWidth());
+      container.setInput('title', this.tooltipTitle());
+      container.setInput('variant', this.tooltipVariant());
+      container.setInput('coachHint', this.tooltipCoachHint());
     });
   }
 
@@ -111,26 +156,40 @@ export class MudTooltip {
   }
 
   protected onMouseEnter(): void {
+    if (this._effectiveTrigger !== 'hover') return;
+
     this._scheduleShow(this.tooltipShowDelay());
   }
 
   protected onMouseLeave(): void {
+    if (this._effectiveTrigger !== 'hover') return;
+
     this._scheduleHide();
   }
 
   protected onFocus(): void {
+    const trigger = this._effectiveTrigger;
+
+    if (trigger !== 'hover' && trigger !== 'focus') return;
+
     this._scheduleShow(0);
   }
 
   protected onBlur(): void {
+    const trigger = this._effectiveTrigger;
+
+    if (trigger !== 'hover' && trigger !== 'focus') return;
+
     this._scheduleHide();
   }
 
   protected onClick(): void {
     if (this.tooltipDisabled()) return;
 
-    if (this._pinned) {
-      this._dismiss();
+    if (this._effectiveTrigger !== 'click') return;
+
+    if (this._overlayRef?.hasAttached()) {
+      this._dismiss('click-trigger');
     } else {
       this._clearTimeouts();
       this._attach();
@@ -150,13 +209,14 @@ export class MudTooltip {
   }
 
   /**
-   * @description Hides after a task-queue turn so the pointer can travel onto the bubble.
+   * @description Hides after the hide delay so the pointer can travel onto an
+   * interactive bubble before it disappears.
    * */
   private _scheduleHide(): void {
     if (this._pinned) return;
 
     this._clearTimeouts();
-    this._hideTimeout = setTimeout(() => this._detach(), 0);
+    this._hideTimeout = setTimeout(() => this._dismiss('blur'), this.tooltipHideDelay());
   }
 
   private _attach(): void {
@@ -197,9 +257,12 @@ export class MudTooltip {
     containerRef.setInput('message', this.mudTooltip());
     containerRef.setInput('placement', this.tooltipPlacement());
     containerRef.setInput('size', this.tooltipSize());
-    containerRef.setInput('closeable', this.tooltipCloseable());
+    containerRef.setInput('closeable', this.tooltipCloseable() || this._isCoach);
     containerRef.setInput('closeAriaLabel', this.tooltipCloseAriaLabel());
     containerRef.setInput('maxWidth', this.tooltipMaxWidth());
+    containerRef.setInput('title', this.tooltipTitle());
+    containerRef.setInput('variant', this.tooltipVariant());
+    containerRef.setInput('coachHint', this.tooltipCoachHint());
     this._containerRef.set(containerRef);
 
     /**
@@ -212,23 +275,27 @@ export class MudTooltip {
       if (applied) containerRef.setInput('placement', applied.placement);
     });
 
-    containerRef.instance.closed.subscribe(() => this._dismiss());
+    containerRef.instance.closed.subscribe(() => this._dismiss('close-button'));
 
-    containerRef.instance.hovered.subscribe((inside) => {
-      if (inside) {
-        this._clearTimeouts();
-      } else {
-        this._scheduleHide();
-      }
-    });
+    // Hovering the bubble keeps it open only for interactive tooltips
+    // (official behavior); otherwise leaving the trigger hides it.
+    if (this.tooltipInteractive()) {
+      containerRef.instance.hovered.subscribe((inside) => {
+        if (inside) {
+          this._clearTimeouts();
+        } else {
+          this._scheduleHide();
+        }
+      });
+    }
 
     this._overlayRef.outsidePointerEvents().subscribe((event) => {
       const target = event.target as Node | null;
 
-      if (this._pinned && target && !this._trigger.contains(target)) this._dismiss();
+      if (this._pinned && target && !this._trigger.contains(target)) this._dismiss('click-outside');
     });
 
-    this._pinned = this.tooltipCloseable();
+    this._pinned = this.tooltipCloseable() || this._isCoach;
 
     /**
      * aria-describedby is a token list the trigger may already use (form hints etc.)
@@ -243,11 +310,11 @@ export class MudTooltip {
     this._document.addEventListener('keydown', this._onDocumentKeydown, { capture: true });
   }
 
-  private _dismiss(): void {
+  private _dismiss(reason: MudTooltipCloseReason): void {
     if (!this._overlayRef?.hasAttached()) return;
 
     this._detach();
-    this.tooltipDismissed.emit();
+    this.tooltipDismissed.emit(reason);
   }
 
   private _detach(): void {

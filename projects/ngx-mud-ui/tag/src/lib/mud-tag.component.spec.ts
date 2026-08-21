@@ -102,4 +102,29 @@ describe('MudTag', () => {
       warn.mockRestore();
     }
   });
+
+  it('is a11y-silent by default (no role, no aria-live)', async () => {
+    const { el } = await render();
+
+    expect(el.getAttribute('role')).toBeNull();
+    expect(el.getAttribute('aria-live')).toBeNull();
+    expect(el.getAttribute('aria-label')).toBeNull();
+  });
+
+  it('becomes a polite status live region only when aria-label is set', async () => {
+    const fixture = TestBed.createComponent(LabelledHost);
+
+    await fixture.whenStable();
+    const el = fixture.nativeElement.querySelector('mud-tag') as HTMLElement;
+
+    expect(el.getAttribute('aria-label')).toBe('Payment status');
+    expect(el.getAttribute('role')).toBe('status');
+    expect(el.getAttribute('aria-live')).toBe('polite');
+  });
 });
+
+@Component({
+  imports: [MudTag],
+  template: `<mud-tag aria-label="Payment status">Paid</mud-tag>`,
+})
+class LabelledHost {}

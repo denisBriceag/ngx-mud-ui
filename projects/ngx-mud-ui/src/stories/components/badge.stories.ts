@@ -22,7 +22,7 @@ const meta: Meta<MudBadge> = {
     },
     badgeColor: {
       control: 'inline-radio',
-      options: ['dark', 'light', 'neutral', 'accent', 'danger'],
+      options: ['default', 'brand', 'positive', 'warning', 'danger', 'dark', 'light', 'neutral', 'accent'],
     },
     badgePosition: {
       control: 'select',
@@ -104,16 +104,27 @@ export const Sizes: Story = {
   }),
 };
 
+/**
+ * The first row is the official design-system palette. The second row shows
+ * the extra names (`dark` renders like `default`; `light`/`neutral`/`accent`
+ * have no official equivalent).
+ */
 export const Colors: Story = {
   parameters: { controls: { disable: true } },
   render: () => ({
     template: `
       <div style="${ROW}">
+        <span style="${TILE}" mudBadge="1" badgeColor="default"></span>
+        <span style="${TILE}" mudBadge="1" badgeColor="brand"></span>
+        <span style="${TILE}" mudBadge="1" badgeColor="positive"></span>
+        <span style="${TILE}" mudBadge="1" badgeColor="warning"></span>
+        <span style="${TILE}" mudBadge="1" badgeColor="danger"></span>
+      </div>
+      <div style="${ROW}">
         <span style="${TILE}" mudBadge="1" badgeColor="dark"></span>
         <span style="${TILE};background:var(--color-background-base-inverse-default)" mudBadge="1" badgeColor="light"></span>
         <span style="${TILE}" mudBadge="1" badgeColor="neutral"></span>
         <span style="${TILE}" mudBadge="1" badgeColor="accent"></span>
-        <span style="${TILE}" mudBadge="1" badgeColor="danger"></span>
       </div>
     `,
   }),

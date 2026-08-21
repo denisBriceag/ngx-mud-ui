@@ -114,6 +114,19 @@ export const Sizes: Story = {
   }),
 };
 
+/** `fullWidth` stretches the button to its container (forms, button groups). */
+export const FullWidth: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <div style="display:flex;flex-direction:column;gap:12px;max-width:320px">
+        <button type="button" mudButton fullWidth>Continue</button>
+        <button type="button" mudButton="outlined" fullWidth>Back</button>
+      </div>
+    `,
+  }),
+};
+
 export const Shapes: Story = {
   parameters: { controls: { disable: true } },
   render: () => ({

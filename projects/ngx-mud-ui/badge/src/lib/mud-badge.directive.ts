@@ -2,7 +2,21 @@ import { computed, Directive, effect, ElementRef, inject, input, PLATFORM_ID, Re
 import { isPlatformBrowser } from '@angular/common';
 
 export type MudBadgeSize = 'extra-small' | 'small' | 'medium' | 'large' | 'extra-large';
-export type MudBadgeColor = 'dark' | 'light' | 'neutral' | 'accent' | 'danger';
+/**
+ * `default`, `brand`, `positive`, `warning`, `danger` mirror the official
+ * design-system palette; `dark`, `light`, `neutral`, `accent` are extra
+ * (`dark` renders like `default`, `accent` uses the warning-accent surface).
+ */
+export type MudBadgeColor =
+  | 'default'
+  | 'brand'
+  | 'positive'
+  | 'warning'
+  | 'danger'
+  | 'dark'
+  | 'light'
+  | 'neutral'
+  | 'accent';
 export type MudBadgePosition =
   | 'above after'
   | 'above before'
@@ -174,6 +188,10 @@ export class MudBadge {
 
     this._renderer.setAttribute(element, 'id', this._descriptionId);
     this._renderer.setAttribute(element, 'class', 'mud-badge-description');
+    // Polite live region so a changing description (e.g. an updated unread
+    // count) is announced, matching the official badge's role="status".
+    this._renderer.setAttribute(element, 'role', 'status');
+    this._renderer.setAttribute(element, 'aria-live', 'polite');
     this._renderer.appendChild(this._host, element);
     this._description = element;
 

@@ -19,15 +19,14 @@ import { MudAccordion } from './mud-accordion.component';
       [attr.aria-disabled]="_item._disabledState() ? 'true' : null"
       (click)="_toggle()"
     >
-      <ng-content />
+      <span class="accordion__text"><ng-content /></span>
       @if (!_item.hideToggle()) {
+        <!-- Plus drawn as two bars; the vertical one collapses (scaleY) when
+             open so the glyph morphs into a minus, per the official design. -->
         <span class="accordion__icon" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" width="20" height="20" fill="currentColor" focusable="false">
-            <path
-              fill-rule="evenodd"
-              d="M10.395 2.16c.404 0 .732.328.732.732v6.371h6.371a.732.732 0 1 1 0 1.464h-6.371v6.371a.732.732 0 0 1-1.464 0v-6.371H3.292a.732.732 0 0 1 0-1.464h6.371V2.892c0-.404.328-.732.732-.732"
-              clip-rule="evenodd"
-            />
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="20" height="20" fill="currentColor" focusable="false">
+            <rect x="2.75" y="9.25" width="14.5" height="1.5" rx="0.75" />
+            <rect class="accordion__icon-vertical" x="9.25" y="2.75" width="1.5" height="14.5" rx="0.75" />
           </svg>
         </span>
       }

@@ -1,9 +1,13 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, input } from '@angular/core';
 import { CDK_ACCORDION, CdkAccordion } from '@angular/cdk/accordion';
+
+export type MudAccordionAppearance = 'default' | 'trail-sites';
+export type MudAccordionSize = 'medium' | 'small';
+export type MudAccordionIconPosition = 'right' | 'left';
 
 /**
  * ```html
- * <mud-accordion-group [multi]="false">
+ * <mud-accordion-group [multi]="false" appearance="trail-sites">
  *   <mud-accordion>…</mud-accordion>
  *   <mud-accordion>…</mud-accordion>
  * </mud-accordion-group>
@@ -20,6 +24,21 @@ import { CDK_ACCORDION, CdkAccordion } from '@angular/cdk/accordion';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MudAccordionGroup extends CdkAccordion {
+  /**
+   * @description trail-sites tints OPEN items with the brand-secondary surface and
+   * on-secondary text colors (the eGov "trail sites" pattern).
+   */
+  readonly appearance = input<MudAccordionAppearance>('default');
+
+  /**
+   * @description small compresses the header to the mobile type ramp (22/30) and 24px
+   * block padding regardless of viewport - for dense surfaces.
+   */
+  readonly size = input<MudAccordionSize>('medium');
+
+  /** @description left places the +/- trigger before the text (chevron-style navigation). */
+  readonly iconPosition = input<MudAccordionIconPosition>('right');
+
   constructor() {
     super();
     this.multi = true;
@@ -54,15 +73,35 @@ export class MudAccordionGroup extends CdkAccordion {
 
     event.preventDefault();
 
-    const next =
-      key === 'ArrowDown'
-        ? Math.min(index + 1, triggers.length - 1)
-        : key === 'ArrowUp'
-          ? Math.max(index - 1, 0)
-          : key === 'Home'
-            ? 0
-            : triggers.length - 1;
+    const enabled = (i: number) => triggers[i].getAttribute('aria-disabled') !== 'true';
+    const count = triggers.length;
+    let target = -1;
 
-    triggers[next].focus();
+    // Official behavior: arrows wrap around and skip disabled headers;
+    // Home/End land on the first/last enabled header.
+    if (key === 'ArrowDown' || key === 'ArrowUp') {
+      const direction = key === 'ArrowDown' ? 1 : -1;
+      let i = index;
+
+      for (let step = 0; step < count; step++) {
+        i = (i + direction + count) % count;
+
+        if (enabled(i)) {
+          target = i;
+          break;
+        }
+      }
+    } else {
+      const order = key === 'Home' ? triggers.keys() : [...triggers.keys()].reverse();
+
+      for (const i of order) {
+        if (enabled(i)) {
+          target = i;
+          break;
+        }
+      }
+    }
+
+    if (target >= 0 && target !== index) triggers[target].focus();
   }
 }

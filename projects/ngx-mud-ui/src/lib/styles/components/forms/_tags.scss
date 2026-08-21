@@ -5,22 +5,29 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  vertical-align: middle;
   gap: var(--spacing-4, 4px);
   height: 24px;
   min-width: 32px;
   padding: 0 var(--spacing-8, 8px);
   border: 1px solid transparent;
   border-radius: var(--border-radius-4, 4px);
-  font-family: inherit;
+  font-family: var(--font-family-primary, inherit);
   font-size: 14px;
   line-height: 20px;
   font-weight: 500;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   -webkit-user-select: none;
   user-select: none;
 
   &:has(> :is(mud-icon, svg):first-child) {
     padding-left: var(--spacing-6, 6px);
+  }
+
+  &:has(> :is(mud-icon, svg):last-child) {
+    padding-right: var(--spacing-6, 6px);
   }
 
   mud-icon svg,
@@ -31,7 +38,7 @@
 
   &--small {
     height: 20px;
-    min-width: 28px;
+    min-width: 32px;
     padding: 0 var(--spacing-6, 6px);
     font-size: 12px;
     line-height: 16px;
@@ -40,13 +47,22 @@
       padding-left: var(--spacing-4, 4px);
     }
 
-    // Figma does not demonstrate small tags with icons; 14px is inferred
-    // from the 16px medium icon and the 4px-smaller box.
+    &:has(> :is(mud-icon, svg):last-child) {
+      padding-right: var(--spacing-4, 4px);
+    }
+
     mud-icon svg,
     > svg {
-      width: 14px;
-      height: 14px;
+      width: 12px;
+      height: 12px;
     }
+  }
+
+  // Info is regular-weight with the tighter inline padding at every size.
+  &--info {
+    padding-left: var(--spacing-6, 6px);
+    padding-right: var(--spacing-6, 6px);
+    font-weight: 400;
   }
 }
 
@@ -54,9 +70,8 @@ $tag-colors: (
   muted: (
     subtle-bg: var(--color-background-base-default),
     subtle-color: var(--color-text-base-tertiary),
-    // Raw palette on purpose: no semantic "muted strong" token exists yet;
-    // gray-600 is the Figma value (white on gray-600 passes AA at 9.7:1).
-    strong-bg: var(--gray-600),
+    // Official binding (resolves to gray-600; white on it passes AA at 9.7:1).
+    strong-bg: var(--color-background-base-inverse-default-active),
     strong-color: var(--color-text-base-inverse-on-color),
     outlined-border: var(--color-border-base-default),
     outlined-color: var(--color-text-base-tertiary),
@@ -80,10 +95,10 @@ $tag-colors: (
   success: (
     subtle-bg: var(--color-background-positive-secondary),
     subtle-color: var(--color-text-positive-on-secondary),
-    // Figma specifies green-600 here, but white on green-600 is 3.73:1 and
-    // fails WCAG AA (1.4.3). green-700 passes at 5.48:1 and is what the dark
-    // theme already resolves --color-background-positive-default to.
-    strong-bg: var(--green-700),
+    // Figma shows green-600, but white on green-600 fails AA (3.73:1). The
+    // official design system also deviates here: its token resolves to
+    // green-700 (5.48:1), which is exactly this semantic binding.
+    strong-bg: var(--color-background-positive-default-hover),
     strong-color: var(--color-text-base-inverse-on-color),
     outlined-border: var(--color-border-positive-default),
     outlined-color: var(--color-tag-outlined-success),

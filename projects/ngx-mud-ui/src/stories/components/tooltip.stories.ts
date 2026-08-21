@@ -25,8 +25,8 @@ const meta: Meta<MudTooltip> = {
     tooltipSize: 'small',
     tooltipCloseable: false,
     tooltipDisabled: false,
-    tooltipShowDelay: 300,
-    tooltipMaxWidth: '240px',
+    tooltipShowDelay: 200,
+    tooltipMaxWidth: '280px',
   },
 };
 
@@ -160,4 +160,44 @@ export const CloseableOnboarding: Story = {
   parameters: { controls: { disable: true } },
   decorators: [moduleMetadata({ imports: [TooltipOnboardingDemo] })],
   render: () => ({ template: `<mud-tooltip-onboarding-demo />` }),
+};
+
+
+/**
+ * The coach variant is the persistent onboarding bubble: it opens on click,
+ * ignores hover/blur, and closes only via Escape, the close button, or an
+ * outside click. Localize the hint via `tooltipCoachHint`.
+ */
+export const Coach: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <div style="padding:96px;display:flex;justify-content:center">
+        <button
+          type="button"
+          mudTooltip="Filtrele noi te ajută să găsești serviciul potrivit."
+          tooltipVariant="coach"
+          tooltipTitle="Nou!"
+          tooltipCoachHint="Apasă Esc pentru a închide"
+          tooltipSize="large"
+        >
+          Click me (coach)
+        </button>
+      </div>
+    `,
+  }),
+};
+
+/** Explicit trigger modes: hover (default), click toggle, focus-only. */
+export const TriggerModes: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <div style="padding:80px;display:flex;gap:24px;justify-content:center">
+        <button type="button" mudTooltip="Opens on hover/focus">Hover</button>
+        <button type="button" mudTooltip="Toggles on click" tooltipTrigger="click">Click</button>
+        <button type="button" mudTooltip="Opens on keyboard focus only" tooltipTrigger="focus">Focus</button>
+      </div>
+    `,
+  }),
 };

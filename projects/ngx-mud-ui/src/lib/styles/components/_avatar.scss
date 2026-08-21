@@ -4,17 +4,23 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  vertical-align: middle;
   flex-shrink: 0;
   border-radius: var(--border-radius-full, 50%);
   background-color: var(--color-background-base-tertiary);
   color: var(--color-text-base-secondary);
-  font-family: inherit;
+  font-family: var(--font-family-primary, inherit);
   font-weight: 500;
   text-transform: uppercase;
   -webkit-user-select: none;
   user-select: none;
 
-  &:has(> img) {
+  // Anchor a mudBadge on the circle's NE circumference instead of the
+  // bounding-box corner: 14.6% = (1 - sin45deg) * 50%.
+  --badge-offset-top: 14.6%;
+  --badge-offset-right: 14.6%;
+
+  &:has(> img:not(.avatar-img-failed)) {
     background-color: transparent;
     overflow: hidden;
   }
@@ -23,16 +29,32 @@
     color: var(--color-icon-base-secondary);
   }
 
+  // Derived initials (from the name/initials inputs) act as the fallback:
+  // hidden while a healthy photo or an icon is projected.
+  &:has(> img:not(.avatar-img-failed)) .avatar-initials,
+  &:has(> :is(mud-icon, svg)) .avatar-initials {
+    display: none;
+  }
+
   img {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    -webkit-user-drag: none;
+
+    // A failed photo collapses so the tinted circle + derived initials show.
+    &.avatar-img-failed {
+      display: none;
+    }
   }
 
   &:focus-visible {
-    outline: var(--border-width-2, 2px) solid var(--color-border-brand-default);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow:
+      0 0 0 var(--focus-ring-inner-width, 2px) var(--focus-ring-inner-color, #fff),
+      0 0 0 calc(var(--focus-ring-inner-width, 2px) + var(--focus-ring-outer-width, 3px))
+        var(--focus-ring-outer-color, var(--blue-sky-500));
   }
 
   @media (forced-colors: active) {
@@ -47,8 +69,8 @@
 
     mud-icon svg,
     > svg {
-      width: 16px;
-      height: 16px;
+      width: 12px;
+      height: 12px;
     }
   }
 
@@ -60,8 +82,8 @@
 
     mud-icon svg,
     > svg {
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
     }
   }
 
@@ -105,30 +127,31 @@
   }
 }
 
+// Stack overlap grows with the rung (official avatar.stack.overlap tokens).
 .avatar-stack {
   display: inline-flex;
 
   .avatar {
-    margin-left: calc(var(--spacing-8, 8px) * -1);
     border: 2px solid var(--color-background-base-default);
-    box-shadow: 0 0 0 1px var(--color-background-base-secondary);
-    transition: transform 0.2s ease;
 
-    &:hover {
-      transform: translateY(-2px);
-      z-index: 2;
+    &--xs {
+      margin-left: -8px;
+    }
+    &--sm {
+      margin-left: -10px;
+    }
+    &--md {
+      margin-left: -12px;
+    }
+    &--lg {
+      margin-left: -14px;
+    }
+    &--xl {
+      margin-left: -20px;
     }
 
     &:first-child {
       margin-left: 0;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      transition: none;
-
-      &:hover {
-        transform: none;
-      }
     }
   }
 }

@@ -78,9 +78,9 @@ export const Sizes: Story = {
 };
 
 /**
- * A leading icon tightens the left padding (6px on medium, 4px on small) and
- * is forced to 16px (medium) / 14px (small). Pass `scale="16"` so the icon
- * geometry matches the rendered size.
+ * An icon on either edge tightens that edge's padding (6px on medium, 4px on
+ * small) and is forced to 16px (medium) / 12px (small). Pass `scale="16"` so
+ * the icon geometry matches the rendered size.
  */
 export const LeadingIcon: Story = {
   parameters: { controls: { disable: true } },
@@ -93,9 +93,29 @@ export const LeadingIcon: Story = {
         <mud-tag color="info" type="strong">
           <mud-icon name="circle-info" [scale]="16" /> In review
         </mud-tag>
+        <mud-tag color="brand">
+          Details <mud-icon name="chevron-right-small" [scale]="16" />
+        </mud-tag>
         <mud-tag color="danger" type="outlined" size="small">
           <mud-icon name="circle-info" [scale]="16" /> Rejected
         </mud-tag>
+      </div>
+    `,
+  }),
+};
+
+/**
+ * A tag is a11y-silent by default. Give it an `aria-label` and it becomes a
+ * polite live region (`role="status"`), so content changes are announced —
+ * use this for tags that reflect changing state (e.g. a payment status).
+ */
+export const AnnouncedStatus: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <div style="${ROW}">
+        <mud-tag color="success" aria-label="Payment status">Paid</mud-tag>
+        <mud-tag color="neutral">Decorative, not announced</mud-tag>
       </div>
     `,
   }),

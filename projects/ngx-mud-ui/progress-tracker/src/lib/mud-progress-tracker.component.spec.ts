@@ -3,6 +3,7 @@ import { Component, PLATFORM_ID, signal, viewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { form, required } from '@angular/forms/signals';
 import { MudProgressTracker } from './mud-progress-tracker.component';
+import type { MudProgressTrackerStepClick } from './mud-progress-tracker.component';
 import { MudStep } from './mud-step.component';
 import { MudStepHeader } from './mud-step-header.component';
 
@@ -449,3 +450,61 @@ describe('MudProgressTracker on the server platform', () => {
     expect(fixture.componentInstance.tracker().selectedIndex).toBe(0);
   });
 });
+
+describe('MudProgressTracker stepClick and compact', () => {
+  it('emits a cancelable stepClick before selecting; preventDefault keeps selection', async () => {
+    const fixture = TestBed.createComponent(StepClickHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const headers = fixture.nativeElement.querySelectorAll('mud-step-header');
+
+    headers[1].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await fixture.whenStable();
+
+    expect(host.clicks).toEqual([1]);
+    expect(host.tracker().selectedIndex).toBe(1);
+
+    host.prevent.set(true);
+    headers[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await fixture.whenStable();
+
+    expect(host.clicks).toEqual([1, 0]);
+    expect(host.tracker().selectedIndex).toBe(1);
+  });
+
+  it('applies the compact class from the input', async () => {
+    const fixture = TestBed.createComponent(StepClickHost);
+
+    await fixture.whenStable();
+    const track = fixture.nativeElement.querySelector('.progress-tracker') as HTMLElement;
+
+    expect(track.classList.contains('progress-tracker--compact')).toBe(false);
+
+    fixture.componentInstance.compact.set(true);
+    await fixture.whenStable();
+    expect(track.classList.contains('progress-tracker--compact')).toBe(true);
+  });
+});
+
+@Component({
+  imports: [MudProgressTracker, MudStep],
+  template: `
+    <mud-progress-tracker [compact]="compact()" (stepClick)="onStepClick($event)">
+      <mud-step label="One">one</mud-step>
+      <mud-step label="Two">two</mud-step>
+    </mud-progress-tracker>
+  `,
+})
+class StepClickHost {
+  readonly tracker = viewChild.required(MudProgressTracker);
+  readonly compact = signal(false);
+  readonly prevent = signal(false);
+  readonly clicks: number[] = [];
+
+  onStepClick(event: MudProgressTrackerStepClick): void {
+    this.clicks.push(event.index);
+
+    if (this.prevent()) event.preventDefault();
+  }
+}

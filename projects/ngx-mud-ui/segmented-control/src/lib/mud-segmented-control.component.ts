@@ -12,8 +12,13 @@ import {
   model,
   output,
   PLATFORM_ID,
+  signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import type { ControlValueAccessor } from '@angular/forms';
+
+export type MudSegmentedControlSize = 'medium' | 'small';
 
 /**
  * @description A segment created inside @for receives its [value] binding one change-
@@ -73,7 +78,7 @@ export class MudSegment<T = unknown> {
   readonly disabled = input(false, { transform: booleanAttribute });
 
   protected readonly _selected = computed(() => this._group._isSelected(this));
-  protected readonly _isDisabled = computed(() => this.disabled() || this._group.disabled());
+  protected readonly _isDisabled = computed(() => this.disabled() || this._group._effectiveDisabled());
   protected readonly _tabIndex = computed(() => this._group._tabIndexFor(this));
 
   /** @docs-private */
@@ -103,6 +108,10 @@ export class MudSegment<T = unknown> {
 }
 
 /**
+ * Works standalone via `[(value)]` or inside reactive/template-driven forms
+ * (implements ControlValueAccessor, so `formControlName`/`ngModel` and form
+ * resets behave like any native control).
+ *
  * ```html
  * <mud-segmented-control [(value)]="view" aria-label="View">
  *   <button mud-segment value="list">List</button>
@@ -117,12 +126,23 @@ export class MudSegment<T = unknown> {
     class: 'segmented-control',
     role: 'radiogroup',
     '[class.segmented-control--full-width]': 'fullWidth()',
+    '[class.segmented-control--sm]': "size() === 'small'",
+    '[class.segmented-control--disabled]': '_effectiveDisabled()',
+    '[attr.aria-disabled]': '_effectiveDisabled() ? "true" : null',
     '[attr.aria-label]': 'ariaLabel()',
     '[attr.aria-labelledby]': 'ariaLabelledby()',
+    '(focusout)': '_onTouched()',
   },
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => MudSegmentedControl),
+      multi: true,
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MudSegmentedControl<T = unknown> {
+export class MudSegmentedControl<T = unknown> implements ControlValueAccessor {
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly segments = contentChildren<MudSegment<T>>(MudSegment);
@@ -131,13 +151,38 @@ export class MudSegmentedControl<T = unknown> {
   readonly ariaLabelledby = input<string | undefined>(undefined, { alias: 'aria-labelledby' });
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly fullWidth = input(false, { transform: booleanAttribute });
+  readonly size = input<MudSegmentedControlSize>('medium');
   readonly value = model<T | undefined>(undefined);
 
   readonly selectionChange = output<MudSegmentedControlChange<T>>();
 
+  private readonly _cvaDisabled = signal(false);
+  private _onChange: (value: T | undefined) => void = () => undefined;
+  /** @docs-private */
+  protected _onTouched: () => void = () => undefined;
+
+  /** @docs-private Combined input + forms-driven disabled state. */
+  readonly _effectiveDisabled = computed(() => this.disabled() || this._cvaDisabled());
+
   private _lastEmitted: T | undefined;
   private _lastIndex = 0;
   private _initialized = false;
+
+  writeValue(value: T | undefined): void {
+    this.value.set(value);
+  }
+
+  registerOnChange(fn: (value: T | undefined) => void): void {
+    this._onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this._onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this._cvaDisabled.set(isDisabled);
+  }
 
   constructor() {
     effect(() => {
@@ -157,7 +202,7 @@ export class MudSegmentedControl<T = unknown> {
       const index = values.findIndex((segmentValue) => Object.is(segmentValue, value));
       const current = index >= 0 ? segments[index] : undefined;
 
-      if (value !== undefined && !this.disabled() && (!current || current.disabled())) {
+      if (value !== undefined && !this._effectiveDisabled() && (!current || current.disabled())) {
         const fallback = this._closestEnabled(current ? index : this._lastIndex);
 
         if (fallback >= 0 && fallback !== index) {
@@ -201,11 +246,12 @@ export class MudSegmentedControl<T = unknown> {
 
   /** @docs-private */
   _select(segment: MudSegment<T>): void {
-    if (segment.disabled() || this.disabled()) {
+    if (segment.disabled() || this._effectiveDisabled()) {
       return;
     }
 
     this.value.set(segment.value());
+    this._onChange(segment.value());
   }
 
   /** @docs-private */
@@ -243,11 +289,12 @@ export class MudSegmentedControl<T = unknown> {
 
     const next = segments[target];
 
-    if (!next || next.disabled() || this.disabled()) {
+    if (!next || next.disabled() || this._effectiveDisabled()) {
       return;
     }
 
     this.value.set(next.value());
+    this._onChange(next.value());
 
     if (this._isBrowser) {
       next._focus();
