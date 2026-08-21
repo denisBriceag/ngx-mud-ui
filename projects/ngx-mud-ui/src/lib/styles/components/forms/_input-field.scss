@@ -51,6 +51,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-4, 4px);
+  max-width: 100%;
   font-size: 14px;
   line-height: 20px;
   font-weight: 500;
@@ -58,7 +59,17 @@
   cursor: pointer;
 }
 
+// A long label truncates on its single line instead of wrapping or
+// stretching the field.
+.input-field__label-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .input-field__required {
+  flex-shrink: 0;
   color: var(--color-text-danger-default);
   font-size: 12px;
 }
@@ -215,6 +226,68 @@
       color: var(--color-icon-disabled-on-disabled, var(--color-icon-disabled-default));
     }
   }
+}
+
+// ----- textarea additions (mud-textarea shares the whole contract) -------
+
+.input-field__control--textarea {
+  height: auto;
+  min-height: 120px;
+  align-items: stretch;
+  padding-block: var(--spacing-8, 8px);
+}
+
+.input-field--lg .input-field__control--textarea {
+  min-height: 150px;
+  padding-block: var(--spacing-12, 12px);
+}
+
+textarea.input-field__native {
+  height: auto;
+  resize: vertical;
+}
+
+.input-field--no-resize textarea.input-field__native {
+  resize: none;
+}
+
+.input-field__footer {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-16, 16px);
+}
+
+.input-field__footer .input-field__assistive {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.input-field__counter {
+  flex-shrink: 0;
+  margin-left: auto;
+  font-family: var(--font-family-primary, inherit);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--color-text-base-tertiary);
+}
+
+.input-field.is-invalid .input-field__counter {
+  color: var(--color-text-danger-default);
+}
+
+.input-field.is-disabled .input-field__counter {
+  color: var(--color-text-disabled-on-disabled, var(--color-text-disabled-default));
+}
+
+// Assistive text clamps at two lines inside a field (standalone
+// inline-messages are unaffected).
+.input-field__assistive .inline-message__text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {

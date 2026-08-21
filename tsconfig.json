@@ -9,7 +9,8 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "ngx-mud-ui": ["./dist/ngx-mud-ui"]
+      "ngx-mud-ui": ["./dist/ngx-mud-ui"],
+      "ngx-mud-ui/*": ["./projects/ngx-mud-ui/*/src/public-api.ts"]
     },
     "skipLibCheck": true,
     "isolatedModules": true,

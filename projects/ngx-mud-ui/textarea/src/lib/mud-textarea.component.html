@@ -1,0 +1,91 @@
+@if (_showLabel()) {
+  <label class="input-field__label" [attr.for]="_id" [id]="_labelId">
+    <span class="input-field__label-text"><ng-content select="[mudLabel]">{{ label() }}</ng-content></span>
+    @if (required()) {
+      <span class="input-field__required" aria-hidden="true">*</span>
+    }
+  </label>
+}
+
+<div class="input-field__control input-field__control--textarea">
+  <textarea
+    #native
+    class="input-field__native"
+    [id]="_id"
+    [value]="value()"
+    [rows]="rows()"
+    [attr.name]="name() || null"
+    [attr.placeholder]="placeholder() ?? null"
+    [disabled]="_effectiveDisabled()"
+    [readOnly]="readonly()"
+    [required]="required()"
+    [attr.minlength]="minLength() ?? null"
+    [attr.maxlength]="maxLength() ?? null"
+    [attr.aria-label]="_ariaLabel()"
+    [attr.aria-labelledby]="_showLabel() ? _labelId : null"
+    [attr.aria-describedby]="_describedBy()"
+    [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
+    (input)="_onInput($event)"
+    (focus)="_onFocus()"
+    (blur)="_onBlur()"
+  ></textarea>
+</div>
+
+@if (_showError() || _showHelper() || _showCounter()) {
+  <div class="input-field__footer">
+    @if (_showError()) {
+      <div class="input-field__assistive" role="alert" [id]="_errorId">
+        <ng-content select="[mudError]">
+          <div class="inline-message inline-message--error">
+            <span class="inline-message__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false">
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M10 1.667a8.333 8.333 0 1 0 0 16.666 8.333 8.333 0 0 0 0-16.666m-.833 7.5c0-.459.416-.834.833-.834s.833.373.833.834v4.166a.833.833 0 0 1-1.666 0zM10 5.833A.833.833 0 1 0 10 7.5a.833.833 0 0 0 0-1.667"
+                />
+              </svg>
+            </span>
+            <span class="inline-message__text">{{ _errorMessage() }}</span>
+          </div>
+        </ng-content>
+      </div>
+    } @else if (_showHelper()) {
+      <div class="input-field__assistive" [id]="_helperId">
+        <ng-content select="[mudHelper]">
+          <div
+            class="inline-message"
+            [class.inline-message--warning]="_effectiveVariant() === 'warning'"
+            [class.inline-message--success]="_effectiveVariant() === 'success'"
+          >
+            @if (_effectiveVariant() === 'warning') {
+              <span class="inline-message__icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false">
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M8.563 3.31a1.667 1.667 0 0 1 2.874 0L18.313 15c.654 1.11-.148 2.512-1.437 2.512H3.124c-1.29 0-2.09-1.401-1.437-2.512zM10 8.345c.46 0 .834.373.834.833v1.667a.833.833 0 1 1-1.667 0V9.178c0-.46.373-.833.833-.833m-1.041 5a1.042 1.042 0 1 1 2.083 0 1.042 1.042 0 0 1-2.083 0"
+                  />
+                </svg>
+              </span>
+            } @else if (_effectiveVariant() === 'success') {
+              <span class="inline-message__icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false">
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M10 1.667a8.333 8.333 0 1 0 0 16.666 8.333 8.333 0 0 0 0-16.666m2.984 6.645a.625.625 0 0 0-.968-.791L8.704 11.57l-1.179-1.18a.625.625 0 0 0-.884.884l1.667 1.667a.625.625 0 0 0 .926-.046z"
+                  />
+                </svg>
+              </span>
+            }
+            <span class="inline-message__text">{{ _helperMessage() }}</span>
+          </div>
+        </ng-content>
+      </div>
+    }
+    @if (_showCounter()) {
+      <span class="input-field__counter" aria-hidden="true">{{ value().length }} / {{ maxLength() }}</span>
+    }
+  </div>
+}
