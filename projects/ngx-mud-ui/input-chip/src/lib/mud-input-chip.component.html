@@ -1,0 +1,96 @@
+@if (_showLabel()) {
+  <label class="input-field__label" [attr.for]="_id" [id]="_labelId">
+    <span class="input-field__label-text"><ng-content select="[mudLabel]">{{ label() }}</ng-content></span>
+    @if (required()) {
+      <span class="input-field__required" aria-hidden="true">*</span>
+    }
+  </label>
+}
+
+<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
+<div
+  class="input-field__control chip-field__control"
+  role="group"
+  [attr.aria-label]="_ariaLabel()"
+  [attr.aria-labelledby]="_showLabel() ? _labelId : null"
+  (click)="_onControlClick($event)"
+>
+  @for (chip of value(); track $index) {
+    <span class="chip-field__chip">
+      <span class="chip-field__chip-label">{{ chip }}</span>
+      <button
+        #removeBtn
+        type="button"
+        class="chip-field__chip-remove"
+        [attr.data-chip-index]="$index"
+        [attr.aria-label]="removeLabel() + ' ' + chip"
+        [disabled]="_effectiveDisabled()"
+        (click)="_onRemoveClick($event, $index)"
+        (keydown)="_onChipKeydown($event, $index)"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false" aria-hidden="true">
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M4.41 4.41a.833.833 0 0 1 1.18 0L10 8.821l4.41-4.41a.833.833 0 1 1 1.18 1.178L11.178 10l4.41 4.41a.833.833 0 0 1-1.178 1.18L10 11.178l-4.41 4.41a.833.833 0 0 1-1.18-1.178L8.821 10l-4.41-4.41a.833.833 0 0 1 0-1.18"
+          />
+        </svg>
+      </button>
+    </span>
+  }
+
+  <input
+    #native
+    type="text"
+    class="input-field__native chip-field__native"
+    [id]="_id"
+    [value]="draft()"
+    [attr.name]="name() || null"
+    [attr.placeholder]="value().length === 0 ? (placeholder() ?? null) : null"
+    [disabled]="_effectiveDisabled()"
+    [readOnly]="_effectiveReadonly()"
+    [required]="required()"
+    autocomplete="off"
+    [attr.aria-label]="_ariaLabel()"
+    [attr.aria-describedby]="_describedBy()"
+    [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
+    (input)="_onDraftInput($event)"
+    (keydown)="_onInputKeydown($event)"
+    (paste)="_onPaste($event)"
+    (focus)="_onFocus()"
+    (blur)="_onBlur()"
+  />
+</div>
+
+@if (_showError() || _showHelper()) {
+  <div class="input-field__footer">
+    @if (_showError()) {
+      <div class="input-field__assistive" role="alert" [id]="_errorId">
+        <ng-content select="[mudError]">
+          <div class="inline-message inline-message--error">
+            <span class="inline-message__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false">
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M10 1.667a8.333 8.333 0 1 0 0 16.666 8.333 8.333 0 0 0 0-16.666m-.833 7.5c0-.459.416-.834.833-.834s.833.373.833.834v4.166a.833.833 0 0 1-1.666 0zM10 5.833A.833.833 0 1 0 10 7.5a.833.833 0 0 0 0-1.667"
+                />
+              </svg>
+            </span>
+            <span class="inline-message__text">{{ _errorMessage() }}</span>
+          </div>
+        </ng-content>
+      </div>
+    } @else if (_showHelper()) {
+      <div class="input-field__assistive" [id]="_helperId">
+        <ng-content select="[mudHelper]">
+          <div class="inline-message">
+            <span class="inline-message__text">{{ _helperMessage() }}</span>
+          </div>
+        </ng-content>
+      </div>
+    }
+  </div>
+}
+
+<span class="input-field__sr-only" role="status" aria-live="polite">{{ _announcement() }}</span>

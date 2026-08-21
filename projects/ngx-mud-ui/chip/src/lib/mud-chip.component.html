@@ -1,0 +1,59 @@
+@if (_isFilter()) {
+  <button
+    type="button"
+    class="chip__control"
+    [attr.aria-pressed]="_selected()"
+    [attr.aria-label]="label() ?? null"
+    [disabled]="disabled()"
+    (click)="_toggle()"
+  >
+    <ng-container [ngTemplateOutlet]="content" />
+  </button>
+} @else {
+  <span class="chip__control">
+    <ng-container [ngTemplateOutlet]="content" />
+  </span>
+}
+
+@if (_showRemove()) {
+  <button
+    type="button"
+    class="chip__remove"
+    [attr.aria-label]="_removeAriaLabel()"
+    [disabled]="disabled()"
+    (click)="_onRemove()"
+  >
+    <!-- Inline glyph on purpose: the × renders at half the remove-circle size
+         (8–10px), below the icon set's smallest rung. -->
+    <span class="chip__remove-icon" aria-hidden="true">
+      <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg" focusable="false">
+        <path d="M1 1 L9 9 M9 1 L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+      </svg>
+    </span>
+  </button>
+}
+
+<ng-template #content>
+  <span class="chip__avatar"><ng-content select="[avatar]" /></span>
+  @if (_showCheck()) {
+    <svg
+      class="chip__check"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M15.527 5.398a.8.8 0 0 1 .075 1.129l-7 8a.8.8 0 0 1-1.168.039l-3-3a.8.8 0 0 1 1.132-1.132L7.96 12.83l6.437-7.357a.8.8 0 0 1 1.129-.075z"
+      />
+    </svg>
+  }
+  <span class="chip__icon"><ng-content select="[icon-start]" /></span>
+  <span class="chip__label"><ng-content /></span>
+  @if (_showCount()) {
+    <span class="chip__count">{{ count() }}</span>
+  }
+</ng-template>

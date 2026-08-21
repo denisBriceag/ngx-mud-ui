@@ -547,11 +547,125 @@ textarea.input-field__native {
   overflow: hidden;
 }
 
+// ----- input-chip additions ----------------------------------------------
+
+.chip-field {
+  --_chip-height: 24px;
+  --_chip-remove-size: 16px;
+  --_chip-remove-icon-size: 12px;
+}
+
+.input-field--lg.chip-field {
+  --_chip-height: 32px;
+  --_chip-remove-size: 24px;
+  --_chip-remove-icon-size: 16px;
+}
+
+.chip-field__control {
+  height: auto;
+  min-height: var(--_if-height);
+  flex-wrap: wrap;
+  padding-block: calc((var(--_if-height) - var(--_chip-height) - 2px) / 2);
+  cursor: text;
+}
+
+.chip-field__native {
+  flex: 1 1 120px;
+  min-width: 120px;
+  height: var(--_chip-height);
+}
+
+.chip-field__chip {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4, 4px);
+  height: var(--_chip-height);
+  max-width: 100%;
+  padding-inline: var(--spacing-12, 12px) var(--spacing-4, 4px);
+  background-color: var(--color-background-base-secondary);
+  color: var(--color-text-base-default);
+  border-radius: var(--border-radius-full, 9999px);
+  font-size: 14px;
+  line-height: 20px;
+  transition: background-color 150ms ease-out;
+}
+
+.input-field:not(.is-disabled) .chip-field__chip:hover {
+  background-color: var(--color-background-base-tertiary);
+}
+
+.chip-field__chip-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip-field__chip-remove {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--_chip-remove-size);
+  height: var(--_chip-remove-size);
+  padding: 0;
+  border: none;
+  border-radius: var(--border-radius-full, 9999px);
+  background: transparent;
+  color: var(--color-icon-base-secondary);
+  cursor: pointer;
+  transition:
+    color 150ms ease-out,
+    background-color 150ms ease-out;
+
+  &:hover {
+    color: var(--color-icon-base-default);
+    background-color: var(--color-background-base-tertiary);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 var(--focus-ring-inner-width, 2px) var(--focus-ring-inner-color, #fff),
+      0 0 0 calc(var(--focus-ring-inner-width, 2px) + var(--focus-ring-outer-width, 3px))
+        var(--focus-ring-outer-color, var(--blue-sky-500));
+  }
+
+  svg {
+    width: var(--_chip-remove-icon-size);
+    height: var(--_chip-remove-icon-size);
+  }
+}
+
+.input-field.is-readonly .chip-field__chip-remove {
+  cursor: default;
+}
+
+.input-field.is-disabled {
+  .chip-field__control {
+    cursor: not-allowed;
+  }
+
+  .chip-field__chip {
+    background-color: var(--color-background-disabled-default);
+    color: var(--color-text-disabled-on-disabled, var(--color-text-disabled-default));
+  }
+
+  .chip-field__chip-remove {
+    color: var(--color-icon-disabled-on-disabled, var(--color-icon-disabled-default));
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .input-field__control,
   .input-field__clear,
   .input-field__search-clear,
-  .input-field__submit {
+  .input-field__submit,
+  .chip-field__chip,
+  .chip-field__chip-remove {
     transition: none;
   }
 
