@@ -1,0 +1,72 @@
+<div class="selection-control__row">
+  <span class="selection-control__box">
+    <input
+      #native
+      type="checkbox"
+      class="selection-control__native"
+      [id]="_id"
+      [checked]="checked()"
+      [disabled]="_effectiveDisabled()"
+      [required]="required()"
+      [attr.name]="name() || null"
+      [attr.aria-label]="_ariaLabel()"
+      [attr.aria-labelledby]="ariaLabelledby() ?? null"
+      [attr.aria-describedby]="_describedBy()"
+      [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
+      (click)="_onClick($event)"
+      (change)="_onNativeChange($event)"
+      (blur)="_onBlur()"
+    />
+    <svg
+      class="selection-control__glyph selection-control__glyph--check"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      focusable="false"
+      aria-hidden="true"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M12.494 4.236a.75.75 0 0 1 .07 1.058l-5.6 6.4a.75.75 0 0 1-1.094.036l-2.4-2.4a.75.75 0 1 1 1.06-1.06l1.833 1.833 5.073-5.797a.75.75 0 0 1 1.058-.07"
+      />
+    </svg>
+    <svg
+      class="selection-control__glyph selection-control__glyph--dash"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      focusable="false"
+      aria-hidden="true"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M3.25 8A.75.75 0 0 1 4 7.25h8a.75.75 0 0 1 0 1.5H4A.75.75 0 0 1 3.25 8"
+      />
+    </svg>
+  </span>
+
+  <span class="selection-control__text">
+    @if (_showLabel()) {
+      <label class="selection-control__label" [attr.for]="_id">
+        <ng-content select="[mudLabel]">{{ label() }}</ng-content>
+        @if (required()) {
+          <span class="selection-control__required" aria-hidden="true">*</span>
+        }
+      </label>
+    }
+    @if (_showSupporting()) {
+      <span class="selection-control__supporting" [id]="_supportingId">
+        <ng-content select="[mudHelper]">{{ _supportingMessage() }}</ng-content>
+      </span>
+    }
+    @if (_showError()) {
+      <div class="selection-control__error" role="alert" [id]="_errorId">
+        <ng-content select="[mudError]">
+          <span class="selection-control__error-text">{{ _errorMessage() }}</span>
+        </ng-content>
+      </div>
+    }
+  </span>
+</div>

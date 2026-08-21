@@ -1,0 +1,180 @@
+.selection-control {
+  --_sc-size: 24px;
+  --_sc-glyph: 16px;
+  --_sc-gap: var(--spacing-12, 12px);
+  --_sc-label-font: 16px;
+  --_sc-label-line: 24px;
+  --_sc-supporting-font: 14px;
+  --_sc-supporting-line: 20px;
+  --_sc-border: var(--color-border-base-secondary);
+  --_sc-bg: var(--color-background-base-default);
+  --_sc-bg-checked: var(--color-background-brand-default);
+  --_sc-border-checked: var(--color-background-brand-default);
+
+  display: block;
+  font-family: var(--font-family-primary, inherit);
+}
+
+.selection-control--sm {
+  --_sc-size: 20px;
+  --_sc-glyph: 12px;
+  --_sc-gap: var(--spacing-6, 6px);
+  --_sc-label-font: 14px;
+  --_sc-label-line: 20px;
+  --_sc-supporting-font: 12px;
+  --_sc-supporting-line: 16px;
+}
+
+.selection-control.is-invalid {
+  --_sc-border: var(--color-border-danger-default);
+  --_sc-bg-checked: var(--color-border-danger-default);
+  --_sc-border-checked: var(--color-border-danger-default);
+}
+
+.selection-control__row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--_sc-gap);
+  align-items: start;
+}
+
+.selection-control__box {
+  position: relative;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--_sc-size);
+  height: var(--_sc-size);
+  // Center the box against the first label line.
+  margin-top: calc((var(--_sc-label-line) - var(--_sc-size)) / 2);
+  border: 2px solid var(--_sc-border);
+  border-radius: var(--border-radius-6, 6px);
+  background-color: var(--_sc-bg);
+  color: var(--color-icon-base-inverse-on-color, #fff);
+  transition:
+    background-color 150ms ease-out,
+    border-color 150ms ease-out,
+    box-shadow 150ms ease-out;
+}
+
+.selection-control.is-checked .selection-control__box,
+.selection-control.is-indeterminate .selection-control__box {
+  background-color: var(--_sc-bg-checked);
+  border-color: var(--_sc-border-checked);
+}
+
+.selection-control__native {
+  position: absolute;
+  inset: calc((var(--_sc-size) - 36px) / 2);
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.selection-control__box:has(.selection-control__native:focus-visible) {
+  outline: 3px solid var(--focus-ring-outer-color, var(--blue-sky-500));
+  outline-offset: 1px;
+}
+
+.selection-control__glyph {
+  display: none;
+  width: var(--_sc-glyph);
+  height: var(--_sc-glyph);
+}
+
+// The dash (mixed) wins over the check.
+.selection-control.is-checked:not(.is-indeterminate) .selection-control__glyph--check {
+  display: block;
+}
+
+.selection-control.is-indeterminate .selection-control__glyph--dash {
+  display: block;
+}
+
+.selection-control__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2, 2px);
+  min-width: 0;
+}
+
+.selection-control__label {
+  font-size: var(--_sc-label-font);
+  line-height: var(--_sc-label-line);
+  font-weight: 500;
+  color: var(--color-text-base-default);
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.selection-control__required {
+  color: var(--color-text-danger-default);
+  font-size: 12px;
+  margin-left: var(--spacing-4, 4px);
+}
+
+.selection-control__supporting {
+  font-size: var(--_sc-supporting-font);
+  line-height: var(--_sc-supporting-line);
+  font-weight: 400;
+  color: var(--color-text-base-tertiary);
+  overflow-wrap: anywhere;
+}
+
+.selection-control__error,
+.selection-control__error-text {
+  font-size: var(--_sc-supporting-font);
+  line-height: var(--_sc-supporting-line);
+  font-weight: 400;
+  color: var(--color-text-danger-default);
+  overflow-wrap: anywhere;
+}
+
+.selection-control.is-invalid .selection-control__label,
+.selection-control.is-invalid .selection-control__supporting {
+  color: var(--color-text-danger-default);
+}
+
+// ----- states -------------------------------------------------------------
+
+.selection-control.is-readonly .selection-control__native,
+.selection-control.is-readonly .selection-control__label {
+  cursor: default;
+}
+
+.selection-control.is-disabled {
+  .selection-control__box {
+    background-color: var(--color-background-disabled-default);
+    border-color: var(--color-border-disabled-default);
+    color: var(--color-icon-disabled-on-disabled, var(--color-icon-disabled-default));
+  }
+
+  .selection-control__native,
+  .selection-control__label {
+    cursor: not-allowed;
+  }
+
+  .selection-control__label,
+  .selection-control__supporting {
+    color: var(--color-text-disabled-on-disabled, var(--color-text-disabled-default));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selection-control__box {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .selection-control.is-checked .selection-control__box,
+  .selection-control.is-indeterminate .selection-control__box {
+    background-color: Highlight;
+    border-color: Highlight;
+  }
+}

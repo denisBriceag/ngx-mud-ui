@@ -198,13 +198,6 @@ export const SignalForms: Story = {
   render: () => ({ template: `<mud-input-signal-demo />` }),
 };
 
-
-/**
- * Composable regions: project [mudLabel] / [mudHelper] / [mudError] content
- * (import the marker directives, e.g. via the MUD_INPUT bundle). The
- * component keeps the wrappers — ids, aria-describedby, role="alert", and
- * error-replaces-helper — so the ARIA wiring survives composition.
- */
 export const Composable: Story = {
   parameters: { controls: { disable: true } },
   decorators: [moduleMetadata({ imports: [MudInputLabel, MudInputHelper, MudInputError, MudInlineMessage] })],
