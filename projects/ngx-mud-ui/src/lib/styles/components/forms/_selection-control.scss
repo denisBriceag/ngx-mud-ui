@@ -271,3 +271,118 @@
   color: var(--color-text-danger-default);
   overflow-wrap: anywhere;
 }
+
+// ----- switch (mud-switch) --------------------------------------------------
+
+.switch-control {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-12, 12px);
+  font-family: var(--font-family-primary, inherit);
+}
+
+.switch-control__track {
+  position: relative;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  width: 48px;
+  height: 28px;
+  padding: var(--spacing-2, 2px);
+  border-radius: var(--border-radius-full, 9999px);
+  background-color: var(--gray-400);
+  transition: background-color 150ms ease-out;
+
+  &:hover {
+    background-color: var(--gray-500);
+  }
+}
+
+.switch-control.is-checked .switch-control__track {
+  background-color: var(--color-background-brand-default);
+
+  &:hover {
+    background-color: var(--color-background-brand-default-hover);
+  }
+}
+
+.switch-control__thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--border-radius-full, 9999px);
+  background-color: var(--color-background-base-default);
+  box-shadow:
+    0 0 0.5px 0 rgba(0, 0, 0, 0.3),
+    0 1px 3px 0 rgba(0, 0, 0, 0.16);
+  transition: transform 150ms ease-out;
+}
+
+.switch-control.is-checked .switch-control__thumb {
+  transform: translateX(20px);
+}
+
+.switch-control__native {
+  position: absolute;
+  inset: -2px;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+
+  @media (pointer: coarse) {
+    inset: -6px;
+  }
+}
+
+.switch-control__track:has(.switch-control__native:focus-visible) {
+  outline: none;
+  box-shadow:
+    0 0 0 1px var(--focus-ring-inner-color, #fff),
+    0 0 0 calc(1px + var(--focus-ring-outer-width, 3px)) var(--focus-ring-outer-color, var(--blue-sky-500));
+}
+
+.switch-control__label {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--color-text-base-default);
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.switch-control.is-disabled {
+  .switch-control__track,
+  .switch-control__track:hover {
+    background-color: var(--color-background-disabled-default);
+  }
+
+  .switch-control__native,
+  .switch-control__label {
+    cursor: not-allowed;
+  }
+
+  .switch-control__label {
+    color: var(--color-text-disabled-default);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .switch-control__track,
+  .switch-control__thumb {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .switch-control__track {
+    border: 1px solid CanvasText;
+  }
+
+  .switch-control.is-checked .switch-control__track {
+    background-color: Highlight;
+  }
+}

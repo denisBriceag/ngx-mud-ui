@@ -1,0 +1,25 @@
+<span class="switch-control__track">
+  <input
+    #native
+    type="checkbox"
+    role="switch"
+    class="switch-control__native"
+    [id]="_id"
+    [checked]="checked()"
+    [disabled]="_effectiveDisabled()"
+    [required]="required()"
+    [attr.name]="name() || null"
+    [attr.aria-label]="_ariaLabel()"
+    [attr.aria-labelledby]="ariaLabelledby() ?? null"
+    [attr.aria-describedby]="ariaDescribedby() ?? null"
+    (change)="_onNativeChange($event)"
+    (blur)="_onBlur()"
+  />
+  <span class="switch-control__thumb"></span>
+</span>
+
+@if (_showLabel()) {
+  <label class="switch-control__label" [attr.for]="_id">
+    <ng-content select="[mudLabel]">{{ label() }}</ng-content>
+  </label>
+}

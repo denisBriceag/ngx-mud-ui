@@ -47,6 +47,7 @@
               "../search-input/src/**/*.spec.ts",
               "../segmented-control/src/**/*.spec.ts",
               "../spinner/src/**/*.spec.ts",
+              "../switch/src/**/*.spec.ts",
               "../tabs/src/**/*.spec.ts",
               "../tag/src/**/*.spec.ts",
               "../textarea/src/**/*.spec.ts",
