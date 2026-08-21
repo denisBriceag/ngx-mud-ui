@@ -14,6 +14,7 @@
     "badge/src/**/*.spec.ts",
     "button/src/**/*.spec.ts",
     "icons/src/**/*.spec.ts",
+    "inline-message/src/**/*.spec.ts",
     "link/src/**/*.spec.ts",
     "progress-tracker/src/**/*.spec.ts",
     "segmented-control/src/**/*.spec.ts",

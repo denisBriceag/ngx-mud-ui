@@ -1,0 +1,62 @@
+.inline-message {
+  --_im-font-size: 14px;
+  --_im-line-height: 20px;
+  --_im-icon-size: 20px;
+  --_im-gap: var(--spacing-6, 6px);
+  --_im-text: var(--color-text-base-secondary);
+  --_im-icon: var(--color-icon-brand-default);
+
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--_im-gap);
+  vertical-align: middle;
+  color: var(--_im-text);
+  font-family: var(--font-family-primary, inherit);
+  font-size: var(--_im-font-size);
+  line-height: var(--_im-line-height);
+  font-weight: 400;
+}
+
+.inline-message--small {
+  --_im-font-size: 12px;
+  --_im-line-height: 16px;
+  --_im-icon-size: 16px;
+  --_im-gap: var(--spacing-4, 4px);
+}
+
+.inline-message--warning {
+  --_im-text: var(--color-text-warning-default);
+  --_im-icon: var(--color-icon-warning-default);
+}
+
+.inline-message--success {
+  --_im-text: var(--color-text-positive-on-secondary);
+  --_im-icon: var(--color-icon-positive-on-secondary);
+}
+
+.inline-message--error {
+  --_im-text: var(--color-text-danger-default);
+  --_im-icon: var(--color-icon-danger-default);
+}
+
+.inline-message__icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--_im-icon-size);
+  // Match the line box so the icon centers with the first line of text.
+  height: var(--_im-line-height);
+  color: var(--_im-icon);
+
+  svg {
+    width: var(--_im-icon-size);
+    height: var(--_im-icon-size);
+  }
+}
+
+.inline-message__text {
+  min-width: 0;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
