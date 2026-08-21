@@ -1,0 +1,16 @@
+@if (_showLabel()) {
+  <div class="radio-group__label" [id]="_labelId">
+    <ng-content select="[mudLabel]">{{ label() }}</ng-content>
+    @if (required()) {
+      <span class="radio-group__required" aria-hidden="true">*</span>
+    }
+  </div>
+}
+
+<ng-content />
+
+@if (_showError()) {
+  <div class="radio-group__error" role="alert" [id]="_errorId">
+    <ng-content select="[mudError]">{{ _errorMessage() }}</ng-content>
+  </div>
+}

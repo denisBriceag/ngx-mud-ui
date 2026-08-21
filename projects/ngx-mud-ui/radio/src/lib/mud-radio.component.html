@@ -1,0 +1,33 @@
+<div class="selection-control__row">
+  <span class="selection-control__box">
+    <input
+      #native
+      type="radio"
+      class="selection-control__native"
+      [id]="_id"
+      [checked]="_checked()"
+      [disabled]="_effectiveDisabled()"
+      [required]="_required()"
+      [attr.name]="_name()"
+      [attr.aria-label]="_ariaLabel()"
+      [attr.aria-describedby]="_describedBy()"
+      (click)="_onClick($event)"
+      (keydown)="_onKeydown($event)"
+      (change)="_onNativeChange($event)"
+    />
+    <span class="selection-control__dot"></span>
+  </span>
+
+  <span class="selection-control__text">
+    @if (_showLabel()) {
+      <label class="selection-control__label" [attr.for]="_id">
+        <ng-content select="[mudLabel]">{{ label() }}</ng-content>
+      </label>
+    }
+    @if (_showSupporting()) {
+      <span class="selection-control__supporting" [id]="_supportingId">
+        <ng-content select="[mudHelper]">{{ supportingText() }}</ng-content>
+      </span>
+    }
+  </span>
+</div>
