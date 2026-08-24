@@ -1,0 +1,70 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as TagStories from './tag.stories';
+
+<Meta of={TagStories} />
+
+# Tag
+
+A small status label — approved, pending, rejected. Unlike a chip, a tag is not
+interactive: it reports state rather than accepting input.
+
+## Import
+
+```ts
+import { MudTag } from 'ngx-mud-ui/tag';
+
+@Component({
+  imports: [MudTag],
+  template: `
+    <mud-tag color="success">Approved</mud-tag>
+    <mud-tag color="danger" type="strong" size="small">Rejected</mud-tag>
+  `,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={TagStories.Playground} />
+<Controls of={TagStories.Playground} />
+
+## Matrix
+
+<Canvas of={TagStories.Matrix} />
+
+## Sizes
+
+<Canvas of={TagStories.Sizes} />
+
+## Leading icon
+
+<Canvas of={TagStories.LeadingIcon} />
+
+## Announced status
+
+<Canvas of={TagStories.AnnouncedStatus} />
+
+## API
+
+Selector: `mud-tag`
+
+<ArgTypes of={TagStories} />
+
+## Usage tips
+
+- **`aria-label` turns the tag into a live region.** Only when it is set does the
+  tag become `role="status"` and announce changes; unlabelled tags stay silent,
+  matching the official design system. Set it when the state can change while
+  the user is on the page, leave it off for static labels.
+- **A tag is not a chip.** Nothing here toggles or removes — reach for
+  `mud-chip` when the user acts on it.
+- **`type="strong"` is for the states that must not be missed**, such as a
+  rejection; `subtle` is the default for routine statuses.
+- **Colour is not the message.** `success` and `danger` read identically to a
+  colourblind user, so the tag's text must say what the state is.

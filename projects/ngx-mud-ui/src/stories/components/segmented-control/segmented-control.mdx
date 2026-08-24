@@ -1,0 +1,114 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as SegmentedControlStories from './segmented-control.stories';
+import { MudSegment } from 'ngx-mud-ui/segmented-control';
+
+<Meta of={SegmentedControlStories} />
+
+# Segmented control
+
+A small set of mutually exclusive choices shown side by side — a view switcher
+rather than a form field. Each segment is a native `<button>`, so the DOM
+matches the design-system CSS contract.
+
+## Import
+
+```ts
+import { MudSegment, MudSegmentedControl } from 'ngx-mud-ui/segmented-control';
+
+@Component({
+  imports: [MudSegment, MudSegmentedControl],
+  template: `
+    <mud-segmented-control [(value)]="view" aria-label="View">
+      <button mud-segment value="list">List</button>
+      <button mud-segment value="grid">Grid</button>
+    </mud-segmented-control>
+  `,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={SegmentedControlStories.Playground} />
+<Controls of={SegmentedControlStories.Playground} />
+
+## Small
+
+<Canvas of={SegmentedControlStories.Small} />
+
+## Segment counts
+
+<Canvas of={SegmentedControlStories.SegmentCounts} />
+
+## Leading icons
+
+<Canvas of={SegmentedControlStories.LeadingIcons} />
+
+## Disabled
+
+<Canvas of={SegmentedControlStories.Disabled} />
+
+## Long labels
+
+<Canvas of={SegmentedControlStories.LongLabels} />
+
+## Truncated, with a tooltip
+
+<Canvas of={SegmentedControlStories.TruncatedWithTooltip} />
+
+## Desktop and mobile
+
+<Canvas of={SegmentedControlStories.DesktopAndMobile} />
+
+## Reactive forms
+
+<Canvas of={SegmentedControlStories.ReactiveForms} />
+
+## Signal forms
+
+The control implements `FormValueControl`, so `[formField]` binds the value, the
+disabled state and the validation errors. Render the message yourself — the
+control has no error region.
+
+<Canvas of={SegmentedControlStories.SignalForms} />
+
+## API
+
+### `MudSegmentedControl`
+
+Selector: `mud-segmented-control`
+
+<ArgTypes of={SegmentedControlStories} />
+
+### `MudSegment`
+
+Selector: `button[mud-segment]`
+
+<ArgTypes of={MudSegment} />
+
+## Usage tips
+
+- **Name the control.** It has no visible label of its own, so set `aria-label`
+  or `aria-labelledby` — otherwise the group is announced as an unlabelled set
+  of buttons.
+- **Keep labels short.** A long label truncates to one line with an ellipsis;
+  the truncation is visual only, so the full text stays in the accessible name.
+- **Truncated segments get no tooltip automatically.** Compose `mudTooltip` from
+  `ngx-mud-ui/tooltip` on the same button when you need one — the component
+  deliberately stays out of it.
+- **It works in forms too.** It implements `ControlValueAccessor`, so
+  `formControlName` and `ngModel` behave like any native control, and the
+  signal-forms `FormValueControl` contract, so `[formField]` binds the value and
+  pushes validation errors. `[(value)]` is just the standalone path.
+- **`errors` has no visual region here.** Signal forms can push validation
+  errors, but a segmented control is a view switcher rather than a field, so
+  nothing renders — surface them next to the control if they matter.
+- **Use it for switching views, not for choosing data.** More than about five
+  options, or anything that belongs in a submitted form, is a radio group or a
+  select.

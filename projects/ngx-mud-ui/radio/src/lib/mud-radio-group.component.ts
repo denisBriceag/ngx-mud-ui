@@ -103,8 +103,7 @@ export class MudRadioGroup<T = unknown> implements ControlValueAccessor, FormVal
   private readonly _host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  /** @docs-private */
-  protected readonly _radios = contentChildren(MudRadio);
+  protected readonly _radios = contentChildren(forwardRef(() => MudRadio));
 
   /** @docs-private Projected region markers. */
   protected readonly _projectedLabel = contentChild(MudInputLabel);

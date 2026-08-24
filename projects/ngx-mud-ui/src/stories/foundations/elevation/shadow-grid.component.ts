@@ -58,7 +58,7 @@ const ALIASES: Record<string, string> = {
       display: block;
       padding: 1.5rem 2rem;
       font-family: system-ui, sans-serif;
-      color: #121212;
+      color: var(--color-text-base-default);
     }
     .grid {
       display: grid;
@@ -69,16 +69,16 @@ const ALIASES: Record<string, string> = {
       display: flex;
       flex-direction: column;
       gap: 0.4rem;
-      border: 1px solid #ececec;
+      border: 1px solid var(--color-border-base-default);
       border-radius: 10px;
-      background: #fff;
+      background: var(--color-background-base-default);
       padding: 0.75rem;
     }
     .preview {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f5f5f5;
+      background: var(--color-background-base-secondary);
       border-radius: 8px;
       padding: 1.5rem;
       margin-bottom: 0.35rem;
@@ -86,7 +86,7 @@ const ALIASES: Record<string, string> = {
     .card {
       width: 72px;
       height: 48px;
-      background: #fff;
+      background: var(--color-background-base-default);
       border-radius: 8px;
     }
     .chip {
@@ -95,15 +95,15 @@ const ALIASES: Record<string, string> = {
       justify-content: space-between;
       gap: 0.5rem;
       text-align: left;
-      border: 1px solid #ececec;
+      border: 1px solid var(--color-border-base-default);
       border-radius: 6px;
-      background: #fafafa;
+      background: var(--color-background-base-secondary);
       padding: 0.3rem 0.5rem;
       font: inherit;
       cursor: pointer;
     }
     .chip:hover {
-      border-color: #cfcfcf;
+      border-color: var(--color-border-base-secondary);
     }
     .chip code {
       font-family: ui-monospace, monospace;
@@ -113,10 +113,10 @@ const ALIASES: Record<string, string> = {
       text-overflow: ellipsis;
     }
     .chip--class {
-      background: #f2f6ff;
+      background: var(--color-background-brand-secondary);
     }
     .chip__ok {
-      color: #0a7d34;
+      color: var(--color-text-positive-default);
       font-size: 0.72rem;
       opacity: 0;
       transition: opacity 0.15s;
@@ -125,7 +125,7 @@ const ALIASES: Record<string, string> = {
       opacity: 1;
     }
     .empty {
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
   `,
 })

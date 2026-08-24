@@ -1,6 +1,7 @@
 import { Component, PLATFORM_ID, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormField, form, required } from '@angular/forms/signals';
 import { MudSegment, MudSegmentedControl } from './mud-segmented-control.component';
 import type { MudSegmentedControlChange } from './mud-segmented-control.component';
 
@@ -13,6 +14,7 @@ import type { MudSegmentedControlChange } from './mud-segmented-control.componen
       [fullWidth]="fullWidth()"
       aria-label="View"
       (selectionChange)="changes.push($event)"
+      (touch)="touches = touches + 1"
     >
       @if (showList()) {
         <button mud-segment value="list">List</button>
@@ -29,6 +31,7 @@ class Host {
   readonly gridDisabled = signal(false);
   readonly showList = signal(true);
   readonly changes: MudSegmentedControlChange<string>[] = [];
+  touches = 0;
 }
 
 @Component({
@@ -69,7 +72,9 @@ async function render() {
   const host = fixture.componentInstance;
   const group = fixture.nativeElement.querySelector('mud-segmented-control') as HTMLElement;
   const buttons = () =>
-    Array.from(fixture.nativeElement.querySelectorAll('button[mud-segment]')) as HTMLButtonElement[];
+    Array.from(
+      fixture.nativeElement.querySelectorAll('button[mud-segment]'),
+    ) as HTMLButtonElement[];
 
   return { fixture, host, group, buttons };
 }
@@ -360,6 +365,59 @@ describe('MudSegmentedControl size and forms integration', () => {
     expect(buttons[1].getAttribute('aria-checked')).toBe('true');
   });
 
+  it('emits touch only when focus leaves the group entirely', async () => {
+    const { fixture, host, buttons } = await render();
+    const [first, second] = buttons();
+
+    first.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: second }));
+    await fixture.whenStable();
+    expect(host.touches).toBe(0);
+
+    first.dispatchEvent(
+      new FocusEvent('focusout', { bubbles: true, relatedTarget: document.body }),
+    );
+    await fixture.whenStable();
+    expect(host.touches).toBe(1);
+  });
+
+  it('works as a signal-forms control: value round-trips through the model', async () => {
+    const fixture = TestBed.createComponent(SignalHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const buttons = Array.from(
+      fixture.nativeElement.querySelectorAll('button[mud-segment]'),
+    ) as HTMLButtonElement[];
+
+    expect(buttons[0].getAttribute('aria-checked')).toBe('true');
+
+    buttons[1].click();
+    await fixture.whenStable();
+    expect(host.model().view).toBe('grid');
+
+    host.model.set({ view: 'list' });
+    await fixture.whenStable();
+    expect(buttons[0].getAttribute('aria-checked')).toBe('true');
+  });
+
+  it('accepts validation errors pushed by signal forms', async () => {
+    const fixture = TestBed.createComponent(SignalHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const control = fixture.debugElement.children[0]
+      .componentInstance as MudSegmentedControl<string>;
+
+    host.model.set({ view: '' });
+    await fixture.whenStable();
+    expect(host.form.view().errors().length).toBeGreaterThan(0);
+    expect(control.errors().length).toBeGreaterThan(0);
+
+    host.model.set({ view: 'grid' });
+    await fixture.whenStable();
+    expect(control.errors().length).toBe(0);
+  });
+
   it('marks the control touched on blur', async () => {
     const fixture = TestBed.createComponent(FormHost);
 
@@ -397,4 +455,20 @@ class SizedHost {}
 })
 class FormHost {
   readonly control = new FormControl<string | null>('list');
+}
+
+@Component({
+  imports: [MudSegmentedControl, MudSegment, FormField],
+  template: `
+    <mud-segmented-control [formField]="form.view" aria-label="View">
+      <button mud-segment value="list">List</button>
+      <button mud-segment value="grid">Grid</button>
+    </mud-segmented-control>
+  `,
+})
+class SignalHost {
+  readonly model = signal({ view: 'list' });
+  readonly form = form(this.model, (path) => {
+    required(path.view, { message: 'Choose a view.' });
+  });
 }

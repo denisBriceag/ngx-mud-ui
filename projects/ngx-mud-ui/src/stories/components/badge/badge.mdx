@@ -1,0 +1,81 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as BadgeStories from './badge.stories';
+
+<Meta of={BadgeStories} />
+
+# Badge
+
+An attribute directive that overlays a count or a dot on the element it sits on
+— typically a button or an icon. The badge is rendered by the directive, so the
+host keeps its own content and semantics.
+
+## Import
+
+```ts
+import { MudBadge } from 'ngx-mud-ui/badge';
+
+@Component({
+  imports: [MudBadge],
+  template: `<button mudButton mudBadge="5" badgeColor="danger">Inbox</button>`,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={BadgeStories.Playground} />
+<Controls of={BadgeStories.Playground} />
+
+## Sizes
+
+<Canvas of={BadgeStories.Sizes} />
+
+## Colors
+
+<Canvas of={BadgeStories.Colors} />
+
+## Positions
+
+<Canvas of={BadgeStories.Positions} />
+
+## Truncation
+
+<Canvas of={BadgeStories.Truncation} />
+
+## Dot
+
+<Canvas of={BadgeStories.Dot} />
+
+## Inline and nested
+
+<Canvas of={BadgeStories.InlineNested} />
+
+## Accessibility
+
+<Canvas of={BadgeStories.Accessibility} />
+
+## API
+
+Selector: `[mudBadge]` · `exportAs: 'mudBadge'`
+
+<ArgTypes of={BadgeStories} />
+
+## Usage tips
+
+- **`mudBadge` carries the content** and accepts a string, a number, or `null`.
+  Passing `null` removes the badge entirely rather than rendering an empty one.
+- **`badgeMax` truncates large counts** — with `badgeMax="99"` a value of 150
+  renders as `99+`. Leave it `null` to always show the exact number.
+- **Set `badgeDescription` whenever the number alone is ambiguous.** The badge
+  renders next to the host's own label, so a bare `5` on an Inbox button reads
+  as "Inbox 5" — a description like "5 unread messages" states what it counts.
+- **`badgeVariant="dot"` ignores the content**, so use it for "something
+  changed" signals where the exact count doesn't matter.
+- **The host needs its own accessible name.** The badge decorates an element; it
+  does not name it.

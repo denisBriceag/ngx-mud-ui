@@ -1,0 +1,107 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as TabsStories from './tabs.stories';
+import { MudTab } from 'ngx-mud-ui/tabs';
+
+<Meta of={TabsStories} />
+
+# Tabs
+
+A tabbed panel set. `mud-tab-group` owns the selection and the keyboard
+behaviour; each `mud-tab` contributes a label and its content. Tab content is
+lazily attached, so panels are not rendered until first shown.
+
+## Import
+
+```ts
+import { MudTab, MudTabGroup } from 'ngx-mud-ui/tabs';
+
+@Component({
+  imports: [MudTab, MudTabGroup],
+  template: `
+    <mud-tab-group [(selectedIndex)]="index" (selectedTabChange)="onChange($event)">
+      <mud-tab label="Overview">…</mud-tab>
+      <mud-tab label="Details" [disabled]="true">…</mud-tab>
+    </mud-tab-group>
+  `,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Basic
+
+<Canvas of={TabsStories.Basic} />
+<Controls of={TabsStories.Basic} />
+
+## Stretched
+
+<Canvas of={TabsStories.Stretched} />
+
+## Overflowing
+
+<Canvas of={TabsStories.Overflowing} />
+
+## Icons and counters
+
+<Canvas of={TabsStories.WithIconsAndCounters} />
+
+## Disabled tabs
+
+<Canvas of={TabsStories.DisabledTabs} />
+
+## Interactive
+
+<Canvas of={TabsStories.Interactive} />
+
+## Badges
+
+<Canvas of={TabsStories.WithBadges} />
+
+## API
+
+### `MudTabGroup`
+
+Selector: `mud-tab-group`
+
+<ArgTypes of={TabsStories} />
+
+### `MudTab`
+
+Selector: `mud-tab`
+
+<ArgTypes of={MudTab} />
+
+### `MudTabLabel`
+
+Selector: `[mudTabLabel]`
+
+For a label richer than plain text, project an `ng-template` instead of setting
+the `label` input:
+
+```html
+<mud-tab>
+  <ng-template mudTabLabel>
+    <mud-icon name="alarm" /> Alerts
+  </ng-template>
+  …content…
+</mud-tab>
+```
+
+## Usage tips
+
+- **Name the group.** Set `aria-label` or `aria-labelledby` on `mud-tab-group`
+  so the tab list is announced with a purpose rather than as an anonymous set.
+- **`badgeCount` shows at zero.** Any value `>= 0` renders the pill, so use
+  `null` — not `0` — to hide it. A visible `0` badge is usually a bug.
+- **`selectedIndex` is two-way bindable**, which is how you drive tabs from a
+  route or restore a remembered position.
+- **`selectedTabChange` fires with a `MudTabChangeEvent`** carrying the index and
+  the tab instance, so you can act on identity rather than position.
+- **`contentTabIndex` controls whether the panel itself is focusable.** Leave it
+  `null` unless the panel has no focusable content of its own, in which case `0`
+  keeps keyboard users from being stranded on the tab list.

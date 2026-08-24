@@ -1,0 +1,61 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as SpinnerStories from './spinner.stories';
+
+<Meta of={SpinnerStories} />
+
+# Spinner
+
+An indeterminate loading indicator for work with no measurable progress. It
+renders as a status region so assistive tech is told that something is loading.
+
+## Import
+
+```ts
+import { MudSpinner } from 'ngx-mud-ui/spinner';
+
+@Component({
+  imports: [MudSpinner],
+  template: `
+    <mud-spinner />
+    <mud-spinner size="small" variant="light-on-color" aria-label="Se încarcă" />
+  `,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={SpinnerStories.Playground} />
+<Controls of={SpinnerStories.Playground} />
+
+## Sizes
+
+<Canvas of={SpinnerStories.Sizes} />
+
+## Variants
+
+<Canvas of={SpinnerStories.Variants} />
+
+## API
+
+Selector: `mud-spinner`
+
+<ArgTypes of={SpinnerStories} />
+
+## Usage tips
+
+- **Always set a localized `aria-label`.** It defaults to the English
+  `'Loading'`, which is a safety net rather than a choice — the text is rendered
+  visually hidden inside the status region and read aloud.
+- **`variant="light-on-color"` is for saturated backgrounds**, where the default
+  brand spinner loses contrast.
+- **Don't stack a spinner on a loading button.** `mudButton` has its own
+  `loading` state with the matching accessibility contract.
+- **Use it only for indeterminate waits.** When you know how much work is left,
+  a progress indicator tells the user far more.

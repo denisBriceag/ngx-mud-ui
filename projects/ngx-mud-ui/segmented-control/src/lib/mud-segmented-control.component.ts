@@ -17,6 +17,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
+import type { FormValueControl, ValidationError } from '@angular/forms/signals';
 
 export type MudSegmentedControlSize = 'medium' | 'small';
 
@@ -131,7 +132,7 @@ export class MudSegment<T = unknown> {
     '[attr.aria-disabled]': '_effectiveDisabled() ? "true" : null',
     '[attr.aria-label]': 'ariaLabel()',
     '[attr.aria-labelledby]': 'ariaLabelledby()',
-    '(focusout)': '_onTouched()',
+    '(focusout)': '_onFocusout($event)',
   },
   providers: [
     {
@@ -142,8 +143,11 @@ export class MudSegment<T = unknown> {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MudSegmentedControl<T = unknown> implements ControlValueAccessor {
+export class MudSegmentedControl<T = unknown>
+  implements ControlValueAccessor, FormValueControl<T | undefined>
+{
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly _host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
   readonly segments = contentChildren<MudSegment<T>>(MudSegment);
 
@@ -154,7 +158,17 @@ export class MudSegmentedControl<T = unknown> implements ControlValueAccessor {
   readonly size = input<MudSegmentedControlSize>('medium');
   readonly value = model<T | undefined>(undefined);
 
+  /**
+   * @description Validation errors pushed by signal forms. The segmented control has no
+   * error region of its own (it is a view switcher, not a field), so bind them
+   * to a message beside it when they need to be shown.
+   */
+  readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
+
   readonly selectionChange = output<MudSegmentedControlChange<T>>();
+
+  /** Signal-forms touch contract: emitted when focus leaves the group. */
+  readonly touch = output<void>();
 
   private readonly _cvaDisabled = signal(false);
   private _onChange: (value: T | undefined) => void = () => undefined;
@@ -182,6 +196,16 @@ export class MudSegmentedControl<T = unknown> implements ControlValueAccessor {
 
   setDisabledState(isDisabled: boolean): void {
     this._cvaDisabled.set(isDisabled);
+  }
+
+  /** @docs-private Focus moving between segments is not leaving the control. */
+  protected _onFocusout(event: FocusEvent): void {
+    const next = event.relatedTarget as Node | null;
+
+    if (next && this._host.contains(next)) return;
+
+    this._onTouched();
+    this.touch.emit();
   }
 
   constructor() {

@@ -1,0 +1,68 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as MudIconStories from './mud-icon.stories';
+
+<Meta of={MudIconStories} />
+
+# Icon
+
+One component renders every icon in the set. Icons are tree-shakeable: each is a
+separate export, and only the ones you register are bundled.
+
+## Import
+
+Register the icons you use once at bootstrap, then use `mud-icon` anywhere:
+
+```ts
+// bootstrap
+import { provideMudIcons, alarm, arrowLeft } from 'ngx-mud-ui/icons';
+
+bootstrapApplication(App, {
+  providers: [provideMudIcons([alarm, arrowLeft])],
+});
+```
+
+```ts
+// component
+import { MudIconComponent } from 'ngx-mud-ui/icons';
+
+@Component({
+  imports: [MudIconComponent],
+  template: `<mud-icon name="alarm" variant="outlined" [scale]="24" />`,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+Every icon in the set is registered here, so the `name` control lists all of
+them.
+
+<Canvas of={MudIconStories.Playground} />
+<Controls of={MudIconStories.Playground} />
+
+## API
+
+Selector: `mud-icon`
+
+<ArgTypes of={MudIconStories} />
+
+## Usage tips
+
+- **Only registered icons render.** `provideMudIcons` is what pulls an icon into
+  the bundle; a `name` you never registered resolves to nothing. That is the
+  price of tree-shaking.
+- **Icons are decorative by default.** With no `aria-label` the host is
+  `aria-hidden`, which is correct beside a visible text label. Set `aria-label`
+  only when the icon is the sole carrier of meaning.
+- **The input is aliased `aria-label`**, so bind it as `[aria-label]="…"` in
+  templates rather than by its class member name.
+- **Color follows CSS `color`.** The glyph is drawn with `currentColor`, so it
+  inherits from the surrounding text and adapts to the theme without extra work.
+- **`scale` is a fixed rung** — 12, 16, 20 or 24 — not an arbitrary pixel size,
+  because the artwork is drawn per size rather than scaled.

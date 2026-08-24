@@ -22,7 +22,10 @@ const config: StorybookConfig = {
       alias.push(entryAlias);
     } else {
       viteConfig.resolve.alias = [
-        ...Object.entries(alias ?? {}).map(([find, replacement]) => ({ find, replacement: replacement as string })),
+        ...Object.entries(alias ?? {}).map(([find, replacement]) => ({
+          find,
+          replacement: replacement as string,
+        })),
         entryAlias,
       ];
     }
@@ -41,7 +44,18 @@ const config: StorybookConfig = {
     name: '@storybook/angular-vite',
     options: {
       compodoc: true,
-      compodocArgs: ['-e', 'json', '-d', 'projects/ngx-mud-ui'],
+      // Protected/private members are implementation detail: without these flags
+      // compodoc publishes `_hostClasses`, `_toggle`, etc. into the ArgTypes
+      // tables alongside the real inputs and outputs.
+      compodocArgs: [
+        '-e',
+        'json',
+        '-d',
+        'projects/ngx-mud-ui',
+        '--disableProtected',
+        '--disablePrivate',
+        '--disableInternal',
+      ],
     },
   },
 };

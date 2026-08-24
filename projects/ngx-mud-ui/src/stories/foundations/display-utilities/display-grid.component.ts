@@ -58,12 +58,12 @@ const ORDER = [
       display: block;
       padding: 1.5rem 2rem;
       font-family: system-ui, sans-serif;
-      color: #121212;
+      color: var(--color-text-base-default);
     }
     .note {
       margin: 0 0 1.5rem;
       font-size: 0.82rem;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .note code {
       font-family: ui-monospace, monospace;
@@ -79,21 +79,21 @@ const ORDER = [
       gap: 0.5rem;
       position: relative;
       text-align: left;
-      border: 1px solid #ececec;
+      border: 1px solid var(--color-border-base-default);
       border-radius: 10px;
-      background: #fff;
+      background: var(--color-background-base-default);
       padding: 0.75rem;
       font: inherit;
       cursor: pointer;
     }
     .card:hover {
-      border-color: #cfcfcf;
+      border-color: var(--color-border-base-secondary);
     }
     .demo {
       gap: 4px;
       align-content: flex-start;
       min-height: 72px;
-      background: #f5f5f5;
+      background: var(--color-background-base-secondary);
       border-radius: 8px;
       padding: 0.5rem;
       overflow: hidden;
@@ -103,15 +103,15 @@ const ORDER = [
       width: 28px;
       height: 20px;
       border-radius: 4px;
-      background: #7aa7ff;
-      color: #fff;
+      background: var(--color-background-brand-secondary-active);
+      color: var(--color-text-base-inverse-on-color);
       font-size: 0.6rem;
       text-align: center;
       line-height: 20px;
     }
     .demo__hidden {
       font-size: 0.7rem;
-      color: #9e9e9e;
+      color: var(--color-text-base-tertiary);
     }
     .meta {
       display: flex;
@@ -124,14 +124,14 @@ const ORDER = [
     }
     .meta__value {
       font-size: 0.72rem;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .copied {
       position: absolute;
       right: 0.6rem;
       top: 0.5rem;
       font-size: 0.7rem;
-      color: #0a7d34;
+      color: var(--color-text-positive-default);
       opacity: 0;
       transition: opacity 0.15s;
     }
@@ -139,7 +139,7 @@ const ORDER = [
       opacity: 1;
     }
     .empty {
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
   `,
 })

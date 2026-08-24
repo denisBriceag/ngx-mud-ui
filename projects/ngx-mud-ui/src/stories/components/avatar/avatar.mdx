@@ -1,0 +1,73 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as AvatarStories from './avatar.stories';
+
+<Meta of={AvatarStories} />
+
+# Avatar
+
+Represents a person or entity. Either project the content yourself — initials
+text, an icon, or an `<img>` — or pass `name` / `initials` and let the avatar
+derive the initials.
+
+## Import
+
+```ts
+import { MudAvatar } from 'ngx-mud-ui/avatar';
+
+@Component({
+  imports: [MudAvatar],
+  template: `
+    <mud-avatar name="Olga Popescu" />
+    <mud-avatar label="Olga Popescu">OP</mud-avatar>
+    <mud-avatar name="Olga Popescu"><img src="/photo.jpg" alt="Olga Popescu" /></mud-avatar>
+  `,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={AvatarStories.Playground} />
+<Controls of={AvatarStories.Playground} />
+
+## Content types
+
+<Canvas of={AvatarStories.ContentTypes} />
+
+## Name fallback
+
+<Canvas of={AvatarStories.NameFallback} />
+
+## Sizes
+
+<Canvas of={AvatarStories.Sizes} />
+
+## Avatar stack
+
+<Canvas of={AvatarStories.AvatarStack} />
+
+## API
+
+Selector: `mud-avatar`
+
+<ArgTypes of={AvatarStories} />
+
+## Usage tips
+
+- **A projected `<img>` that fails to load collapses**, so passing `name`
+  alongside the photo gives you the official photo-to-initials fallback for
+  free. Photo-only avatars show an empty circle when the URL breaks.
+- **`initials` overrides derivation from `name`** and is trimmed to two
+  characters and uppercased. Use it when your initials rules differ from
+  first-letter-of-each-word.
+- **`label` changes the accessibility semantics**, not just the text: the host
+  becomes `role="img"` with that name and the projected content turns
+  presentational. Set it whenever the avatar carries meaning on its own.
+- **Decorative avatars beside a visible name need no `label`.** Leaving it unset
+  keeps the avatar silent so screen readers don't hear the name twice.

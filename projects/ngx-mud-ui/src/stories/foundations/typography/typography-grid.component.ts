@@ -1,4 +1,5 @@
 import { afterNextRender, Component, DOCUMENT, inject, signal } from '@angular/core';
+import { MudSegment, MudSegmentedControl } from 'ngx-mud-ui/segmented-control';
 
 type Device = 'desktop' | 'mobile';
 
@@ -27,18 +28,28 @@ const SAMPLE = 'The quick brown fox';
  */
 @Component({
   selector: 'mud-typography-grid',
+  imports: [MudSegment, MudSegmentedControl],
   template: `
-    <div class="toolbar">
-      <span class="toolbar__label">Device</span>
-      <button type="button" [class.active]="device() === 'desktop'" (click)="setDevice('desktop')">Desktop</button>
-      <button type="button" [class.active]="device() === 'mobile'" (click)="setDevice('mobile')">Mobile</button>
-    </div>
+    <mud-segmented-control
+      class="toolbar"
+      [value]="device()"
+      (selectionChange)="setDevice($event.value)"
+      aria-label="Type scale"
+    >
+      <button mud-segment value="desktop">Desktop</button>
+      <button mud-segment value="mobile">Mobile</button>
+    </mud-segmented-control>
 
     @for (group of groups(); track group.title) {
       <section class="group">
         <h3 class="group__title">{{ group.title }}</h3>
         @for (style of group.styles; track style.className) {
-          <button type="button" class="row" [title]="'Copy ' + style.className" (click)="copy(style.className)">
+          <button
+            type="button"
+            class="row"
+            [title]="'Copy ' + style.className"
+            (click)="copy(style.className)"
+          >
             <div class="specimen" [class]="style.className">{{ sample }}</div>
             <div class="meta">
               <code class="meta__name">{{ style.className }}</code>
@@ -64,33 +75,11 @@ const SAMPLE = 'The quick brown fox';
       display: block;
       padding: 1.5rem 2rem;
       font-family: system-ui, sans-serif;
-      color: #121212;
+      color: var(--color-text-base-default);
     }
     .toolbar {
       display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
       margin-bottom: 1.5rem;
-      padding: 0.25rem;
-      border: 1px solid #e5e5e5;
-      border-radius: 8px;
-    }
-    .toolbar__label {
-      font-size: 0.75rem;
-      color: #757575;
-      padding: 0 0.5rem;
-    }
-    .toolbar button {
-      border: 0;
-      background: transparent;
-      padding: 0.35rem 0.85rem;
-      border-radius: 6px;
-      font: inherit;
-      cursor: pointer;
-    }
-    .toolbar button.active {
-      background: #121212;
-      color: #fff;
     }
     .group {
       margin-bottom: 2.5rem;
@@ -100,7 +89,7 @@ const SAMPLE = 'The quick brown fox';
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .row {
       display: block;
@@ -108,13 +97,13 @@ const SAMPLE = 'The quick brown fox';
       width: 100%;
       text-align: left;
       border: 0;
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid var(--color-border-base-default);
       background: transparent;
       padding: 1rem 0.5rem;
       cursor: pointer;
     }
     .row:hover {
-      background: #fafafa;
+      background: var(--color-background-base-secondary);
     }
     .specimen {
       margin: 0 0 0.35rem;
@@ -132,14 +121,14 @@ const SAMPLE = 'The quick brown fox';
     }
     .meta__props {
       font-size: 0.72rem;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .copied {
       position: absolute;
       right: 0.5rem;
       top: 1rem;
       font-size: 0.7rem;
-      color: #0a7d34;
+      color: var(--color-text-positive-default);
       opacity: 0;
       transition: opacity 0.15s;
     }
@@ -147,7 +136,7 @@ const SAMPLE = 'The quick brown fox';
       opacity: 1;
     }
     .empty {
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
   `,
 })
@@ -173,7 +162,10 @@ export class TypographyGridComponent {
     void navigator.clipboard?.writeText(className);
     this.copied.set(className);
 
-    setTimeout(() => this.copied.update((current) => (current === className ? null : current)), 1200);
+    setTimeout(
+      () => this.copied.update((current) => (current === className ? null : current)),
+      1200,
+    );
   }
 
   private _load(): void {

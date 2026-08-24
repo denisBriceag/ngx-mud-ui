@@ -5,7 +5,9 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true
   },
-  "exclude": ["../src/test.ts", "../src/**/*.spec.ts"],
-  "include": ["../src/**/*.ts", "../src/**/*.stories.*", "./preview.ts"],
+  // Compodoc reads this config to build the ArgTypes tables, so the library
+  // entry-point sources must be included.
+  "exclude": ["../src/test.ts", "../**/*.spec.ts", "../icons/src/lib/data/**"],
+  "include": ["../src/**/*.ts", "../src/**/*.stories.*", "../*/src/**/*.ts", "./preview.ts", "./compodoc-argtypes.ts"],
   "files": ["./typings.d.ts"]
 }

@@ -1,6 +1,8 @@
 import type { Decorator, Preview } from '@storybook/angular-vite';
 import { setCompodocJson } from '@storybook/addon-docs/angular';
 
+import { extractArgTypes } from './compodoc-argtypes';
+
 import docJson from '../documentation.json';
 
 // Structural styles for CDK overlays.
@@ -36,6 +38,7 @@ const preview: Preview = {
   },
   initialGlobals: { theme: 'light' },
   parameters: {
+    docs: { extractArgTypes },
     options: {
       storySort: { order: ['Introduction', 'Foundations', 'Components', '*'] },
     },

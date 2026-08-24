@@ -78,7 +78,7 @@ const SECTIONS: { title: string; kind: BorderKind; tokenPrefix: string; classSte
       display: block;
       padding: 1.5rem 2rem;
       font-family: system-ui, sans-serif;
-      color: #121212;
+      color: var(--color-text-base-default);
     }
     .group {
       margin-bottom: 2rem;
@@ -88,7 +88,7 @@ const SECTIONS: { title: string; kind: BorderKind; tokenPrefix: string; classSte
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .grid {
       display: grid;
@@ -99,9 +99,9 @@ const SECTIONS: { title: string; kind: BorderKind; tokenPrefix: string; classSte
       display: flex;
       flex-direction: column;
       gap: 0.4rem;
-      border: 1px solid #ececec;
+      border: 1px solid var(--color-border-base-default);
       border-radius: 10px;
-      background: #fff;
+      background: var(--color-background-base-default);
       padding: 0.75rem;
     }
     .box {
@@ -110,18 +110,18 @@ const SECTIONS: { title: string; kind: BorderKind; tokenPrefix: string; classSte
       box-sizing: border-box;
     }
     .box--fill {
-      background: #d7e6ff;
+      background: var(--color-background-brand-secondary);
     }
     .box--outline {
       border-style: solid;
-      border-color: #121212;
+      border-color: var(--color-border-base-strong);
     }
     .box--thick {
       border-width: 3px;
     }
     .value {
       font-size: 0.72rem;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .chip {
       display: inline-flex;
@@ -129,15 +129,15 @@ const SECTIONS: { title: string; kind: BorderKind; tokenPrefix: string; classSte
       justify-content: space-between;
       gap: 0.5rem;
       text-align: left;
-      border: 1px solid #ececec;
+      border: 1px solid var(--color-border-base-default);
       border-radius: 6px;
-      background: #fafafa;
+      background: var(--color-background-base-secondary);
       padding: 0.3rem 0.5rem;
       font: inherit;
       cursor: pointer;
     }
     .chip:hover {
-      border-color: #cfcfcf;
+      border-color: var(--color-border-base-secondary);
     }
     .chip code {
       font-family: ui-monospace, monospace;
@@ -147,10 +147,10 @@ const SECTIONS: { title: string; kind: BorderKind; tokenPrefix: string; classSte
       text-overflow: ellipsis;
     }
     .chip--class {
-      background: #f2f6ff;
+      background: var(--color-background-brand-secondary);
     }
     .chip__ok {
-      color: #0a7d34;
+      color: var(--color-text-positive-default);
       font-size: 0.72rem;
       opacity: 0;
       transition: opacity 0.15s;
@@ -159,7 +159,7 @@ const SECTIONS: { title: string; kind: BorderKind; tokenPrefix: string; classSte
       opacity: 1;
     }
     .empty {
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
   `,
 })

@@ -1,0 +1,63 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as SwitchStories from './switch.stories';
+
+<Meta of={SwitchStories} />
+
+# Switch
+
+An instant on/off toggle. A native `<input type="checkbox" role="switch">` — the
+official accessibility pattern — drives a styled track and thumb, and the label
+toggles on click.
+
+## Import
+
+```ts
+import { MudSwitch } from 'ngx-mud-ui/switch';
+
+@Component({
+  imports: [MudSwitch],
+  template: `<mud-switch label="Notificări prin e-mail" [formControl]="notifications" />`,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={SwitchStories.Playground} />
+<Controls of={SwitchStories.Playground} />
+
+## States
+
+<Canvas of={SwitchStories.States} />
+
+## Settings panel
+
+<Canvas of={SwitchStories.SettingsPanel} />
+
+## API
+
+Selector: `mud-switch`
+
+<ArgTypes of={SwitchStories} />
+
+## Usage tips
+
+- **A switch takes effect immediately.** If the change only applies after a
+  Save button, use a checkbox — the switch's affordance promises instant
+  application.
+- **It is deliberately minimal**, matching the official switch: one size, and no
+  invalid, readonly or supporting-text states. Attach an external message with
+  `aria-describedby` when you need one.
+- **`errors` is accepted but has no visual region.** Signal forms can push
+  validation errors, but nothing renders — surface them yourself if they matter.
+- **It works with both forms systems**: signal forms via the `FormCheckboxControl`
+  contract, reactive and template-driven forms via `ControlValueAccessor`, or
+  standalone with `[(checked)]`.
+- **Use `[mudLabel]` for rich label content**; the `label` input is plain text
+  only.

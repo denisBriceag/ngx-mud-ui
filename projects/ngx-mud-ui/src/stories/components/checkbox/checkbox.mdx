@@ -1,0 +1,69 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as CheckboxStories from './checkbox.stories';
+
+<Meta of={CheckboxStories} />
+
+# Checkbox
+
+A native checkbox with the design-system treatment, a label, supporting text and
+an error region. Works standalone via `[(checked)]`, with reactive and
+template-driven forms via `ControlValueAccessor`, and with signal forms.
+
+## Import
+
+```ts
+import { MudCheckbox } from 'ngx-mud-ui/checkbox';
+
+@Component({
+  imports: [MudCheckbox],
+  template: `<mud-checkbox label="Accept termenii" [formControl]="terms" required />`,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={CheckboxStories.Playground} />
+<Controls of={CheckboxStories.Playground} />
+
+## States
+
+<Canvas of={CheckboxStories.States} />
+
+## Composed content
+
+Rich label, helper and error content is projected with the `[mudLabel]`,
+`[mudHelper]` and `[mudError]` directives from `ngx-mud-ui/input`.
+
+<Canvas of={CheckboxStories.ComposedContent} />
+
+## Select all
+
+<Canvas of={CheckboxStories.SelectAll} />
+
+## API
+
+Selector: `mud-checkbox`
+
+<ArgTypes of={CheckboxStories} />
+
+## Usage tips
+
+- **`indeterminate` is consumer-owned.** Rendering follows the input only, and a
+  user toggle does **not** clear it — you must update it yourself in the change
+  handler. This is what makes the select-all pattern work.
+- **`errorText` replaces `supportingText`** while the field is invalid; they
+  never show at once, so you can leave both set.
+- **`invalid` drives the visuals, `errorText` supplies the message.** Setting
+  the text alone shows nothing. Signal forms bind `invalid` and `errors` for
+  you.
+- **`readonly` still focusable.** It keeps the box reachable and readable but
+  not toggleable — different from `disabled`, which removes it from the flow.
+- **Use `aria-label` only when no visible `label` is rendered**; with both set
+  the accessible name silently replaces the visible one.

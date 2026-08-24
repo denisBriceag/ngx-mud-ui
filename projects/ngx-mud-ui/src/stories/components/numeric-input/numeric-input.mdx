@@ -1,0 +1,81 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as NumericInputStories from './numeric-input.stories';
+
+<Meta of={NumericInputStories} />
+
+# Numeric input
+
+A number field with locale-aware formatting, optional steppers, clamping to a
+range, and a suffix slot for units or currency.
+
+## Import
+
+```ts
+import { MudNumericInput } from 'ngx-mud-ui/numeric-input';
+
+@Component({
+  imports: [MudNumericInput],
+  template: `
+    <mud-numeric-input
+      label="Suma"
+      [min]="0"
+      [max]="10000"
+      [precision]="2"
+      locale="ro-MD"
+      showSteppers
+      [formControl]="amount"
+    >
+      <span suffix>MDL</span>
+    </mud-numeric-input>
+  `,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={NumericInputStories.Playground} />
+<Controls of={NumericInputStories.Playground} />
+
+## Locale and currency
+
+<Canvas of={NumericInputStories.LocaleCurrency} />
+
+## Steppers and states
+
+<Canvas of={NumericInputStories.SteppersAndStates} />
+
+## Reactive forms
+
+<Canvas of={NumericInputStories.ReactiveForms} />
+
+## API
+
+Selector: `mud-numeric-input`
+
+<ArgTypes of={NumericInputStories} />
+
+## Usage tips
+
+- **The empty value is `null`, not `0`.** Treat `null` as "nothing entered" —
+  conflating it with zero is the usual source of bugs with required amount
+  fields.
+- **`locale` changes parsing as well as display.** With `ro-MD`, `1250.5`
+  renders as `1.250,5` and grouped input is parsed leniently. Leave it unset for
+  plain digits with a dot separator.
+- **Clamping happens on commit, not on keystroke**, so a user can type past
+  `max` and see it corrected on blur rather than having characters swallowed.
+  `errored` fires when that happens.
+- **`allowDecimal` and `allowNegative` block at the keyboard.** Turning them off
+  refuses the separator and the minus sign outright, and commits truncate or
+  clamp accordingly.
+- **`precision` rounds on commit** and controls the displayed fraction digits —
+  it does not merely format.
+- **Localize the four label inputs** — `incrementLabel`, `decrementLabel`,
+  `clearLabel` and `counterLabel` all default to English.

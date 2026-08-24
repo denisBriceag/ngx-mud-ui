@@ -1,0 +1,92 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as TooltipStories from './tooltip.stories';
+
+<Meta of={TooltipStories} />
+
+# Tooltip
+
+An attribute directive that attaches a bubble to any element, rendered in a CDK
+overlay. It also provides the persistent `coach` variant used for onboarding.
+
+## Import
+
+```ts
+import { MudTooltip } from 'ngx-mud-ui/tooltip';
+
+@Component({
+  imports: [MudTooltip],
+  template: `
+    <button mudTooltip="Saved successfully!" tooltipPlacement="top-center">Save</button>
+    <button mudTooltip="Try the new filters." tooltipVariant="coach" tooltipTitle="New!">
+      Filters
+    </button>
+  `,
+})
+export class Demo {}
+```
+
+Tooltips render through the CDK overlay, so the overlay stylesheet must be
+loaded alongside the design-system one:
+
+```ts
+import '@angular/cdk/overlay-prebuilt.css';
+```
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Basic
+
+<Canvas of={TooltipStories.Basic} />
+<Controls of={TooltipStories.Basic} />
+
+## Sizes
+
+<Canvas of={TooltipStories.Sizes} />
+
+## Placements
+
+<Canvas of={TooltipStories.Placements} />
+
+## On an icon trigger
+
+<Canvas of={TooltipStories.OnIconTrigger} />
+
+## Closeable onboarding
+
+<Canvas of={TooltipStories.CloseableOnboarding} />
+
+## Coach
+
+<Canvas of={TooltipStories.Coach} />
+
+## Trigger modes
+
+<Canvas of={TooltipStories.TriggerModes} />
+
+## API
+
+Selector: `[mudTooltip]` · `exportAs: 'mudTooltip'`
+
+<ArgTypes of={TooltipStories} />
+
+## Usage tips
+
+- **A tooltip must never carry the only copy of essential information.** It is
+  unavailable on touch devices in hover mode and disappears on blur — treat it
+  as an enhancement, and put anything required in the visible label or helper
+  text.
+- **`hover` also opens on focus**, so keyboard users get the tooltip too. That
+  is why it is the default rather than a pointer-only mode.
+- **`coach` is a different component in spirit.** It stays open until Escape,
+  the close button, or an outside click, shows a hint line, and ignores the
+  hover and focus paths entirely — for onboarding, not for labels.
+- **`tooltipInteractive` is off by default.** Turn it on when the bubble
+  contains a link, so moving the pointer onto it doesn't dismiss it first.
+- **`manual` responds only to `show()` and `hide()`**, reachable through the
+  `mudTooltip` template reference variable.
+- **Localize `tooltipCoachHint` and `tooltipCloseAriaLabel`** — they default to
+  the English `'Press Esc to close'` and `'Close'`.
+- **`tooltipDismissed` reports why the tooltip closed**, which is what you record
+  when tracking whether an onboarding hint was actually read or brushed aside.

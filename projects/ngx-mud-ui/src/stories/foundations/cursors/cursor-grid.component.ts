@@ -51,12 +51,12 @@ const CURSOR_GROUPS: CursorGroup[] = [
       display: block;
       padding: 1.5rem 2rem;
       font-family: system-ui, sans-serif;
-      color: #121212;
+      color: var(--color-text-base-default);
     }
     .note {
       margin: 0 0 1.5rem;
       font-size: 0.82rem;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .note code {
       font-family: ui-monospace, monospace;
@@ -69,7 +69,7 @@ const CURSOR_GROUPS: CursorGroup[] = [
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .grid {
       display: grid;
@@ -84,15 +84,15 @@ const CURSOR_GROUPS: CursorGroup[] = [
       position: relative;
       min-height: 60px;
       text-align: left;
-      border: 1px solid #ececec;
+      border: 1px solid var(--color-border-base-default);
       border-radius: 10px;
-      background: #fafafa;
+      background: var(--color-background-base-secondary);
       padding: 0.75rem;
       font: inherit;
     }
     .cell:hover {
-      border-color: #cfcfcf;
-      background: #f2f6ff;
+      border-color: var(--color-border-base-secondary);
+      background: var(--color-background-brand-secondary);
     }
     .cell__label {
       font-family: ui-monospace, monospace;
@@ -103,7 +103,7 @@ const CURSOR_GROUPS: CursorGroup[] = [
       right: 0.6rem;
       top: 0.5rem;
       font-size: 0.7rem;
-      color: #0a7d34;
+      color: var(--color-text-positive-default);
       opacity: 0;
       transition: opacity 0.15s;
     }

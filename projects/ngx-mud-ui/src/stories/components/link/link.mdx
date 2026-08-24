@@ -1,0 +1,83 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as LinkStories from './link.stories';
+
+<Meta of={LinkStories} />
+
+# Link
+
+An attribute directive that styles a native `<a>`. The anchor keeps its own
+semantics, so `href`, `target`, `routerLink` and event bindings all work
+unchanged.
+
+## Import
+
+```ts
+import { MudLink } from 'ngx-mud-ui/link';
+
+@Component({
+  imports: [MudLink],
+  template: `
+    <a mudLink href="/services">Services</a>
+    <a mudLink="strict" size="small" underline="none" href="/terms">Terms</a>
+  `,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={LinkStories.Playground} />
+<Controls of={LinkStories.Playground} />
+
+## Sizes
+
+<Canvas of={LinkStories.Sizes} />
+
+## Variations
+
+<Canvas of={LinkStories.Variations} />
+
+## Styles
+
+<Canvas of={LinkStories.Styles} />
+
+## Touch targets
+
+<Canvas of={LinkStories.TouchTargets} />
+
+## Disabled
+
+<Canvas of={LinkStories.Disabled} />
+
+## External
+
+<Canvas of={LinkStories.External} />
+
+## API
+
+Selector: `a[mudLink]` · `exportAs: 'mudLink'`
+
+<ArgTypes of={LinkStories} />
+
+## Usage tips
+
+- **External links are handled for you.** With `external` left on (the default),
+  an anchor with `target="_blank"` and no trailing icon gets the external-link
+  glyph after its label. Set `external="false"` to suppress it.
+- **`underline="none"` needs another affordance.** Removing the underline leaves
+  color as the only signal, which fails for colorblind readers unless the link
+  sits somewhere unmistakably interactive, like a nav bar.
+- **`touchTarget="auto"` expands the hit area only where it is safe** — inline
+  links in a paragraph keep their natural box so the expansion doesn't overlap
+  neighbouring text.
+- **`disabled` on an anchor is advisory.** As with buttons, there is no native
+  disabled state for links; the directive maps it to `aria-disabled` and removes
+  the tab stop rather than removing the `href`.
+- **Use a button, not a link, for actions.** A link navigates; anything that
+  mutates state belongs on `mudButton`.

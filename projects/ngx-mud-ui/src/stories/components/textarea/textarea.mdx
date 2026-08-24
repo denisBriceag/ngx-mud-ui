@@ -1,0 +1,63 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as TextareaStories from './textarea.stories';
+
+<Meta of={TextareaStories} />
+
+# Textarea
+
+The multi-line text field. Same label, helper and error treatment as `mud-input`,
+plus a character counter and a resize policy.
+
+## Import
+
+```ts
+import { MudTextarea } from 'ngx-mud-ui/textarea';
+
+@Component({
+  imports: [MudTextarea],
+  template: `<mud-textarea label="Mesaj" [formControl]="message" [maxLength]="500" [rows]="6" />`,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={TextareaStories.Playground} />
+<Controls of={TextareaStories.Playground} />
+
+## Counter and states
+
+<Canvas of={TextareaStories.CounterAndStates} />
+
+## Resize and sizes
+
+<Canvas of={TextareaStories.ResizeAndSizes} />
+
+## Truncation
+
+<Canvas of={TextareaStories.Truncation} />
+
+## API
+
+Selector: `mud-textarea`
+
+<ArgTypes of={TextareaStories} />
+
+## Usage tips
+
+- **The counter needs `maxLength`.** `showCounter` is on by default but renders
+  nothing until a maximum is set, since there is nothing to count towards.
+- **`counterLabel` is the screen-reader sentence for the counter** and is fully
+  consumer-owned — the visible `n / max` is not announced usefully on its own.
+- **Horizontal resizing is never allowed.** `resize` chooses between `vertical`
+  and `none`, because a textarea widened past its container breaks the layout.
+- **`rows` is the starting height, not a limit.** With `resize="vertical"` the
+  user can still drag it taller.
+- **`maxLength` is a hard native limit.** For a soft limit that warns but still
+  accepts, leave it unset and validate in the form instead.

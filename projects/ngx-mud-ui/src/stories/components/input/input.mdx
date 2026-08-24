@@ -1,0 +1,101 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as InputStories from './input.stories';
+
+<Meta of={InputStories} />
+
+# Input
+
+The single-line text field: label, helper text, error region, optional leading
+and trailing icons, and a clear button. Works standalone via `[(value)]`, with
+reactive and template-driven forms, and with signal forms.
+
+## Import
+
+```ts
+import { MudInput, MudInputError, MudInputHelper, MudInputLabel } from 'ngx-mud-ui/input';
+
+@Component({
+  imports: [MudInput],
+  template: `<mud-input label="IDNP" required [formControl]="idnp" [maxLength]="13" />`,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={InputStories.Playground} />
+<Controls of={InputStories.Playground} />
+
+## Variants
+
+<Canvas of={InputStories.Variants} />
+
+## Sizes
+
+<Canvas of={InputStories.Sizes} />
+
+## States
+
+<Canvas of={InputStories.States} />
+
+## Icons and clear
+
+<Canvas of={InputStories.IconsAndClear} />
+
+## Reactive forms
+
+<Canvas of={InputStories.ReactiveForms} />
+
+## Signal forms
+
+<Canvas of={InputStories.SignalForms} />
+
+## Composable content
+
+For anything richer than plain text — a label with an icon, an error containing
+a link — project content instead of passing strings.
+
+<Canvas of={InputStories.Composable} />
+
+## API
+
+Selector: `mud-input`
+
+<ArgTypes of={InputStories} />
+
+### Projection slots
+
+<table>
+  <thead>
+    <tr><th>Directive</th><th>Selector</th><th>Replaces</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>MudInputLabel</code></td><td><code>[mudLabel]</code></td><td><code>label</code></td></tr>
+    <tr><td><code>MudInputHelper</code></td><td><code>[mudHelper]</code></td><td><code>helperText</code></td></tr>
+    <tr><td><code>MudInputError</code></td><td><code>[mudError]</code></td><td><code>errorText</code></td></tr>
+  </tbody>
+</table>
+
+## Usage tips
+
+- **`errorText` replaces `helperText`** while invalid — both can stay set, and
+  only one renders.
+- **`invalid` drives visuals, the text supplies the message.** Setting
+  `errorText` alone renders nothing until `invalid` is true; signal forms bind
+  `invalid` and `errors` automatically.
+- **`aria-describedby` is for messages rendered outside the field.** The field
+  already wires its own helper and error ids; to use only your own, leave
+  `helperText` / `errorText` unset and don't project the slots.
+- **`pattern` accepts a string, a RegExp, or the `RegExp[]` signal forms push.**
+  It is normalised internally, and only the first expression reaches the native
+  `pattern` attribute.
+- **`clearable` is suppressed** while the field is disabled, read-only or
+  loading, so the affordance never appears on a field the user cannot edit.
+- **Localize `clearLabel`** — it defaults to the English `'Clear field'` and is
+  the clear button's accessible name.

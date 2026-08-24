@@ -1,0 +1,110 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as ChipStories from './chip.stories';
+
+<Meta of={ChipStories} />
+
+# Chip
+
+A compact pill that plays two distinct roles, selected with `type`:
+
+- **`filter`** (default) — a toggle button. Clicking flips `selected` and the
+  host exposes `aria-pressed`.
+- **`input`** — a discrete value the user already entered. The body is static
+  (no dead tab stop) and, with `removable`, a trailing close button emits
+  `removed`.
+
+## Import
+
+```ts
+import { MudChip } from 'ngx-mud-ui/chip';
+
+@Component({
+  imports: [MudChip],
+  template: `
+    <mud-chip selectionMode="multi" [(selected)]="active" [count]="12">Acte</mud-chip>
+    <mud-chip type="input" removable (removed)="drop(tag)">{{ tag }}</mud-chip>
+  `,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={ChipStories.Playground} />
+<Controls of={ChipStories.Playground} />
+
+## Filter modes
+
+`mono` is radio-like: the chip only flips color, and keeping the group exclusive
+is the consumer's job — react to `selectedChange` and clear the others. `multi`
+is checkbox-like and renders a leading check automatically while selected.
+
+<Canvas of={ChipStories.FilterModes} />
+
+## Input tokens
+
+<Canvas of={ChipStories.InputTokens} />
+
+## Sizes and states
+
+<Canvas of={ChipStories.SizesAndStates} />
+
+## API
+
+Selector: `mud-chip`
+
+<ArgTypes of={ChipStories} />
+
+### Content slots
+
+{/* Storybook's MDX pipeline has no remark-gfm, so pipe tables render as plain
+    text — tables in these docs pages must be written as HTML. */}
+
+<table>
+  <thead>
+    <tr><th>Slot</th><th>Selector</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Avatar</td>
+      <td><code>[avatar]</code></td>
+      <td>Hugs the leading edge; intended for a small <code>&lt;img&gt;</code>.</td>
+    </tr>
+    <tr>
+      <td>Leading icon</td>
+      <td><code>[icon-start]</code></td>
+      <td>Sits after the multi-select check.</td>
+    </tr>
+    <tr>
+      <td>Label</td>
+      <td><em>(default)</em></td>
+      <td>The visible text.</td>
+    </tr>
+  </tbody>
+</table>
+
+## Usage tips
+
+- **`selected` is a `model()`** — bind it two-way with `[(selected)]`, or listen
+  to `selectedChange` and drive it yourself. It is ignored for `type="input"`.
+- **Mono-exclusivity is not built in.** With `selectionMode="mono"` the chip
+  still toggles itself independently; only one chip appearing active is
+  something you enforce in the parent, as the Filter modes example shows.
+- **`removable` only applies to `type="input"`.** Setting it on a filter chip
+  renders nothing — the remove button requires both.
+- **Localize `removeLabel`.** It defaults to the English `'Remove'` and becomes
+  the remove button's accessible name; when `label` is also set the two are
+  joined (`"Remove Ana Popescu"`).
+- **`label` is ARIA-only.** It sets `aria-label` on the chip and enriches the
+  remove button's name — it does not render. Visible text belongs in the default
+  content.
+- **`count` renders only for finite numbers**, so leaving it `undefined` hides
+  the badge while `[count]="0"` shows a zero.
+- **`disabled` blocks both interactions** — toggling and removing — and disables
+  the underlying native buttons.

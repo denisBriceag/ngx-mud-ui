@@ -1,0 +1,71 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as SelectInputStories from './select-input.stories';
+
+<Meta of={SelectInputStories} />
+
+# Select input
+
+A single-select dropdown driven by an `options` array, with the same label,
+helper and error treatment as the other fields. The listbox renders in a CDK
+overlay.
+
+## Import
+
+```ts
+import { MudSelectInput } from 'ngx-mud-ui/select-input';
+import type { MudSelectOption } from 'ngx-mud-ui/select-input';
+
+@Component({
+  imports: [MudSelectInput],
+  template: `<mud-select-input label="Raion" [options]="raions" [formControl]="raion" />`,
+})
+export class Demo {
+  readonly raions: readonly MudSelectOption<string>[] = [
+    { value: 'ch', label: 'Chișinău' },
+    { value: 'bl', label: 'Bălți' },
+  ];
+}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={SelectInputStories.Playground} />
+<Controls of={SelectInputStories.Playground} />
+
+## States
+
+<Canvas of={SelectInputStories.States} />
+
+## Reactive forms
+
+<Canvas of={SelectInputStories.ReactiveForms} />
+
+## Non-string values
+
+<Canvas of={SelectInputStories.NonStringValues} />
+
+## API
+
+Selector: `mud-select-input`
+
+<ArgTypes of={SelectInputStories} />
+
+## Usage tips
+
+- **`options` is data, not projected content.** There is no `mud-option`
+  element — build the array and let the component render it.
+- **The component is generic in the option value**, so options can carry numbers
+  or objects, not just strings. The selected value keeps its type.
+- **`open` is two-way bindable**, which is what makes "open the dropdown when
+  the user lands here" possible without reaching into the component.
+- **`emptyText` shows inside the panel** when `options` is empty. It defaults to
+  the English `'No options'` — localize it, and prefer it over hiding the field
+  entirely so the user can see the control exists.
+- **`readonly` keeps the trigger focusable but the listbox shut**, which is the
+  right state for a value the user may read and copy but not change.

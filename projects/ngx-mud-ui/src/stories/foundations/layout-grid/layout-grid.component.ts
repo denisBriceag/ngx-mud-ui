@@ -115,12 +115,12 @@ const EXAMPLES: GridExample[] = [
       display: block;
       padding: 1.5rem 2rem;
       font-family: system-ui, sans-serif;
-      color: #121212;
+      color: var(--color-text-base-default);
     }
     .note {
       margin: 0 0 1.5rem;
       font-size: 0.82rem;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     code {
       font-family: ui-monospace, monospace;
@@ -145,12 +145,12 @@ const EXAMPLES: GridExample[] = [
     .spec td {
       text-align: left;
       padding: 0.5rem 0.9rem;
-      border-bottom: 1px solid #ececec;
+      border-bottom: 1px solid var(--color-border-base-default);
       white-space: nowrap;
     }
     .spec th {
       font-weight: 600;
-      color: #383838;
+      color: var(--color-text-base-secondary);
     }
     .example {
       margin-bottom: 1.25rem;
@@ -159,11 +159,11 @@ const EXAMPLES: GridExample[] = [
       display: block;
       margin-bottom: 0.4rem;
       font-size: 0.75rem;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .demo {
       overflow: hidden;
-      background: #f7f7f7;
+      background: var(--color-background-base-secondary);
       border-radius: 8px;
       padding: 0.5rem;
     }
@@ -176,18 +176,18 @@ const EXAMPLES: GridExample[] = [
       height: 40px;
       border: none;
       border-radius: 6px;
-      background: #d7e6ff;
-      color: #0058d2;
+      background: var(--color-background-brand-secondary);
+      color: var(--color-text-brand-default);
       font: inherit;
       font-size: 0.75rem;
       cursor: pointer;
     }
     .cell:hover {
-      background: #c2d8ff;
+      background: var(--color-background-brand-secondary-hover);
     }
     .copied {
       margin-left: 0.35rem;
-      color: #0a7d34;
+      color: var(--color-text-positive-default);
       opacity: 0;
       transition: opacity 0.15s;
     }

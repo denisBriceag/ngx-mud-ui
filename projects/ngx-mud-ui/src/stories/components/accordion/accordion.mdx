@@ -1,0 +1,127 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as AccordionStories from './accordion.stories';
+import { MudAccordionGroup, MudAccordionHeader } from 'ngx-mud-ui/accordion';
+
+<Meta of={AccordionStories} />
+
+# Accordion
+
+A disclosure panel built on the CDK accordion. `mud-accordion` is one expandable
+item; wrap several in `mud-accordion-group` to coordinate them. The header is
+composed from `mud-accordion-title` and an optional `mud-accordion-description`.
+
+## Import
+
+```ts
+import {
+  MudAccordion,
+  MudAccordionDescription,
+  MudAccordionGroup,
+  MudAccordionHeader,
+  MudAccordionTitle,
+} from 'ngx-mud-ui/accordion';
+
+@Component({
+  imports: [MudAccordion, MudAccordionHeader, MudAccordionTitle, MudAccordionDescription],
+  template: `
+    <mud-accordion [expanded]="true" (afterExpand)="onShown()">
+      <mud-accordion-header>
+        <mud-accordion-title>Heading</mud-accordion-title>
+        <mud-accordion-description>Supporting text</mud-accordion-description>
+      </mud-accordion-header>
+      Expandable content
+    </mud-accordion>
+  `,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={AccordionStories.Playground} />
+<Controls of={AccordionStories.Playground} />
+
+## Group
+
+<Canvas of={AccordionStories.Group} />
+
+## One open at a time
+
+<Canvas of={AccordionStories.SingleOpen} />
+
+## Disabled
+
+<Canvas of={AccordionStories.Disabled} />
+
+## Trail sites
+
+<Canvas of={AccordionStories.TrailSites} />
+
+## Small, icon on the left
+
+<Canvas of={AccordionStories.SmallIconLeft} />
+
+## API
+
+### `MudAccordion`
+
+Selector: `mud-accordion`
+
+<ArgTypes of={AccordionStories} />
+
+#### Inherited from `CdkAccordionItem`
+
+`MudAccordion` extends the CDK's accordion item, and those members are part of
+its usable API even though the table above cannot see across the package
+boundary.
+
+<table>
+  <thead>
+    <tr><th>Member</th><th>Kind</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>expanded</code></td><td>input</td><td>Open state. Two-way bindable via <code>expandedChange</code>.</td></tr>
+    <tr><td><code>disabled</code></td><td>input</td><td>Blocks toggling.</td></tr>
+    <tr><td><code>expandedChange</code></td><td>output</td><td>Fires as the state flips, before the animation.</td></tr>
+    <tr><td><code>opened</code> / <code>closed</code></td><td>output</td><td>CDK-level open/close notifications.</td></tr>
+    <tr><td><code>toggle()</code> / <code>open()</code> / <code>close()</code></td><td>method</td><td>Imperative control.</td></tr>
+  </tbody>
+</table>
+
+### `MudAccordionGroup`
+
+Selector: `mud-accordion-group`
+
+<ArgTypes of={MudAccordionGroup} />
+
+`multi` is inherited from `CdkAccordion` and is missing from the table above:
+set it to `true` to let several items stay open at once. It defaults to `false`,
+so a group is single-open unless you opt in.
+
+### `MudAccordionHeader`
+
+Selector: `mud-accordion-header`
+
+<ArgTypes of={MudAccordionHeader} />
+
+## Usage tips
+
+- **`afterExpand` / `afterCollapse` fire after the animation**, unlike the CDK's
+  `opened` / `closed` which fire as the state flips. Use them when you need the
+  panel to have finished moving — measuring, scrolling into view, focusing.
+- **Set `headingLevel` to match the surrounding document outline.** It defaults
+  to `3` and becomes the header's `aria-level`; a wrong level misreports the
+  page structure to screen readers.
+- **`appearance="trail-sites"` is a themed variant**, not a decoration — it
+  tints open items with the brand-secondary surface for the eGov trail-sites
+  pattern. Leave it `default` elsewhere.
+- **`size="small"` is for dense surfaces.** It pins the header to the mobile
+  type ramp and 24px block padding at every viewport, rather than adapting.
+- **`hideToggle` removes the affordance, not the behavior** — the header still
+  toggles on click, so only use it when something else signals interactivity.

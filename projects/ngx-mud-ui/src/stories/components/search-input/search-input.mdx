@@ -1,0 +1,70 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as SearchInputStories from './search-input.stories';
+
+<Meta of={SearchInputStories} />
+
+# Search input
+
+A text field specialised for queries: a leading search glyph, a clear
+affordance, an optional integrated submit button, and a `searched` output that
+fires on Enter.
+
+## Import
+
+```ts
+import { MudSearchInput } from 'ngx-mud-ui/search-input';
+
+@Component({
+  imports: [MudSearchInput],
+  template: `
+    <mud-search-input shape="circular" placeholder="Caută servicii" (searched)="find($event)" />
+  `,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={SearchInputStories.Playground} />
+<Controls of={SearchInputStories.Playground} />
+
+## Shapes
+
+<Canvas of={SearchInputStories.Shapes} />
+
+## States
+
+<Canvas of={SearchInputStories.States} />
+
+## Interactive
+
+<Canvas of={SearchInputStories.Interactive} />
+
+## API
+
+Selector: `mud-search-input`
+
+<ArgTypes of={SearchInputStories} />
+
+## Usage tips
+
+- **`searched` is the one to bind**, not `valueChange`. It fires on Enter and on
+  the submit button with the current query, which is the "user asked for
+  results" moment; `value` changes on every keystroke.
+- **`clearable` is on by default here**, unlike the plain input. Clearing emits
+  `cleared` — reset your results there rather than debouncing an empty query.
+- **`withButton` is for prominent search surfaces**, such as a portal landing
+  page. Inline filters usually read better without it, since Enter already
+  submits.
+- **`shape="circular"` is the hero-search silhouette.** Keep `rectangular` when
+  the field sits in a form beside other inputs, so the rhythm matches.
+- **Label it even when the placeholder seems enough.** A placeholder disappears
+  on focus and is not a substitute for `label` or `aria-label`.
+- **Localize `submitLabel` and `clearLabel`** — they default to the English
+  `'Search'` and `'Clear'` and are the accessible names of those two buttons.

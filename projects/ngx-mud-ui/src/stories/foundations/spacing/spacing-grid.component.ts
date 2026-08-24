@@ -114,12 +114,12 @@ const CONFIG: Record<SpacingKind, KindConfig> = {
       display: block;
       padding: 1.5rem 2rem;
       font-family: system-ui, sans-serif;
-      color: #121212;
+      color: var(--color-text-base-default);
     }
     .note {
       margin: 0 0 1.5rem;
       font-size: 0.82rem;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .group {
       margin-bottom: 2rem;
@@ -141,15 +141,15 @@ const CONFIG: Record<SpacingKind, KindConfig> = {
       gap: 0.5rem;
       position: relative;
       text-align: left;
-      border: 1px solid #ececec;
+      border: 1px solid var(--color-border-base-default);
       border-radius: 10px;
-      background: #fff;
+      background: var(--color-background-base-default);
       padding: 0.75rem;
       font: inherit;
       cursor: pointer;
     }
     .card:hover {
-      border-color: #cfcfcf;
+      border-color: var(--color-border-base-secondary);
     }
     .demo {
       display: flex;
@@ -158,7 +158,7 @@ const CONFIG: Record<SpacingKind, KindConfig> = {
       min-height: 72px;
       max-height: 200px;
       overflow: auto;
-      background: #f5f5f5;
+      background: var(--color-background-base-secondary);
       border-radius: 8px;
       padding: 0.5rem;
     }
@@ -171,22 +171,22 @@ const CONFIG: Record<SpacingKind, KindConfig> = {
       width: 28px;
       height: 20px;
       border-radius: 4px;
-      background: #7aa7ff;
+      background: var(--color-background-brand-secondary-active);
     }
     .mzone {
       display: inline-flex;
-      background: #dbe7ff;
+      background: var(--color-background-brand-secondary);
       border-radius: 4px;
     }
     .mbox {
       width: 44px;
       height: 26px;
       border-radius: 4px;
-      background: #2563eb;
+      background: var(--color-background-brand-default);
     }
     .pzone {
       display: inline-block;
-      background: #dbe7ff;
+      background: var(--color-background-brand-secondary);
       border-radius: 4px;
     }
     .pinner {
@@ -194,7 +194,7 @@ const CONFIG: Record<SpacingKind, KindConfig> = {
       width: 44px;
       height: 26px;
       border-radius: 2px;
-      background: #2563eb;
+      background: var(--color-background-brand-default);
     }
     .meta {
       display: flex;
@@ -207,14 +207,14 @@ const CONFIG: Record<SpacingKind, KindConfig> = {
     }
     .meta__value {
       font-size: 0.72rem;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .copied {
       position: absolute;
       right: 0.6rem;
       top: 0.5rem;
       font-size: 0.7rem;
-      color: #0a7d34;
+      color: var(--color-text-positive-default);
       opacity: 0;
       transition: opacity 0.15s;
     }
@@ -222,7 +222,7 @@ const CONFIG: Record<SpacingKind, KindConfig> = {
       opacity: 1;
     }
     .empty {
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
   `,
 })

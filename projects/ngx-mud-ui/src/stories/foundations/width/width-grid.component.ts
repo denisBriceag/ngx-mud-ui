@@ -82,12 +82,12 @@ const CONSTRAINT = ['min-w-0', 'min-w-full', 'max-w-sm', 'max-w-md', 'max-w-lg',
       display: block;
       padding: 1.5rem 2rem;
       font-family: system-ui, sans-serif;
-      color: #121212;
+      color: var(--color-text-base-default);
     }
     .note {
       margin: 0 0 1.5rem;
       font-size: 0.82rem;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     code {
       font-family: ui-monospace, monospace;
@@ -112,25 +112,25 @@ const CONSTRAINT = ['min-w-0', 'min-w-full', 'max-w-sm', 'max-w-md', 'max-w-lg',
       align-items: center;
       gap: 0.75rem;
       text-align: left;
-      border: 1px solid #ececec;
+      border: 1px solid var(--color-border-base-default);
       border-radius: 8px;
-      background: #fff;
+      background: var(--color-background-base-default);
       padding: 0.6rem 0.75rem;
       font: inherit;
       cursor: pointer;
     }
     .bar-row:hover {
-      border-color: #cfcfcf;
+      border-color: var(--color-border-base-secondary);
     }
     .bar-row__name {
       font-size: 0.78rem;
     }
     .bar-row__value {
       font-size: 0.72rem;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .bar-track {
-      background: #e8f5ec;
+      background: var(--color-background-positive-secondary);
       border-radius: 4px;
       overflow: hidden;
     }
@@ -138,7 +138,7 @@ const CONSTRAINT = ['min-w-0', 'min-w-full', 'max-w-sm', 'max-w-md', 'max-w-lg',
       display: block;
       height: 20px;
       border-radius: 4px;
-      background: #0a7d34;
+      background: var(--color-background-positive-default);
     }
     .grid {
       display: grid;
@@ -151,15 +151,15 @@ const CONSTRAINT = ['min-w-0', 'min-w-full', 'max-w-sm', 'max-w-md', 'max-w-lg',
       gap: 0.5rem;
       position: relative;
       text-align: left;
-      border: 1px solid #ececec;
+      border: 1px solid var(--color-border-base-default);
       border-radius: 10px;
-      background: #fff;
+      background: var(--color-background-base-default);
       padding: 0.75rem;
       font: inherit;
       cursor: pointer;
     }
     .card:hover {
-      border-color: #cfcfcf;
+      border-color: var(--color-border-base-secondary);
     }
     .card--value {
       flex-direction: row;
@@ -177,13 +177,13 @@ const CONSTRAINT = ['min-w-0', 'min-w-full', 'max-w-sm', 'max-w-md', 'max-w-lg',
     }
     .meta__value {
       font-size: 0.72rem;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .truncate-demo {
       display: block;
       max-width: 260px;
       padding: 0.5rem;
-      background: #f5f5f5;
+      background: var(--color-background-base-secondary);
       border-radius: 6px;
       font-size: 0.8rem;
     }
@@ -192,7 +192,7 @@ const CONSTRAINT = ['min-w-0', 'min-w-full', 'max-w-sm', 'max-w-md', 'max-w-lg',
       right: 0.6rem;
       top: 0.5rem;
       font-size: 0.7rem;
-      color: #0a7d34;
+      color: var(--color-text-positive-default);
       opacity: 0;
       transition: opacity 0.15s;
     }
@@ -200,7 +200,7 @@ const CONSTRAINT = ['min-w-0', 'min-w-full', 'max-w-sm', 'max-w-md', 'max-w-lg',
       opacity: 1;
     }
     .empty {
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
   `,
 })

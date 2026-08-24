@@ -1,0 +1,75 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as InlineMessageStories from './inline-message.stories';
+
+<Meta of={InlineMessageStories} />
+
+# Inline message
+
+A short contextual message with a semantic icon — used on its own, or projected
+into a form field's helper and error slots.
+
+## Import
+
+```ts
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+
+@Component({
+  imports: [MudInlineMessage],
+  template: `
+    <mud-inline-message variant="error" size="small" id="cnp-error">
+      Introduceți un IDNP valid.
+    </mud-inline-message>
+  `,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={InlineMessageStories.Playground} />
+<Controls of={InlineMessageStories.Playground} />
+
+## Variants
+
+<Canvas of={InlineMessageStories.Variants} />
+
+## Sizes
+
+<Canvas of={InlineMessageStories.Sizes} />
+
+## Icon variations
+
+<Canvas of={InlineMessageStories.IconVariations} />
+
+## Wrapping
+
+<Canvas of={InlineMessageStories.Wrapping} />
+
+## As a field error
+
+<Canvas of={InlineMessageStories.AsFieldError} />
+
+## API
+
+Selector: `mud-inline-message`
+
+<ArgTypes of={InlineMessageStories} />
+
+## Usage tips
+
+- **`info` colors only the icon.** The other three variants color both icon and
+  text, which is why `info` reads as neutral supporting text rather than an
+  alert.
+- **The component is not a live region.** It announces nothing on its own; when
+  projected as `[mudError]` into a field, the field's own `role="alert"` wrapper
+  does the announcing.
+- **Give it an `id` when it describes a control** rendered outside the field, and
+  point the control's `aria-describedby` at it.
+- **`hideIcon` is the icon-none variation** for dense layouts and for stacks of
+  messages where a column of repeated icons adds noise.

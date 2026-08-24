@@ -1,4 +1,5 @@
 import { afterNextRender, Component, DOCUMENT, inject, input, signal } from '@angular/core';
+import { MudSegment, MudSegmentedControl } from 'ngx-mud-ui/segmented-control';
 
 type ColorMode = 'primitives' | 'semantic';
 
@@ -13,17 +14,25 @@ interface ColorGroup {
 }
 
 const SEMANTIC_ORDER = ['background', 'text', 'border', 'icon'];
+
+const normalizeSelector = (selector: string): string =>
+  selector.replace(/['"]/g, '').replace(/\s+/g, ' ').trim();
 const COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\(/i;
 
 @Component({
   selector: 'mud-color-grid',
+  imports: [MudSegment, MudSegmentedControl],
   template: `
     @if (mode() === 'semantic') {
-      <div class="toolbar">
-        <span class="toolbar__label">Theme</span>
-        <button type="button" [class.active]="theme() === 'light'" (click)="setTheme('light')">Light</button>
-        <button type="button" [class.active]="theme() === 'dark'" (click)="setTheme('dark')">Dark</button>
-      </div>
+      <mud-segmented-control
+        class="toolbar"
+        [value]="theme()"
+        (selectionChange)="setTheme($event.value)"
+        aria-label="Token theme"
+      >
+        <button mud-segment value="light">Light</button>
+        <button mud-segment value="dark">Dark</button>
+      </mud-segmented-control>
     }
 
     @for (group of groups(); track group.title) {
@@ -37,7 +46,7 @@ const COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\(/i;
               [title]="'Copy var(' + swatch.name + ')'"
               (click)="copy(swatch.name)"
             >
-              <span class="swatch__chip" [style.background]="'var(' + swatch.name + ')'"></span>
+              <span class="swatch__chip" [style.background]="swatch.value"></span>
               <span class="swatch__meta">
                 <code class="swatch__name">{{ swatch.name }}</code>
                 <span class="swatch__value">{{ swatch.value }}</span>
@@ -58,33 +67,11 @@ const COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\(/i;
       display: block;
       padding: 1.5rem 2rem;
       font-family: system-ui, sans-serif;
-      color: #121212;
+      color: var(--color-text-base-default);
     }
     .toolbar {
       display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
       margin-bottom: 1.5rem;
-      padding: 0.25rem;
-      border: 1px solid #e5e5e5;
-      border-radius: 8px;
-    }
-    .toolbar__label {
-      font-size: 0.75rem;
-      color: #757575;
-      padding: 0 0.5rem;
-    }
-    .toolbar button {
-      border: 0;
-      background: transparent;
-      padding: 0.35rem 0.85rem;
-      border-radius: 6px;
-      font: inherit;
-      cursor: pointer;
-    }
-    .toolbar button.active {
-      background: #121212;
-      color: #fff;
     }
     .group {
       margin-bottom: 2rem;
@@ -94,7 +81,7 @@ const COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\(/i;
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .grid {
       display: grid;
@@ -107,22 +94,22 @@ const COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\(/i;
       gap: 0.75rem;
       position: relative;
       text-align: left;
-      border: 1px solid #ececec;
+      border: 1px solid var(--color-border-base-default);
       border-radius: 10px;
-      background: #fff;
+      background: var(--color-background-base-default);
       padding: 0.6rem;
       font: inherit;
       cursor: pointer;
     }
     .swatch:hover {
-      border-color: #cfcfcf;
+      border-color: var(--color-border-base-secondary);
     }
     .swatch__chip {
       flex: 0 0 auto;
       width: 40px;
       height: 40px;
       border-radius: 8px;
-      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+      box-shadow: inset 0 0 0 1px var(--color-border-base-default);
     }
     .swatch__meta {
       display: flex;
@@ -138,14 +125,14 @@ const COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\(/i;
     }
     .swatch__value {
       font-size: 0.72rem;
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
     .swatch__copied {
       position: absolute;
       right: 0.6rem;
       top: 0.5rem;
       font-size: 0.7rem;
-      color: #0a7d34;
+      color: var(--color-text-positive-default);
       opacity: 0;
       transition: opacity 0.15s;
     }
@@ -153,7 +140,7 @@ const COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\(/i;
       opacity: 1;
     }
     .empty {
-      color: #757575;
+      color: var(--color-text-base-secondary);
     }
   `,
 })
@@ -185,21 +172,19 @@ export class ColorGridComponent {
   }
 
   private _load(): void {
-    const root = this._document.documentElement;
-
-    if (this.mode() === 'semantic' && this.theme() === 'dark') {
-      root.setAttribute('data-theme', 'dark');
-    } else {
-      root.removeAttribute('data-theme');
-    }
-
-    const styles = getComputedStyle(root);
+    const light = this._declared(':root');
+    const dark = this._declared("[data-theme='dark']");
+    const wantSemantic = this.mode() === 'semantic';
+    const scale = wantSemantic && this.theme() === 'dark' ? dark : new Map<string, string>();
     const swatches: Swatch[] = [];
 
-    for (const name of this._collectNames()) {
-      const value = styles.getPropertyValue(name).trim();
+    for (const [name, lightValue] of light) {
+      if (name.startsWith('--color-') !== wantSemantic) continue;
 
-      if (this.mode() === 'semantic' || COLOR_VALUE.test(value)) {
+      // Dark only overrides part of the palette; the rest keeps its light value.
+      const value = this._resolve(scale.get(name) ?? lightValue, light, scale, 0);
+
+      if (wantSemantic || COLOR_VALUE.test(value)) {
         swatches.push({ name, value });
       }
     }
@@ -207,11 +192,12 @@ export class ColorGridComponent {
     this.groups.set(this._group(swatches));
   }
 
-  private _collectNames(): string[] {
-    const names = new Set<string>();
-    const wantSemantic = this.mode() === 'semantic';
+  /** Merges the declarations of every rule matching `selector`, in cascade order. */
+  private _declared(selector: string): Map<string, string> {
+    const declarations = new Map<string, string>();
+    const wanted = normalizeSelector(selector);
 
-    for (const sheet of Array.from(document.styleSheets)) {
+    for (const sheet of Array.from(this._document.styleSheets)) {
       let rules: CSSRuleList;
 
       try {
@@ -221,28 +207,42 @@ export class ColorGridComponent {
       }
 
       for (const rule of Array.from(rules)) {
-        if (!(rule instanceof CSSStyleRule) || rule.selectorText !== ':root') {
+        if (!(rule instanceof CSSStyleRule) || normalizeSelector(rule.selectorText) !== wanted) {
           continue;
         }
 
         for (const name of Array.from(rule.style)) {
-          const isSemantic = name.startsWith('--color-');
-
-          if (name.startsWith('--') && isSemantic === wantSemantic) {
-            names.add(name);
+          if (name.startsWith('--')) {
+            declarations.set(name, rule.style.getPropertyValue(name).trim());
           }
         }
       }
     }
 
-    return [...names];
+    return declarations;
+  }
+
+  private _resolve(
+    value: string,
+    light: Map<string, string>,
+    scale: Map<string, string>,
+    depth: number,
+  ): string {
+    const reference = /^var\(\s*(--[a-z0-9-]+)\s*\)$/i.exec(value)?.[1];
+
+    if (!reference || depth > 10) return value;
+
+    const next = scale.get(reference) ?? light.get(reference);
+
+    return next === undefined ? value : this._resolve(next, light, scale, depth + 1);
   }
 
   private _group(swatches: Swatch[]): ColorGroup[] {
     const buckets = new Map<string, Swatch[]>();
 
     for (const swatch of swatches) {
-      const key = this.mode() === 'semantic' ? this._categoryOf(swatch.name) : this._familyOf(swatch.name);
+      const key =
+        this.mode() === 'semantic' ? this._categoryOf(swatch.name) : this._familyOf(swatch.name);
       const bucket = buckets.get(key) ?? [];
 
       bucket.push(swatch);
@@ -254,13 +254,21 @@ export class ColorGridComponent {
     return order
       .filter((key) => buckets.has(key))
       .concat([...buckets.keys()].filter((k) => !order.includes(k)).sort())
-      .map((title) => ({ title, swatches: buckets.get(title)!.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })) }));
+      .map((title) => ({
+        title,
+        swatches: buckets
+          .get(title)!
+          .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })),
+      }));
   }
 
   private _familyOf(name: string): string {
     const parts = name.replace(/^--/, '').split('-');
 
-    while (parts.length > 1 && (/^\d+$/.test(parts[parts.length - 1]) || parts[parts.length - 1] === 'alpha')) {
+    while (
+      parts.length > 1 &&
+      (/^\d+$/.test(parts[parts.length - 1]) || parts[parts.length - 1] === 'alpha')
+    ) {
       parts.pop();
     }
 

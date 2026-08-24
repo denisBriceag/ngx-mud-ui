@@ -1,0 +1,77 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as InputChipStories from './input-chip.stories';
+
+<Meta of={InputChipStories} />
+
+# Input chip
+
+A field whose value is a list of strings. The user types, confirms with Enter or
+a separator character, and each confirmed value becomes a removable chip.
+
+## Import
+
+```ts
+import { MudInputChip } from 'ngx-mud-ui/input-chip';
+
+@Component({
+  imports: [MudInputChip],
+  template: `
+    <mud-input-chip
+      label="Destinatari"
+      [maxChips]="5"
+      [validatePattern]="emailPattern"
+      [formControl]="recipients"
+    />
+  `,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={InputChipStories.Playground} />
+<Controls of={InputChipStories.Playground} />
+
+## States
+
+<Canvas of={InputChipStories.States} />
+
+## Validation and limits
+
+<Canvas of={InputChipStories.ValidationAndMax} />
+
+## Reactive forms
+
+<Canvas of={InputChipStories.ReactiveForms} />
+
+## API
+
+Selector: `mud-input-chip`
+
+<ArgTypes of={InputChipStories} />
+
+## Usage tips
+
+- **`value` is the confirmed list; `draft` is the pending text.** They are
+  separate two-way models, so text the user has typed but not confirmed never
+  silently becomes part of the form value.
+- **The validation input is `validatePattern`, not `pattern`.** That name is
+  deliberate: signal forms auto-bind a member called `pattern` with an
+  incompatible protocol (the field's own `readonly RegExp[]`), so using it here
+  would collide.
+- **Every rejection emits `errored`** with a code of `pattern`, `duplicate` or
+  `max` — bind it to surface why a value was refused, since the field itself
+  only clears the draft.
+- **`separators` adds to Enter rather than replacing it**, and newlines always
+  split a paste, so pasting a column of addresses works regardless of the
+  setting.
+- **Localize the three announcer inputs.** `announceAdded`, `announceRemoved`
+  and `announceRejected` build the live-region text and default to English.
+- **`placeholder` only shows while the list is empty**, so it cannot be used as
+  a persistent hint.

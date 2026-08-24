@@ -1,0 +1,80 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as RadioStories from './radio.stories';
+import { MudRadio } from 'ngx-mud-ui/radio';
+
+<Meta of={RadioStories} />
+
+# Radio
+
+A single-choice group. `mud-radio-group` owns the value and the form binding;
+each `mud-radio` contributes one option and derives its checked state from the
+group.
+
+## Import
+
+```ts
+import { MudRadio, MudRadioGroup } from 'ngx-mud-ui/radio';
+
+@Component({
+  imports: [MudRadio, MudRadioGroup],
+  template: `
+    <mud-radio-group label="Metoda de plată" [formControl]="method" required>
+      <mud-radio value="card" label="Card bancar" />
+      <mud-radio value="mpay" label="MPay" supportingText="Fără comision." />
+    </mud-radio-group>
+  `,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={RadioStories.Playground} />
+<Controls of={RadioStories.Playground} />
+
+## States
+
+<Canvas of={RadioStories.States} />
+
+## Reactive forms
+
+<Canvas of={RadioStories.ReactiveForms} />
+
+## Non-string values
+
+<Canvas of={RadioStories.NonStringValues} />
+
+## API
+
+### `MudRadioGroup`
+
+Selector: `mud-radio-group`
+
+<ArgTypes of={RadioStories} />
+
+### `MudRadio`
+
+Selector: `mud-radio`
+
+<ArgTypes of={MudRadio} />
+
+## Usage tips
+
+- **A radio cannot be used outside a group.** Checked state derives from the
+  group's value, so a lone `mud-radio` has no source of truth. For a single
+  on/off choice use `mud-checkbox` or `mud-switch`.
+- **Values are compared with `Object.is`**, so object and array values must be
+  the same reference — rebuilding the options array each change detection cycle
+  silently breaks selection. Primitives and enum values are safest.
+- **`size` is set on the group**, not per option, and applies to every child.
+- **Per-option `disabled` stacks with the group's.** A radio is disabled if
+  either it or its group says so; disabling the group does not clear child
+  settings.
+- **`readonly` keeps the options focusable** but prevents the selection from
+  changing, which `disabled` does not — disabled options leave the tab order.
