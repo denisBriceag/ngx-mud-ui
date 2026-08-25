@@ -15,6 +15,7 @@
     "button/src/**/*.spec.ts",
     "checkbox/src/**/*.spec.ts",
     "chip/src/**/*.spec.ts",
+    "file-input/src/**/*.spec.ts",
     "icons/src/**/*.spec.ts",
     "inline-message/src/**/*.spec.ts",
     "input/src/**/*.spec.ts",

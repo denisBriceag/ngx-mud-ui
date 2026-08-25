@@ -1,0 +1,313 @@
+import { Component, PLATFORM_ID, signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { MudFileItem } from './mud-file-item.component';
+import type { MudFileItemRemove, MudFileItemState } from './mud-file-item.component';
+
+@Component({
+  imports: [MudFileItem],
+  template: `
+    <mud-file-item
+      [filename]="filename()"
+      [size]="size()"
+      [state]="state()"
+      [errorText]="errorText()"
+      [previewSrc]="previewSrc()"
+      [disabled]="disabled()"
+      [removable]="removable()"
+      (removed)="removals.push($event)"
+    />
+  `,
+})
+class Host {
+  readonly filename = signal('raport.pdf');
+  readonly size = signal<number | undefined>(undefined);
+  readonly state = signal<MudFileItemState>('uploaded');
+  readonly errorText = signal<string | undefined>(undefined);
+  readonly previewSrc = signal<string | undefined>(undefined);
+  readonly disabled = signal(false);
+  readonly removable = signal(true);
+  readonly removals: MudFileItemRemove[] = [];
+}
+
+async function render() {
+  const fixture = TestBed.createComponent(Host);
+
+  await fixture.whenStable();
+  const el = fixture.nativeElement.querySelector('mud-file-item') as HTMLElement;
+
+  return {
+    fixture,
+    host: fixture.componentInstance,
+    el,
+    filenameEl: () => el.querySelector('.file-item__filename') as HTMLElement | null,
+    meta: () => el.querySelector('.file-item__meta') as HTMLElement | null,
+    glyph: () => el.querySelector('.file-item__glyph') as HTMLElement | null,
+    thumbnail: () => el.querySelector('.file-item__thumbnail') as HTMLImageElement | null,
+    spinner: () => el.querySelector('.file-item__spinner') as HTMLElement | null,
+    statusIcon: (kind: string) => el.querySelector(`.file-item__status--${kind}`) as HTMLElement | null,
+    removeBtn: () => el.querySelector('.file-item__remove') as HTMLButtonElement | null,
+    errorMessage: () => el.querySelector('.file-item__error-message') as HTMLElement | null,
+  };
+}
+
+@Component({
+  imports: [MudFileItem],
+  template: `
+    <mud-file-item filename="raport.pdf" [state]="state()" [previewSrc]="previewSrc()">
+      <svg icon class="custom-icon" viewBox="0 0 20 20"></svg>
+    </mud-file-item>
+  `,
+})
+class SlottedHost {
+  readonly state = signal<MudFileItemState>('uploaded');
+  readonly previewSrc = signal<string | undefined>(undefined);
+}
+
+async function renderSlotted() {
+  const fixture = TestBed.createComponent(SlottedHost);
+
+  await fixture.whenStable();
+  const el = fixture.nativeElement.querySelector('mud-file-item') as HTMLElement;
+
+  return {
+    fixture,
+    host: fixture.componentInstance,
+    el,
+    custom: () => el.querySelector('.custom-icon') as SVGElement | null,
+    glyph: () => el.querySelector('.file-item__glyph') as HTMLElement | null,
+    thumbnail: () => el.querySelector('.file-item__thumbnail') as HTMLImageElement | null,
+  };
+}
+
+describe('MudFileItem leading-icon projection', () => {
+  it('lets a projected [icon] replace the default glyph', async () => {
+    const { custom, glyph } = await renderSlotted();
+
+    expect(custom()).not.toBeNull();
+    expect(glyph()).toBeNull();
+  });
+
+  it('still prefers the preview thumbnail over a projected icon', async () => {
+    const { fixture, host, custom, thumbnail } = await renderSlotted();
+
+    host.previewSrc.set('blob:preview');
+    await fixture.whenStable();
+
+    expect(thumbnail()).not.toBeNull();
+    expect(custom()).toBeNull();
+  });
+
+  it('restores the projected icon after a preview fails', async () => {
+    const { fixture, host, custom, thumbnail, glyph } = await renderSlotted();
+
+    host.previewSrc.set('blob:broken');
+    await fixture.whenStable();
+    thumbnail()!.dispatchEvent(new Event('error'));
+    await fixture.whenStable();
+
+    // Falling back must land on the consumer's icon, not the built-in glyph.
+    expect(custom()).not.toBeNull();
+    expect(glyph()).toBeNull();
+  });
+
+  it('drops the projected icon in the error state, like the built-in glyph', async () => {
+    const { fixture, host, custom } = await renderSlotted();
+
+    host.state.set('error');
+    await fixture.whenStable();
+
+    expect(custom()).toBeNull();
+  });
+});
+
+describe('MudFileItem', () => {
+  it('renders the filename', async () => {
+    const { filenameEl } = await render();
+
+    expect(filenameEl()?.textContent?.trim()).toBe('raport.pdf');
+  });
+
+  it('renders the size as a human-readable string', async () => {
+    const { fixture, host, meta } = await render();
+
+    host.size.set(512);
+    await fixture.whenStable();
+    expect(meta()?.textContent?.trim()).toBe('512 B');
+
+    host.size.set(1536);
+    await fixture.whenStable();
+    expect(meta()?.textContent?.trim()).toBe('1.5 KB');
+
+    host.size.set(2.5 * 1024 * 1024);
+    await fixture.whenStable();
+    expect(meta()?.textContent?.trim()).toBe('2.5 MB');
+
+    host.size.set(1.25 * 1024 * 1024 * 1024);
+    await fixture.whenStable();
+    expect(meta()?.textContent?.trim()).toBe('1.25 GB');
+  });
+
+  it('omits the size meta line when no size is given', async () => {
+    const { meta } = await render();
+
+    expect(meta()).toBeNull();
+  });
+
+  it('in the resting state shows the file glyph and the remove button only', async () => {
+    const { el, glyph, spinner, statusIcon, removeBtn } = await render();
+
+    expect(el.classList.contains('file-item--uploaded')).toBe(true);
+    expect(glyph()).not.toBeNull();
+    expect(removeBtn()).not.toBeNull();
+    expect(spinner()).toBeNull();
+    expect(statusIcon('success')).toBeNull();
+    expect(statusIcon('error')).toBeNull();
+  });
+
+  it('while uploading shows a spinner and hides the remove button', async () => {
+    const { fixture, host, spinner, removeBtn } = await render();
+
+    host.state.set('uploading');
+    await fixture.whenStable();
+
+    expect(spinner()).not.toBeNull();
+    expect(removeBtn()).toBeNull();
+  });
+
+  it('on success shows the confirmation icon and hides the remove button', async () => {
+    const { fixture, host, statusIcon, removeBtn } = await render();
+
+    host.state.set('success');
+    await fixture.whenStable();
+
+    expect(statusIcon('success')).not.toBeNull();
+    expect(removeBtn()).toBeNull();
+  });
+
+  it('on error shows the error icon, keeps remove, drops the leading glyph and renders the message', async () => {
+    const { fixture, host, glyph, statusIcon, removeBtn, errorMessage } = await render();
+
+    host.state.set('error');
+    host.errorText.set('Fișierul este prea mare');
+    await fixture.whenStable();
+
+    expect(statusIcon('error')).not.toBeNull();
+    expect(removeBtn()).not.toBeNull();
+    expect(glyph()).toBeNull();
+    expect(errorMessage()?.textContent?.trim()).toBe('Fișierul este prea mare');
+  });
+
+  it('ignores errorText outside the error state', async () => {
+    const { fixture, host, errorMessage } = await render();
+
+    host.errorText.set('Fișierul este prea mare');
+    await fixture.whenStable();
+
+    expect(errorMessage()).toBeNull();
+  });
+
+  it('renders a thumbnail for previewSrc and falls back to the glyph when the image fails', async () => {
+    const { fixture, host, thumbnail, glyph } = await render();
+
+    host.previewSrc.set('blob:preview');
+    await fixture.whenStable();
+
+    expect(thumbnail()).not.toBeNull();
+    expect(glyph()).toBeNull();
+
+    thumbnail()!.dispatchEvent(new Event('error'));
+    await fixture.whenStable();
+
+    expect(thumbnail()).toBeNull();
+    expect(glyph()).not.toBeNull();
+  });
+
+  it('recovers from a preview failure when previewSrc changes', async () => {
+    const { fixture, host, thumbnail } = await render();
+
+    host.previewSrc.set('blob:broken');
+    await fixture.whenStable();
+    thumbnail()!.dispatchEvent(new Event('error'));
+    await fixture.whenStable();
+    expect(thumbnail()).toBeNull();
+
+    host.previewSrc.set('blob:fresh');
+    await fixture.whenStable();
+
+    expect(thumbnail()).not.toBeNull();
+  });
+
+  it('hides the remove button when removable is false', async () => {
+    const { fixture, host, removeBtn } = await render();
+
+    host.removable.set(false);
+    await fixture.whenStable();
+
+    expect(removeBtn()).toBeNull();
+  });
+
+  it('labels the remove button with removeLabel plus the filename', async () => {
+    const { removeBtn } = await render();
+
+    expect(removeBtn()?.getAttribute('aria-label')).toBe('Remove file raport.pdf');
+  });
+
+  it('emits removed with the filename on remove click', async () => {
+    const { host, removeBtn } = await render();
+
+    removeBtn()!.click();
+
+    expect(host.removals).toEqual([{ filename: 'raport.pdf' }]);
+  });
+
+  it('renders on the server without constructing a ResizeObserver', async () => {
+    TestBed.configureTestingModule({
+      providers: [{ provide: PLATFORM_ID, useValue: 'server' }],
+    });
+
+    const observed: string[] = [];
+    const RealResizeObserver = globalThis.ResizeObserver;
+
+    globalThis.ResizeObserver = class {
+      constructor() {
+        observed.push('constructed');
+      }
+      observe() {
+        observed.push('observe');
+      }
+      disconnect() {
+        observed.push('disconnect');
+      }
+      unobserve() {
+        observed.push('unobserve');
+      }
+    } as unknown as typeof ResizeObserver;
+
+    try {
+      const { fixture, host, filenameEl, meta, removeBtn } = await render();
+
+      host.size.set(2048);
+      await fixture.whenStable();
+
+      expect(filenameEl()?.textContent?.trim()).toBe('raport.pdf');
+      expect(meta()?.textContent?.trim()).toBe('2.0 KB');
+      expect(removeBtn()).not.toBeNull();
+      expect(observed).toEqual([]);
+    } finally {
+      globalThis.ResizeObserver = RealResizeObserver;
+    }
+  });
+
+  it('disables the remove button and suppresses removal while disabled', async () => {
+    const { fixture, host, el, removeBtn } = await render();
+
+    host.disabled.set(true);
+    await fixture.whenStable();
+
+    expect(el.classList.contains('is-disabled')).toBe(true);
+    expect(removeBtn()?.disabled).toBe(true);
+
+    removeBtn()!.click();
+    expect(host.removals).toEqual([]);
+  });
+});

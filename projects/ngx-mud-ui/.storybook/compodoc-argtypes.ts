@@ -85,13 +85,15 @@ interface Repair {
   options?: readonly string[];
 }
 
+const FUNCTION_TYPE = /=>/;
+
 /**
  * Maps a fully resolved type to a usable control, or null to leave Storybook's
- * object control in place — correct for arrays, functions, RegExp and generics,
- * which genuinely have no simpler editor.
+ * object control in place — correct for arrays, RegExp and generics, which
+ * genuinely have no simpler editor. Function types never reach here.
  */
 const repairFor = (resolved: string): Repair | null => {
-  if (/=>|\[\]|[<>{}]/.test(resolved)) return null;
+  if (FUNCTION_TYPE.test(resolved) || /\[\]|[<>{}]/.test(resolved)) return null;
 
   const members = resolved
     .split('|')
@@ -219,6 +221,15 @@ export const extractArgTypes = (component: unknown): ArgTypes | undefined => {
     // generic JSON editor — an "Edit JSON string..." box that does nothing
     // useful and, if typed into, assigns over the OutputEmitterRef.
     if (argType.table?.category === 'outputs') {
+      argType.control = false as typeof argType.control;
+      continue;
+    }
+
+    // A function input has the same problem as an output: the JSON editor
+    // cannot express a callback, and whatever is typed in replaces the
+    // function the component later invokes. The type column still carries the
+    // signature, which is the part a reader needs.
+    if (FUNCTION_TYPE.test(resolveType(argType.table?.type?.summary ?? summary))) {
       argType.control = false as typeof argType.control;
       continue;
     }

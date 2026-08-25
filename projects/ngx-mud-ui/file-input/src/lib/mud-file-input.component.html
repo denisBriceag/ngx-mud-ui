@@ -1,0 +1,174 @@
+@if (_showLabel()) {
+  <label class="input-field__label file-field__label" [id]="_labelId" [attr.for]="_browseId">
+    <span class="input-field__label-text"><ng-content select="[mudLabel]">{{ label() }}</ng-content></span>
+    @if (required()) {
+      <span class="input-field__required" aria-hidden="true">*</span>
+      <!--
+        Every other field in the library conveys required via `required` /
+        `aria-required` on its native control. Here the only interactive element
+        is a button, where `aria-required` is a prohibited attribute, so the
+        word rides the label, which is also the button's accessible name.
+      -->
+      <span class="input-field__sr-only file-field__required-text">{{ requiredLabel() }}</span>
+    }
+  </label>
+}
+
+@if (variant() === 'button') {
+  @if (_hasCaptions()) {
+    <div class="file-field__captions">
+      @if (_formatsCaption()) {
+        <span class="file-field__caption-formats">{{ _formatsCaption() }}</span>
+      }
+      @if (_maxSizeCaption()) {
+        <span class="file-field__caption-max-size">{{ _maxSizeCaption() }}</span>
+      }
+    </div>
+  }
+  <button
+    #browse
+    type="button"
+    mudButton
+    color="primary"
+    [size]="size() === 'large' ? 'medium' : 'small'"
+    class="file-field__browse file-field__upload-button"
+    [id]="_browseId"
+    [disabled]="_effectiveDisabled()"
+    [attr.aria-label]="_ariaLabel()"
+    [attr.aria-labelledby]="_showLabel() ? _labelId : null"
+    [attr.aria-describedby]="_describedBy()"
+    [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
+    (click)="_onBrowseClick($event)"
+  >
+    {{ chooseFilesText() }}
+  </button>
+} @else {
+  <!--
+    Drop-target only: no button role, tabindex or aria naming here. ARIA
+    forbids a button role around a focusable descendant, and the inner browse
+    button is the keyboard activator carrying every association - clicks
+    anywhere on the dropzone still reach the picker.
+  -->
+  <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+  <div
+    class="file-field__dropzone"
+    (click)="_onBrowseClick($event)"
+    (dragenter)="_onDragEnter($event)"
+    (dragover)="_onDragOver($event)"
+    (dragleave)="_onDragLeave()"
+    (drop)="_onDrop($event)"
+  >
+    @if (!_dragOver()) {
+      <span class="file-field__dropzone-icon" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" focusable="false">
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M5.67 8.25a6.901 6.901 0 0 1 13.181 1.924A4.901 4.901 0 0 1 18 19.9h-2a.9.9 0 1 1 0-1.8h2a3.1 3.1 0 1 0 0-6.2.9.9 0 0 1-.9-.9 5.1 5.1 0 0 0-9.923-1.662.9.9 0 0 1-.731.599A4.101 4.101 0 0 0 7 18.1h1a.9.9 0 1 1 0 1.8H7A5.9 5.9 0 0 1 5.67 8.25m3.194 5.614 2.5-2.5a.9.9 0 0 1 1.272 0l2.5 2.5a.9.9 0 1 1-1.272 1.272l-.964-.963V19a.9.9 0 1 1-1.8 0v-4.827l-.964.963a.9.9 0 1 1-1.272-1.272"
+          />
+        </svg>
+      </span>
+      <span class="file-field__dropzone-body">
+        <span class="file-field__dropzone-cta">
+          <span class="file-field__dropzone-cta-body">{{ ctaText() }}</span>
+          <button
+            #browse
+            type="button"
+            class="file-field__browse file-field__browse-link"
+            [id]="_browseId"
+            [disabled]="_effectiveDisabled()"
+            [attr.aria-label]="_ariaLabel()"
+            [attr.aria-labelledby]="_showLabel() ? _labelId : null"
+            [attr.aria-describedby]="_describedBy()"
+            [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
+            (click)="_onBrowseClick($event)"
+          >
+            {{ chooseFilesText() }}
+          </button>
+        </span>
+      </span>
+    } @else {
+      <span class="file-field__dropzone-body">
+        <span class="file-field__dropzone-text">{{ dropzoneActiveText() }}</span>
+      </span>
+    }
+  </div>
+  @if (!_dragOver() && _hasCaptions()) {
+    <div class="file-field__captions">
+      @if (_formatsCaption()) {
+        <span class="file-field__caption-formats">{{ _formatsCaption() }}</span>
+      }
+      @if (_maxSizeCaption()) {
+        <span class="file-field__caption-max-size">{{ _maxSizeCaption() }}</span>
+      }
+    </div>
+  }
+}
+
+<input
+  #native
+  type="file"
+  class="file-field__native"
+  tabindex="-1"
+  aria-hidden="true"
+  [attr.name]="name() || null"
+  [attr.accept]="accept() ?? null"
+  [multiple]="multiple()"
+  [required]="required()"
+  [disabled]="_effectiveDisabled()"
+  (change)="_onNativeChange($event)"
+/>
+
+@if (showFileList() && value().length > 0) {
+  <ul
+    class="file-field__list"
+    role="list"
+    [attr.aria-label]="fileListLabel() || null"
+  >
+    @for (file of value(); track $index) {
+      <li class="file-field__list-item">
+        <mud-file-item
+          [filename]="file.name"
+          [size]="file.size"
+          [previewSrc]="_previewFor(file)"
+          [disabled]="_effectiveDisabled()"
+          [removeLabel]="removeLabel()"
+          (removed)="_onItemRemoved($index)"
+        />
+      </li>
+    }
+  </ul>
+}
+
+@if (_showError() || _showHelper()) {
+  <div class="input-field__footer">
+    @if (_showError()) {
+      <div class="input-field__assistive" role="alert" [id]="_errorId">
+        <ng-content select="[mudError]">
+          <div class="inline-message inline-message--error">
+            <span class="inline-message__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false">
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M10 1.667a8.333 8.333 0 1 0 0 16.666 8.333 8.333 0 0 0 0-16.666m-.833 7.5c0-.459.416-.834.833-.834s.833.373.833.834v4.166a.833.833 0 0 1-1.666 0zM10 5.833A.833.833 0 1 0 10 7.5a.833.833 0 0 0 0-1.667"
+                />
+              </svg>
+            </span>
+            <span class="inline-message__text">{{ _errorMessage() }}</span>
+          </div>
+        </ng-content>
+      </div>
+    } @else if (_showHelper()) {
+      <div class="input-field__assistive" [id]="_helperId">
+        <ng-content select="[mudHelper]">
+          <div class="inline-message">
+            <span class="inline-message__text">{{ _helperMessage() }}</span>
+          </div>
+        </ng-content>
+      </div>
+    }
+  </div>
+}
+
+<span class="input-field__sr-only" role="status" aria-live="polite">{{ _announcement() }}</span>

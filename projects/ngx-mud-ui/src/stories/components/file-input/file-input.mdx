@@ -1,0 +1,142 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import { MudFileItem } from 'ngx-mud-ui/file-input';
+import * as FileInputStories from './file-input.stories';
+
+<Meta of={FileInputStories} />
+
+# File input
+
+Drag-and-drop or click-to-browse file selection, with a label, captions, an
+error region and an inline list of the chosen files. The component owns
+**selection, validation and display** — the actual upload is yours to drive
+from the value. Works standalone via `[(value)]`, with reactive and
+template-driven forms via `ControlValueAccessor`, and with signal forms.
+
+## Import
+
+```ts
+import { MudFileInput } from 'ngx-mud-ui/file-input';
+
+@Component({
+  imports: [MudFileInput],
+  template: `
+    <mud-file-input
+      label="Documente"
+      accept=".pdf,image/*"
+      multiple
+      [maxSize]="5242880"
+      [formControl]="documents"
+    />
+  `,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={FileInputStories.Playground} />
+<Controls of={FileInputStories.Playground} />
+
+## Variants
+
+<Canvas of={FileInputStories.Variants} />
+
+## States
+
+<Canvas of={FileInputStories.States} />
+
+## Composed content
+
+Rich label, helper and error content is projected with the `[mudLabel]`,
+`[mudHelper]` and `[mudError]` directives from `ngx-mud-ui/input`.
+
+<Canvas of={FileInputStories.ComposedContent} />
+
+## Reactive forms
+
+The control value is the `File[]` itself, so `Validators.required` rejects an
+empty selection and custom validators receive the real files.
+
+<Canvas of={FileInputStories.ReactiveForms} />
+
+## Signal forms
+
+<Canvas of={FileInputStories.SignalForms} />
+
+## File rows
+
+`mud-file-item` ships from the same entry point and renders standalone, so you
+can build your own list surfaces (upload progress, read-only summaries).
+
+<Canvas of={FileInputStories.FileItemStates} />
+
+Project an `[icon]` to replace the leading glyph — a per-extension icon, or an
+`<img ngSrc>` when the preview is a server-hosted thumbnail.
+
+<Canvas of={FileInputStories.ProjectedIcon} />
+
+## Consumer-driven upload
+
+<Canvas of={FileInputStories.ConsumerDrivenUpload} />
+
+## API
+
+Selector: `mud-file-input`
+
+<ArgTypes of={FileInputStories} />
+
+### `mud-file-item`
+
+<ArgTypes of={MudFileItem} />
+
+## Usage tips
+
+- **Upload is not included.** The component never touches the network. Watch
+  `value` (or `valueChange`), upload each file yourself, and reflect progress by
+  turning `showFileList` off and rendering your own `mud-file-item` rows with
+  per-file `state`.
+- **The value is always a `File[]`**, even with `multiple` off — the array just
+  never holds more than one entry, and a new pick replaces it.
+- **Rejected files never enter the value.** Each one fires `rejected` with a
+  `type` / `size` / `count` code, so surface your own message from that event;
+  the built-in announcement only tells screen-reader users something was
+  refused.
+- **Captions derive from `accept` and `maxSize`.** Set `supportedFormatsText` or
+  `maxSizeText` only when you want to override the derived copy.
+- **`accept` is a filter, not a guarantee.** It is applied to the picker and
+  re-checked on drop, but it matches on MIME type and extension — validate
+  file contents server-side.
+- **`invalid` drives the visuals, `errorText` supplies the message.** Setting
+  the text alone shows nothing. Signal forms bind `invalid` and `errors` for you.
+- **Image previews are automatic.** The component creates object URLs for
+  `image/*` files and revokes them when the file leaves the list or the
+  component is destroyed. Rows you render yourself own their own `previewSrc`.
+- **Don't reach for `ngSrc` on `previewSrc`.** `NgOptimizedImage` throws on both
+  `blob:` and `data:` URLs (NG2952), which is what an object-URL preview and the
+  built-in glyph are — and there is nothing to optimize for bytes already in
+  memory. If your thumbnails come from a server instead, project your own
+  `<img ngSrc width height>` through the `[icon]` slot, keeping the loader
+  configuration in your app.
+- **All user-facing copy is an input.** `ctaText`, `chooseFilesText`,
+  `dropzoneActiveText`, `removeLabel`, `requiredLabel`, `fileListLabel` and the
+  three `announce*` functions default to English — pass your own for other
+  locales.
+- **`fileListLabel` names the file list** for assistive tech. It is worth
+  setting on forms with several file fields, where an unnamed list announces
+  only "list, 2 items". Pass an empty string to leave it unnamed.
+- **`required` is announced through the label, not `aria-required`.** The only
+  interactive control here is a button, and `aria-required` is a prohibited
+  attribute on it, so the `requiredLabel` word is appended to the label for
+  assistive tech while the visible asterisk stays decorative. The hidden native
+  input still carries the real `required` constraint.
+- **Focus is managed on removal.** Removing a row moves focus to the row that
+  takes its place, to the previous row when you delete the last one, or back to
+  the browse control once the list is empty.
+- **Use `aria-label` only when no visible `label` is rendered**; with both set
+  the accessible name silently replaces the visible one.

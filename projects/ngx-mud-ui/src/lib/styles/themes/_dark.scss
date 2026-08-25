@@ -23,7 +23,10 @@
   --color-text-warning-default: var(--apricot-500);
   --color-text-warning-on-secondary: var(--apricot-800);
 
-  --color-text-danger-default: var(--red-500);
+  // red-500 lands at 4.43:1 on the dark surface — just under the 4.5:1 AA
+  // minimum for body text. red-400 is one perceptual step lighter and reaches
+  // ~6:1. The icon token moves with it so the two stay the same red.
+  --color-text-danger-default: var(--red-400);
   --color-text-danger-on-secondary: var(--red-800);
 
   --color-icon-base-default: var(--white-1000);
@@ -49,7 +52,7 @@
   --color-icon-warning-default: var(--apricot-500);
   --color-icon-warning-on-secondary: var(--apricot-800);
 
-  --color-icon-danger-default: var(--red-500);
+  --color-icon-danger-default: var(--red-400);
   --color-icon-danger-on-secondary: var(--red-800);
 }
 
