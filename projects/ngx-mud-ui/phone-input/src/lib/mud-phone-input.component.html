@@ -1,0 +1,224 @@
+@if (_showLabel()) {
+  <label class="input-field__label" [attr.for]="_id" [id]="_labelId">
+    <span class="input-field__label-text"
+      ><ng-content select="[mudLabel]">{{ label() }}</ng-content></span
+    >
+    @if (required()) {
+      <span class="input-field__required" aria-hidden="true">*</span>
+    }
+  </label>
+}
+
+<div class="input-field__control phone-field__control" #control>
+  @if (_isInternational()) {
+    <button
+      #trigger
+      type="button"
+      class="phone-field__trigger"
+      role="combobox"
+      aria-haspopup="listbox"
+      [id]="_triggerId"
+      [attr.aria-expanded]="_open() ? 'true' : 'false'"
+      [attr.aria-controls]="_open() ? _listBoxId : null"
+      [attr.aria-label]="
+        countryLabel() + ': ' + _countryName(_country()) + ' ' + _country().dialCode
+      "
+      [disabled]="_effectiveDisabled() || readonly()"
+      (click)="_toggleList()"
+      (keydown)="_onTriggerKeydown($event)"
+    >
+      @if (_flagSrc()) {
+        <img class="phone-field__flag" [src]="_flagSrc()" alt="" width="20" height="14" />
+      }
+      <span class="phone-field__dial-code">{{ _country().dialCode }}</span>
+      <span class="phone-field__chevron" aria-hidden="true">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          focusable="false"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M4.41 7.077a.833.833 0 0 1 1.18 0L10 11.488l4.41-4.411a.833.833 0 1 1 1.18 1.178l-5 5a.833.833 0 0 1-1.18 0l-5-5a.833.833 0 0 1 0-1.178"
+          />
+        </svg>
+      </span>
+    </button>
+  } @else {
+    <span class="phone-field__prefix">
+      @if (_flagSrc()) {
+        <img class="phone-field__flag" [src]="_flagSrc()" alt="" width="20" height="14" />
+      }
+      <span class="input-field__sr-only">{{ _countryName(_country()) }}</span>
+      <span class="phone-field__dial-code">{{ _country().dialCode }}</span>
+    </span>
+  }
+
+  <input
+    #native
+    type="tel"
+    class="input-field__native phone-field__native"
+    [id]="_id"
+    [attr.value]="_display()"
+    [attr.name]="name() || null"
+    [attr.placeholder]="placeholder() ?? _country().mask"
+    [disabled]="_effectiveDisabled()"
+    [readOnly]="readonly()"
+    [required]="required()"
+    inputmode="tel"
+    autocomplete="tel-national"
+    [attr.aria-label]="_ariaLabel()"
+    [attr.aria-describedby]="_describedBy()"
+    [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
+    (input)="_onInput($event)"
+    (focus)="_onFocus()"
+    (blur)="_onBlur()"
+  />
+
+  @if (_showClear()) {
+    <button
+      type="button"
+      class="input-field__clear phone-field__clear"
+      [attr.aria-label]="clearLabel()"
+      (click)="_onClear()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        focusable="false"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M4.41 4.41a.833.833 0 0 1 1.18 0L10 8.821l4.41-4.41a.833.833 0 1 1 1.18 1.178L11.178 10l4.41 4.41a.833.833 0 0 1-1.178 1.18L10 11.178l-4.41 4.41a.833.833 0 0 1-1.18-1.178L8.821 10l-4.41-4.41a.833.833 0 0 1 0-1.18"
+        />
+      </svg>
+    </button>
+  }
+</div>
+
+@if (_showError() || _showHelper()) {
+  <div class="input-field__footer">
+    @if (_showError()) {
+      <div class="input-field__assistive" role="alert" [id]="_errorId">
+        <ng-content select="[mudError]">
+          <div class="inline-message inline-message--error">
+            <span class="inline-message__icon" aria-hidden="true">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                focusable="false"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M10 1.667a8.333 8.333 0 1 0 0 16.666 8.333 8.333 0 0 0 0-16.666m-.833 7.5c0-.459.416-.834.833-.834s.833.373.833.834v4.166a.833.833 0 0 1-1.666 0zM10 5.833A.833.833 0 1 0 10 7.5a.833.833 0 0 0 0-1.667"
+                />
+              </svg>
+            </span>
+            <span class="inline-message__text">{{ _errorMessage() }}</span>
+          </div>
+        </ng-content>
+      </div>
+    } @else if (_showHelper()) {
+      <div class="input-field__assistive" [id]="_helperId">
+        <ng-content select="[mudHelper]">
+          <div class="inline-message">
+            <span class="inline-message__text">{{ _helperMessage() }}</span>
+          </div>
+        </ng-content>
+      </div>
+    }
+  </div>
+}
+
+<ng-template #panel>
+  <div class="menu-panel phone-field__panel">
+    <div class="phone-field__search-row">
+      <input
+        #searchEl
+        type="text"
+        class="phone-field__search"
+        autocomplete="off"
+        spellcheck="false"
+        [value]="_query()"
+        [attr.placeholder]="countrySearchLabel()"
+        [attr.aria-label]="countrySearchLabel()"
+        [attr.aria-controls]="_listBoxId"
+        [attr.aria-activedescendant]="_activeDescendant()"
+        (input)="_onSearchInput($event)"
+        (keydown)="_onListKeydown($event)"
+      />
+    </div>
+
+    <!--
+      The search field is a keyboard-bound surface, not a focus surface:
+      the options are non-focusable, and the click path is gated by aria-activedescendant,
+      not by the panel itself.
+    -->
+    <div
+      class="phone-field__listbox"
+      role="listbox"
+      [id]="_listBoxId"
+      [attr.aria-label]="countryLabel()"
+    >
+      @if (_filtered().length === 0) {
+        <!-- A listbox must contain options (axe aria-required-children); the
+             empty state is a disabled option so it is announced too. -->
+        <div class="menu-panel__empty" role="option" aria-disabled="true" aria-selected="false">
+          {{ countryEmptyText() }}
+        </div>
+      } @else {
+        @for (country of _filtered(); track country.iso) {
+          <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+          <div
+            class="menu-panel__option phone-field__option"
+            role="option"
+            [id]="_listBoxId + '-opt-' + $index"
+            [attr.data-iso]="country.iso"
+            [attr.data-option-index]="$index"
+            [class.is-selected]="country.iso === _country().iso"
+            [class.is-highlighted]="_highlighted() === $index"
+            [attr.aria-selected]="country.iso === _country().iso ? 'true' : 'false'"
+            (mousedown)="$event.preventDefault()"
+            (click)="_selectCountry(country)"
+            (mouseenter)="_onOptionEnter($index)"
+          >
+            @if (_flagFor(country)) {
+              <img
+                class="phone-field__flag"
+                [src]="_flagFor(country)"
+                alt=""
+                width="20"
+                height="14"
+              />
+            }
+            <span class="phone-field__option-name">{{ _countryName(country) }}</span>
+            <span class="phone-field__option-code">{{ country.dialCode }}</span>
+            @if (country.iso === _country().iso) {
+              <svg
+                class="menu-panel__option-check"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                focusable="false"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M12.494 4.236a.75.75 0 0 1 .07 1.058l-5.6 6.4a.75.75 0 0 1-1.094.036l-2.4-2.4a.75.75 0 1 1 1.06-1.06l1.833 1.833 5.073-5.797a.75.75 0 0 1 1.058-.07"
+                />
+              </svg>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+</ng-template>

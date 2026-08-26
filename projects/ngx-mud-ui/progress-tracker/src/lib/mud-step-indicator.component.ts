@@ -10,8 +10,6 @@ import {
 
 declare const ngDevMode: boolean | undefined;
 
-const isDevMode = (): boolean => typeof ngDevMode === 'undefined' || !!ngDevMode;
-
 /**
  * One entry of an {@link MudStepIndicator}. Projected content renders
  * under the heading as supporting text and/or an action.
@@ -43,7 +41,7 @@ export class MudIndicatorStep {
     const index = this._indicator.steps().indexOf(this);
 
     if (index === -1) {
-      if (isDevMode() && !this._warnedNotFound) {
+      if ((typeof ngDevMode === 'undefined' || ngDevMode) && !this._warnedNotFound) {
         this._warnedNotFound = true;
         console.warn(
           'mud-indicator-step: not found among the direct children of mud-step-indicator; ' +

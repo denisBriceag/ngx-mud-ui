@@ -6,8 +6,6 @@ export type MudTagSize = 'medium' | 'small';
 
 declare const ngDevMode: boolean | undefined;
 
-const isDevMode = (): boolean => typeof ngDevMode === 'undefined' || !!ngDevMode;
-
 /**
  * ```html
  * <mud-tag color="success">Approved</mud-tag>
@@ -40,7 +38,7 @@ export class MudTag {
 
   private readonly _effectiveType = computed<MudTagType>(() => {
     if (this.color() === 'info' && this.type() === 'outlined') {
-      if (isDevMode()) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
         console.warn(
           'mud-tag: color "info" does not support the "outlined" type; falling back to "subtle". ' +
             'Supported types for info: subtle, strong.',

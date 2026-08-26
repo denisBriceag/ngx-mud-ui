@@ -22,6 +22,7 @@
     "input-chip/src/**/*.spec.ts",
     "link/src/**/*.spec.ts",
     "numeric-input/src/**/*.spec.ts",
+    "phone-input/src/**/*.spec.ts",
     "progress-tracker/src/**/*.spec.ts",
     "radio/src/**/*.spec.ts",
     "search-input/src/**/*.spec.ts",

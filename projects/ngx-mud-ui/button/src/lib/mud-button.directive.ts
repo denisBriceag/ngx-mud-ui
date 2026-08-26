@@ -1,5 +1,7 @@
 import { booleanAttribute, computed, Directive, input } from '@angular/core';
-import { MudButtonBase, isDevMode } from './mud-button-base';
+import { MudButtonBase } from './mud-button-base';
+
+declare const ngDevMode: boolean | undefined;
 
 export type MudButtonVariant = 'filled' | 'outlined' | 'text';
 export type MudButtonColor = 'primary' | 'secondary' | 'strict' | 'neutral' | 'destructive';
@@ -50,7 +52,7 @@ export class MudButton extends MudButtonBase {
     const color = this.color();
 
     if (!SUPPORTED_COLORS[variant].includes(color)) {
-      if (isDevMode()) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
         console.warn(
           `mudButton: color "${color}" is not supported by the "${variant}" variant; falling back to "primary". ` +
             `Supported colors: ${SUPPORTED_COLORS[variant].join(', ')}.`,

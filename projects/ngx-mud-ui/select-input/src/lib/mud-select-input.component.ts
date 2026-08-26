@@ -131,7 +131,7 @@ export class MudSelectInput<T = unknown> implements ControlValueAccessor, FormVa
   protected readonly _labelId = `${this._id}-label`;
   protected readonly _helperId = `${this._id}-helper`;
   protected readonly _errorId = `${this._id}-error`;
-  protected readonly _listboxId = `${this._id}-listbox`;
+  protected readonly _listBoxId = `${this._id}-listbox`;
 
   protected readonly _focused = signal(false);
   protected readonly _highlighted = signal(-1);
@@ -209,7 +209,7 @@ export class MudSelectInput<T = unknown> implements ControlValueAccessor, FormVa
   });
 
   protected readonly _activeDescendant = computed<string | null>(() =>
-    this.open() && this._highlighted() >= 0 ? `${this._listboxId}-opt-${this._highlighted()}` : null,
+    this.open() && this._highlighted() >= 0 ? `${this._listBoxId}-opt-${this._highlighted()}` : null,
   );
 
   protected readonly _hostClasses = computed(() => {

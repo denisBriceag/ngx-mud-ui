@@ -40,8 +40,6 @@ let nextId = 0;
 
 declare const ngDevMode: boolean | undefined;
 
-const isDevMode = (): boolean => typeof ngDevMode === 'undefined' || !!ngDevMode;
-
 /**
  * ```html
  * <button mudButton mudBadge="5" badgeColor="danger">Inbox</button>
@@ -68,7 +66,7 @@ export class MudBadge {
       const parsed = Number(value);
 
       if (Number.isNaN(parsed)) {
-        if (isDevMode()) {
+        if (typeof ngDevMode === 'undefined' || ngDevMode) {
           console.warn(`mudBadge: badgeMax "${value}" is not a number; the badge count will not be truncated.`);
         }
 
@@ -86,7 +84,7 @@ export class MudBadge {
 
   private readonly _effectiveVariant = computed<MudBadgeVariant>(() => {
     if (this.badgeVariant() === 'count' && this.badgeSize() === 'extra-small') {
-      if (isDevMode()) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
         console.warn(
           'mudBadge: size "extra-small" is dot-only; rendering a dot instead of the count. ' +
             'Use badgeDescription to announce the count, or size "small" and up to display it.',

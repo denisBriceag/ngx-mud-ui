@@ -1,10 +1,6 @@
 import { booleanAttribute, computed, Directive, ElementRef, inject, input } from '@angular/core';
 import type { Signal } from '@angular/core';
 
-declare const ngDevMode: boolean | undefined;
-
-export const isDevMode = (): boolean => typeof ngDevMode === 'undefined' || !!ngDevMode;
-
 /**
  * Shared behavior for mudButton/mudIconButton: disabled semantics for
  * buttons and anchors, and the loading state with its accessibility contract.

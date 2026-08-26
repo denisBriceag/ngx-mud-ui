@@ -20,8 +20,6 @@ const SIZE_CLASSES: Record<MudAvatarSize, string> = {
 
 declare const ngDevMode: boolean | undefined;
 
-const isDevMode = (): boolean => typeof ngDevMode === 'undefined' || !!ngDevMode;
-
 /**
  * Derives up to two uppercase initials from a full name (first + last word,
  * split on whitespace and hyphens), matching the official design system:
@@ -138,7 +136,7 @@ export class MudAvatar {
         true,
       );
 
-      if (isDevMode()) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
         const img = host.querySelector(':scope > img');
 
         if (img && !this.label() && !this.name() && img.getAttribute('alt') === null) {

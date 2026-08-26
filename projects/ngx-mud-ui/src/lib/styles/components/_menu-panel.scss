@@ -40,6 +40,11 @@
     background-color: var(--color-background-base-secondary);
   }
 
+  &.is-highlighted {
+    outline: var(--border-width-2, 2px) solid var(--color-border-brand-default);
+    outline-offset: calc(var(--border-width-2, 2px) * -1);
+  }
+
   &.is-selected {
     background-color: var(--color-background-base-secondary);
   }
@@ -69,4 +74,19 @@
   font-size: 14px;
   line-height: 20px;
   color: var(--color-text-base-tertiary);
+}
+
+@media (forced-colors: active) {
+  .menu-panel {
+    border: 1px solid CanvasText;
+  }
+
+  .menu-panel__option.is-highlighted {
+    outline-color: Highlight;
+  }
+
+  .menu-panel__option.is-selected .menu-panel__option-check {
+    forced-color-adjust: none;
+    color: Highlight;
+  }
 }

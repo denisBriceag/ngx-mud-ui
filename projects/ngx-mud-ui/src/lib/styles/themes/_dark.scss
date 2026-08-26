@@ -14,8 +14,8 @@
   --color-text-brand-on-secondary: var(--blue-sky-700);
   --color-text-brand-visited: var(--magenta-400);
 
-  --color-text-disabled-default: var(--gray-600);
-  --color-text-disabled-on-disabled: var(--gray-400);
+  --color-text-disabled-default: var(--gray-300);
+  --color-text-disabled-on-disabled: var(--gray-300);
 
   --color-text-positive-default: var(--green-500);
   --color-text-positive-on-secondary: var(--green-800);
@@ -23,9 +23,6 @@
   --color-text-warning-default: var(--apricot-500);
   --color-text-warning-on-secondary: var(--apricot-800);
 
-  // red-500 lands at 4.43:1 on the dark surface — just under the 4.5:1 AA
-  // minimum for body text. red-400 is one perceptual step lighter and reaches
-  // ~6:1. The icon token moves with it so the two stay the same red.
   --color-text-danger-default: var(--red-400);
   --color-text-danger-on-secondary: var(--red-800);
 
@@ -132,28 +129,23 @@
   --color-border-danger-default: var(--red-500);
 }
 
-// Input surface tokens (abstracts/_tokens.scss). Each flip follows the shade
-// mapping the semantic tokens above already use for the same primitive
-// (e.g. gray-250 borders -> gray-600, gray-100 surfaces -> gray-800).
 [data-theme='dark'] {
   --color-input-background: var(--gray-900);
   --color-input-text: var(--white);
-  --color-input-placeholder: var(--gray-400);
+  --color-input-placeholder: var(--gray-300);
   --color-input-border: var(--gray-600);
   --color-input-border-hover: var(--gray-250);
   --color-input-focus-ring: var(--blue-sky-300);
   --color-input-focus-border: var(--blue-sky-500);
   --color-input-disabled-background: var(--gray-700);
   --color-input-disabled-border: var(--gray-600);
-  --color-input-disabled-text: var(--gray-400);
+  --color-input-disabled-text: var(--gray-300);
   --color-input-readonly-background: var(--gray-800);
   --color-input-readonly-border: var(--gray-700);
   --color-input-readonly-text: var(--gray-200);
 }
 
 [data-theme='dark'] {
-  // Tag outlined text needs lighter shades on dark surfaces (WCAG 4.5:1
-  // against --gray-900: green-500 = 5.87, red-400 = 5.98; red-500 fails at 4.44).
   --color-tag-outlined-success: var(--color-text-positive-default);
   --color-tag-outlined-danger: var(--red-400);
 }

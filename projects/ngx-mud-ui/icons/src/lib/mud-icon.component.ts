@@ -5,8 +5,10 @@ import {
   effect,
   inject,
   input,
-  isDevMode,
 } from '@angular/core';
+
+declare const ngDevMode: boolean | undefined;
+
 import type { SafeHtml } from '@angular/platform-browser';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MudIconRegistry } from './mud-icon-registry.service';
@@ -55,9 +57,11 @@ export class MudIconComponent {
     const icon = this._registry.get(this.name());
 
     if (!icon) {
-      warnings.push(
-        `[mud-icon] Icon "${this.name()}" is not registered. Did you call provideMudIcons([...])?`,
-      );
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        warnings.push(
+          `[mud-icon] Icon "${this.name()}" is not registered. Did you call provideMudIcons([...])?`,
+        );
+      }
 
       return { geometry: undefined, warnings };
     }
@@ -90,7 +94,7 @@ export class MudIconComponent {
 
   constructor() {
     effect(() => {
-      if (!isDevMode()) return;
+      if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
 
       for (const warning of this._resolution().warnings) console.warn(warning);
     });
@@ -105,7 +109,9 @@ export class MudIconComponent {
     if (variants[want]) return want;
 
     if (variants.outlined) {
-      warnings.push(`[mud-icon] "${this.name()}" has no "${want}" variant; using "outlined".`);
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        warnings.push(`[mud-icon] "${this.name()}" has no "${want}" variant; using "outlined".`);
+      }
 
       return 'outlined';
     }
@@ -128,7 +134,9 @@ export class MudIconComponent {
     const larger = available.filter((s) => s > want).sort((a, b) => a - b)[0];
     const chosen = larger ?? available.filter((s) => s < want).sort((a, b) => b - a)[0];
 
-    warnings.push(`[mud-icon] "${this.name()}" has no scale ${want}; using ${chosen}.`);
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      warnings.push(`[mud-icon] "${this.name()}" has no scale ${want}; using ${chosen}.`);
+    }
 
     return chosen;
   }

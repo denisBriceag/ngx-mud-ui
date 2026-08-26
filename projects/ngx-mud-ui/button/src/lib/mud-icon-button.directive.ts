@@ -1,5 +1,7 @@
 import { afterNextRender, computed, Directive } from '@angular/core';
-import { MudButtonBase, isDevMode } from './mud-button-base';
+import { MudButtonBase } from './mud-button-base';
+
+declare const ngDevMode: boolean | undefined;
 
 /**
  * Icon-only button: a transparent circle that must be given an accessible
@@ -23,7 +25,7 @@ export class MudIconButton extends MudButtonBase {
   constructor() {
     super();
 
-    if (isDevMode()) {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
       afterNextRender(() => {
         const el = this._element;
         const hasName =
