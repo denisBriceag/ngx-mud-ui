@@ -316,3 +316,40 @@ class SignalHost {
   readonly model = signal({ recipients: [] as string[] });
   readonly form = form(this.model);
 }
+
+describe('MudInputChip pre-filled beyond maxChips', () => {
+  let warn: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+  });
+
+  afterEach(() => warn.mockRestore());
+
+  it('warns when the bound value already exceeds maxChips, since the input silently locks', async () => {
+    const { fixture, host, native } = await render();
+
+    host.maxChips.set(2);
+    host.chips.set(['a', 'b', 'c']);
+    await fixture.whenStable();
+
+    // The functional consequence worth surfacing: no more can be typed.
+    expect(native.readOnly).toBe(true);
+    expect(warn).toHaveBeenCalled();
+    expect(warn.mock.calls.flat().join(' ')).toContain('3');
+  });
+
+  it('says nothing at or under the maximum, or when maxChips is unset', async () => {
+    const { fixture, host } = await render();
+
+    host.maxChips.set(2);
+    host.chips.set(['a', 'b']);
+    await fixture.whenStable();
+    expect(warn).not.toHaveBeenCalled();
+
+    host.maxChips.set(undefined);
+    host.chips.set(['a', 'b', 'c', 'd']);
+    await fixture.whenStable();
+    expect(warn).not.toHaveBeenCalled();
+  });
+});

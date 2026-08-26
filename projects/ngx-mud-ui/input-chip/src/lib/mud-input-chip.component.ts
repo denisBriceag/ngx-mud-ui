@@ -4,6 +4,7 @@ import {
   Component,
   computed,
   contentChild,
+  effect,
   forwardRef,
   inject,
   input,
@@ -14,6 +15,9 @@ import {
   viewChild,
   viewChildren,
 } from '@angular/core';
+
+declare const ngDevMode: boolean | undefined;
+
 import type { ElementRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -266,6 +270,23 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
 
     return classes.join(' ');
   });
+
+  constructor() {
+    effect(() => {
+      if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
+
+      const max = this.maxChips();
+      const count = this.value().length;
+
+      if (max !== undefined && count > max) {
+        console.warn(
+          `[mud-input-chip] the bound value holds ${count} chips but maxChips is ${max}, ` +
+            `so the field is read-only until enough are removed. ` +
+            `Validation applies to typed input, not to the bound value.`,
+        );
+      }
+    });
+  }
 
   writeValue(value: readonly string[] | null | undefined): void {
     this.value.set(value ? [...value] : []);

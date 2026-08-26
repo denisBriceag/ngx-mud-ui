@@ -298,3 +298,53 @@ class NumberHost {
   ];
   readonly copies = signal<number | undefined>(undefined);
 }
+
+describe('MudSelectInput orphan value diagnostics', () => {
+  let warn: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    warn.mockRestore();
+    document.querySelectorAll('.cdk-overlay-container').forEach((n) => n.remove());
+  });
+
+  it('warns when the value matches no option, naming the value', async () => {
+    const { fixture, host } = await render();
+
+    host.value.set('no-such-raion');
+    await fixture.whenStable();
+
+    expect(warn).toHaveBeenCalled();
+    expect(warn.mock.calls.flat().join(' ')).toContain('no-such-raion');
+  });
+
+  it('stays quiet while options are still empty, so an async load is not flagged', async () => {
+    const { fixture, host } = await render();
+
+    host.options.set([]);
+    host.value.set('arrives-later');
+    await fixture.whenStable();
+
+    expect(warn).not.toHaveBeenCalled();
+
+    // Once the options land WITHOUT it, that is a genuine mismatch.
+    host.options.set(OPTIONS);
+    await fixture.whenStable();
+    expect(warn).toHaveBeenCalled();
+  });
+
+  it('says nothing for a matching value or an empty one', async () => {
+    const { fixture, host } = await render();
+
+    host.value.set('balti');
+    await fixture.whenStable();
+    expect(warn).not.toHaveBeenCalled();
+
+    host.value.set(undefined);
+    await fixture.whenStable();
+    expect(warn).not.toHaveBeenCalled();
+  });
+});

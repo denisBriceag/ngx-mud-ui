@@ -15,6 +15,9 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+
+declare const ngDevMode: boolean | undefined;
+
 import type { ElementRef, TemplateRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Overlay } from '@angular/cdk/overlay';
@@ -231,6 +234,23 @@ export class MudSelectInput<T = unknown> implements ControlValueAccessor, FormVa
   });
 
   constructor() {
+    effect(() => {
+      if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
+
+      const value = this.value();
+      const options = this.options();
+
+      if (value === undefined || value === null || options.length === 0) return;
+
+      if (!options.some((option) => Object.is(option.value, value))) {
+        console.warn(
+          `[mud-select-input] value ${JSON.stringify(value)} matches none of the ${options.length} options, ` +
+            `so the trigger shows the placeholder as if nothing were selected. ` +
+            `Add a matching option, or clear the value.`,
+        );
+      }
+    });
+
     // The overlay follows the open model (which is also settable from
     // outside), so attach/detach lives in one browser-only effect.
     effect(() => {
