@@ -1,310 +1,281 @@
 .date-picker {
-  background: white;
-  border-radius: var(--border-radius-12);
-  box-shadow: var(--drop-shadow-300);
+  background: var(--color-background-base-default);
+  border-radius: var(--border-radius-12, 12px);
   box-sizing: border-box;
   color: var(--color-text-base-default);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-8);
   font-family: var(--font-family-base);
+  gap: var(--spacing-8);
   padding: var(--spacing-12);
   width: 320px;
 }
 
-.date-picker__field {
-  max-width: 320px;
-  position: relative;
+// `--drop-shadow-300` is not defined in the shipped styles, so the token alone
+// resolved to nothing and left `elevated` and `flat` visually identical. The
+// literal is the layered shadow from `_menu-panel.scss`, the maintained sibling
+// for exactly this floating-panel case.
+.date-picker--elevated {
+  box-shadow:
+    var(
+      --drop-shadow-300,
+      0 12px 16px -4px rgba(16, 24, 40, 0.08),
+      0 4px 6px -2px rgba(16, 24, 40, 0.03)
+    );
 }
 
-.date-picker-panel {
-  left: 0;
-  position: absolute;
-  top: calc(100% + var(--spacing-8));
-  width: 320px;
-  z-index: 1100;
+// `flat` sits inside a surface that already casts the shadow — the popover
+// in mud-date-input, or a consumer's own card.
+.date-picker--flat {
+  box-shadow: none;
+}
 
-  &[hidden] {
-    display: none;
-  }
+.date-picker.is-disabled {
+  color: var(--color-text-disabled-default);
+  pointer-events: none;
 }
 
 .date-picker__header {
   align-items: center;
   display: flex;
   gap: var(--spacing-8);
-  justify-content: center;
-  width: 100%;
-}
-
-.date-picker__header--advanced {
   justify-content: space-between;
+  width: 100%;
 }
 
 .date-picker__nav {
   align-items: center;
   background: var(--color-background-base-tertiary);
   border: 0;
-  border-radius: var(--border-radius-6);
+  border-radius: var(--border-radius-6, 6px);
   box-sizing: border-box;
   color: var(--color-icon-base-secondary);
   cursor: pointer;
   display: inline-flex;
+  flex: 0 0 auto;
   height: 40px;
   justify-content: center;
   padding: 0;
   width: 40px;
 
-  &:focus-visible {
-    outline: 2px solid var(--color-border-brand-default);
-    outline-offset: 2px;
+  &:hover:not(:disabled) {
+    background: var(--color-background-base-tertiary-hover);
+  }
+
+  &:disabled {
+    color: var(--color-text-disabled-default);
+    cursor: default;
+  }
+
+  svg {
+    height: 20px;
+    width: 20px;
   }
 }
 
-.date-picker__selects {
-  display: flex;
-  gap: var(--spacing-4);
-  height: 40px;
-  align-items: center;
-}
-
-.date-picker__select-btn {
-  align-items: center;
-  background: transparent;
+.date-picker__title,
+.date-picker__chip {
+  background: none;
   border: 0;
-  border-radius: var(--border-radius-4);
-  color: var(--color-text-base-default);
+  border-radius: var(--border-radius-6, 6px);
+  color: inherit;
   cursor: pointer;
-  display: inline-flex;
-  font-size: var(--text-body-md-500-font-size);
-  font-weight: var(--text-body-md-500-font-weight);
-  gap: var(--spacing-4);
-  height: 40px;
-  line-height: 24px;
-  padding: 0 var(--spacing-6);
+  font: inherit;
+  font-weight: 500;
+  padding: var(--spacing-4) var(--spacing-8);
+
+  &:hover:not(:disabled) {
+    background: var(--color-background-base-secondary-hover);
+  }
+
+  &:disabled {
+    cursor: default;
+  }
 }
 
-.date-picker__month {
-  flex: 1 1 0;
-  font-size: var(--text-body-md-500-font-size);
-  font-weight: var(--text-body-md-500-font-weight);
-  line-height: 24px;
+.date-picker__title {
+  flex: 1 1 auto;
   text-align: center;
 }
 
-.date-picker__grid[hidden] {
-  display: none;
-}
-
-.date-picker__weekdays,
-.date-picker__days,
-.date-picker__days--states {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-}
-
-.date-picker__weekdays {
-  align-items: center;
-}
-
-.date-picker__weekday {
-  align-items: center;
-  border-radius: var(--border-radius-6);
-  box-sizing: border-box;
-  color: var(--color-text-base-tertiary);
+.date-picker__header-dropdowns {
   display: flex;
-  font-size: var(--text-body-sm-500-font-size);
-  font-weight: var(--text-body-sm-500-font-weight);
-  height: 32px;
+  flex: 1 1 auto;
+  gap: var(--spacing-4);
   justify-content: center;
-  line-height: 20px;
 }
 
-.date-picker__days {
-  row-gap: var(--spacing-4);
+.date-picker__grid {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
 }
 
-.date-picker__days--states {
-  
+.date-picker__day-label {
+  color: var(--color-text-base-secondary);
+  // `--font-size-12` is not defined in _tokens.scss; the repo's idiom is a
+  // literal fallback, as in `var(--font-size-14, 14px)`.
+  font-size: var(--font-size-12, 12px);
+  font-weight: 500;
+  padding-bottom: var(--spacing-4);
+  text-align: center;
 }
 
 .date-picker__day {
-  align-items: center;
-  background: transparent;
-  border: 1.5px solid transparent;
-  border-radius: var(--border-radius-6);
-  box-sizing: border-box;
-  color: var(--color-text-base-default);
-  cursor: pointer;
-  display: flex;
-  font-size: var(--text-body-sm-500-font-size);
-  font-weight: var(--text-body-sm-500-font-weight);
-  height: 40px;
-  justify-content: center;
-  line-height: 20px;
-  padding: var(--spacing-6) var(--spacing-8);
-
-  &:focus-visible {
-    outline: 2px solid var(--color-border-brand-default);
-    outline-offset: 2px;
-  }
-}
-
-.date-picker__day.is-outside,
-.date-picker__day:disabled {
-  color: var(--color-text-disabled-default);
-  cursor: not-allowed;
-}
-
-.date-picker__day.is-hover {
-  background: var(--color-background-base-secondary);
-}
-
-.date-picker__day.is-focus {
-  box-shadow: 0 0 0 2px var(--color-border-brand-default);
-}
-
-.date-picker__day.is-today {
-  border-color: var(--color-border-brand-default);
-  color: var(--color-text-brand-default);
-}
-
-.date-picker__day.is-selected,
-.date-picker__day.is-range-start,
-.date-picker__day.is-range-end {
-  background: var(--color-background-brand-default);
-  color: #fff;
-}
-
-.date-picker__day.is-range-start {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.date-picker__day.is-range-end {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-.date-picker__day.is-range-start.is-range-end {
-  border-radius: var(--border-radius-6);
-}
-
-.date-picker__day.is-in-range {
-  border-radius: var(--border-radius-0);
-  background: var(--color-background-brand-secondary);
-  color: var(--color-text-base-default);
-}
-
-.date-picker__months,
-.date-picker__years {
-  display: grid;
-  gap: var(--spacing-4);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  width: 100%;
-}
-
-.date-picker__months {
-  grid-template-rows: repeat(3, minmax(0, 1fr));
-}
-
-.date-picker__years {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.date-picker__option {
-  align-items: center;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--border-radius-6);
-  color: var(--color-text-base-default);
-  cursor: pointer;
-  display: flex;
-  font-size: var(--text-body-md-500-font-size);
-  font-weight: var(--text-body-md-500-font-weight);
-  height: 40px;
-  justify-content: center;
-  line-height: 24px;
-  padding: 0 var(--spacing-4);
+  padding: 0;
   text-align: center;
 }
 
-.date-picker__option.is-selected {
+.date-picker__day-button {
+  background: none;
+  border: 0;
+  border-radius: var(--border-radius-6, 6px);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  // 40px rows x 6 fixed weeks: the calendar never changes height, so a short
+  // month cannot resize the popover under the pointer.
+  height: 40px;
+  width: 100%;
+
+  // `[aria-disabled]` as well as `:disabled`: per-DATE unavailability is
+  // expressed with the attribute so the day stays focusable (see the template
+  // comment), and styling only `:disabled` left every day refused by `min`,
+  // `max`, `disabledDates` or `dateFilter` at full contrast, taking the hover
+  // tint and showing a pointer cursor. The precedent is `_accordion.scss`.
+  &:hover:not(:disabled):not([aria-disabled='true']) {
+    background: var(--color-background-base-secondary-hover);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-outer-width, 3px) solid
+      var(--focus-ring-outer-color, var(--blue-sky-500));
+    outline-offset: -2px;
+  }
+
+  &:disabled {
+    color: var(--color-text-disabled-default);
+    cursor: default;
+  }
+}
+
+// `--color-text-base-secondary` alone (no opacity) — halving it again with
+// `opacity` compounds the two dimmings and drops below WCAG AA's 4.5:1 for
+// this 16px/normal-weight text (axe `color-contrast`, task 14 audit: 3.54:1).
+// These cells are ordinary enabled buttons (a real adjacent-month date one
+// click away), not disabled controls, so the contrast requirement applies.
+.date-picker__day.is-outside .date-picker__day-button {
+  color: var(--color-text-base-secondary);
+}
+
+// Ordered AFTER `.is-outside` deliberately: the two selectors tie on
+// specificity, and an outside-month day that is ALSO unavailable must read as
+// unavailable. A SELECTED out-of-range day is the deliberate exception — the
+// `.is-selected` rule below is later still and keeps the brand fill, because
+// dropping a consumer's value out of sight is the failure mode this library
+// rejects (see `writeValue`).
+.date-picker__day .date-picker__day-button[aria-disabled='true'] {
+  color: var(--color-text-disabled-default);
+  cursor: default;
+}
+
+.date-picker__day.is-today .date-picker__day-button {
+  box-shadow: inset 0 0 0 1px var(--color-border-brand-default);
+}
+
+.date-picker__day.is-selected .date-picker__day-button,
+.date-picker__day.is-range-start .date-picker__day-button,
+.date-picker__day.is-range-end .date-picker__day-button {
   background: var(--color-background-brand-default);
-  color: #fff;
+  color: var(--color-text-base-inverse-on-color);
 }
 
-.bottom-sheet--static {
-  inset: auto;
-  pointer-events: auto;
-  position: static;
+// The middle band paints the cell, not the button, so adjacent days join up
+// into one continuous bar.
+.date-picker__day.is-range-middle {
+  background: var(--color-background-brand-tertiary);
 }
 
-.bottom-sheet--static .bottom-sheet__overlay {
-  display: none;
+// The endpoint half-bars only exist once BOTH ends are set. `is-range-lone`
+// marks a start with no end yet — it renders as a plain selected day, with no
+// half-bar pointing into empty space.
+.date-picker__day.is-range-start:not(.is-range-lone) {
+  background: linear-gradient(to right, transparent 50%, var(--color-background-brand-tertiary) 50%);
 }
 
-.bottom-sheet--static .bottom-sheet__panel {
-  max-height: none;
-  min-height: initial;
-  position: static;
-  transform: none;
+.date-picker__day.is-range-end {
+  background: linear-gradient(to left, transparent 50%, var(--color-background-brand-tertiary) 50%);
 }
 
-.bottom-sheet--static .date-picker {
-  border-radius: 0;
-  box-shadow: none;
-  padding: 0;
+// A single-day range: both halves would cancel out, so paint neither.
+.date-picker__day.is-range-start.is-range-end {
+  background: none;
+}
+
+.date-picker__month-grid,
+.date-picker__year-grid {
+  display: grid;
+  gap: var(--spacing-4);
+}
+
+.date-picker__month-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.date-picker__year-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.date-picker__month-button,
+.date-picker__year-button {
+  background: none;
+  border: 0;
+  border-radius: var(--border-radius-6, 6px);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  height: 40px;
   width: 100%;
+
+  &:hover:not(:disabled) {
+    background: var(--color-background-base-secondary-hover);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-outer-width, 3px) solid
+      var(--focus-ring-outer-color, var(--blue-sky-500));
+    outline-offset: -2px;
+  }
 }
 
-.bottom-sheet--static .date-picker__grid {
-  padding: var(--spacing-24) var(--spacing-16);
-  min-height: calc(32px + 240px + (5 * var(--spacing-4)) + (2 * var(--spacing-24)));
+.date-picker__month.is-selected .date-picker__month-button,
+.date-picker__year.is-selected .date-picker__year-button {
+  background: var(--color-background-brand-default);
+  color: var(--color-text-base-inverse-on-color);
 }
 
-.date-picker__field.is-mobile .date-picker-panel:not([hidden]) {
-  align-items: flex-end;
-  background: rgba(18, 18, 18, 0.4);
+.date-picker__footer {
   display: flex;
-  inset: 0;
   justify-content: center;
-  margin: 0;
-  padding: 0;
-  position: fixed;
-  width: 100%;
-  z-index: 1100;
 }
 
-.date-picker__field.is-mobile .date-picker {
-  border-radius: var(--border-radius-16) var(--border-radius-16) 0 0;
-  padding: var(--spacing-16) var(--spacing-16) 0;
-  position: relative;
-  width: 100%;
-}
+.date-picker__today {
+  background: none;
+  border: 0;
+  border-radius: var(--border-radius-6, 6px);
+  color: var(--color-text-brand-default);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 500;
+  padding: var(--spacing-8) var(--spacing-12);
 
-.date-picker__field.is-mobile .date-picker::before {
-  content: "";
-  width: 48px;
-  height: 4px;
-  background: var(--color-background-base-default-active);
-  border-radius: 999px;
-  position: absolute;
-  top: var(--spacing-16);
-  left: 50%;
-  transform: translateX(-50%);
-}
+  &:hover:not(:disabled) {
+    background: var(--color-background-brand-secondary-hover);
+  }
 
-.date-picker__field.is-mobile .date-picker__header {
-  padding: var(--spacing-24) 0 0;
+  &:focus-visible {
+    outline: var(--focus-ring-outer-width, 3px) solid
+      var(--focus-ring-outer-color, var(--blue-sky-500));
+    outline-offset: 2px;
+  }
 }
-
-.date-picker__field.is-mobile .date-picker__grid {
-  padding: var(--spacing-24) 0;
-  min-height: calc(32px + 240px + (5 * var(--spacing-4)) + (2 * var(--spacing-24)));
-}
-
-.date-picker__field.is-mobile .date-picker-panel[hidden] {
-  display: none;
-}
-

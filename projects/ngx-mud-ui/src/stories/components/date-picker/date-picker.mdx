@@ -1,0 +1,187 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import { MudDatePicker } from 'ngx-mud-ui/date-picker';
+import * as DateStories from './date-picker.stories';
+
+<Meta of={DateStories} />
+
+# Date picker
+
+Two components in one entry point: `MudDateInput`, a masked date field that
+opens a calendar popover, and `MudDatePicker`, the calendar itself — usable
+inline for pages that show a calendar rather than a field.
+
+## Import
+
+```ts
+import { MudDateInput } from 'ngx-mud-ui/date-picker';
+
+@Component({
+  imports: [MudDateInput],
+  template: `<mud-date-input label="Data nașterii" [formControl]="dob" />`,
+})
+export class Demo {}
+```
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## The value is an ISO date string
+
+Both components use `YYYY-MM-DD` strings — never `Date` objects — in every
+mode. A calendar cell is a civil date, not an instant, and `Date` brings a
+timezone with it:
+
+```ts
+JSON.stringify({ dob: new Date(1990, 4, 15) })
+// → {"dob":"1990-05-14T21:00:00.000Z"}   ← a birthday off by one day in UTC+3
+```
+
+With ISO strings the value that leaves your form is the value the user saw.
+This is also what the platform chose: `<input type="date">.value` is exactly
+`YYYY-MM-DD`.
+
+Most backends already send date-only strings, so there is nothing to convert:
+
+```ts
+dob = new FormControl<string | null>(user.dob);   // "1990-05-15"
+```
+
+When you do hold a timestamp, convert explicitly:
+
+```ts
+import { mudDateFromDate, mudDateToDate, mudToday, mudAddDays } from 'ngx-mud-ui/date-picker';
+
+mudDateFromDate(new Date(user.dobTimestamp))  // local Y/M/D → '1990-05-15'
+mudDateToDate('2026-08-27')                   // → Date at local NOON
+```
+
+`mudDateToDate` returns local noon on purpose — a DST transition can shift
+midnight across a day boundary, noon cannot. Never use `new Date('2026-08-27')`
+yourself: it parses as UTC midnight.
+
+A value that is not `YYYY-MM-DD` renders as empty and logs a dev-mode warning
+naming the fix, rather than being silently truncated at the `T`.
+
+<Canvas of={DateStories.Playground} />
+<Controls of={DateStories.Playground} />
+
+## Formats
+
+`format` sets both the entry mask and the display order. The value stays ISO
+regardless.
+
+<Canvas of={DateStories.Formats} />
+
+## Range
+
+`mode="range"` renders two masked inputs in one field. Completing the start
+advances focus to the end; `Backspace` at the head of the end input walks back.
+Two inputs rather than one control holding both dates, because two accessible
+names are what makes it announce correctly.
+
+Each input's accessible name is the field's own label **plus** the segment, so
+`<mud-date-input mode="range" label="Perioada">` announces "Perioada, start
+date" — composed with `aria-labelledby`, not an `aria-label` that would throw
+your label away.
+
+<Canvas of={DateStories.Range} />
+
+## Bounds and disabled dates
+
+`min` / `max` are inclusive ISO bounds. `disabledDates` takes an ISO array for
+the holiday case; `dateFilter` takes a predicate returning `true` for a
+**selectable** day, for rules like "weekdays only".
+
+These disable days in the calendar and refuse out-of-range typed input — they
+never write a `ValidationError` into your form. Validation rules stay yours, as
+with every other control in this library.
+
+An unavailable day is dimmed, takes no hover state and previews no range, so
+the rule is visible and not only announced.
+
+### What happens to a refused entry
+
+While you type, the field commits only what it can use, so an incomplete,
+impossible or out-of-bounds entry leaves `value` as `null`. On **blur** the
+field settles: an entry it cannot use is replaced by the last date the field
+actually held, so a refused edit neither strands rejected text on screen nor
+destroys the value that was already there. Deleting the field yourself is a
+deliberate "no date" and is never undone.
+
+The calendar makes the same choice — clicking an unavailable day is a no-op
+that keeps the current selection.
+
+A range entered the other way round (later date first) is **reordered**, in
+both the field and the calendar, rather than being rejected.
+
+<Canvas of={DateStories.Bounded} />
+
+## The calendar on its own
+
+`MudDatePicker` renders the calendar by itself — `appearance="flat"` drops the
+card shadow for embedding inside your own surface, and it supports the same
+`single` / `range` / `multi` selection modes and both header styles.
+
+<Canvas of={DateStories.InlineCalendar} />
+<Canvas of={DateStories.CalendarModes} />
+<Canvas of={DateStories.DropdownHeader} />
+
+## Forms
+
+Works with reactive and template-driven forms via `ControlValueAccessor`,
+standalone via `[(value)]`, and with signal forms via `[formField]` — both
+components implement the `FormValueControl` protocol.
+
+<Canvas of={DateStories.WithForms} />
+
+## Keyboard
+
+| Key | Action |
+| --- | --- |
+| `Alt` + `↓` | Open the calendar from the field |
+| `←` `→` `↑` `↓` | Move by day / week |
+| `PageUp` / `PageDown` | Previous / next month |
+| `Shift` + `PageUp` / `PageDown` | Previous / next year |
+| `Home` / `End` | Start / end of the visible week |
+| `Enter` / `Space` | Select the focused day |
+| `Escape` | Close the calendar, returning focus to the field |
+
+The day grid is a single tab stop with roving focus. The calendar **never
+opens on focus** — a dialog that captures arrow keys the moment you tab into a
+field you meant to type in is the classic date-picker mistake.
+
+## Localization
+
+Weekday and month names come from `Intl`, driven by `locale` (defaulting to the
+app's `LOCALE_ID`). The UI strings ship in English and are overridden app-wide
+in one call:
+
+```ts
+import { provideMudDateLabels } from 'ngx-mud-ui/date-picker';
+
+provideMudDateLabels({
+  calendar: 'Calendar',
+  today: 'Astăzi',
+  previousMonth: 'Luna precedentă',
+  nextMonth: 'Luna următoare',
+  rangeStart: 'Data de început',
+  rangeEnd: 'Data de sfârșit',
+  formatHint: (pattern) => `Format: ${pattern}`,
+});
+```
+
+`firstDayOfWeek` defaults to 1 (Monday), matching the Romanian and wider
+European convention.
+
+## API
+
+Selector: `mud-date-input`
+
+<ArgTypes of={DateStories} />
+
+### `mud-date-picker`
+
+<ArgTypes of={MudDatePicker} />
