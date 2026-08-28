@@ -1,0 +1,141 @@
+.banner {
+  --_banner-close-size: 24px;
+  --_banner-close-touch-target: 32px;
+  --_banner-surface: var(--color-background-brand-secondary);
+  --_banner-text: var(--color-text-brand-on-secondary);
+  --_banner-icon: var(--color-icon-brand-on-secondary);
+
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: var(--spacing-8, 8px);
+  inline-size: 100%;
+  padding-block: var(--spacing-12, 12px);
+  // Inline padding leaves room for the absolutely-positioned close button so
+  // the centered content never collides with it.
+  padding-inline: var(--spacing-48, 48px);
+  background: var(--_banner-surface);
+  color: var(--_banner-text);
+  font-family: var(--font-family-primary, inherit);
+  font-size: var(--font-size-14, 14px);
+  line-height: var(--line-height-20, 20px);
+}
+
+.banner--warning {
+  --_banner-surface: var(--color-background-warning-secondary);
+  --_banner-text: var(--color-text-warning-on-secondary);
+  --_banner-icon: var(--color-icon-warning-on-secondary);
+}
+
+.banner--error {
+  --_banner-surface: var(--color-background-danger-secondary);
+  --_banner-text: var(--color-text-danger-on-secondary);
+  --_banner-icon: var(--color-icon-danger-on-secondary);
+}
+
+.banner--strong {
+  --_banner-surface: var(--color-background-brand-default);
+  --_banner-text: var(--color-text-base-inverse-on-color);
+  --_banner-icon: var(--color-icon-base-inverse-on-color);
+}
+
+// Amber is too light for white text — 1.84:1. Upstream uses the accent fill
+// with a dark foreground here, and only here; info and error keep white.
+.banner--strong.banner--warning {
+  --_banner-surface: var(--color-background-warning-accent);
+  --_banner-text: var(--color-text-base-default-on-color);
+  --_banner-icon: var(--color-icon-base-default-on-color);
+}
+
+.banner--strong.banner--error {
+  --_banner-surface: var(--color-background-danger-default);
+}
+
+.banner__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: 24px;
+  block-size: 24px;
+  color: var(--_banner-icon);
+}
+
+.banner__icon svg {
+  inline-size: 20px;
+  block-size: 20px;
+}
+
+.banner__message {
+  white-space: nowrap;
+}
+
+.banner__close {
+  position: absolute;
+  inset-inline-end: var(--spacing-16, 16px);
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--_banner-close-size);
+  block-size: var(--_banner-close-size);
+  padding: 0;
+  border: 0;
+  border-radius: var(--border-radius-4, 4px);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+// Expands the HIT AREA without changing the visible control, so there is no
+// visual jump between pointer types. Same technique as `_chip.scss`.
+.banner__close::before {
+  content: '';
+  position: absolute;
+  inset: calc((var(--_banner-close-size) - var(--_banner-close-touch-target)) / 2);
+}
+
+.banner__close:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-inner-width, 2px) var(--focus-ring-inner-color, #fff),
+    0 0 0 calc(var(--focus-ring-inner-width, 2px) + var(--focus-ring-outer-width, 3px))
+      var(--focus-ring-outer-color, var(--blue-sky-500));
+}
+
+.banner__close svg {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+@media (pointer: coarse) {
+  .banner__close {
+    --_banner-close-touch-target: 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .banner {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-inline-start: var(--spacing-16, 16px);
+    padding-inline-end: var(--spacing-12, 12px);
+  }
+
+  .banner__message {
+    flex: 1 1 0;
+    min-inline-size: 0;
+    white-space: normal;
+    font-size: var(--font-size-16, 16px);
+    line-height: var(--line-height-24, 24px);
+  }
+
+  .banner__close {
+    position: static;
+    transform: none;
+  }
+}
