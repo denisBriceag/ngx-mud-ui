@@ -42,6 +42,7 @@
               "../chip/src/**/*.spec.ts",
               "../file-input/src/**/*.spec.ts",
               "../icons/src/**/*.spec.ts",
+              "../info-box/src/**/*.spec.ts",
               "../inline-message/src/**/*.spec.ts",
               "../input/src/**/*.spec.ts",
               "../input-chip/src/**/*.spec.ts",

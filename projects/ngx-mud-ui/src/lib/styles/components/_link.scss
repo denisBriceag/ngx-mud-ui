@@ -16,8 +16,8 @@
 
   font-family: var(--text-body-md-font-family);
   font-weight: var(--text-body-md-font-weight);
-  font-size: var(--text-body-md-font-size);
-  line-height: var(--text-body-md-line-height);
+  font-size: var(--text-body-md-font-size, 16px);
+  line-height: 24px;
 
   color: var(--_link-color);
   cursor: pointer;
@@ -69,29 +69,29 @@
 }
 
 .link-lg {
-  font-size: var(--text-body-lg-font-size);
-  line-height: var(--text-body-lg-line-height);
+  font-size: var(--text-body-lg-font-size, 18px);
+  line-height: 28px;
   --_link-gap: var(--spacing-6, 6px);
   --_link-icon-size: 20px;
 }
 
 .link-md {
-  font-size: var(--text-body-md-font-size);
-  line-height: var(--text-body-md-line-height);
+  font-size: var(--text-body-md-font-size, 16px);
+  line-height: 24px;
   --_link-gap: var(--spacing-4, 4px);
   --_link-icon-size: 20px;
 }
 
 .link-sm {
-  font-size: var(--text-body-sm-font-size);
-  line-height: var(--text-body-sm-line-height);
+  font-size: var(--text-body-sm-font-size, 14px);
+  line-height: 20px;
   --_link-gap: var(--spacing-4, 4px);
   --_link-icon-size: 16px;
 }
 
 .link-xs {
-  font-size: var(--text-caption-md-font-size);
-  line-height: var(--text-caption-md-line-height);
+  font-size: var(--text-caption-md-font-size, 12px);
+  line-height: 16px;
   --_link-gap: var(--spacing-2, 2px);
   --_link-icon-size: 12px;
 }

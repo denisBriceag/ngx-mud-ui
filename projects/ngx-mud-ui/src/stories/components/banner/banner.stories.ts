@@ -5,7 +5,13 @@ import { MudLink } from 'ngx-mud-ui/link';
 
 const COL = 'display:flex;flex-direction:column;gap:16px;padding:24px';
 
-const meta: Meta<MudBanner> = {
+// `ariaLabel` is aliased to `aria-label` on the component, so the Storybook
+// arg key IS the string 'aria-label' — MudBanner itself has no such property.
+// This type documents the alias for Meta/StoryObj instead of casting it away
+// in the render signature.
+type BannerArgs = MudBanner & { 'aria-label'?: string };
+
+const meta: Meta<BannerArgs> = {
   title: 'Components/Banner',
   component: MudBanner,
   decorators: [moduleMetadata({ imports: [MudBanner, MudLink] })],
@@ -20,12 +26,13 @@ const meta: Meta<MudBanner> = {
 
 export default meta;
 
-type Story = StoryObj<MudBanner>;
+type Story = StoryObj<BannerArgs>;
 
 export const Playground: Story = {
-  // `ariaLabel` is aliased (`aria-label`), so pass it under a non-colliding
-  // prop name — a raw `ariaLabel` prop crashes the Storybook wrapper.
-  render: ({ ariaLabel, ...args }) => ({
+  // Destructure the actual arg key, not `ariaLabel`, and pass it under a
+  // non-colliding prop name. A raw `ariaLabel` prop (or the aliased key left
+  // in `...args`) crashes the Storybook wrapper.
+  render: ({ 'aria-label': ariaLabel, ...args }) => ({
     props: { ...args, ariaLabelText: ariaLabel },
     template: `
       <div style="${COL}">

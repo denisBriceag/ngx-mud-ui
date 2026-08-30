@@ -18,7 +18,9 @@ import {
 
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:560px;padding:24px';
 
-const meta: Meta<MudFileInput> = {
+type FileInputArgs = MudFileInput & { 'aria-label'?: string };
+
+const meta: Meta<FileInputArgs> = {
   title: 'Components/File input',
   component: MudFileInput,
   decorators: [moduleMetadata({ imports: [MudFileInput] })],
@@ -39,16 +41,17 @@ const meta: Meta<MudFileInput> = {
 
 export default meta;
 
-type Story = StoryObj<MudFileInput>;
+type Story = StoryObj<FileInputArgs>;
 
 /**
  * The captions under the drop zone are derived from `accept` and `maxSize`
  * unless you set `supportedFormatsText` / `maxSizeText` yourself.
  */
 export const Playground: Story = {
-  // `ariaLabel` is aliased (`aria-label`), so pass it under a non-colliding
-  // prop name — a raw `ariaLabel` prop crashes the Storybook wrapper.
-  render: ({ ariaLabel, ...args }) => ({
+  // Destructure the actual arg key, not `ariaLabel`, and pass it under a
+  // non-colliding prop name. A raw `ariaLabel` prop (or the aliased key left
+  // in `...args`) crashes the Storybook wrapper.
+  render: ({ 'aria-label': ariaLabel, ...args }) => ({
     props: { ...args, ariaLabelText: ariaLabel },
     template: `
       <div style="${COL}">

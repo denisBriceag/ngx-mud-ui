@@ -1,0 +1,168 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as InfoBoxStories from './info-box.stories';
+
+<Meta of={InfoBoxStories} />
+
+# Info box
+
+An inline callout that sits **inside your content**, highlighting an
+explanation, a prerequisite or a caution attached to a section rather than to a
+single form control.
+
+Pick the right one of the three message components:
+
+| Component | Use it for |
+| --- | --- |
+| `mud-info-box` | A callout inside the content column |
+| `mud-banner` | A full-width system message at the top of the page |
+| `mud-inline-message` | A short message attached to one form control |
+
+## Import
+
+```ts
+import { MudInfoBox } from 'ngx-mud-ui/info-box';
+
+@Component({
+  imports: [MudInfoBox],
+  template: `
+    <mud-info-box variant="prominent">
+      <p heading>Before you begin</p>
+      You will need your IDNP.
+    </mud-info-box>
+  `,
+})
+export class Demo {}
+```
+
+Everything but the icon and the close button is projected content — a
+`[heading]` slot, the default slot for the message, and an `[actions]` slot.
+
+The design-system stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+<Canvas of={InfoBoxStories.Playground} />
+<Controls of={InfoBoxStories.Playground} />
+
+## Variants
+
+Five, and unlike `mud-banner` there is no separate subtle/strong axis — each
+variant carries its own surface. `neutral`,
+`moderate` and `prominent` share the info glyph and differ in icon colour and
+background; `prominent` is the only one with a tinted surface.
+
+<Canvas of={InfoBoxStories.Variants} />
+
+## Heading
+
+A slot, not an input — so **you** own the element. Pick the tag, and clamp or
+truncate the title however your layout needs; the box imposes nothing:
+
+```html
+<mud-info-box variant="prominent">
+  <p heading style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+    A title you have decided to clamp to one line
+  </p>
+  You will need your IDNP.
+</mud-info-box>
+```
+
+Prefer a `<p>`. A callout title should not add an entry to the page's document
+outline, and only you know the right level if it should — but nothing stops you
+projecting an `<h3>` when it genuinely is one. Whatever element you use inherits
+the box's heading typography and loses its UA margin, so a `<p>` and an `<h3>`
+render identically.
+
+The slot sits 6px above the message. It collapses completely when nothing is
+projected, so an `@if` around the heading leaves no stray gap.
+
+<Canvas of={InfoBoxStories.WithHeading} />
+
+## Actions
+
+Put `actions` on **each control**, not on a wrapper around them — the slot is
+already the flex row that spaces them 12px apart, and a wrapper would swallow
+that spacing:
+
+```html
+<mud-info-box variant="moderate">
+  <p heading>Your session is about to expire</p>
+  You will be signed out in two minutes.
+  <button actions mudButton="filled" size="small">Stay signed in</button>
+  <a actions mudLink href="/help">What does this mean?</a>
+</mud-info-box>
+```
+
+Nothing is configured through inputs, so a `routerLink` works exactly as it
+would anywhere else. The group sits 12px below the message.
+
+The box **pins the sizes** rather than trusting each call site: a `mud-btn`
+renders at the `small` 32px height and a `mud-link` at the `medium` 24px line
+box, whatever `size` you pass. Pass `size="small"` on buttons anyway so the
+markup says what it means.
+
+<Canvas of={InfoBoxStories.WithActions} />
+
+## Closing
+
+`closable` renders a close button that emits `closed`. **The box does not remove
+itself** — you own that, so it composes with `@if` in your template.
+
+<Canvas of={InfoBoxStories.Closable} />
+
+The close button is absolutely positioned 10px from the box's top-right corner,
+so it stays put however tall the content grows. It is 32×32, growing to 40×40 on
+coarse-pointer devices; the × glyph stays 16px, only the target grows. Because
+it is out of flow, `closable` also widens the box's trailing padding to match —
+the message never runs underneath it.
+
+Since the button is destroyed along with the box, move focus to a sensible
+neighbour when you handle `closed` — otherwise it lands on `<body>`.
+
+## Accessibility
+
+An info box is **never** an ARIA live region. It is static content in the page
+flow, so announcing it would re-fire on every render. If you need a message
+announced when a condition changes, that is `mud-banner` with `live`, or your
+own live region.
+
+Setting `aria-label` gives the box a `region` role so it becomes a navigable
+landmark — an `aria-label` alone, without a role, is ignored by assistive
+technology.
+
+The icon is decorative (`aria-hidden`); the text carries the meaning. `hideIcon`
+removes the icon region entirely.
+
+<Canvas of={InfoBoxStories.WithoutIcon} />
+
+## Custom icon
+
+The icon region projects `mud-icon` or `svg` content, falling back to the
+built-in glyph only when nothing is projected — so a `mud-icon` **replaces**
+the default rather than sitting alongside it:
+
+```html
+<mud-info-box variant="prominent">
+  <mud-icon name="light-bulb" />
+  A custom icon replaces the default glyph.
+</mud-info-box>
+```
+
+## Localization
+
+The box owns one string — the close button's accessible name. Override it per
+instance:
+
+```html
+<mud-info-box closable closeLabel="Închide">…</mud-info-box>
+```
+
+It defaults to `Close`, and a blank or whitespace value falls back to that
+default rather than leaving the button unnamed. Everything else is your
+projected content, so it is already in your language.
+
+## API
+
+<ArgTypes of={InfoBoxStories} />

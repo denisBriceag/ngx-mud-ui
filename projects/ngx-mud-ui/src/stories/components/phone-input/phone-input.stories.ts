@@ -9,7 +9,9 @@ import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:420px;padding:24px';
 
-const meta: Meta<MudPhoneInput> = {
+type PhoneInputArgs = MudPhoneInput & { 'aria-label'?: string };
+
+const meta: Meta<PhoneInputArgs> = {
   title: 'Components/Phone input',
   component: MudPhoneInput,
   decorators: [moduleMetadata({ imports: [MudPhoneInput] })],
@@ -28,14 +30,17 @@ const meta: Meta<MudPhoneInput> = {
 
 export default meta;
 
-type Story = StoryObj<MudPhoneInput>;
+type Story = StoryObj<PhoneInputArgs>;
 
 /**
  * The placeholder defaults to the country's mask, and separators appear as you
  * reach them. Editing mid-number keeps the caret where you are typing.
  */
 export const Playground: Story = {
-  render: ({ ariaLabel, ...args }) => ({
+  // Destructure the actual arg key, not `ariaLabel`, and pass it under a
+  // non-colliding prop name. A raw `ariaLabel` prop (or the aliased key left
+  // in `...args`) crashes the Storybook wrapper.
+  render: ({ 'aria-label': ariaLabel, ...args }) => ({
     props: { ...args, ariaLabelText: ariaLabel },
     template: `
       <div style="${COL}">
