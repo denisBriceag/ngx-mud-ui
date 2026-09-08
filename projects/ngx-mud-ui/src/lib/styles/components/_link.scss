@@ -127,12 +127,12 @@
 
 .link-target-pointer {
   min-height: 32px;
-  padding-inline: var(--spacing-8);
+  padding-inline: var(--spacing-8, 8px);
 }
 
 .link-target-touch {
   min-height: 40px;
-  padding-inline: var(--spacing-12);
+  padding-inline: var(--spacing-12, 12px);
 }
 
 .link-external[target='_blank']:not(:has(> :is(mud-icon, svg):last-child))::after {

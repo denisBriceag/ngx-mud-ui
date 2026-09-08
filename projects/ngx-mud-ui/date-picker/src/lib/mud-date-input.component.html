@@ -1,0 +1,210 @@
+@if (_showLabel()) {
+  <label class="input-field__label" [attr.for]="_id" [id]="_labelId">
+    <span class="input-field__label-text"><ng-content select="[mudLabel]">{{ label() }}</ng-content></span>
+    @if (required()) {
+      <span class="input-field__required" aria-hidden="true">*</span>
+    }
+  </label>
+}
+
+<div class="input-field__control date-field__control" #control>
+  @if (_isRange()) {
+    <span class="date-field__range">
+      <span class="date-field__entry">
+        <input
+          #startNative
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          size="1"
+          class="input-field__native date-field__native"
+          [id]="_id"
+          [attr.placeholder]="_spec().format"
+          [attr.value]="_startDraft()"
+          [attr.name]="name() ? name() + '-start' : null"
+          [attr.aria-labelledby]="_startLabelledBy()"
+          [attr.aria-describedby]="_describedBy()"
+          [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
+          [attr.aria-required]="required() ? 'true' : null"
+          [readonly]="readonly()"
+          [disabled]="_effectiveDisabled()"
+          (input)="_onSegmentInput('start', $event)"
+          (keydown)="_onKeydown($event)"
+          (focus)="_onFocus()"
+          (blur)="_onBlur('start')"
+        />
+        <span class="date-field__ghost-row" aria-hidden="true"
+          [class.date-field__ghost-row--hidden]="!_startDraft() || !_startGhost()"
+          ><span class="date-field__ghost-typed">{{ _startDraft() }}</span
+          ><span class="date-field__ghost">{{ _startGhost() }}</span></span
+        >
+      </span>
+
+      <span class="date-field__range-separator" aria-hidden="true">–</span>
+
+      <span class="date-field__entry">
+        <input
+          #endNative
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          size="1"
+          class="input-field__native date-field__native"
+          [attr.placeholder]="_spec().format"
+          [attr.value]="_endDraft()"
+          [attr.name]="name() ? name() + '-end' : null"
+          [attr.aria-labelledby]="_endLabelledBy()"
+          [attr.aria-describedby]="_describedBy()"
+          [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
+          [attr.aria-required]="required() ? 'true' : null"
+          [readonly]="readonly()"
+          [disabled]="_effectiveDisabled()"
+          (input)="_onSegmentInput('end', $event)"
+          (keydown)="_onEndKeydown($event)"
+          (focus)="_onFocus()"
+          (blur)="_onBlur('end')"
+        />
+        <span class="date-field__ghost-row" aria-hidden="true"
+          [class.date-field__ghost-row--hidden]="!_endDraft() || !_endGhost()"
+          ><span class="date-field__ghost-typed">{{ _endDraft() }}</span
+          ><span class="date-field__ghost">{{ _endGhost() }}</span></span
+        >
+      </span>
+    </span>
+  } @else {
+    <span class="date-field__entry">
+      <input
+        #native
+        type="text"
+        inputmode="numeric"
+        autocomplete="off"
+        class="input-field__native date-field__native"
+        [id]="_id"
+        [attr.value]="_draft()"
+        [attr.name]="name() || null"
+        [attr.placeholder]="placeholder() ?? _spec().format"
+        [attr.aria-label]="_ariaLabel()"
+        [attr.aria-labelledby]="_showLabel() ? _labelId : null"
+        [attr.aria-describedby]="_describedBy()"
+        [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
+        [attr.aria-required]="required() ? 'true' : null"
+        [readonly]="readonly()"
+        [disabled]="_effectiveDisabled()"
+        (input)="_onInput($event)"
+        (keydown)="_onKeydown($event)"
+        (focus)="_onFocus()"
+        (blur)="_onBlur()"
+      />
+      <!-- The untyped tail of the pattern, sitting behind the caret. The typed
+           portion is a visibility-hidden spacer (same glyphs as the draft) so
+           the remainder lines up after the caret; only that remainder carries
+           the `date-field__ghost` class consumers/tests read text from. -->
+      <span class="date-field__ghost-row" aria-hidden="true"
+        [class.date-field__ghost-row--hidden]="!_draft() || !_ghost()"
+        ><span class="date-field__ghost-typed">{{ _draft() }}</span
+        ><span class="date-field__ghost">{{ _ghost() }}</span></span
+      >
+    </span>
+  }
+
+  @if (_showClear()) {
+    <button
+      type="button"
+      class="input-field__clear"
+      [attr.aria-label]="_labels().clear"
+      (click)="_onClear()"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false" aria-hidden="true">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M5.244 5.244a.833.833 0 0 1 1.179 0L10 8.821l3.577-3.577a.833.833 0 1 1 1.179 1.179L11.179 10l3.577 3.577a.833.833 0 0 1-1.179 1.179L10 11.179l-3.577 3.577a.833.833 0 0 1-1.179-1.179L8.821 10 5.244 6.423a.833.833 0 0 1 0-1.179" />
+      </svg>
+    </button>
+  }
+
+  <button
+    type="button"
+    class="date-field__toggle"
+    aria-haspopup="dialog"
+    [attr.aria-label]="_labels().calendar"
+    [attr.aria-expanded]="open() ? 'true' : 'false'"
+    [attr.aria-controls]="open() ? _dialogId : null"
+    [disabled]="_effectiveDisabled() || readonly()"
+    (click)="_toggle()"
+  >
+    <!-- The icon set's OUTLINE `calendar`, inlined per the house pattern
+         (accordion does the same with plus-large). Two grids rather than one
+         scaled: medium shows the 20px artwork, large the 24px artwork — the
+         set draws each size on its own grid. -->
+    <svg class="date-field__toggle-icon--md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+      <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M6.667 2.167a.75.75 0 0 1 .75.75v.916h5.166v-.916a.75.75 0 0 1 1.5 0v.916H15a2.417 2.417 0 0 1 2.417 2.417v9.167A2.417 2.417 0 0 1 15 17.833H5a2.417 2.417 0 0 1-2.417-2.416V6.25A2.417 2.417 0 0 1 5 3.833h.917v-.916a.75.75 0 0 1 .75-.75M5 5.333a.917.917 0 0 0-.917.917V8h11.834V6.25A.917.917 0 0 0 15 5.333zM15.917 9.5H4.083v5.917c0 .506.41.916.917.916h10c.506 0 .917-.41.917-.916z" />
+    </svg>
+    <svg class="date-field__toggle-icon--lg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+      <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M8 2.6a.9.9 0 0 1 .9.9v1.1h6.2V3.5a.9.9 0 1 1 1.8 0v1.1H18a2.9 2.9 0 0 1 2.9 2.9v11a2.9 2.9 0 0 1-2.9 2.9H6a2.9 2.9 0 0 1-2.9-2.9v-11A2.9 2.9 0 0 1 6 4.6h1.1V3.5a.9.9 0 0 1 .9-.9M6 6.4a1.1 1.1 0 0 0-1.1 1.1v2.1h14.2V7.5A1.1 1.1 0 0 0 18 6.4zm13.1 5H4.9v7.1A1.1 1.1 0 0 0 6 19.6h12a1.1 1.1 0 0 0 1.1-1.1z" />
+    </svg>
+  </button>
+</div>
+
+<span class="input-field__sr-only date-field__format-hint" [id]="_hintId">{{ _formatHint() }}</span>
+
+@if (_isRange()) {
+  <!-- The two range inputs name themselves with `aria-labelledby`, pointing at
+       the field's own label plus one of these segment spans — see
+       `_startLabelledBy`. An `aria-label` on the inputs would override the
+       <label> and throw the field's name away. `_nameId` carries the
+       consumer's `[aria-label]` for the no-visible-label case, which
+       `aria-labelledby` cannot reference otherwise. -->
+  <span class="input-field__sr-only" [id]="_startSegmentId">{{ _labels().rangeStart }}</span>
+  <span class="input-field__sr-only" [id]="_endSegmentId">{{ _labels().rangeEnd }}</span>
+  @if (_fieldNameId() === _nameId) {
+    <span class="input-field__sr-only" [id]="_nameId">{{ _ariaLabel() }}</span>
+  }
+}
+
+@if (_showError()) {
+  <div class="input-field__assistive" role="alert" [id]="_errorId">
+    <ng-content select="[mudError]">
+      <div class="inline-message inline-message--error">
+        <span class="inline-message__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 1.667a8.333 8.333 0 1 0 0 16.666 8.333 8.333 0 0 0 0-16.666m-.833 7.5c0-.459.416-.834.833-.834s.833.373.833.834v4.166a.833.833 0 0 1-1.666 0zM10 5.833A.833.833 0 1 0 10 7.5a.833.833 0 0 0 0-1.667" />
+          </svg>
+        </span>
+        <span class="inline-message__text">{{ _errorMessage() }}</span>
+      </div>
+    </ng-content>
+  </div>
+} @else if (_showHelper()) {
+  <div class="input-field__assistive" [id]="_helperId">
+    <ng-content select="[mudHelper]">
+      <div class="inline-message">
+        <span class="inline-message__text">{{ _helperMessage() }}</span>
+      </div>
+    </ng-content>
+  </div>
+}
+
+<ng-template #panel>
+  <div
+    class="date-field__panel"
+    role="dialog"
+    aria-modal="true"
+    cdkTrapFocus
+    [cdkTrapFocusAutoCapture]="false"
+    [id]="_dialogId"
+    [attr.aria-label]="_labels().calendar"
+    (keydown)="_onPanelKeydown($event)"
+  >
+    <mud-date-picker
+      appearance="flat"
+      [mode]="_isRange() ? 'range' : 'single'"
+      [value]="_isRange() ? _range() : _valueIso()"
+      [startAt]="_pickerStartAt()"
+      [min]="_minIso()"
+      [max]="_maxIso()"
+      [disabledDates]="disabledDates()"
+      [dateFilter]="dateFilter()"
+      [firstDayOfWeek]="firstDayOfWeek()"
+      [locale]="locale()"
+      (valueChange)="_onPickerChange($event)"
+    />
+  </div>
+</ng-template>

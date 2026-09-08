@@ -145,6 +145,28 @@
   --color-icon-danger-on-secondary: var(--red-700);
 }
 
+:root {
+  --spacing-minus-2: -2px;
+  --spacing-0: 0px;
+  --spacing-2: 2px;
+  --spacing-4: 4px;
+  --spacing-6: 6px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-14: 14px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
+  --spacing-56: 56px;
+  --spacing-64: 64px;
+  --spacing-72: 72px;
+  --spacing-80: 80px;
+  --spacing-120: 120px;
+}
+
 $token-spacing-0:  var(--spacing-0);
 $token-spacing-2:  var(--spacing-2);
 $token-spacing-4:  var(--spacing-4);

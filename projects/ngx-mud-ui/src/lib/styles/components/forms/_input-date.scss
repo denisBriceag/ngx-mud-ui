@@ -1,60 +1,165 @@
-@use "sass:map";
-@use "../../abstracts/tokens" as tokens;
-@use './input' as *; 
-
-.input-date {
-  display: flex;
+.date-field .date-field__control {
   align-items: center;
+  display: flex;
+  gap: var(--spacing-4, 4px);
+}
+
+.date-field__entry {
+  display: inline-grid;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.date-field__range .date-field__entry {
+  flex: 0 1 auto;
+}
+
+// The input and the ghost row occupy the same grid cell, so the untyped tail
+// of the pattern lines up with the caret without any measuring. Every metric
+// that affects glyph position must match — including line-height, which the
+// real input gets from `.input-field__native` and the bare ghost span does not.
+.date-field__entry > .date-field__native,
+.date-field__entry > .date-field__ghost-row {
+  grid-area: 1 / 1;
+  font-family: var(--font-family-base);
+  font-size: var(--_if-font-size);
+  line-height: var(--_if-line-height);
+  letter-spacing: inherit;
+}
+
+.date-field__native {
+  background: transparent;
+  border: 0;
+  caret-color: var(--color-text-brand-default);
+  color: inherit;
+  min-width: 0;
+  outline: none;
+  padding: 0;
   position: relative;
   width: 100%;
-  font-family: "Onest", sans-serif;
+  z-index: 1;
+}
 
-  input[type="date"] {
-    width: 100%;
-    padding: var(--spacing-12) var(--spacing-16);
-    border: 1.5px solid var(--color-border-base-default);
-    border-radius: var(--border-radius-8);
-    font-size: var(--font-size-16);
-    color: var(--color-text-base-default);
-    background-color: var(--color-background-base-default);
-    outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+.date-field__ghost-row {
+  overflow: hidden;
+  pointer-events: none;
+  white-space: pre;
+}
 
-    
-    &:focus {
-      border-color: map.get(map.get(tokens.$input-colors, default), focus);
-      box-shadow: 0 0 0 2px map.get(map.get(tokens.$input-colors, default), focus);
-    }
+.date-field__ghost-row--hidden {
+  visibility: hidden;
+}
 
-    
-    &.is-warning {
-      border-color: map.get(map.get(tokens.$input-colors, warning), focus);
-      box-shadow: 0 0 0 2px map.get(map.get(tokens.$input-colors, warning), focus);
-    }
+.date-field__ghost-typed {
+  visibility: hidden;
+}
 
-    
-    &.is-destructive {
-      border-color: map.get(map.get(tokens.$input-colors, destructive), focus);
-      box-shadow: 0 0 0 2px map.get(map.get(tokens.$input-colors, destructive), focus);
-    }
+// Only the untyped tail is visible, and `.date-field__ghost` holds ONLY that
+// tail — the typed prefix is its sibling, not its child, so reading this
+// element's text yields the remainder alone.
+.date-field__ghost {
+  color: var(--color-text-base-secondary);
+}
 
-    
-    &:disabled {
-      background-color: var(--color-background-disabled-default);
-      border-color: var(--color-border-disabled-default);
-      color: var(--color-text-base-disabled);
-      cursor: not-allowed;
+.date-field.is-disabled .date-field__ghost {
+  color: var(--color-text-disabled-default);
+}
+
+.date-field__range {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  gap: var(--spacing-4, 4px);
+  min-width: 0;
+}
+
+.date-field__range-separator {
+  color: var(--color-text-base-secondary);
+  flex: 0 0 auto;
+}
+
+.date-field__toggle {
+  align-items: center;
+  background: none;
+  border: 0;
+  border-radius: var(--border-radius-6, 6px);
+  color: var(--color-icon-base-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 24px;
+  justify-content: center;
+  padding: 0;
+  // Anchors the ::before hit-area extension below.
+  position: relative;
+  width: 24px;
+
+  &:hover:not(:disabled) {
+    color: var(--color-icon-base-default);
+  }
+
+  // Touch devices get a 40px hit area without the visible button growing —
+  // the glyph stays 24px inside the field row; only the invisible target
+  // extends. A child of the button still hit-tests as the button.
+  @media (pointer: coarse) {
+    &::before {
+      content: '';
+      inset: -8px;
+      position: absolute;
     }
   }
 
-  
-  .input-date-icon {
-    position: absolute;
-    right: var(--spacing-12);
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    display: flex;
-    align-items: center;
+  &:focus-visible {
+    outline: var(--focus-ring-outer-width, 3px) solid
+      var(--focus-ring-outer-color, var(--blue-sky-500));
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    color: var(--color-text-disabled-default);
+    cursor: default;
+  }
+
+  svg {
+    height: 20px;
+    width: 20px;
+  }
+}
+
+.date-field__toggle-icon--lg,
+.input-field--lg .date-field__toggle-icon--md {
+  display: none;
+}
+
+.input-field--lg .date-field__toggle-icon--lg {
+  display: block;
+  height: 24px;
+  width: 24px;
+}
+
+.date-field__panel {
+  background: var(--color-background-base-default);
+  border-radius: var(--border-radius-12, 12px);
+  box-shadow:
+    var(
+      --drop-shadow-300,
+      0 8px 12px 4px rgba(40, 46, 55, 0.06),
+      0 2px 4px 0 rgba(40, 46, 55, 0.06)
+    );
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: date-field-panel-in 120ms ease-out;
+  }
+}
+
+@keyframes date-field-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
   }
 }

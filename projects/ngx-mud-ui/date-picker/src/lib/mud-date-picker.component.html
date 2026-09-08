@@ -1,0 +1,186 @@
+<div class="date-picker__header" [class.date-picker__header--dropdown]="headerStyle() === 'dropdown'">
+  <button
+    type="button"
+    class="date-picker__nav"
+    data-nav="prev"
+    [attr.aria-label]="_navLabels().prev"
+    [disabled]="_effectiveDisabled()"
+    (click)="_goToMonth(-1)"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false" aria-hidden="true">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.923 4.41a.833.833 0 0 1 0 1.18L8.512 10l4.411 4.41a.833.833 0 1 1-1.178 1.18l-5-5a.833.833 0 0 1 0-1.18l5-5a.833.833 0 0 1 1.178 0" />
+    </svg>
+  </button>
+
+  @if (headerStyle() === 'dropdown' && _view() === 'days') {
+    <span class="date-picker__header-dropdowns">
+      <button
+        type="button"
+        class="date-picker__chip"
+        data-header="month"
+        [attr.aria-label]="_labels().chooseMonth"
+        [disabled]="_effectiveDisabled()"
+        (click)="_openView('months')"
+      >{{ _monthOnlyLabel() }}</button>
+      <button
+        type="button"
+        class="date-picker__chip"
+        data-header="year"
+        [attr.aria-label]="_labels().chooseYear"
+        [disabled]="_effectiveDisabled()"
+        (click)="_openView('years')"
+      >{{ _viewYear() }}</button>
+    </span>
+  } @else {
+    <button
+      type="button"
+      class="date-picker__title"
+      [id]="_titleId"
+      [disabled]="_effectiveDisabled()"
+      (click)="_cycleView()"
+    >{{ _headerLabel() }}</button>
+  }
+
+  <button
+    type="button"
+    class="date-picker__nav"
+    data-nav="next"
+    [attr.aria-label]="_navLabels().next"
+    [disabled]="_effectiveDisabled()"
+    (click)="_goToMonth(1)"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false" aria-hidden="true">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M7.077 4.41a.833.833 0 0 1 1.178 0l5 5a.833.833 0 0 1 0 1.18l-5 5a.833.833 0 1 1-1.178-1.18L11.488 10 7.077 5.59a.833.833 0 0 1 0-1.18" />
+    </svg>
+  </button>
+</div>
+
+@if (headerStyle() === 'dropdown' && _view() === 'days') {
+  <span class="input-field__sr-only" [id]="_titleId">{{ _monthLabel() }}</span>
+}
+
+@if (_view() === 'days') {
+  <!--
+    Roving tabindex: the grid itself is never a tab stop, only the single
+    cell.tabbable button inside it, so the keydown listener lives here instead.
+  -->
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -->
+  <table
+    class="date-picker__grid"
+    role="grid"
+    [attr.aria-labelledby]="_titleId"
+    [attr.aria-disabled]="_effectiveDisabled() ? 'true' : null"
+    [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
+    (keydown)="_onGridKeydown($event)"
+    (mouseleave)="_onGridLeave()"
+  >
+    <thead>
+      <tr class="date-picker__day-labels" role="row">
+        @for (weekday of _weekdays(); track weekday.long) {
+          <th class="date-picker__day-label" role="columnheader" scope="col" [attr.aria-label]="weekday.long">
+            <span>{{ weekday.short }}</span>
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (week of [0, 1, 2, 3, 4, 5]; track week) {
+        <tr role="row">
+          @for (cell of _cells().slice(week * 7, week * 7 + 7); track cell.iso) {
+            <td
+              class="date-picker__day"
+              role="gridcell"
+              [attr.data-iso]="cell.iso"
+              [class.is-outside]="cell.outside"
+              [class.is-today]="cell.today"
+              [class.is-selected]="cell.selected"
+              [class.is-range-start]="cell.rangeStart || cell.rangeLone"
+              [class.is-range-lone]="cell.rangeLone"
+              [class.is-range-middle]="cell.rangeMiddle"
+              [class.is-range-end]="cell.rangeEnd"
+              [attr.aria-selected]="cell.selected ? 'true' : 'false'"
+              [attr.aria-disabled]="cell.disabled ? 'true' : null"
+              [attr.aria-current]="cell.today ? 'date' : null"
+              (mouseenter)="_onCellEnter(cell.iso)"
+            >
+              <!--
+                `disabled` is reserved for the whole-control state: a native
+                `disabled` button is unfocusable and drops out of the tab
+                order regardless of `tabindex`, which would let the grid lose
+                its only tab stop (or silently swallow arrow-key focus) on a
+                per-date disabled day. Per-date unavailability is conveyed with
+                `aria-disabled` instead, which keeps the button focusable;
+                `_select` still refuses to commit a disabled date.
+              -->
+              <button
+                type="button"
+                class="date-picker__day-button"
+                [attr.tabindex]="cell.tabbable || cell.iso === _fallbackTabbableIso() ? 0 : -1"
+                [disabled]="_effectiveDisabled()"
+                [attr.aria-disabled]="cell.disabled ? 'true' : null"
+                (click)="_select(cell.iso)"
+                (focus)="_onCellFocus(cell.iso)"
+              >
+                {{ cell.day }}
+              </button>
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+@if (_view() === 'months') {
+  <div class="date-picker__month-grid" role="group" [attr.aria-label]="_labels().chooseMonth">
+    @for (cell of _monthCells(); track cell.month) {
+      <div class="date-picker__month" [attr.data-month]="cell.month" [class.is-selected]="cell.selected">
+        <!-- The visible text is the SHORT name; the full month is the
+             accessible name. Intl-derived short names are dot-stripped so the
+             visible label stays a prefix of the accessible name (WCAG 2.5.3);
+             consumer-provided overrides own that property themselves. -->
+        <button
+          type="button"
+          class="date-picker__month-button"
+          [attr.aria-label]="cell.fullName"
+          [attr.aria-current]="cell.selected ? 'true' : null"
+          (click)="_selectMonth(cell.month)"
+        >
+          {{ cell.label }}
+        </button>
+      </div>
+    }
+  </div>
+}
+
+@if (_view() === 'years') {
+  <div class="date-picker__year-grid" role="group" [attr.aria-label]="_labels().chooseYear">
+    @for (cell of _yearCells(); track cell.year) {
+      <div class="date-picker__year" [attr.data-year]="cell.year" [class.is-selected]="cell.selected">
+        <button
+          type="button"
+          class="date-picker__year-button"
+          [attr.aria-current]="cell.selected ? 'true' : null"
+          (click)="_selectYear(cell.year)"
+        >
+          {{ cell.year }}
+        </button>
+      </div>
+    }
+  </div>
+}
+
+@if (showTodayShortcut()) {
+  <div class="date-picker__footer">
+    <button
+      type="button"
+      class="date-picker__today"
+      [disabled]="_effectiveDisabled()"
+      (click)="_goToToday()"
+    >
+      {{ _labels().today }}
+    </button>
+  </div>
+}
+
+<div class="input-field__sr-only" aria-live="polite" role="status">{{ _announcement() }}</div>
