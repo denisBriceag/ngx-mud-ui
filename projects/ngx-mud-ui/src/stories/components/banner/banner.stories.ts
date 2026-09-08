@@ -53,6 +53,7 @@ export const Playground: Story = {
 
 /** All six combinations: three variants across both types. */
 export const Variants: Story = {
+  parameters: { controls: { disable: true } },
   render: () => ({
     template: `
       <div style="${COL}">
@@ -69,6 +70,7 @@ export const Variants: Story = {
 
 /** The link is projected, so it can be a routerLink — upstream's linkText/linkHref cannot. */
 export const WithLink: Story = {
+  parameters: { controls: { disable: true } },
   render: () => ({
     template: `
       <div style="${COL}">
@@ -82,6 +84,7 @@ export const WithLink: Story = {
 };
 
 export const Dismissible: Story = {
+  parameters: { controls: { disable: true } },
   render: () => ({
     props: { onDismissed: () => undefined },
     template: `

@@ -3,7 +3,9 @@
   "compilerOptions": {
     "types": ["node"],
     "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "rootDir": "..",
+    "noEmit": true
   },
   // Compodoc reads this config to build the ArgTypes tables, so the library
   // entry-point sources must be included.
