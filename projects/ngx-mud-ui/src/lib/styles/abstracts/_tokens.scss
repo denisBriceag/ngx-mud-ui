@@ -89,7 +89,12 @@
   --color-text-base-inverse-on-color: var(--white-1000);
 
   --color-text-brand-default: var(--blue-sky-600);
-  --color-text-brand-default-hover: var(--blue-sky-600);
+  // 700, not 600: upstream's generated tokens duplicate the default here (so
+  // hover is a no-op), but their backlog doc
+  // (2026-05-27-text-brand-hover-active-semantic-gap.md) proposes 700/800 —
+  // we ship their intended fix.
+  --color-text-brand-default-hover: var(--blue-sky-700);
+  --color-text-brand-default-active: var(--blue-sky-800);
   --color-text-brand-on-secondary: var(--blue-sky-600);
   --color-text-brand-visited: var(--magenta-600);
   --color-text-brand-visited-on-secondary: var(--magenta-700);
@@ -338,7 +343,7 @@ $input-sizes: (
 :root {
   --color-link-primary-default: var(--color-text-brand-default);
   --color-link-primary-hover: var(--color-text-brand-default-hover);
-  --color-link-primary-active: var(--color-background-brand-default-active);
+  --color-link-primary-active: var(--color-text-brand-default-active);
   --color-link-primary-visited: var(--color-text-brand-visited);
 
   --color-link-strict-default: var(--color-text-base-default);
