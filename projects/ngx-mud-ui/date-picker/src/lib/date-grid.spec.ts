@@ -59,17 +59,17 @@ describe('date-grid', () => {
   });
 
   describe('buildYearPage', () => {
-    it('returns 24 page-aligned years', () => {
+    it('returns 12 page-aligned years, the 4x3 grid upstream specifies', () => {
       const page = buildYearPage(2026);
 
-      expect(page).toHaveLength(24);
+      expect(page).toHaveLength(12);
       expect(page[0]).toBe(2016);
-      expect(page[23]).toBe(2039);
+      expect(page[11]).toBe(2027);
     });
 
     it('keeps every year in a page on the same page', () => {
-      expect(yearPageStart(2016)).toBe(yearPageStart(2039));
-      expect(yearPageStart(2040)).toBe(2040);
+      expect(yearPageStart(2016)).toBe(yearPageStart(2027));
+      expect(yearPageStart(2028)).toBe(2028);
     });
   });
 });

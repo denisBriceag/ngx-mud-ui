@@ -1,26 +1,23 @@
 .date-picker {
   background: var(--color-background-base-default);
+  border: var(--border-width-1, 1px) solid var(--color-border-base-default);
   border-radius: var(--border-radius-12, 12px);
   box-sizing: border-box;
   color: var(--color-text-base-default);
   display: flex;
   flex-direction: column;
   font-family: var(--font-family-base);
-  gap: var(--spacing-8);
-  padding: var(--spacing-12);
+  gap: var(--spacing-8, 8px);
+  padding: var(--spacing-12, 12px);
   width: 320px;
 }
 
-// `--drop-shadow-300` is not defined in the shipped styles, so the token alone
-// resolved to nothing and left `elevated` and `flat` visually identical. The
-// literal is the layered shadow from `_menu-panel.scss`, the maintained sibling
-// for exactly this floating-panel case.
 .date-picker--elevated {
   box-shadow:
     var(
       --drop-shadow-300,
-      0 12px 16px -4px rgba(16, 24, 40, 0.08),
-      0 4px 6px -2px rgba(16, 24, 40, 0.03)
+      0 8px 12px 4px rgba(40, 46, 55, 0.06),
+      0 2px 4px 0 rgba(40, 46, 55, 0.06)
     );
 }
 
@@ -38,7 +35,7 @@
 .date-picker__header {
   align-items: center;
   display: flex;
-  gap: var(--spacing-8);
+  gap: var(--spacing-8, 8px);
   justify-content: space-between;
   width: 100%;
 }
@@ -49,7 +46,9 @@
   border: 0;
   border-radius: var(--border-radius-6, 6px);
   box-sizing: border-box;
-  color: var(--color-icon-base-secondary);
+  // base-default, not -secondary: upstream's nav icon is #121212 light / #fff
+  // dark, which is what the default icon token resolves to.
+  color: var(--color-icon-base-default);
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
@@ -60,6 +59,11 @@
 
   &:hover:not(:disabled) {
     background: var(--color-background-base-tertiary-hover);
+  }
+
+  // Upstream: #B2B2B2 light / #616161 dark — the tertiary-active pair exactly.
+  &:active:not(:disabled) {
+    background: var(--color-background-base-tertiary-active);
   }
 
   &:disabled {
@@ -81,8 +85,14 @@
   color: inherit;
   cursor: pointer;
   font: inherit;
+  // Pinned, not inherited: upstream's header title is 16/24 at 500 regardless
+  // of the context the calendar is embedded in.
+  font-size: var(--font-size-16, 16px);
   font-weight: 500;
-  padding: var(--spacing-4) var(--spacing-8);
+  // Figma: the header date matches the 40px nav arrows, not its text box.
+  height: 40px;
+  line-height: 24px;
+  padding: 0 var(--spacing-8, 8px);
 
   &:hover:not(:disabled) {
     background: var(--color-background-base-secondary-hover);
@@ -101,7 +111,7 @@
 .date-picker__header-dropdowns {
   display: flex;
   flex: 1 1 auto;
-  gap: var(--spacing-4);
+  gap: var(--spacing-4, 4px);
   justify-content: center;
 }
 
@@ -111,14 +121,18 @@
   width: 100%;
 }
 
+// Upstream metrics: 32px row, 14/20 at 500, uppercase. The COLOR deliberately
+// diverges: upstream's #757575 light / #B2B2B2 dark sit at the AA borderline,
+// so these keep base-secondary like the rest of the library's secondary text.
 .date-picker__day-label {
   color: var(--color-text-base-secondary);
-  // `--font-size-12` is not defined in _tokens.scss; the repo's idiom is a
-  // literal fallback, as in `var(--font-size-14, 14px)`.
-  font-size: var(--font-size-12, 12px);
+  font-size: var(--font-size-14, 14px);
   font-weight: 500;
-  padding-bottom: var(--spacing-4);
+  height: 32px;
+  line-height: 20px;
   text-align: center;
+  text-transform: uppercase;
+  vertical-align: middle;
 }
 
 .date-picker__day {
@@ -133,19 +147,13 @@
   color: inherit;
   cursor: pointer;
   font: inherit;
+  font-size: var(--font-size-14, 14px);
+  font-weight: 500;
+  line-height: 20px;
   // 40px rows x 6 fixed weeks: the calendar never changes height, so a short
   // month cannot resize the popover under the pointer.
   height: 40px;
   width: 100%;
-
-  // `[aria-disabled]` as well as `:disabled`: per-DATE unavailability is
-  // expressed with the attribute so the day stays focusable (see the template
-  // comment), and styling only `:disabled` left every day refused by `min`,
-  // `max`, `disabledDates` or `dateFilter` at full contrast, taking the hover
-  // tint and showing a pointer cursor. The precedent is `_accordion.scss`.
-  &:hover:not(:disabled):not([aria-disabled='true']) {
-    background: var(--color-background-base-secondary-hover);
-  }
 
   &:focus-visible {
     outline: var(--focus-ring-outer-width, 3px) solid
@@ -157,6 +165,12 @@
     color: var(--color-text-disabled-default);
     cursor: default;
   }
+}
+
+.date-picker__day:not(.is-selected)
+  .date-picker__day-button:hover:not(:disabled):not([aria-disabled='true']) {
+  background: var(--color-background-base-default-hover);
+  color: var(--color-text-base-default);
 }
 
 // `--color-text-base-secondary` alone (no opacity) — halving it again with
@@ -179,8 +193,18 @@
   cursor: default;
 }
 
+// Upstream's today cell is brand-COLOURED text inside a 1.5px brand ring
+// (`--date-picker-day-cell-today-color/border-color`), not just the ring. Both
+// tokens here resolve to upstream's exact pair in each theme.
 .date-picker__day.is-today .date-picker__day-button {
-  box-shadow: inset 0 0 0 1px var(--color-border-brand-default);
+  box-shadow: inset 0 0 0 1.5px var(--color-border-brand-default);
+  color: var(--color-text-brand-default);
+}
+
+.date-picker__day.is-today:not(.is-selected)
+  .date-picker__day-button:hover:not(:disabled):not([aria-disabled='true']) {
+  background: var(--color-background-brand-secondary);
+  color: var(--color-text-brand-on-secondary);
 }
 
 .date-picker__day.is-selected .date-picker__day-button,
@@ -190,21 +214,27 @@
   color: var(--color-text-base-inverse-on-color);
 }
 
-// The middle band paints the cell, not the button, so adjacent days join up
-// into one continuous bar.
+.date-picker__day.is-selected .date-picker__day-button:hover:not(:disabled) {
+  background: var(--color-background-brand-default-hover);
+}
+
 .date-picker__day.is-range-middle {
-  background: var(--color-background-brand-tertiary);
+  background: var(--color-background-brand-secondary);
+}
+
+.date-picker__day.is-range-middle .date-picker__day-button:not([aria-disabled='true']) {
+  color: var(--color-text-brand-on-secondary);
 }
 
 // The endpoint half-bars only exist once BOTH ends are set. `is-range-lone`
 // marks a start with no end yet — it renders as a plain selected day, with no
 // half-bar pointing into empty space.
 .date-picker__day.is-range-start:not(.is-range-lone) {
-  background: linear-gradient(to right, transparent 50%, var(--color-background-brand-tertiary) 50%);
+  background: linear-gradient(to right, transparent 50%, var(--color-background-brand-secondary) 50%);
 }
 
 .date-picker__day.is-range-end {
-  background: linear-gradient(to left, transparent 50%, var(--color-background-brand-tertiary) 50%);
+  background: linear-gradient(to left, transparent 50%, var(--color-background-brand-secondary) 50%);
 }
 
 // A single-day range: both halves would cancel out, so paint neither.
@@ -212,33 +242,31 @@
   background: none;
 }
 
+// Both pickers are upstream's 4x3 twelve-cell grid — months always, years
+// because the page size is 12 (see YEAR_PAGE in date-grid.ts).
 .date-picker__month-grid,
 .date-picker__year-grid {
   display: grid;
-  gap: var(--spacing-4);
-}
-
-.date-picker__month-grid {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.date-picker__year-grid {
-  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-8, 8px);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .date-picker__month-button,
 .date-picker__year-button {
   background: none;
   border: 0;
-  border-radius: var(--border-radius-6, 6px);
+  border-radius: var(--border-radius-8, 8px);
   color: inherit;
   cursor: pointer;
   font: inherit;
+  font-size: var(--font-size-14, 14px);
+  font-weight: 500;
   height: 40px;
+  line-height: 20px;
   width: 100%;
 
   &:hover:not(:disabled) {
-    background: var(--color-background-base-secondary-hover);
+    background: var(--color-background-base-default-hover);
   }
 
   &:focus-visible {
@@ -267,10 +295,11 @@
   cursor: pointer;
   font: inherit;
   font-weight: 500;
-  padding: var(--spacing-8) var(--spacing-12);
+  padding: var(--spacing-8, 8px) var(--spacing-12, 12px);
 
   &:hover:not(:disabled) {
-    background: var(--color-background-brand-secondary-hover);
+    background: var(--color-background-brand-secondary);
+    color: var(--color-text-brand-on-secondary);
   }
 
   &:focus-visible {

@@ -154,6 +154,24 @@ describe('MudDateInput', () => {
     expect(view.ghost()).toBe('');
   });
 
+  it('paints the ghost row only mid-typing, never for an empty or complete entry', async () => {
+    const view = await render();
+    const hidden = () =>
+      view.el.querySelector('.date-field__ghost-row')!.classList.contains('date-field__ghost-row--hidden');
+
+    // Empty: the native placeholder is the hint; a visible ghost row would be
+    // the axe color-contrast bail (overlapped text) all over again.
+    expect(hidden()).toBe(true);
+    expect(view.native.getAttribute('placeholder')).toBe('DD/MM/YYYY');
+
+    await view.type('15/04');
+    expect(hidden()).toBe(false);
+
+    // Complete: even the transparent typed-spacer holds text axe would check.
+    await view.type('15/04/2026');
+    expect(hidden()).toBe(true);
+  });
+
   it('commits the ISO value once the entry is complete and valid', async () => {
     const view = await render();
 
@@ -248,6 +266,7 @@ describe('MudDateInput', () => {
     await view.fixture.whenStable();
     expect(view.panel()).not.toBeNull();
     expect(view.dialog()!.getAttribute('aria-label')).toBe('Calendar');
+    expect(view.dialog()!.getAttribute('aria-modal')).toBe('true');
     expect(view.toggle().getAttribute('aria-expanded')).toBe('true');
     expect(view.toggle().getAttribute('aria-haspopup')).toBe('dialog');
   });
@@ -285,6 +304,21 @@ describe('MudDateInput', () => {
 
     view.dialog()!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     await view.fixture.whenStable();
+
+    expect(view.panel()).toBeNull();
+  });
+
+  it('closes on Escape pressed in the field itself', async () => {
+    const view = await render();
+
+    view.toggle().click();
+    await view.fixture.whenStable();
+    expect(view.panel()).not.toBeNull();
+
+    // Clicking back into the input moves focus out of the trapped dialog
+    // without closing it (the outside-click handler exempts the control), so
+    // Escape has to work from the field too.
+    await view.press('Escape');
 
     expect(view.panel()).toBeNull();
   });

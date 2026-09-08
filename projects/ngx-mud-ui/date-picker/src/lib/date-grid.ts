@@ -12,8 +12,7 @@ export interface MudDayCell {
 /** Cells per page: 6 rows of 7, fixed so the calendar never changes height. */
 const DAY_CELLS = 42;
 
-/** How many years one year-view page shows. */
-const YEAR_PAGE = 24;
+export const YEAR_PAGE = 12;
 
 export function weekdayOrder(firstDayOfWeek: number): number[] {
   return Array.from({ length: 7 }, (_, i) => (firstDayOfWeek + i) % 7);

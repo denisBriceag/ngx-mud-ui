@@ -1,16 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
-import { moduleMetadata } from '@storybook/angular-vite';
+import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
 import { Component, signal } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { expect, userEvent, within } from 'storybook/test';
-import { MudDateInput, MudDatePicker, mudToday } from 'ngx-mud-ui/date-picker';
+import { MudDateInput, MudDatePicker, mudToday, provideMudDateLabels } from 'ngx-mud-ui/date-picker';
 import type { MudDateRange } from 'ngx-mud-ui/date-picker';
 
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:560px;padding:24px';
 
-const meta: Meta<MudDateInput> = {
+type DateInputArgs = MudDateInput & { 'aria-label'?: string };
+
+const meta: Meta<DateInputArgs> = {
   title: 'Components/Date picker',
   component: MudDateInput,
   decorators: [moduleMetadata({ imports: [MudDateInput, MudDatePicker] })],
@@ -29,13 +31,11 @@ const meta: Meta<MudDateInput> = {
 
 export default meta;
 
-type Story = StoryObj<MudDateInput>;
+type Story = StoryObj<DateInputArgs>;
 
 /** The 90% case: one tag, a label, and a calendar the user can also type into. */
 export const Playground: Story = {
-  // `ariaLabel` is aliased (`aria-label`), so pass it under a non-colliding
-  // prop name — a raw `ariaLabel` prop crashes the Storybook wrapper.
-  render: ({ ariaLabel, ...args }) => ({
+  render: ({ 'aria-label': ariaLabel, ...args }) => ({
     props: { ...args, ariaLabelText: ariaLabel },
     template: `
       <div style="${COL}">
@@ -76,6 +76,67 @@ export const Range: Story = {
       <div style="${COL}">
         <mud-date-input mode="range" label="Perioada" clearable
           helperText="Completați data de început; focusul trece automat la data de sfârșit." />
+      </div>
+    `,
+  }),
+  // Layout regression pin (browser only — jsdom has no layout): the two
+  // entries hug their pattern text and pack at the field's START. With growing
+  // entries each grabbed half the control, stranding the separator mid-field.
+  play: async ({ canvasElement }) => {
+    const control = canvasElement.querySelector<HTMLElement>('.date-field__control')!;
+    const entries = Array.from(canvasElement.querySelectorAll<HTMLElement>('.date-field__entry'));
+
+    await expect(entries).toHaveLength(2);
+
+    for (const entry of entries) {
+      // Half the control would be ~46% of its width; a packed DD/MM/YYYY at
+      // 14px is nowhere near it.
+      await expect(entry.offsetWidth).toBeLessThan(control.offsetWidth * 0.35);
+    }
+  },
+};
+
+/**
+ * Month/weekday names come from `Intl` via `locale`; every UI string — and,
+ * when Intl's month forms don't match the design ("ian." vs "Ian"), the month
+ * names themselves — comes from the `MUD_DATE_LABELS` token, overridden
+ * app-wide with one `provideMudDateLabels` call.
+ */
+export const LocalizedRomanian: Story = {
+  name: 'Localized (Romanian)',
+  parameters: { controls: { disable: true } },
+  decorators: [
+    applicationConfig({
+      providers: [
+        provideMudDateLabels({
+          calendar: 'Calendar',
+          previousMonth: 'Luna precedentă',
+          nextMonth: 'Luna următoare',
+          previousYear: 'Anul precedent',
+          nextYear: 'Anul următor',
+          chooseMonth: 'Alegeți luna',
+          chooseYear: 'Alegeți anul',
+          today: 'Astăzi',
+          clear: 'Șterge',
+          rangeStart: 'Data de început',
+          rangeEnd: 'Data de sfârșit',
+          monthNamesShort: ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Noi', 'Dec'],
+          monthNamesLong: [
+            'Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie',
+            'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie',
+          ],
+          formatHint: (pattern) => `Format: ${pattern}`,
+          rangeStartSelected: (start) => `${start} selectat, alegeți data de sfârșit`,
+          rangeSelected: (start, end) => `${start} – ${end} selectate`,
+        }),
+      ],
+    }),
+  ],
+  render: () => ({
+    template: `
+      <div style="${COL}">
+        <mud-date-input label="Data nașterii" locale="ro" clearable />
+        <mud-date-picker locale="ro" startAt="2026-08-15" headerStyle="dropdown" />
       </div>
     `,
   }),
@@ -225,10 +286,19 @@ export const SignalForms: Story = {
 export const CaretBehaviour: Story = {
   name: 'Caret stays put while typing (browser)',
   tags: ['!autodocs'],
+  parameters: { controls: { disable: true } },
   render: () => ({ template: `<div style="${COL}"><mud-date-input label="Date" /></div>` }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Date') as HTMLInputElement;
+
+    // The input must be the TOP layer, the ghost row underneath: axe's
+    // color-contrast check reports "background could not be determined" for
+    // any element overlapped from above.
+    const rect = input.getBoundingClientRect();
+    const top = document.elementsFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)[0];
+
+    await expect(top).toBe(input);
 
     await userEvent.type(input, '1504');
     // No trailing separator: the mask holds it back until a digit follows it,
@@ -243,6 +313,14 @@ export const CaretBehaviour: Story = {
     input.setSelectionRange(1, 1);
     await userEvent.type(input, '2', { skipClick: true });
     await expect(input.selectionStart).toBe(2);
+
+    // Leave the canvas resting: the a11y addon scans the POST-play DOM, and a
+    // half-typed entry keeps the ghost overlay painted under the input, which
+    // axe reports as an undeterminable background. Select-all first — the
+    // caret is still parked at position 2 from the assertion above.
+    input.setSelectionRange(0, input.value.length);
+    await userEvent.keyboard('{Backspace}');
+    await expect(input.value).toBe('');
   },
 };
 
@@ -251,6 +329,7 @@ export const CaretBehaviour: Story = {
 export const BackspaceDeletes: Story = {
   name: 'Backspace can clear the field (browser)',
   tags: ['!autodocs'],
+  parameters: { controls: { disable: true } },
   render: () => ({ template: `<div style="${COL}"><mud-date-input label="Date" /></div>` }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -271,6 +350,7 @@ export const BackspaceDeletes: Story = {
 export const PopoverKeyboard: Story = {
   name: 'Alt+Down opens and Escape restores focus (browser)',
   tags: ['!autodocs'],
+  parameters: { controls: { disable: true } },
   render: () => ({ template: `<div style="${COL}"><mud-date-input label="Date" /></div>` }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

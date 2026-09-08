@@ -1,13 +1,17 @@
 .date-field .date-field__control {
   align-items: center;
   display: flex;
-  gap: var(--spacing-4);
+  gap: var(--spacing-4, 4px);
 }
 
 .date-field__entry {
   display: inline-grid;
   flex: 1 1 auto;
   min-width: 0;
+}
+
+.date-field__range .date-field__entry {
+  flex: 0 1 auto;
 }
 
 // The input and the ghost row occupy the same grid cell, so the untyped tail
@@ -26,24 +30,28 @@
 .date-field__native {
   background: transparent;
   border: 0;
+  caret-color: var(--color-text-brand-default);
   color: inherit;
   min-width: 0;
   outline: none;
   padding: 0;
+  position: relative;
   width: 100%;
+  z-index: 1;
 }
 
-// The overlay layer sitting on top of the input.
 .date-field__ghost-row {
   overflow: hidden;
   pointer-events: none;
   white-space: pre;
 }
 
-// The typed prefix is transparent: the real input paints those characters, and
-// this span exists only to push the remainder to the right offset.
+.date-field__ghost-row--hidden {
+  visibility: hidden;
+}
+
 .date-field__ghost-typed {
-  color: transparent;
+  visibility: hidden;
 }
 
 // Only the untyped tail is visible, and `.date-field__ghost` holds ONLY that
@@ -61,7 +69,7 @@
   align-items: center;
   display: flex;
   flex: 1 1 auto;
-  gap: var(--spacing-4);
+  gap: var(--spacing-4, 4px);
   min-width: 0;
 }
 
@@ -82,10 +90,23 @@
   height: 24px;
   justify-content: center;
   padding: 0;
+  // Anchors the ::before hit-area extension below.
+  position: relative;
   width: 24px;
 
   &:hover:not(:disabled) {
     color: var(--color-icon-base-default);
+  }
+
+  // Touch devices get a 40px hit area without the visible button growing —
+  // the glyph stays 24px inside the field row; only the invisible target
+  // extends. A child of the button still hit-tests as the button.
+  @media (pointer: coarse) {
+    &::before {
+      content: '';
+      inset: -8px;
+      position: absolute;
+    }
   }
 
   &:focus-visible {
@@ -105,17 +126,25 @@
   }
 }
 
+.date-field__toggle-icon--lg,
+.input-field--lg .date-field__toggle-icon--md {
+  display: none;
+}
+
+.input-field--lg .date-field__toggle-icon--lg {
+  display: block;
+  height: 24px;
+  width: 24px;
+}
+
 .date-field__panel {
   background: var(--color-background-base-default);
   border-radius: var(--border-radius-12, 12px);
-  // `--drop-shadow-300` is not defined in the shipped styles, so the token
-  // alone left the popover floating with no elevation at all. Literal copied
-  // from `_menu-panel.scss`, the maintained sibling for a floating panel.
   box-shadow:
     var(
       --drop-shadow-300,
-      0 12px 16px -4px rgba(16, 24, 40, 0.08),
-      0 4px 6px -2px rgba(16, 24, 40, 0.03)
+      0 8px 12px 4px rgba(40, 46, 55, 0.06),
+      0 2px 4px 0 rgba(40, 46, 55, 0.06)
     );
 
   @media (prefers-reduced-motion: no-preference) {

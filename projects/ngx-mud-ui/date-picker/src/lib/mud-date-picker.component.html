@@ -18,7 +18,7 @@
         type="button"
         class="date-picker__chip"
         data-header="month"
-        [attr.aria-label]="_labels.chooseMonth"
+        [attr.aria-label]="_labels().chooseMonth"
         [disabled]="_effectiveDisabled()"
         (click)="_openView('months')"
       >{{ _monthOnlyLabel() }}</button>
@@ -26,7 +26,7 @@
         type="button"
         class="date-picker__chip"
         data-header="year"
-        [attr.aria-label]="_labels.chooseYear"
+        [attr.aria-label]="_labels().chooseYear"
         [disabled]="_effectiveDisabled()"
         (click)="_openView('years')"
       >{{ _viewYear() }}</button>
@@ -78,13 +78,6 @@
       <tr class="date-picker__day-labels" role="row">
         @for (weekday of _weekdays(); track weekday.long) {
           <th class="date-picker__day-label" role="columnheader" scope="col" [attr.aria-label]="weekday.long">
-            <!--
-              Not aria-hidden: `aria-label` above already fully overrides the
-              accessible name (an assistive tech never reads this span's own
-              text once aria-label is set), so hiding it announces nothing
-              extra — it only strips the visible text axe's empty-table-header
-              check requires a th to have.
-            -->
             <span>{{ weekday.short }}</span>
           </th>
         }
@@ -138,20 +131,18 @@
   </table>
 }
 
-<!--
-  Months and years are a labelled group of plain buttons, not a grid: a
-  `role="grid"` demands `role="row"` children and a roving-focus model, and 12
-  or 24 one-shot drill-down buttons have neither. `aria-current` marks the
-  entry the calendar is currently on; `aria-selected` would be invalid outside
-  a grid/listbox context.
--->
 @if (_view() === 'months') {
-  <div class="date-picker__month-grid" role="group" [attr.aria-label]="_labels.chooseMonth">
+  <div class="date-picker__month-grid" role="group" [attr.aria-label]="_labels().chooseMonth">
     @for (cell of _monthCells(); track cell.month) {
       <div class="date-picker__month" [attr.data-month]="cell.month" [class.is-selected]="cell.selected">
+        <!-- The visible text is the SHORT name; the full month is the
+             accessible name. Intl-derived short names are dot-stripped so the
+             visible label stays a prefix of the accessible name (WCAG 2.5.3);
+             consumer-provided overrides own that property themselves. -->
         <button
           type="button"
           class="date-picker__month-button"
+          [attr.aria-label]="cell.fullName"
           [attr.aria-current]="cell.selected ? 'true' : null"
           (click)="_selectMonth(cell.month)"
         >
@@ -163,7 +154,7 @@
 }
 
 @if (_view() === 'years') {
-  <div class="date-picker__year-grid" role="group" [attr.aria-label]="_labels.chooseYear">
+  <div class="date-picker__year-grid" role="group" [attr.aria-label]="_labels().chooseYear">
     @for (cell of _yearCells(); track cell.year) {
       <div class="date-picker__year" [attr.data-year]="cell.year" [class.is-selected]="cell.selected">
         <button
@@ -187,7 +178,7 @@
       [disabled]="_effectiveDisabled()"
       (click)="_goToToday()"
     >
-      {{ _labels.today }}
+      {{ _labels().today }}
     </button>
   </div>
 }

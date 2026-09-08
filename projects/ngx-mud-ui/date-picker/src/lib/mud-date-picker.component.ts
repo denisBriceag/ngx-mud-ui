@@ -10,6 +10,7 @@ import {
   inject,
   Injector,
   input,
+  isSignal,
   LOCALE_ID,
   linkedSignal,
   model,
@@ -33,7 +34,7 @@ import {
   toIso,
   toValidIsoOrUndefined,
 } from './date-core';
-import { buildDayGrid, buildYearPage, weekdayOrder, yearPageStart } from './date-grid';
+import { buildDayGrid, buildYearPage, weekdayOrder, YEAR_PAGE, yearPageStart } from './date-grid';
 import { MUD_DATE_LABELS } from './date-labels';
 import type {
   MudDateMonthChange,
@@ -147,7 +148,12 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   /** Signal-forms touch contract. */
   readonly touch = output<void>();
 
-  protected readonly _labels = inject(MUD_DATE_LABELS);
+  private readonly _labelsSource = inject(MUD_DATE_LABELS);
+
+  /** Normalized token view: a plain object and a live signal both read here. */
+  protected readonly _labels = computed(() =>
+    isSignal(this._labelsSource) ? this._labelsSource() : this._labelsSource,
+  );
   private readonly _appLocale = inject(LOCALE_ID);
 
   protected readonly _id = `mud-date-picker-${nextUniqueId++}`;
@@ -158,7 +164,11 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   private _onTouched: () => void = () => undefined;
 
   protected readonly _today = mudToday();
-  protected readonly _activeLocale = computed(() => this.locale() ?? this._appLocale);
+
+  /** Input first, then the (possibly live) labels config, then the app locale. */
+  protected readonly _activeLocale = computed(
+    () => this.locale() ?? this._labels().locale ?? this._appLocale,
+  );
 
   protected readonly _effectiveDisabled = computed(() => this.disabled() || this._cvaDisabled());
   protected readonly _effectiveInvalid = computed(() => this.invalid() || this.errors().length > 0);
@@ -277,7 +287,13 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
     });
   });
 
+  /** Header title in days view: "August 2026". A `monthNamesLong` override
+   *  replaces the month word; Intl otherwise (which also owns the word order). */
   protected readonly _monthLabel = computed(() => {
+    const override = this._labels().monthNamesLong;
+
+    if (override?.length === 12) return `${override[this._viewMonth() - 1]} ${this._viewYear()}`;
+
     const formatter = new Intl.DateTimeFormat(this._activeLocale(), {
       month: 'long',
       year: 'numeric',
@@ -288,17 +304,35 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
 
   protected readonly _view = signal<MudDatePickerView>('days');
 
-  protected readonly _monthNames = computed(() => {
-    const formatter = new Intl.DateTimeFormat(this._activeLocale(), { month: 'long' });
+  /** Twelve month names: the labels override when given, Intl otherwise. */
+  private _monthNamesFor(style: 'long' | 'short'): readonly string[] {
+    const override =
+      style === 'long' ? this._labels().monthNamesLong : this._labels().monthNamesShort;
 
-    return Array.from({ length: 12 }, (_, index) =>
-      capitalize(formatter.format(mudDateToDate(toIso({ y: this._viewYear(), m: index + 1, d: 1 })))),
-    );
-  });
+    if (override?.length === 12) return override;
 
+    const formatter = new Intl.DateTimeFormat(this._activeLocale(), { month: style });
+
+    // Month names don't depend on the year, so any fixed one does.
+    // The trailing dot many locales put on short names (`ro` "nov.", `de`
+    // "Aug.") is stripped: the Figma style is dotless, and the dot breaks the
+    // short-is-a-prefix-of-long property that keeps the month buttons clear of
+    // WCAG 2.5.3 label-in-name mismatches.
+    return Array.from({ length: 12 }, (_, index) => {
+      const name = formatter.format(mudDateToDate(toIso({ y: 2024, m: index + 1, d: 1 })));
+
+      return capitalize(style === 'short' ? name.replace(/\.$/, '') : name);
+    });
+  }
+
+  private readonly _monthNamesLong = computed(() => this._monthNamesFor('long'));
+  private readonly _monthNamesShort = computed(() => this._monthNamesFor('short'));
+
+  /** The grid shows the SHORT name; `fullName` is the button's accessible name. */
   protected readonly _monthCells = computed(() =>
-    this._monthNames().map((label, index) => ({
+    this._monthNamesShort().map((label, index) => ({
       label,
+      fullName: this._monthNamesLong()[index],
       month: index + 1,
       selected: index + 1 === this._viewMonth(),
     })),
@@ -319,17 +353,19 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
 
     const start = yearPageStart(this._viewYear());
 
-    return `${start} – ${start + 23}`;
+    return `${start} – ${start + YEAR_PAGE - 1}`;
   });
 
   /** Only the month segment, for the dropdown header style. */
-  protected readonly _monthOnlyLabel = computed(() => this._monthNames()[this._viewMonth() - 1]);
+  protected readonly _monthOnlyLabel = computed(
+    () => this._monthNamesLong()[this._viewMonth() - 1],
+  );
 
   /** Nav arrow accessible names: month-stepping in days view, year-stepping otherwise. */
   protected readonly _navLabels = computed(() =>
     this._view() === 'days'
-      ? { prev: this._labels.previousMonth, next: this._labels.nextMonth }
-      : { prev: this._labels.previousYear, next: this._labels.nextYear },
+      ? { prev: this._labels().previousMonth, next: this._labels().nextMonth }
+      : { prev: this._labels().previousYear, next: this._labels().nextYear },
   );
 
   protected readonly _cells = computed(() => {
@@ -381,6 +417,19 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   constructor() {
     effect(() => {
       if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
+
+      // In the effect, not the constructor: a signal-backed token can swap the
+      // arrays at runtime.
+      for (const key of ['monthNamesShort', 'monthNamesLong'] as const) {
+        const names = this._labels()[key];
+
+        if (names && names.length !== 12) {
+          console.warn(
+            `[mud-date-picker] MUD_DATE_LABELS.${key} has ${names.length} entries; ` +
+              `expected 12 (January first). Falling back to Intl names.`,
+          );
+        }
+      }
 
       const value = this.value();
 
@@ -463,7 +512,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
     if (!start || end) {
       this._rangeHover.set(null);
       this._commit({ start: iso, end: null } as MudDateValue<M>);
-      this._announce(this._labels.rangeStartSelected(this._dayLabel(iso)));
+      this._announce(this._labels().rangeStartSelected(this._dayLabel(iso)));
 
       return;
     }
@@ -472,7 +521,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
 
     this._rangeHover.set(null);
     this._commit(range as MudDateValue<M>);
-    this._announce(this._labels.rangeSelected(this._dayLabel(range.start), this._dayLabel(range.end)));
+    this._announce(this._labels().rangeSelected(this._dayLabel(range.start), this._dayLabel(range.end)));
   }
 
   private _selectMulti(iso: string): void {
@@ -552,7 +601,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
     this._viewIso.set(toIso({ y: this._viewYear(), m: month, d: 1 }));
     this._view.set('days');
     this.monthChange.emit({ year: this._viewYear(), month: month - 1 });
-    this._announce(this._labels.monthChanged(this._monthLabel()));
+    this._announce(this._labels().monthChanged(this._monthLabel()));
 
     // `_viewIso` is already the first of the newly selected month, so
     // `_focusCell`'s own month-paging branch sees no change and does not
@@ -575,11 +624,11 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
 
     if (view === 'days') this._viewIso.set(startOfMonth(addMonths(this._viewIso(), delta)));
     else if (view === 'months') this._viewIso.set(addMonths(this._viewIso(), delta * 12));
-    else this._viewIso.set(addMonths(this._viewIso(), delta * 12 * 24));
+    else this._viewIso.set(addMonths(this._viewIso(), delta * 12 * YEAR_PAGE));
 
     this.monthChange.emit({ year: this._viewYear(), month: this._viewMonth() - 1 });
 
-    if (view === 'days') this._announce(this._labels.monthChanged(this._monthLabel()));
+    if (view === 'days') this._announce(this._labels().monthChanged(this._monthLabel()));
   }
 
   protected _goToToday(): void {
@@ -607,7 +656,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
     if (month !== this._viewIso()) {
       this._viewIso.set(month);
       this.monthChange.emit({ year: this._viewYear(), month: this._viewMonth() - 1 });
-      this._announce(this._labels.monthChanged(this._monthLabel()));
+      this._announce(this._labels().monthChanged(this._monthLabel()));
     }
 
     this._focusAfterRender(`[data-iso="${iso}"] button`);

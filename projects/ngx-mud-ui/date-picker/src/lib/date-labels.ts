@@ -1,11 +1,20 @@
-import { InjectionToken } from '@angular/core';
-import type { Provider } from '@angular/core';
+import { computed, InjectionToken, isSignal } from '@angular/core';
+import type { Provider, Signal } from '@angular/core';
 
 /**
  * Every user-facing string the date components render. Defaults are English;
- * localize an entire app with one `provideMudDateLabels` call.
+ * localize an entire app with one `provideMudDateLabels` call - pass a signal
+ * (or a factory returning one) and the calendars re-render live when it
+ * changes, so a runtime language switch needs no per-instance wiring.
  */
 export interface MudDateLabels {
+  /**
+   * BCP 47 locale for `Intl`-derived month/weekday names, so one signal can
+   * switch strings AND names together. Precedence: a component's own `locale`
+   * input, then this, then the app `LOCALE_ID`.
+   */
+  locale?: string;
+
   /** Accessible name of the calendar popover dialog. */
   calendar: string;
   previousMonth: string;
@@ -24,6 +33,19 @@ export interface MudDateLabels {
   rangeStart: string;
   /** Accessible name of the range end field. */
   rangeEnd: string;
+  /**
+   * Twelve SHORT month names for the month-picker grid, January first
+   * (`['Ian', 'Feb', …]`). If empty - derived from `Intl` for the active locale.
+   */
+  monthNamesShort?: readonly string[];
+
+  /**
+   * Twelve FULL month names, January first, the header title, the dropdown
+   * chip, announcements, and the month buttons' accessible names. Unset:
+   * derived from `Intl` for the active locale.
+   */
+  monthNamesLong?: readonly string[];
+
   /** Describes the expected entry format, e.g. "Date format: DD/MM/YYYY". */
   formatHint: (pattern: string) => string;
   /** Announced after the visible month changes. */
@@ -52,12 +74,44 @@ export const MUD_DATE_LABELS_DEFAULT: MudDateLabels = {
   rangeSelected: (start, end) => `${start} to ${end} selected`,
 };
 
-export const MUD_DATE_LABELS = new InjectionToken<MudDateLabels>('MUD_DATE_LABELS', {
-  providedIn: 'root',
-  factory: () => MUD_DATE_LABELS_DEFAULT,
-});
+export const MUD_DATE_LABELS = new InjectionToken<MudDateLabels | Signal<MudDateLabels>>(
+  'MUD_DATE_LABELS',
+  {
+    providedIn: 'root',
+    factory: () => MUD_DATE_LABELS_DEFAULT,
+  },
+);
 
-/** Overrides only the keys you pass; the rest keep their English defaults. */
-export function provideMudDateLabels(labels: Partial<MudDateLabels>): Provider {
-  return { provide: MUD_DATE_LABELS, useValue: { ...MUD_DATE_LABELS_DEFAULT, ...labels } };
+/**
+ * Overrides only the keys you pass; the rest keep their English defaults.
+ *
+ * Three shapes:
+ * - a plain partial — static labels;
+ * - a `Signal<Partial<MudDateLabels>>` - the calendars re-render when it changes;
+ * - a factory returning either - runs in an injection context, so it can
+ *   `inject()` your i18n service:
+ *
+ * ```ts
+ * provideMudDateLabels(() => {
+ *   const i18n = inject(I18nService);
+ *   return computed(() => (i18n.lang() === 'ro' ? RO_DATE_LABELS : {}));
+ * })
+ * ```
+ */
+export function provideMudDateLabels(
+  labels:
+    | Partial<MudDateLabels>
+    | Signal<Partial<MudDateLabels>>
+    | (() => Partial<MudDateLabels> | Signal<Partial<MudDateLabels>>),
+): Provider {
+  const merge = (partial: Partial<MudDateLabels> | Signal<Partial<MudDateLabels>>) =>
+    isSignal(partial)
+      ? computed(() => ({ ...MUD_DATE_LABELS_DEFAULT, ...partial() }))
+      : { ...MUD_DATE_LABELS_DEFAULT, ...partial };
+
+  if (typeof labels === 'function' && !isSignal(labels)) {
+    return { provide: MUD_DATE_LABELS, useFactory: () => merge(labels()) };
+  }
+
+  return { provide: MUD_DATE_LABELS, useValue: merge(labels) };
 }

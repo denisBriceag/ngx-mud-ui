@@ -9,6 +9,7 @@ import {
   forwardRef,
   inject,
   input,
+  isSignal,
   linkedSignal,
   model,
   output,
@@ -120,7 +121,12 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   readonly cleared = output<void>();
   readonly touch = output<void>();
 
-  protected readonly _labels = inject(MUD_DATE_LABELS);
+  private readonly _labelsSource = inject(MUD_DATE_LABELS);
+
+  /** Normalized token view: a plain object and a live signal both read here. */
+  protected readonly _labels = computed(() =>
+    isSignal(this._labelsSource) ? this._labelsSource() : this._labelsSource,
+  );
   private readonly _overlay = inject(Overlay);
   private readonly _viewContainerRef = inject(ViewContainerRef);
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -304,7 +310,7 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
       : this._draft().length > 0;
   });
 
-  protected readonly _formatHint = computed(() => this._labels.formatHint(this.format()));
+  protected readonly _formatHint = computed(() => this._labels().formatHint(this.format()));
 
   protected readonly _describedBy = computed<string | null>(() => {
     const ids = [this._hintId];
@@ -737,6 +743,13 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
     if (event.altKey && event.key === 'ArrowDown') {
       event.preventDefault();
       this._openPanel();
+
+      return;
+    }
+
+    if (event.key === 'Escape' && this.open()) {
+      event.preventDefault();
+      this._close(false);
     }
   }
 

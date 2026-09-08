@@ -1,13 +1,16 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideMudDateLabels } from './date-labels';
+import type { MudDateLabels } from './date-labels';
 import { MudDatePicker } from './mud-date-picker.component';
 
 @Component({
   imports: [MudDatePicker],
-  template: `<mud-date-picker startAt="2026-08-15" locale="en-GB" [headerStyle]="headerStyle()" />`,
+  template: `<mud-date-picker startAt="2026-08-15" [locale]="locale()" [headerStyle]="headerStyle()" />`,
 })
 class Host {
   readonly headerStyle = signal<'title' | 'dropdown'>('title');
+  readonly locale = signal('en-GB');
 }
 
 async function render() {
@@ -43,7 +46,7 @@ describe('MudDatePicker views', () => {
     expect(view.dayCells()).toHaveLength(0);
 
     await view.click(view.title());
-    expect(view.yearCells()).toHaveLength(24);
+    expect(view.yearCells()).toHaveLength(12);
   });
 
   it('shows the year range as the title in years view', async () => {
@@ -52,7 +55,7 @@ describe('MudDatePicker views', () => {
     await view.click(view.title());
     await view.click(view.title());
 
-    expect(view.title().textContent!.trim()).toBe('2016 – 2039');
+    expect(view.title().textContent!.trim()).toBe('2016 – 2027');
   });
 
   it('returns to the day grid on the chosen month', async () => {
@@ -70,10 +73,10 @@ describe('MudDatePicker views', () => {
 
     await view.click(view.title());
     await view.click(view.title());
-    await view.click(view.yearCells().find((cell) => cell.dataset['year'] === '2030')!.querySelector('button')!);
+    await view.click(view.yearCells().find((cell) => cell.dataset['year'] === '2020')!.querySelector('button')!);
 
     expect(view.monthCells()).toHaveLength(12);
-    expect(view.title().textContent!.trim()).toBe('2030');
+    expect(view.title().textContent!.trim()).toBe('2020');
   });
 
   it('marks the current month with aria-current', async () => {
@@ -112,7 +115,84 @@ describe('MudDatePicker views', () => {
     expect(year.textContent!.trim()).toBe('2026');
 
     await view.click(year);
-    expect(view.yearCells()).toHaveLength(24);
+    expect(view.yearCells()).toHaveLength(12);
+  });
+
+  it('shows short month names in the grid, with the full month as the accessible name', async () => {
+    const view = await render();
+
+    await view.click(view.title());
+
+    const august = view.monthCells()[7].querySelector('button')!;
+
+    expect(august.textContent!.trim()).toBe('Aug');
+    expect(august.getAttribute('aria-label')).toBe('August');
+  });
+
+  it('strips the trailing dot Intl puts on short month names, live with the locale input', async () => {
+    const view = await render();
+
+    await view.click(view.title());
+    expect(view.monthCells()[10].querySelector('button')!.textContent!.trim()).toBe('Nov');
+
+    // Romanian Intl short names carry a dot ("nov.") that would break the
+    // visible-label-is-a-prefix-of-the-accessible-name property.
+    view.host.locale.set('ro');
+    await view.fixture.whenStable();
+
+    const nov = view.monthCells()[10].querySelector('button')!;
+
+    expect(nov.textContent!.trim()).toBe('Nov');
+    expect(nov.getAttribute('aria-label')).toBe('Noiembrie');
+  });
+
+  it('renders consumer-provided month names from MUD_DATE_LABELS instead of Intl', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideMudDateLabels({
+          monthNamesShort: ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Noi', 'Dec'],
+          monthNamesLong: ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'],
+        }),
+      ],
+    });
+
+    const view = await render();
+
+    // September differs between the override and the en-GB Intl name, unlike
+    // the August the calendar opens on.
+    await view.click(view.el.querySelector<HTMLButtonElement>('[data-nav="next"]')!);
+    expect(view.title().textContent!.trim()).toBe('Septembrie 2026');
+
+    await view.click(view.title());
+
+    const january = view.monthCells()[0].querySelector('button')!;
+
+    expect(january.textContent!.trim()).toBe('Ian');
+    expect(january.getAttribute('aria-label')).toBe('Ianuarie');
+  });
+
+  it('re-renders live when the labels token holds a signal — a global language switch', async () => {
+    const lang = signal<Partial<MudDateLabels>>({});
+
+    TestBed.configureTestingModule({ providers: [provideMudDateLabels(lang)] });
+
+    const view = await render();
+    const today = () => view.el.querySelector<HTMLButtonElement>('.date-picker__today')!;
+
+    // September, not the August the calendar opens on: 'August' is spelled the
+    // same in both languages and would mask a stale render.
+    await view.click(view.el.querySelector<HTMLButtonElement>('[data-nav="next"]')!);
+    expect(today().textContent!.trim()).toBe('Today');
+    expect(view.title().textContent!.trim()).toBe('September 2026');
+
+    lang.set({
+      today: 'Astăzi',
+      monthNamesLong: ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'],
+    });
+    await view.fixture.whenStable();
+
+    expect(today().textContent!.trim()).toBe('Astăzi');
+    expect(view.title().textContent!.trim()).toBe('Septembrie 2026');
   });
 
   it('repurposes the nav buttons per view', async () => {
@@ -130,13 +210,13 @@ describe('MudDatePicker views', () => {
 
     await view.click(view.title());
     await view.click(view.title());
-    expect(view.title().textContent!.trim()).toBe('2016 – 2039');
+    expect(view.title().textContent!.trim()).toBe('2016 – 2027');
 
     await view.click(view.el.querySelector<HTMLButtonElement>('[data-nav="next"]')!);
-    expect(view.title().textContent!.trim()).toBe('2040 – 2063');
+    expect(view.title().textContent!.trim()).toBe('2028 – 2039');
 
     await view.click(view.el.querySelector<HTMLButtonElement>('[data-nav="prev"]')!);
-    expect(view.title().textContent!.trim()).toBe('2016 – 2039');
+    expect(view.title().textContent!.trim()).toBe('2016 – 2027');
   });
 
   it('moves focus to the day grid, not <body>, after choosing a month', async () => {
@@ -156,7 +236,7 @@ describe('MudDatePicker views', () => {
 
     await view.click(view.title());
     await view.click(view.title());
-    await view.click(view.yearCells().find((cell) => cell.dataset['year'] === '2030')!.querySelector('button')!);
+    await view.click(view.yearCells().find((cell) => cell.dataset['year'] === '2020')!.querySelector('button')!);
 
     const focused = document.activeElement as HTMLElement;
 
