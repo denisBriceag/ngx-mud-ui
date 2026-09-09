@@ -1,0 +1,17 @@
+<ng-template #panelTpl>
+  <div
+    class="menu"
+    [class.menu--selection]="type() === 'selection'"
+    [id]="_panelId"
+    [attr.role]="type() === 'selection' ? 'listbox' : 'menu'"
+    [attr.aria-label]="ariaLabel() || null"
+    tabindex="-1"
+    (keydown)="_onPanelKeydown($event)"
+  >
+    <ng-content />
+  </div>
+</ng-template>
+
+@if (_renderInline()) {
+  <ng-container [ngTemplateOutlet]="panelTpl" />
+}

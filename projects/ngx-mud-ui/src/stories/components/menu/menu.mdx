@@ -1,0 +1,67 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as MenuStories from './menu.stories';
+
+<Meta of={MenuStories} />
+
+# Menu
+
+A floating panel of choosable options opened from a trigger. Two semantics via
+`type`: `contextual` (an ARIA menu of actions) and `selection` (a single-select
+ARIA listbox whose chosen option carries a trailing check).
+
+## Import
+
+```ts
+import { MudMenu, MudMenuItem, MudMenuTrigger } from 'ngx-mud-ui/menu';
+```
+
+## Usage
+
+Attach a panel to any button with `[mudMenuTriggerFor]`. The popover dismisses
+on a decision, outside interaction, Escape, or pressing the trigger again.
+
+The `open` input is different: it renders the panel **in place, in the normal
+page flow** — no anchoring, no overlay. Use it for permanently visible panels
+or inside your own positioning system; use the trigger for anchored popovers.
+While a trigger is presenting the menu, `open` is ignored.
+
+<Canvas of={MenuStories.Playground} />
+<Controls of={MenuStories.Playground} />
+
+## Types
+
+<Canvas of={MenuStories.Types} />
+
+## Leading elements
+
+Items take `leading="icon" | "checkbox" | "radio"`; icon content projects
+through the `[icon]` slot. Set `closeOnSelect` to `false` for keep-open
+checkbox menus.
+
+<Canvas of={MenuStories.Leadings} />
+
+## Segmented
+
+A `heading` item renders a separator plus an optional section label — leave it
+empty for the separator alone.
+
+<Canvas of={MenuStories.Segmented} />
+
+## Truncation
+
+Labels clamp at two lines.
+
+<Canvas of={MenuStories.Truncation} />
+
+## Nested menus
+
+Put `[mudMenuTriggerFor]` on a `mud-menu-item` to open a submenu — chevron,
+hover-open, ArrowRight/ArrowLeft and chain dismissal included.
+
+<Canvas of={MenuStories.Nested} />
+
+## API
+
+### MudMenu
+
+<ArgTypes of={MenuStories} />
