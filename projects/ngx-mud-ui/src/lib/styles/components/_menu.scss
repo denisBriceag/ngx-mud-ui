@@ -1,41 +1,196 @@
 .menu {
-  position: relative;
   box-sizing: border-box;
-  --menu-row-min-height: 48px;
-  --menu-panel-radius: var(--border-radius-16, 16px);
-  --menu-panel-shadow: var(--drop-shadow-300);
-  --select-bg: var(--color-background-base-default, var(--white, #fff));
-  --select-menu-shadow: var(--menu-panel-shadow);
-  --select-option-text: var(--gray-700, #383838);
-  --select-option-selected-bg: var(
-    --color-background-base-default-active,
-    var(--gray-250, #e8e8e8)
-  );
-  --select-option-selected-text: var(
-    --color-text-brand-default,
-    var(--blue-sky-600, #0058d2)
-  );
-  --select-panel-border: var(--gray-250);
-  --select-menu-radius: var(--menu-panel-radius);
-  --select-z: 2000;
-  --select-focus-ring: rgba(0, 88, 210, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4, 4px);
+  min-inline-size: 270px;
+  max-block-size: 320px;
+  overflow-y: auto;
+  padding: var(--spacing-8, 8px);
+  background-color: var(--color-background-base-default);
+  border: 1px solid var(--color-border-overlay, transparent);
+  border-radius: 16px;
+  box-shadow:
+    0 8px 12px 4px rgba(40, 46, 55, 0.06),
+    0 2px 4px 0 rgba(40, 46, 55, 0.06);
+  font-family: var(--font-family-primary, inherit);
 }
 
-.menu__trigger {
+.menu__item {
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-12, 12px);
+  min-height: 44px;
+  padding: var(--spacing-12, 12px) var(--spacing-24, 24px) var(--spacing-12, 12px) var(--spacing-16, 16px);
+  border-radius: 8px;
+  color: var(--color-text-base-secondary);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  outline: none;
+  transition: background-color 150ms ease-out;
+
+  &:has(.menu__check),
+  &:has(.menu__chevron) {
+    padding-inline-end: var(--spacing-16, 16px);
+  }
+
+  &:hover:not(.is-disabled) {
+    background-color: var(--color-background-base-default-hover);
+  }
+
+  &:active:not(.is-disabled) {
+    background-color: var(--color-background-base-default-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--focus-ring-outer-color, #3379db);
+  }
+
+  &.is-disabled {
+    color: var(--color-text-disabled-default);
+    cursor: not-allowed;
+  }
+}
+
+.menu--selection .menu__item.is-checked {
+  background-color: var(--color-background-base-secondary);
+  color: var(--color-text-brand-default);
+}
+
+.menu__label {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.menu__leading {
+  flex: none;
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-8, 8px);
-  width: 100%;
-  margin: 0;
-  padding: var(--spacing-12, 12px) var(--spacing-16, 16px);
-  min-height: var(--menu-row-min-height);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  color: var(--gray-900, #121212);
-  background: var(--select-bg, var(--white));
-  border: var(--border-width-1, 1px) solid var(--select-panel-border);
-  border-radius: var(--border-radius-8, 8px);
+  justify-content: center;
+  inline-size: 20px;
+  block-size: 20px;
+  color: var(--color-icon-base-default);
+
+  > svg,
+  > mud-icon {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+}
+
+.menu__item.is-disabled .menu__leading {
+  color: var(--color-icon-disabled-default);
+}
+
+.menu__control {
+  box-sizing: border-box;
+  border: 2px solid var(--color-border-base-secondary);
+  background-color: var(--color-background-base-default);
+  color: var(--color-icon-base-inverse-on-color, #fff);
+  transition:
+    background-color 150ms ease-out,
+    border-color 150ms ease-out;
+}
+
+.menu__control--checkbox {
+  border-radius: 6px;
+
+  > svg {
+    inline-size: 12px;
+    block-size: 12px;
+    opacity: 0;
+  }
+}
+
+.menu__item.is-checked .menu__control--checkbox {
+  background-color: var(--color-background-brand-default);
+  border-color: var(--color-background-brand-default);
+
+  > svg {
+    opacity: 1;
+  }
+}
+
+.menu__control--radio {
+  border-radius: 50%;
+}
+
+// The fat border paints the dot: 20px circle − 2×6px border = 8px hole.
+.menu__item.is-checked .menu__control--radio {
+  border-width: 6px;
+  border-color: var(--color-background-brand-default);
+}
+
+.menu__item.is-disabled .menu__control {
+  border-color: var(--color-border-base-default);
+  background-color: var(--color-background-base-secondary);
+}
+
+.menu__check {
+  flex: none;
+  inline-size: 20px;
+  block-size: 20px;
+  color: var(--color-icon-brand-default);
+}
+
+.menu__chevron {
+  flex: none;
+  inline-size: 20px;
+  block-size: 20px;
+  color: var(--color-icon-base-default);
+}
+
+.menu__item.is-disabled .menu__chevron {
+  color: var(--color-icon-disabled-default);
+}
+
+.menu__heading-row {
+  display: block;
+  cursor: default;
+}
+
+.menu__separator {
+  block-size: 1px;
+  margin-block: var(--spacing-4, 4px);
+  background-color: var(--color-border-base-default);
+}
+
+.menu__heading {
+  display: block;
+  padding: var(--spacing-4, 4px) var(--spacing-16, 16px);
+  color: var(--color-text-base-tertiary);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+
+  &:empty {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .menu {
+    border: 1px solid CanvasText;
+  }
+
+  .menu__item:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+    box-shadow: none;
+  }
+
+  .menu--selection .menu__item.is-checked .menu__check {
+    forced-color-adjust: none;
+    color: Highlight;
+  }
 }
