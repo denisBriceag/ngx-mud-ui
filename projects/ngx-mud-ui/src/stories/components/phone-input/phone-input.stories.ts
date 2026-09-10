@@ -4,7 +4,7 @@ import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { MUD_PHONE_COUNTRIES, MudPhoneInput } from 'ngx-mud-ui/phone-input';
-import { MudInputError, MudInputHelper, MudInputLabel } from 'ngx-mud-ui/input';
+import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:420px;padding:24px';
@@ -182,13 +182,13 @@ export const States: Story = {
 
 /**
  * Rich content via the shared slots: `[mudLabel]`, `[mudHelper]` and
- * `[mudError]` from `ngx-mud-ui/input`.
+ * `[mudError]` from `ngx-mud-ui/text-input`.
  */
 export const ComposedContent: Story = {
   parameters: { controls: { disable: true } },
   decorators: [
     moduleMetadata({
-      imports: [MudPhoneInput, MudInputLabel, MudInputHelper, MudInputError, MudInlineMessage],
+      imports: [MudPhoneInput, MudFieldLabel, MudFieldHelper, MudFieldError, MudInlineMessage],
     }),
   ],
   render: () => ({

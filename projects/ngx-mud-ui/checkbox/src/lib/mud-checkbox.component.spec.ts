@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField, form } from '@angular/forms/signals';
 import { MudCheckbox } from './mud-checkbox.component';
-import { MudInputError, MudInputLabel } from 'ngx-mud-ui/input';
+import { MudFieldError, MudFieldLabel } from 'ngx-mud-ui/text-input';
 import { MudInlineMessage } from '../../../inline-message/src/public-api';
 
 @Component({
@@ -192,7 +192,7 @@ class SignalHost {
 }
 
 @Component({
-  imports: [MudCheckbox, MudInputLabel, MudInputError, MudInlineMessage],
+  imports: [MudCheckbox, MudFieldLabel, MudFieldError, MudInlineMessage],
   template: `
     <mud-checkbox invalid>
       <span mudLabel class="custom-label">Accept <a href="/termeni">termenii</a></span>

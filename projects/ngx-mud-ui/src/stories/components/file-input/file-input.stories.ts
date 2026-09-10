@@ -4,7 +4,7 @@ import { Component, computed, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField, form, minLength, required } from '@angular/forms/signals';
 import { MudFileInput, MudFileItem } from 'ngx-mud-ui/file-input';
-import { MudInputError, MudInputHelper, MudInputLabel } from 'ngx-mud-ui/input';
+import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 // `document` is aliased so it cannot shadow the global inside this module.
 import {
@@ -175,14 +175,14 @@ export const ProjectedIcon: Story = {
 
 /**
  * Rich content via the shared slots: `[mudLabel]`, `[mudHelper]` and
- * `[mudError]` from `ngx-mud-ui/input`. Label association, aria-describedby
+ * `[mudError]` from `ngx-mud-ui/text-input`. Label association, aria-describedby
  * and `role="alert"` stay with the component.
  */
 export const ComposedContent: Story = {
   parameters: { controls: { disable: true } },
   decorators: [
     moduleMetadata({
-      imports: [MudFileInput, MudInputLabel, MudInputHelper, MudInputError, MudInlineMessage],
+      imports: [MudFileInput, MudFieldLabel, MudFieldHelper, MudFieldError, MudInlineMessage],
     }),
   ],
   render: () => ({

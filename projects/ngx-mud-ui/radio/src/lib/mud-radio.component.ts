@@ -9,7 +9,7 @@ import {
   viewChild,
 } from '@angular/core';
 import type { ElementRef } from '@angular/core';
-import { MudInputHelper, MudInputLabel } from 'ngx-mud-ui/input';
+import { MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
 import { MudRadioGroup } from './mud-radio-group.component';
 
 let nextUniqueId = 0;
@@ -20,7 +20,7 @@ let nextUniqueId = 0;
  * a group — for a single yes/no toggle use `mud-checkbox`.
  *
  * `label` / `supportingText` accept the [mudLabel] / [mudHelper] projection
- * overrides from `ngx-mud-ui/input`.
+ * overrides from `ngx-mud-ui/text-input`.
  *
  * ```html
  * <mud-radio value="mpay" label="MPay" supportingText="Fără comision." />
@@ -60,8 +60,8 @@ export class MudRadio<T = unknown> {
   }
 
   /** @docs-private Projected region markers. */
-  protected readonly _projectedLabel = contentChild(MudInputLabel);
-  protected readonly _projectedHelper = contentChild(MudInputHelper);
+  protected readonly _projectedLabel = contentChild(MudFieldLabel);
+  protected readonly _projectedHelper = contentChild(MudFieldHelper);
 
   protected readonly _id = `mud-radio-${nextUniqueId++}`;
   protected readonly _supportingId = `${this._id}-supporting`;

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { moduleMetadata } from '@storybook/angular-vite';
 import { Component, computed, signal } from '@angular/core';
 import { MudCheckbox } from 'ngx-mud-ui/checkbox';
-import { MudInputError, MudInputHelper, MudInputLabel } from 'ngx-mud-ui/input';
+import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 const COL = 'display:flex;flex-direction:column;gap:20px;max-width:420px;padding:24px';
@@ -125,12 +125,12 @@ class CheckboxSelectAllDemo {
 /**
  * Rich content via the shared slots: [mudLabel] for the label, [mudHelper]
  * for the supporting line, [mudError] for the error — import the marker
- * directives from ngx-mud-ui/input). The wiring (label
+ * directives from ngx-mud-ui/text-input). The wiring (label
  * association, aria-describedby, role=alert) is kept by the component.
  */
 export const ComposedContent: Story = {
   parameters: { controls: { disable: true } },
-  decorators: [moduleMetadata({ imports: [MudCheckbox, MudInputLabel, MudInputHelper, MudInputError, MudInlineMessage] })],
+  decorators: [moduleMetadata({ imports: [MudCheckbox, MudFieldLabel, MudFieldHelper, MudFieldError, MudInlineMessage] })],
   render: () => ({
     template: `
       <div style="${COL}">

@@ -27,7 +27,7 @@ import type { SafeUrl } from '@angular/platform-browser';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl, ValidationError } from '@angular/forms/signals';
-import { MudInputError, MudInputHelper, MudInputLabel } from 'ngx-mud-ui/input';
+import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
 import {
   MUD_PHONE_COUNTRIES,
   MUD_PHONE_DEFAULT_ISO,
@@ -191,9 +191,9 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   private readonly _appLocale = inject(LOCALE_ID);
 
   /** @docs-private Projected region markers ([mudLabel] / [mudHelper] / [mudError]). */
-  protected readonly _projectedLabel = contentChild(MudInputLabel);
-  protected readonly _projectedHelper = contentChild(MudInputHelper);
-  protected readonly _projectedError = contentChild(MudInputError);
+  protected readonly _projectedLabel = contentChild(MudFieldLabel);
+  protected readonly _projectedHelper = contentChild(MudFieldHelper);
+  protected readonly _projectedError = contentChild(MudFieldError);
 
   protected readonly _id = `mud-phone-input-${nextUniqueId++}`;
   protected readonly _labelId = `${this._id}-label`;

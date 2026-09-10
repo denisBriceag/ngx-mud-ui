@@ -19,7 +19,7 @@ import { MudRadio } from './mud-radio.component';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl, ValidationError } from '@angular/forms/signals';
-import { MudInputError, MudInputLabel } from 'ngx-mud-ui/input';
+import { MudFieldError, MudFieldLabel } from 'ngx-mud-ui/text-input';
 
 export type MudRadioGroupSize = 'medium' | 'small';
 
@@ -106,8 +106,8 @@ export class MudRadioGroup<T = unknown> implements ControlValueAccessor, FormVal
   protected readonly _radios = contentChildren(forwardRef(() => MudRadio));
 
   /** @docs-private Projected region markers. */
-  protected readonly _projectedLabel = contentChild(MudInputLabel);
-  protected readonly _projectedError = contentChild(MudInputError);
+  protected readonly _projectedLabel = contentChild(MudFieldLabel);
+  protected readonly _projectedError = contentChild(MudFieldError);
 
   private readonly _uid = `mud-radio-group-${nextUniqueId++}`;
   protected readonly _labelId = `${this._uid}-label`;

@@ -18,11 +18,11 @@ import { isPlatformBrowser } from '@angular/common';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl, ValidationError } from '@angular/forms/signals';
-import { MudInputError, MudInputHelper, MudInputLabel } from './mud-input-slots';
+import { MudFieldError, MudFieldHelper, MudFieldLabel } from './mud-field-slots';
 
-export type MudInputVariant = 'default' | 'warning' | 'destructive' | 'success';
-export type MudInputSize = 'medium' | 'large';
-export type MudInputType = 'text' | 'email' | 'password' | 'tel' | 'url' | 'search';
+export type MudTextInputVariant = 'default' | 'warning' | 'destructive' | 'success';
+export type MudTextInputSize = 'medium' | 'large';
+export type MudTextInputType = 'text' | 'email' | 'password' | 'tel' | 'url' | 'search';
 
 let nextUniqueId = 0;
 
@@ -40,17 +40,17 @@ function toRegExpArray(value: unknown): readonly RegExp[] {
 
 /**
  * ```html
- * <mud-input label="IDNP" required [formControl]="idnp" [maxLength]="13" />
- * <mud-input label="Email" type="email" [formField]="form.email" />
- * <mud-input [invalid]="ctrl.invalid">
+ * <mud-text-input label="IDNP" required [formControl]="idnp" [maxLength]="13" />
+ * <mud-text-input label="Email" type="email" [formField]="form.email" />
+ * <mud-text-input [invalid]="ctrl.invalid">
  *   <span mudLabel>IDNP</span>
  *   <mud-inline-message mudError variant="error">IDNP invalid — <a href="/ajutor">format</a></mud-inline-message>
- * </mud-input>
+ * </mud-text-input>
  * ```
  */
 @Component({
-  selector: 'mud-input',
-  templateUrl: './mud-input.component.html',
+  selector: 'mud-text-input',
+  templateUrl: './mud-text-input.component.html',
   host: {
     '[class]': '_hostClasses()',
     '[attr.aria-busy]': "loading() ? 'true' : null",
@@ -58,21 +58,21 @@ function toRegExpArray(value: unknown): readonly RegExp[] {
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => MudInput),
+      useExisting: forwardRef(() => MudTextInput),
       multi: true,
     },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MudInput implements ControlValueAccessor, FormValueControl<string> {
+export class MudTextInput implements ControlValueAccessor, FormValueControl<string> {
   /** @description Color treatment. `destructive` is forced when `invalid` is set. */
-  readonly variant = input<MudInputVariant>('default');
+  readonly variant = input<MudTextInputVariant>('default');
 
   /** @description Visual size rung: medium (40px, 14/20) or large (48px, 16/24). */
-  readonly size = input<MudInputSize>('medium');
+  readonly size = input<MudTextInputSize>('medium');
 
   /** @description Native input `type`. */
-  readonly type = input<MudInputType>('text');
+  readonly type = input<MudTextInputType>('text');
 
   readonly disabled = input(false, { transform: booleanAttribute });
 
@@ -151,12 +151,12 @@ export class MudInput implements ControlValueAccessor, FormValueControl<string> 
   private readonly _native = viewChild.required<ElementRef<HTMLInputElement>>('native');
 
   /** @docs-private Projected region markers ([mudLabel] / [mudHelper] / [mudError]). */
-  protected readonly _projectedLabel = contentChild(MudInputLabel);
-  protected readonly _projectedHelper = contentChild(MudInputHelper);
-  protected readonly _projectedError = contentChild(MudInputError);
+  protected readonly _projectedLabel = contentChild(MudFieldLabel);
+  protected readonly _projectedHelper = contentChild(MudFieldHelper);
+  protected readonly _projectedError = contentChild(MudFieldError);
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  protected readonly _id = `mud-input-${nextUniqueId++}`;
+  protected readonly _id = `mud-text-input-${nextUniqueId++}`;
   protected readonly _labelId = `${this._id}-label`;
   protected readonly _helperId = `${this._id}-helper`;
   protected readonly _errorId = `${this._id}-error`;
@@ -171,7 +171,7 @@ export class MudInput implements ControlValueAccessor, FormValueControl<string> 
 
   protected readonly _effectiveInvalid = computed(() => this.invalid() || this.errors().length > 0);
 
-  protected readonly _effectiveVariant = computed<MudInputVariant>(() =>
+  protected readonly _effectiveVariant = computed<MudTextInputVariant>(() =>
     this._effectiveInvalid() ? 'destructive' : this.variant(),
   );
 

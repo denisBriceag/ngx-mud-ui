@@ -2,15 +2,15 @@ import { Component, signal, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
-import { MudInput } from './mud-input.component';
-import { MudInputError, MudInputHelper, MudInputLabel } from './mud-input-slots';
+import { MudTextInput } from './mud-text-input.component';
+import { MudFieldError, MudFieldHelper, MudFieldLabel } from './mud-field-slots';
 import { MudInlineMessage } from '../../../inline-message/src/public-api';
-import type { MudInputSize, MudInputVariant } from './mud-input.component';
+import type { MudTextInputSize, MudTextInputVariant } from './mud-text-input.component';
 
 @Component({
-  imports: [MudInput],
+  imports: [MudTextInput],
   template: `
-    <mud-input
+    <mud-text-input
       [label]="label()"
       [variant]="variant()"
       [size]="size()"
@@ -30,8 +30,8 @@ import type { MudInputSize, MudInputVariant } from './mud-input.component';
 class Host {
   readonly value = signal('');
   readonly label = signal<string | undefined>('IDNP');
-  readonly variant = signal<MudInputVariant>('default');
-  readonly size = signal<MudInputSize>('medium');
+  readonly variant = signal<MudTextInputVariant>('default');
+  readonly size = signal<MudTextInputSize>('medium');
   readonly helperText = signal<string | undefined>(undefined);
   readonly errorText = signal<string | undefined>(undefined);
   readonly invalid = signal(false);
@@ -46,7 +46,7 @@ async function render() {
   const fixture = TestBed.createComponent(Host);
 
   await fixture.whenStable();
-  const el = fixture.nativeElement.querySelector('mud-input') as HTMLElement;
+  const el = fixture.nativeElement.querySelector('mud-text-input') as HTMLElement;
   const native = el.querySelector('input.input-field__native') as HTMLInputElement;
 
   return { fixture, host: fixture.componentInstance, el, native };
@@ -58,7 +58,7 @@ async function type(fixture: { whenStable(): Promise<unknown> }, native: HTMLInp
   await fixture.whenStable();
 }
 
-describe('MudInput', () => {
+describe('MudTextInput', () => {
   it('renders label, control, and native input with the ARIA wiring', async () => {
     const { el, native } = await render();
     const label = el.querySelector('.input-field__label') as HTMLLabelElement;
@@ -187,13 +187,13 @@ describe('MudInput', () => {
   });
 });
 
-describe('MudInput reactive forms (ControlValueAccessor)', () => {
+describe('MudTextInput reactive forms (ControlValueAccessor)', () => {
   it('syncs writeValue, user input, disabling, and touched-on-blur', async () => {
     const fixture = TestBed.createComponent(ReactiveHost);
 
     await fixture.whenStable();
     const host = fixture.componentInstance;
-    const el = fixture.nativeElement.querySelector('mud-input') as HTMLElement;
+    const el = fixture.nativeElement.querySelector('mud-text-input') as HTMLElement;
     const native = el.querySelector('input') as HTMLInputElement;
 
     expect(native.value).toBe('seed');
@@ -231,7 +231,7 @@ describe('MudInput reactive forms (ControlValueAccessor)', () => {
   });
 });
 
-describe('MudInput signal forms (FormValueControl)', () => {
+describe('MudTextInput signal forms (FormValueControl)', () => {
   it('binds value both ways through the Field directive', async () => {
     const fixture = TestBed.createComponent(SignalHost);
 
@@ -254,7 +254,7 @@ describe('MudInput signal forms (FormValueControl)', () => {
 
     await fixture.whenStable();
     const host = fixture.componentInstance;
-    const el = fixture.nativeElement.querySelector('mud-input') as HTMLElement;
+    const el = fixture.nativeElement.querySelector('mud-text-input') as HTMLElement;
     const native = el.querySelector('input') as HTMLInputElement;
 
     await type(fixture, native, '');
@@ -270,38 +270,38 @@ describe('MudInput signal forms (FormValueControl)', () => {
 });
 
 @Component({
-  imports: [MudInput],
-  template: `<mud-input aria-label="Search services" />`,
+  imports: [MudTextInput],
+  template: `<mud-text-input aria-label="Search services" />`,
 })
 class UnlabelledHost {}
 
 @Component({
-  imports: [MudInput, ReactiveFormsModule],
-  template: `<mud-input label="IDNP" [formControl]="control" />`,
+  imports: [MudTextInput, ReactiveFormsModule],
+  template: `<mud-text-input label="IDNP" [formControl]="control" />`,
 })
 class ReactiveHost {
   readonly control = new FormControl<string>('seed', { nonNullable: true, validators: [Validators.required] });
 }
 
 @Component({
-  imports: [MudInput, FormField],
-  template: `<mud-input label="IDNP" [formField]="form.idnp" />`,
+  imports: [MudTextInput, FormField],
+  template: `<mud-text-input label="IDNP" [formField]="form.idnp" />`,
 })
 class SignalHost {
-  readonly input = viewChild.required(MudInput);
+  readonly input = viewChild.required(MudTextInput);
   readonly model = signal({ idnp: 'initial' });
   readonly form = form(this.model, (path) => {
     required(path.idnp, { message: 'IDNP is required' });
   });
 }
 
-describe('MudInput composable slots', () => {
+describe('MudTextInput composable slots', () => {
   it('projected label/helper/error replace the defaults inside the wired wrappers', async () => {
     const fixture = TestBed.createComponent(SlottedHost);
 
     await fixture.whenStable();
     const host = fixture.componentInstance;
-    const el = fixture.nativeElement.querySelector('mud-input') as HTMLElement;
+    const el = fixture.nativeElement.querySelector('mud-text-input') as HTMLElement;
     const native = el.querySelector('input') as HTMLInputElement;
 
     // Projected label renders inside the <label> and keeps the for-association.
@@ -343,13 +343,13 @@ describe('MudInput composable slots', () => {
 });
 
 @Component({
-  imports: [MudInput, MudInputLabel, MudInputHelper, MudInputError, MudInlineMessage],
+  imports: [MudTextInput, MudFieldLabel, MudFieldHelper, MudFieldError, MudInlineMessage],
   template: `
-    <mud-input [invalid]="invalid()">
+    <mud-text-input [invalid]="invalid()">
       <span mudLabel class="custom-label">IDNP</span>
       <mud-inline-message mudHelper class="custom-helper" hideIcon>13 cifre.</mud-inline-message>
       <mud-inline-message mudError class="custom-error" variant="error">IDNP invalid.</mud-inline-message>
-    </mud-input>
+    </mud-text-input>
   `,
 })
 class SlottedHost {
@@ -357,9 +357,9 @@ class SlottedHost {
 }
 
 @Component({
-  imports: [MudInput],
+  imports: [MudTextInput],
   template: `
-    <mud-input label="IDNP" helperText="13 cifre." aria-describedby="external-note" />
+    <mud-text-input label="IDNP" helperText="13 cifre." aria-describedby="external-note" />
     <p id="external-note">Notă externă.</p>
   `,
 })

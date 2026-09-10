@@ -45,7 +45,6 @@
               "../icons/src/**/*.spec.ts",
               "../info-box/src/**/*.spec.ts",
               "../inline-message/src/**/*.spec.ts",
-              "../input/src/**/*.spec.ts",
               "../input-chip/src/**/*.spec.ts",
               "../link/src/**/*.spec.ts",
               "../menu/src/**/*.spec.ts",
@@ -60,6 +59,7 @@
               "../switch/src/**/*.spec.ts",
               "../tabs/src/**/*.spec.ts",
               "../tag/src/**/*.spec.ts",
+              "../text-input/src/**/*.spec.ts",
               "../textarea/src/**/*.spec.ts",
               "../tooltip/src/**/*.spec.ts"
             ]

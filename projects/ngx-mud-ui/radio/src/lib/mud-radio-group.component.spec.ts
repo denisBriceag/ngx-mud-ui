@@ -4,7 +4,7 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { MudRadioGroup } from './mud-radio-group.component';
 import { MudRadio } from './mud-radio.component';
-import { MudInputError, MudInputLabel } from 'ngx-mud-ui/input';
+import { MudFieldError, MudFieldLabel } from 'ngx-mud-ui/text-input';
 
 @Component({
   imports: [MudRadioGroup, MudRadio],
@@ -244,7 +244,7 @@ class SignalHost {
 }
 
 @Component({
-  imports: [MudRadioGroup, MudRadio, MudInputLabel, MudInputError],
+  imports: [MudRadioGroup, MudRadio, MudFieldLabel, MudFieldError],
   template: `
     <mud-radio-group invalid>
       <span mudLabel class="custom-label">Metoda <em>de plată</em></span>
