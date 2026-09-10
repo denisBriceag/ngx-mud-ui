@@ -1,9 +1,9 @@
 import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
-import * as InputStories from './input.stories';
+import * as TextInputStories from './text-input.stories';
 
-<Meta of={InputStories} />
+<Meta of={TextInputStories} />
 
-# Input
+# Text input
 
 The single-line text field: label, helper text, error region, optional leading
 and trailing icons, and a clear button. Works standalone via `[(value)]`, with
@@ -12,11 +12,11 @@ reactive and template-driven forms, and with signal forms.
 ## Import
 
 ```ts
-import { MudInput, MudInputError, MudInputHelper, MudInputLabel } from 'ngx-mud-ui/input';
+import { MudTextInput, MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
 
 @Component({
-  imports: [MudInput],
-  template: `<mud-input label="IDNP" required [formControl]="idnp" [maxLength]="13" />`,
+  imports: [MudTextInput],
+  template: `<mud-text-input label="IDNP" required [formControl]="idnp" [maxLength]="13" />`,
 })
 export class Demo {}
 ```
@@ -29,56 +29,60 @@ The design-system stylesheet must be loaded once in your app:
 
 ## Playground
 
-<Canvas of={InputStories.Playground} />
-<Controls of={InputStories.Playground} />
+<Canvas of={TextInputStories.Playground} />
+<Controls of={TextInputStories.Playground} />
 
 ## Variants
 
-<Canvas of={InputStories.Variants} />
+<Canvas of={TextInputStories.Variants} />
 
 ## Sizes
 
-<Canvas of={InputStories.Sizes} />
+<Canvas of={TextInputStories.Sizes} />
 
 ## States
 
-<Canvas of={InputStories.States} />
+<Canvas of={TextInputStories.States} />
 
 ## Icons and clear
 
-<Canvas of={InputStories.IconsAndClear} />
+<Canvas of={TextInputStories.IconsAndClear} />
 
 ## Reactive forms
 
-<Canvas of={InputStories.ReactiveForms} />
+<Canvas of={TextInputStories.ReactiveForms} />
 
 ## Signal forms
 
-<Canvas of={InputStories.SignalForms} />
+<Canvas of={TextInputStories.SignalForms} />
 
 ## Composable content
 
 For anything richer than plain text — a label with an icon, an error containing
 a link — project content instead of passing strings.
 
-<Canvas of={InputStories.Composable} />
+<Canvas of={TextInputStories.Composable} />
 
 ## API
 
-Selector: `mud-input`
+Selector: `mud-text-input`
 
-<ArgTypes of={InputStories} />
+<ArgTypes of={TextInputStories} />
 
 ### Projection slots
+
+These three directives are shared by every MUD form field (textarea, select,
+checkbox, radio, file input…), which is why they are named `MudField*` rather
+than after any one control.
 
 <table>
   <thead>
     <tr><th>Directive</th><th>Selector</th><th>Replaces</th></tr>
   </thead>
   <tbody>
-    <tr><td><code>MudInputLabel</code></td><td><code>[mudLabel]</code></td><td><code>label</code></td></tr>
-    <tr><td><code>MudInputHelper</code></td><td><code>[mudHelper]</code></td><td><code>helperText</code></td></tr>
-    <tr><td><code>MudInputError</code></td><td><code>[mudError]</code></td><td><code>errorText</code></td></tr>
+    <tr><td><code>MudFieldLabel</code></td><td><code>[mudLabel]</code></td><td><code>label</code></td></tr>
+    <tr><td><code>MudFieldHelper</code></td><td><code>[mudHelper]</code></td><td><code>helperText</code></td></tr>
+    <tr><td><code>MudFieldError</code></td><td><code>[mudError]</code></td><td><code>errorText</code></td></tr>
   </tbody>
 </table>
 

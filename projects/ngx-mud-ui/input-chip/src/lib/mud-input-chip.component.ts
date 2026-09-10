@@ -23,7 +23,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl, ValidationError } from '@angular/forms/signals';
-import { MudInputError, MudInputHelper, MudInputLabel } from 'ngx-mud-ui/input';
+import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
 
 export type MudInputChipVariant = 'default' | 'destructive';
 export type MudInputChipSize = 'medium' | 'large';
@@ -164,9 +164,9 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   /** @docs-private Projected region markers ([mudLabel] / [mudHelper] / [mudError]). */
-  protected readonly _projectedLabel = contentChild(MudInputLabel);
-  protected readonly _projectedHelper = contentChild(MudInputHelper);
-  protected readonly _projectedError = contentChild(MudInputError);
+  protected readonly _projectedLabel = contentChild(MudFieldLabel);
+  protected readonly _projectedHelper = contentChild(MudFieldHelper);
+  protected readonly _projectedError = contentChild(MudFieldError);
 
   protected readonly _id = `mud-input-chip-${nextUniqueId++}`;
   protected readonly _labelId = `${this._id}-label`;

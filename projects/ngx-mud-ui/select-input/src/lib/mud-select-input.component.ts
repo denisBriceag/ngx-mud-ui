@@ -27,7 +27,7 @@ import { ViewContainerRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl, ValidationError } from '@angular/forms/signals';
-import { MudInputError, MudInputHelper, MudInputLabel } from 'ngx-mud-ui/input';
+import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
 
 export type MudSelectInputVariant = 'default' | 'destructive';
 export type MudSelectInputSize = 'medium' | 'large';
@@ -126,9 +126,9 @@ export class MudSelectInput<T = unknown> implements ControlValueAccessor, FormVa
   private readonly _panelTemplate = viewChild.required<TemplateRef<unknown>>('panel');
 
   /** @docs-private Projected region markers ([mudLabel] / [mudHelper] / [mudError]). */
-  protected readonly _projectedLabel = contentChild(MudInputLabel);
-  protected readonly _projectedHelper = contentChild(MudInputHelper);
-  protected readonly _projectedError = contentChild(MudInputError);
+  protected readonly _projectedLabel = contentChild(MudFieldLabel);
+  protected readonly _projectedHelper = contentChild(MudFieldHelper);
+  protected readonly _projectedError = contentChild(MudFieldError);
 
   protected readonly _id = `mud-select-${nextUniqueId++}`;
   protected readonly _labelId = `${this._id}-label`;

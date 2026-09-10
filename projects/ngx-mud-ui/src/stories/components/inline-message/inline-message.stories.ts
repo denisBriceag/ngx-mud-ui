@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { MudIconComponent, provideMudIcons, sparkles } from 'ngx-mud-ui/icons';
-import { MudInput, MudInputError } from 'ngx-mud-ui/input';
+import { MudTextInput, MudFieldError } from 'ngx-mud-ui/text-input';
 
 const COL = 'display:flex;flex-direction:column;gap:12px;align-items:flex-start;padding:24px';
 const ROW = 'display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding:24px';
@@ -12,7 +12,7 @@ const meta: Meta<MudInlineMessage> = {
   component: MudInlineMessage,
   decorators: [
     applicationConfig({ providers: [provideMudIcons([sparkles])] }),
-    moduleMetadata({ imports: [MudInlineMessage, MudIconComponent, MudInput, MudInputError] }),
+    moduleMetadata({ imports: [MudInlineMessage, MudIconComponent, MudTextInput, MudFieldError] }),
   ],
   argTypes: {
     variant: { control: 'inline-radio', options: ['info', 'warning', 'success', 'error'] },
@@ -115,7 +115,7 @@ export const Wrapping: Story = {
  * set on the field itself.
  */
 /**
- * Two ways to attach a message to a real `mud-input`.
+ * Two ways to attach a message to a real `mud-text-input`.
  *
  * **Projected** (`mudError`) is the usual one: the field owns the message, wires
  * `aria-describedby` itself, and announces it through its `role="alert"` region.
@@ -132,14 +132,14 @@ export const AsFieldError: Story = {
   render: () => ({
     template: `
       <div style="${COL};gap:32px;max-width:420px;align-items:stretch">
-        <mud-input label="IDNP" value="12345" [maxLength]="13" invalid>
+        <mud-text-input label="IDNP" value="12345" [maxLength]="13" invalid>
           <mud-inline-message mudError variant="error" size="small">
             IDNP-ul trebuie să conțină 13 cifre.
           </mud-inline-message>
-        </mud-input>
+        </mud-text-input>
 
         <div style="display:flex;flex-direction:column;gap:8px;width:100%">
-          <mud-input label="IDNP" value="12345" aria-describedby="idnp-error" invalid />
+          <mud-text-input label="IDNP" value="12345" aria-describedby="idnp-error" invalid />
           <mud-inline-message variant="error" size="small" id="idnp-error">
             IDNP-ul trebuie să conțină 13 cifre.
           </mud-inline-message>

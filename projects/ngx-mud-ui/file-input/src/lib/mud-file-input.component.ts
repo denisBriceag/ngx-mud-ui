@@ -21,7 +21,7 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl, ValidationError } from '@angular/forms/signals';
 import { MudButton } from 'ngx-mud-ui/button';
-import { MudInputError, MudInputHelper, MudInputLabel } from 'ngx-mud-ui/input';
+import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
 import { MudFileItem } from './mud-file-item.component';
 
 export type MudFileInputVariant = 'dropzone' | 'button';
@@ -206,9 +206,9 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   /** @docs-private Projected region markers ([mudLabel] / [mudHelper] / [mudError]). */
-  protected readonly _projectedLabel = contentChild(MudInputLabel);
-  protected readonly _projectedHelper = contentChild(MudInputHelper);
-  protected readonly _projectedError = contentChild(MudInputError);
+  protected readonly _projectedLabel = contentChild(MudFieldLabel);
+  protected readonly _projectedHelper = contentChild(MudFieldHelper);
+  protected readonly _projectedError = contentChild(MudFieldError);
 
   protected readonly _id = `mud-file-input-${nextUniqueId++}`;
   protected readonly _labelId = `${this._id}-label`;

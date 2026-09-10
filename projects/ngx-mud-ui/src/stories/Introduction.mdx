@@ -109,13 +109,13 @@ Every component is standalone: import the class and put it in a component's
 ```ts
 import { Component } from '@angular/core';
 import { MudButton } from 'ngx-mud-ui/button';
-import { MudInput } from 'ngx-mud-ui/input';
+import { MudTextInput } from 'ngx-mud-ui/text-input';
 
 @Component({
   selector: 'app-request',
-  imports: [MudButton, MudInput],
+  imports: [MudButton, MudTextInput],
   template: `
-    <mud-input label="IDNP" required [(value)]="idnp" [maxLength]="13" />
+    <mud-text-input label="IDNP" required [(value)]="idnp" [maxLength]="13" />
     <button type="button" mudButton (click)="submit()">Continuă</button>
   `,
 })
@@ -174,7 +174,6 @@ the surrounding CSS `color`, and are decorative unless you give them an
     <tr><td><code>ngx-mud-ui/icons</code></td><td>Icon component, registry, providers, 178 icons</td></tr>
     <tr><td><code>ngx-mud-ui/info-box</code></td><td>In-content callout</td></tr>
     <tr><td><code>ngx-mud-ui/inline-message</code></td><td>Inline message</td></tr>
-    <tr><td><code>ngx-mud-ui/input</code></td><td>Text field plus the label / helper / error projection slots</td></tr>
     <tr><td><code>ngx-mud-ui/input-chip</code></td><td>Chip-list field</td></tr>
     <tr><td><code>ngx-mud-ui/link</code></td><td>Link directive</td></tr>
     <tr><td><code>ngx-mud-ui/numeric-input</code></td><td>Numeric field with steppers and locale formatting</td></tr>
@@ -187,6 +186,7 @@ the surrounding CSS `color`, and are decorative unless you give them an
     <tr><td><code>ngx-mud-ui/switch</code></td><td>Switch</td></tr>
     <tr><td><code>ngx-mud-ui/tabs</code></td><td>Tab group, tab, tab label</td></tr>
     <tr><td><code>ngx-mud-ui/tag</code></td><td>Tag</td></tr>
+    <tr><td><code>ngx-mud-ui/text-input</code></td><td>Text field plus the label / helper / error projection slots</td></tr>
     <tr><td><code>ngx-mud-ui/textarea</code></td><td>Multi-line field</td></tr>
     <tr><td><code>ngx-mud-ui/tooltip</code></td><td>Tooltip directive <em>(CDK overlay)</em></td></tr>
     <tr><td><code>{'ngx-mud-ui/styles/*'}</code></td><td>The design-system SCSS</td></tr>
@@ -227,13 +227,13 @@ Form controls work with whichever system your app uses:
 
 ```html
 <!-- reactive -->
-<mud-input label="IDNP" [formControl]="idnp" />
+<mud-text-input label="IDNP" [formControl]="idnp" />
 
 <!-- signal forms -->
-<mud-input label="IDNP" [formField]="form.idnp" />
+<mud-text-input label="IDNP" [formField]="form.idnp" />
 
 <!-- standalone -->
-<mud-input label="IDNP" [(value)]="idnp" />
+<mud-text-input label="IDNP" [(value)]="idnp" />
 ```
 
 With signal forms the `invalid` and `errors` inputs are bound for you, so

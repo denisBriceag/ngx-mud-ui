@@ -114,7 +114,7 @@ export const ResizeAndSizes: Story = {
 };
 
 /**
- * Truncation rules shared with mud-input: the label clamps to ONE line,
+ * Truncation rules shared with mud-text-input: the label clamps to ONE line,
  * assistive text to TWO lines.
  */
 export const Truncation: Story = {

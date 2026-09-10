@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { MudTextarea } from './mud-textarea.component';
-import { MudInputError, MudInputHelper, MudInputLabel } from 'ngx-mud-ui/input';
+import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
 import { MudInlineMessage } from '../../../inline-message/src/public-api';
 
 @Component({
@@ -227,7 +227,7 @@ class SignalHost {
 }
 
 @Component({
-  imports: [MudTextarea, MudInputLabel, MudInputHelper, MudInputError, MudInlineMessage],
+  imports: [MudTextarea, MudFieldLabel, MudFieldHelper, MudFieldError, MudInlineMessage],
   template: `
     <mud-textarea invalid>
       <span mudLabel>Mesaj</span>

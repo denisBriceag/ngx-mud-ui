@@ -4,18 +4,18 @@ import { Component, signal } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
-import { MudInput, MudInputError, MudInputHelper, MudInputLabel } from 'ngx-mud-ui/input';
+import { MudTextInput, MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { MudIconComponent, provideMudIcons, search, envelope } from 'ngx-mud-ui/icons';
 
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:360px;padding:24px';
 
-const meta: Meta<MudInput> = {
-  title: 'Components/Input',
-  component: MudInput,
+const meta: Meta<MudTextInput> = {
+  title: 'Components/Text input',
+  component: MudTextInput,
   decorators: [
     applicationConfig({ providers: [provideMudIcons([search, envelope])] }),
-    moduleMetadata({ imports: [MudInput, MudIconComponent] }),
+    moduleMetadata({ imports: [MudTextInput, MudIconComponent] }),
   ],
   argTypes: {
     variant: { control: 'inline-radio', options: ['default', 'warning', 'destructive', 'success'] },
@@ -50,14 +50,14 @@ const meta: Meta<MudInput> = {
 
 export default meta;
 
-type Story = StoryObj<MudInput>;
+type Story = StoryObj<MudTextInput>;
 
 export const Playground: Story = {
   render: (args) => ({
     props: args,
     template: `
       <div style="${COL}">
-        <mud-input
+        <mud-text-input
           [variant]="variant"
           [size]="size"
           [type]="type"
@@ -83,10 +83,10 @@ export const Variants: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-input label="Default" helperText="Helper text." placeholder="Text" />
-        <mud-input label="Warning" variant="warning" helperText="Verificați valoarea." value="M-2024" />
-        <mud-input label="Success" variant="success" helperText="Valoare confirmată." value="2000000000000" />
-        <mud-input label="Error" invalid errorText="Introduceți un IDNP valid." value="12345" />
+        <mud-text-input label="Default" helperText="Helper text." placeholder="Text" />
+        <mud-text-input label="Warning" variant="warning" helperText="Verificați valoarea." value="M-2024" />
+        <mud-text-input label="Success" variant="success" helperText="Valoare confirmată." value="2000000000000" />
+        <mud-text-input label="Error" invalid errorText="Introduceți un IDNP valid." value="12345" />
       </div>
     `,
   }),
@@ -97,8 +97,8 @@ export const Sizes: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-input label="Medium (40px)" placeholder="14/20 text" />
-        <mud-input label="Large (48px)" size="large" placeholder="16/24 text" />
+        <mud-text-input label="Medium (40px)" placeholder="14/20 text" />
+        <mud-text-input label="Large (48px)" size="large" placeholder="16/24 text" />
       </div>
     `,
   }),
@@ -110,9 +110,9 @@ export const States: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-input label="Disabled" disabled value="Nu poate fi editat" />
-        <mud-input label="Read-only" readonly value="Doar citire, selectabil" />
-        <mud-input label="Loading" loading value="Se verifică..." />
+        <mud-text-input label="Disabled" disabled value="Nu poate fi editat" />
+        <mud-text-input label="Read-only" readonly value="Doar citire, selectabil" />
+        <mud-text-input label="Loading" loading value="Se verifică..." />
       </div>
     `,
   }),
@@ -124,12 +124,12 @@ export const IconsAndClear: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-input label="Căutare" type="search" clearable value="pașaport">
+        <mud-text-input label="Căutare" type="search" clearable value="pașaport">
           <mud-icon icon-start name="search" [scale]="20" />
-        </mud-input>
-        <mud-input label="Email" type="email" placeholder="nume@exemplu.md">
+        </mud-text-input>
+        <mud-text-input label="Email" type="email" placeholder="nume@exemplu.md">
           <mud-icon icon-end name="envelope" [scale]="20" />
-        </mud-input>
+        </mud-text-input>
       </div>
     `,
   }),
@@ -137,11 +137,11 @@ export const IconsAndClear: Story = {
 
 /** Classic reactive forms via ControlValueAccessor. */
 @Component({
-  selector: 'mud-input-reactive-demo',
-  imports: [MudInput, ReactiveFormsModule],
+  selector: 'mud-text-input-reactive-demo',
+  imports: [MudTextInput, ReactiveFormsModule],
   template: `
     <div style="${COL}">
-      <mud-input
+      <mud-text-input
         label="IDNP"
         required
         [formControl]="idnp"
@@ -167,9 +167,9 @@ class InputReactiveDemo {
  */
 const REACTIVE_FORMS_SOURCE = `
 @Component({
-  imports: [MudInput, ReactiveFormsModule],
+  imports: [MudTextInput, ReactiveFormsModule],
   template: \`
-    <mud-input
+    <mud-text-input
       label="IDNP"
       required
       [formControl]="idnp"
@@ -194,7 +194,7 @@ export const ReactiveForms: Story = {
     docs: { source: { code: REACTIVE_FORMS_SOURCE, language: 'ts' } },
   },
   decorators: [moduleMetadata({ imports: [InputReactiveDemo] })],
-  render: () => ({ template: `<mud-input-reactive-demo />` }),
+  render: () => ({ template: `<mud-text-input-reactive-demo />` }),
 };
 
 /**
@@ -206,11 +206,11 @@ export const ReactiveForms: Story = {
  * manually: [(value)] + [invalid]="form.x().invalid() && form.x().touched()".
  */
 @Component({
-  selector: 'mud-input-signal-demo',
-  imports: [MudInput, FormField, JsonPipe],
+  selector: 'mud-text-input-signal-demo',
+  imports: [MudTextInput, FormField, JsonPipe],
   template: `
     <div style="${COL}">
-      <mud-input label="Nume complet" [formField]="form.name" helperText="Prenume și nume." />
+      <mud-text-input label="Nume complet" [formField]="form.name" helperText="Prenume și nume." />
       <code>model: {{ model() | json }} | touched: {{ form.name().touched() }}</code>
     </div>
   `,
@@ -228,8 +228,8 @@ class InputSignalDemo {
  */
 const SIGNAL_FORMS_SOURCE = `
 @Component({
-  imports: [MudInput, FormField],
-  template: \`<mud-input label="Nume complet" [formField]="form.name" helperText="Prenume și nume." />\`,
+  imports: [MudTextInput, FormField],
+  template: \`<mud-text-input label="Nume complet" [formField]="form.name" helperText="Prenume și nume." />\`,
 })
 export class NameField {
   readonly model = signal({ name: '' });
@@ -247,28 +247,28 @@ export const SignalForms: Story = {
     docs: { source: { code: SIGNAL_FORMS_SOURCE, language: 'ts' } },
   },
   decorators: [moduleMetadata({ imports: [InputSignalDemo] })],
-  render: () => ({ template: `<mud-input-signal-demo />` }),
+  render: () => ({ template: `<mud-text-input-signal-demo />` }),
 };
 
 export const Composable: Story = {
   parameters: { controls: { disable: true } },
-  decorators: [moduleMetadata({ imports: [MudInputLabel, MudInputHelper, MudInputError, MudInlineMessage] })],
+  decorators: [moduleMetadata({ imports: [MudFieldLabel, MudFieldHelper, MudFieldError, MudInlineMessage] })],
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-input invalid value="12345">
+        <mud-text-input invalid value="12345">
           <span mudLabel>IDNP <em>(actul de identitate)</em></span>
           <mud-inline-message mudHelper hideIcon size="small">Numărul de 13 cifre de pe verso.</mud-inline-message>
           <mud-inline-message mudError variant="error" size="small">
             IDNP invalid — verificați cele 13 cifre.
           </mud-inline-message>
-        </mud-input>
+        </mud-text-input>
 
-        <mud-input value="2000000000000">
+        <mud-text-input value="2000000000000">
           <span mudLabel>Același câmp, valid</span>
           <mud-inline-message mudHelper hideIcon size="small">Helperul revine când nu mai există eroare.</mud-inline-message>
           <mud-inline-message mudError variant="error" size="small">Nu se afișează.</mud-inline-message>
-        </mud-input>
+        </mud-text-input>
       </div>
     `,
   }),

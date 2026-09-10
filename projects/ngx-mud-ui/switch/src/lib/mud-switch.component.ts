@@ -18,7 +18,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
 import type { FormCheckboxControl, ValidationError } from '@angular/forms/signals';
-import { MudInputLabel } from 'ngx-mud-ui/input';
+import { MudFieldLabel } from 'ngx-mud-ui/text-input';
 
 let nextUniqueId = 0;
 
@@ -92,7 +92,7 @@ export class MudSwitch implements ControlValueAccessor, FormCheckboxControl {
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   /** @docs-private Projected label marker ([mudLabel]). */
-  protected readonly _projectedLabel = contentChild(MudInputLabel);
+  protected readonly _projectedLabel = contentChild(MudFieldLabel);
 
   protected readonly _id = `mud-switch-${nextUniqueId++}`;
 

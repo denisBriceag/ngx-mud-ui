@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form } from '@angular/forms/signals';
 import { MudSwitch } from './mud-switch.component';
-import { MudInputLabel } from 'ngx-mud-ui/input';
+import { MudFieldLabel } from 'ngx-mud-ui/text-input';
 
 @Component({
   imports: [MudSwitch],
@@ -144,7 +144,7 @@ class SignalHost {
 }
 
 @Component({
-  imports: [MudSwitch, MudInputLabel],
+  imports: [MudSwitch, MudFieldLabel],
   template: `
     <mud-switch [checked]="true">
       <span mudLabel class="custom-label">Notificări <strong>importante</strong></span>
