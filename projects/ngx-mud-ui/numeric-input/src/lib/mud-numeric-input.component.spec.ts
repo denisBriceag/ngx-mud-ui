@@ -3,13 +3,14 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form } from '@angular/forms/signals';
 import { MudNumericInput } from './mud-numeric-input.component';
+import { MudLabel } from '../../../label/src/public-api';
+import { MudInlineMessage } from '../../../inline-message/src/public-api';
 import type { MudNumericInputErrorKind, MudNumericInputStep } from './mud-numeric-input.component';
 
 @Component({
-  imports: [MudNumericInput],
+  imports: [MudNumericInput, MudLabel, MudInlineMessage],
   template: `
     <mud-numeric-input
-      label="Suma"
       [(value)]="value"
       [min]="min()"
       [max]="max()"
@@ -21,9 +22,22 @@ import type { MudNumericInputErrorKind, MudNumericInputStep } from './mud-numeri
       [showSteppers]="showSteppers()"
       [clearable]="clearable()"
       [disabled]="disabled()"
+      [invalid]="invalid()"
+      [maxLength]="maxLength()"
+      [showCounter]="showCounter()"
       (stepped)="steps.push($event)"
       (errored)="errorKinds.push($event)"
-    />
+    >
+      @if (withLabel()) {
+        <mud-label>Suma</mud-label>
+      }
+      @if (showHelper()) {
+        <mud-inline-message hideIcon>Introduceți suma în MDL.</mud-inline-message>
+      }
+      @if (showError()) {
+        <mud-inline-message variant="error">Suma este obligatorie.</mud-inline-message>
+      }
+    </mud-numeric-input>
   `,
 })
 class Host {
@@ -38,6 +52,12 @@ class Host {
   readonly showSteppers = signal(false);
   readonly clearable = signal(false);
   readonly disabled = signal(false);
+  readonly invalid = signal(false);
+  readonly maxLength = signal<number | undefined>(undefined);
+  readonly showCounter = signal(true);
+  readonly withLabel = signal(true);
+  readonly showHelper = signal(false);
+  readonly showError = signal(false);
   readonly steps: MudNumericInputStep[] = [];
   readonly errorKinds: MudNumericInputErrorKind[] = [];
 }
@@ -252,12 +272,111 @@ describe('MudNumericInput', () => {
     await fixture.whenStable();
     expect(native.value).toBe('30');
   });
+
+  it('renders the projected mud-label inside the field label element', async () => {
+    const { el, native } = await render();
+    const label = el.querySelector('.input-field__label') as HTMLLabelElement;
+
+    expect(label.textContent).toContain('Suma');
+    expect(label.htmlFor).toBe(native.id);
+    expect(native.getAttribute('aria-labelledby')).toBe(label.id);
+  });
+
+  it('renders no label element without a projected mud-label; ariaLabel takes over', async () => {
+    const fixture = TestBed.createComponent(UnlabelledHost);
+
+    await fixture.whenStable();
+    const native = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    expect(fixture.nativeElement.querySelector('.input-field__label')).toBeNull();
+    expect(native.getAttribute('aria-label')).toBe('Suma');
+    expect(native.getAttribute('aria-labelledby')).toBeNull();
+  });
+
+  it('renders no footer and no describedby when nothing is projected and no counter shows', async () => {
+    const { fixture, host, el, native } = await render();
+
+    host.showCounter.set(false);
+    await fixture.whenStable();
+
+    expect(el.querySelector('.input-field__footer')).toBeNull();
+    expect(el.querySelector('.input-field__assistive')).toBeNull();
+    expect(native.getAttribute('aria-describedby')).toBeNull();
+  });
+
+  it('helper swaps for error in the shared wrapper, with role=alert and describedby wiring', async () => {
+    const { fixture, host, el, native } = await render();
+
+    host.showHelper.set(true);
+    await fixture.whenStable();
+
+    const helper = el.querySelector('.input-field__assistive')!;
+
+    expect(helper.textContent).toContain('Introduceți suma');
+    expect(native.getAttribute('aria-describedby')).toContain(helper.id);
+
+    host.showHelper.set(false);
+    host.invalid.set(true);
+    host.showError.set(true);
+    await fixture.whenStable();
+
+    const error = el.querySelector('.input-field__assistive')!;
+
+    expect(error.getAttribute('role')).toBe('alert');
+    expect(error.textContent).toContain('obligatorie');
+    expect(el.textContent).not.toContain('Introduceți suma');
+    expect(el.classList.contains('input-field--destructive')).toBe(true);
+    expect(native.getAttribute('aria-invalid')).toBe('true');
+  });
+
+  it('can show two messages at once, in template order', async () => {
+    const { fixture, host, el } = await render();
+
+    host.showHelper.set(true);
+    host.showError.set(true);
+    await fixture.whenStable();
+
+    const messages = el.querySelectorAll('.input-field__assistive mud-inline-message');
+
+    expect(messages.length).toBe(2);
+    expect(messages[0].textContent).toContain('Introduceți suma');
+    expect(messages[1].textContent).toContain('obligatorie');
+  });
+
+  it('includes both the assistive message and the counter in aria-describedby', async () => {
+    const { fixture, host, el, native } = await render();
+
+    host.showHelper.set(true);
+    host.maxLength.set(100);
+    await fixture.whenStable();
+
+    const wrapper = el.querySelector('.input-field__assistive') as HTMLElement;
+    const counter = el.querySelector('.input-field__counter') as HTMLElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe(`${wrapper.id} ${counter.id}`);
+  });
+
+  it('merges external aria-describedby ids with the internal assistive id when a message is shown', async () => {
+    const fixture = TestBed.createComponent(ExternalDescribedHost);
+
+    await fixture.whenStable();
+    const native = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe('extra-id');
+
+    fixture.componentInstance.showMessage.set(true);
+    await fixture.whenStable();
+
+    const wrapper = fixture.nativeElement.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe(`${wrapper.id} extra-id`);
+  });
 });
 
 @Component({
   imports: [MudNumericInput],
   template: `
-    <mud-numeric-input label="Suma">
+    <mud-numeric-input>
       <svg icon-start viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8" /></svg>
       <span prefix>MDL</span>
     </mud-numeric-input>
@@ -267,7 +386,7 @@ class IconHost {}
 
 @Component({
   imports: [MudNumericInput, ReactiveFormsModule],
-  template: `<mud-numeric-input label="Suma" [formControl]="control" />`,
+  template: `<mud-numeric-input [formControl]="control" />`,
 })
 class ReactiveHost {
   readonly control = new FormControl<number | null>(10);
@@ -275,9 +394,31 @@ class ReactiveHost {
 
 @Component({
   imports: [MudNumericInput, FormField],
-  template: `<mud-numeric-input label="Suma" [formField]="form.amount" />`,
+  template: `<mud-numeric-input [formField]="form.amount" />`,
 })
 class SignalHost {
   readonly model = signal({ amount: null as number | null });
   readonly form = form(this.model);
+}
+
+@Component({
+  imports: [MudNumericInput],
+  template: `<mud-numeric-input aria-label="Suma" />`,
+})
+class UnlabelledHost {}
+
+@Component({
+  imports: [MudNumericInput, MudInlineMessage],
+  template: `
+    <mud-numeric-input aria-describedby="extra-id" [(value)]="value">
+      @if (showMessage()) {
+        <mud-inline-message hideIcon>Introduceți suma în MDL.</mud-inline-message>
+      }
+    </mud-numeric-input>
+    <p id="extra-id">Notă externă.</p>
+  `,
+})
+class ExternalDescribedHost {
+  readonly value = signal<number | null>(null);
+  readonly showMessage = signal(false);
 }

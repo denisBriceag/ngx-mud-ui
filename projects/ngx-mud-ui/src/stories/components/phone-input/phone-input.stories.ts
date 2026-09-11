@@ -4,19 +4,16 @@ import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { MUD_PHONE_COUNTRIES, MudPhoneInput } from 'ngx-mud-ui/phone-input';
-import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
+import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:420px;padding:24px';
 
-type PhoneInputArgs = MudPhoneInput & { 'aria-label'?: string };
-
-const meta: Meta<PhoneInputArgs> = {
+const meta: Meta<MudPhoneInput> = {
   title: 'Components/Phone input',
   component: MudPhoneInput,
-  decorators: [moduleMetadata({ imports: [MudPhoneInput] })],
+  decorators: [moduleMetadata({ imports: [MudPhoneInput, MudLabel, MudInlineMessage] })],
   args: {
-    label: 'Telefon',
     country: 'MD',
     size: 'medium',
     disabled: false,
@@ -24,28 +21,23 @@ const meta: Meta<PhoneInputArgs> = {
     readonly: false,
     invalid: false,
     clearable: true,
-    helperText: 'Numărul se folosește pentru notificări SMS.',
   },
 };
 
 export default meta;
 
-type Story = StoryObj<PhoneInputArgs>;
+type Story = StoryObj<MudPhoneInput>;
 
 /**
  * The placeholder defaults to the country's mask, and separators appear as you
  * reach them. Editing mid-number keeps the caret where you are typing.
  */
 export const Playground: Story = {
-  // Destructure the actual arg key, not `ariaLabel`, and pass it under a
-  // non-colliding prop name. A raw `ariaLabel` prop (or the aliased key left
-  // in `...args`) crashes the Storybook wrapper.
-  render: ({ 'aria-label': ariaLabel, ...args }) => ({
-    props: { ...args, ariaLabelText: ariaLabel },
+  render: (args) => ({
+    props: args,
     template: `
       <div style="${COL}">
         <mud-phone-input
-          [label]="label"
           [country]="country"
           [size]="size"
           [disabled]="disabled"
@@ -53,11 +45,15 @@ export const Playground: Story = {
           [readonly]="readonly"
           [invalid]="invalid"
           [clearable]="clearable"
-          [helperText]="helperText"
-          [errorText]="errorText"
           [placeholder]="placeholder"
-          [aria-label]="ariaLabelText"
-        />
+        >
+          <mud-label>Telefon</mud-label>
+          @if (invalid) {
+            <mud-inline-message variant="error">Numărul de telefon este incomplet.</mud-inline-message>
+          } @else {
+            <mud-inline-message hideIcon>Numărul se folosește pentru notificări SMS.</mud-inline-message>
+          }
+        </mud-phone-input>
       </div>
     `,
   }),
@@ -74,7 +70,10 @@ export const Countries: Story = {
     template: `
       <div style="${COL}">
         @for (c of countries; track c.iso) {
-          <mud-phone-input [label]="c.name" [country]="c.iso" [helperText]="'Format: ' + c.mask" />
+          <mud-phone-input [country]="c.iso">
+            <mud-label>{{ c.name }}</mud-label>
+            <mud-inline-message hideIcon>{{ 'Format: ' + c.mask }}</mud-inline-message>
+          </mud-phone-input>
         }
       </div>
     `,
@@ -86,20 +85,17 @@ export const International: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-phone-input
-          label="Telefon (internațional)"
-          mode="international"
-          clearable
-          value="+37362123456"
-          helperText="Alegeți țara din listă."
-        />
-        <mud-phone-input
-          label="Listă restrânsă"
-          mode="international"
-          [countries]="['MD','RO','IT','ES','PT']"
-          helperText="Doar țările cu diaspora cea mai numeroasă."
-        />
-        <mud-phone-input label="Dezactivat" mode="international" disabled value="+37362123456" />
+        <mud-phone-input mode="international" clearable value="+37362123456">
+          <mud-label>Telefon (internațional)</mud-label>
+          <mud-inline-message hideIcon>Alegeți țara din listă.</mud-inline-message>
+        </mud-phone-input>
+        <mud-phone-input mode="international" [countries]="['MD','RO','IT','ES','PT']">
+          <mud-label>Listă restrânsă</mud-label>
+          <mud-inline-message hideIcon>Doar țările cu diaspora cea mai numeroasă.</mud-inline-message>
+        </mud-phone-input>
+        <mud-phone-input mode="international" disabled value="+37362123456">
+          <mud-label>Dezactivat</mud-label>
+        </mud-phone-input>
       </div>
     `,
   }),
@@ -132,20 +128,14 @@ export const CustomCountries: Story = {
     },
     template: `
       <div style="${COL}">
-        <mud-phone-input
-          label="Listă extinsă"
-          mode="international"
-          clearable
-          [countries]="extended"
-          helperText="Polonia și Cehia nu sunt în lista oficială — sunt adăugate din aplicație."
-        />
-        <mud-phone-input
-          label="Țară adăugată, preselectată"
-          mode="international"
-          country="PL"
-          [countries]="extended"
-          helperText="Se formatează cu masca proprie (XXX XXX XXX)."
-        />
+        <mud-phone-input mode="international" clearable [countries]="extended">
+          <mud-label>Listă extinsă</mud-label>
+          <mud-inline-message hideIcon>Polonia și Cehia nu sunt în lista oficială — sunt adăugate din aplicație.</mud-inline-message>
+        </mud-phone-input>
+        <mud-phone-input mode="international" country="PL" [countries]="extended">
+          <mud-label>Țară adăugată, preselectată</mud-label>
+          <mud-inline-message hideIcon>Se formatează cu masca proprie (XXX XXX XXX).</mud-inline-message>
+        </mud-phone-input>
       </div>
     `,
   }),
@@ -156,9 +146,15 @@ export const Locales: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-phone-input label="English (en)" mode="international" locale="en" country="DE" />
-        <mud-phone-input label="Română (ro)" mode="international" locale="ro" country="DE" />
-        <mud-phone-input label="Русский (ru)" mode="international" locale="ru" country="DE" />
+        <mud-phone-input mode="international" locale="en" country="DE">
+          <mud-label>English (en)</mud-label>
+        </mud-phone-input>
+        <mud-phone-input mode="international" locale="ro" country="DE">
+          <mud-label>Română (ro)</mud-label>
+        </mud-phone-input>
+        <mud-phone-input mode="international" locale="ru" country="DE">
+          <mud-label>Русский (ru)</mud-label>
+        </mud-phone-input>
       </div>
     `,
   }),
@@ -169,40 +165,44 @@ export const States: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-phone-input label="Implicit" helperText="Introduceți numărul." />
-        <mud-phone-input label="Completat" value="+37362123456" clearable />
-        <mud-phone-input label="Obligatoriu, invalid" required invalid errorText="Numărul de telefon este incomplet." />
-        <mud-phone-input label="Doar citire" value="+37362123456" readonly />
-        <mud-phone-input label="Dezactivat" value="+37362123456" disabled />
-        <mud-phone-input label="Mare (large)" size="large" value="+37362123456" clearable />
+        <mud-phone-input>
+          <mud-label>Implicit</mud-label>
+          <mud-inline-message hideIcon>Introduceți numărul.</mud-inline-message>
+        </mud-phone-input>
+        <mud-phone-input value="+37362123456" clearable>
+          <mud-label>Completat</mud-label>
+        </mud-phone-input>
+        <mud-phone-input required invalid>
+          <mud-label>Obligatoriu, invalid</mud-label>
+          <mud-inline-message variant="error">Numărul de telefon este incomplet.</mud-inline-message>
+        </mud-phone-input>
+        <mud-phone-input value="+37362123456" readonly>
+          <mud-label>Doar citire</mud-label>
+        </mud-phone-input>
+        <mud-phone-input value="+37362123456" disabled>
+          <mud-label>Dezactivat</mud-label>
+        </mud-phone-input>
+        <mud-phone-input size="large" value="+37362123456" clearable>
+          <mud-label>Mare (large)</mud-label>
+        </mud-phone-input>
       </div>
     `,
   }),
 };
 
-/**
- * Rich content via the shared slots: `[mudLabel]`, `[mudHelper]` and
- * `[mudError]` from `ngx-mud-ui/text-input`.
- */
+/** Any number of consumer-timed messages, and a rich label, can be projected. */
 export const ComposedContent: Story = {
   parameters: { controls: { disable: true } },
-  decorators: [
-    moduleMetadata({
-      imports: [MudPhoneInput, MudFieldLabel, MudFieldHelper, MudFieldError, MudInlineMessage],
-    }),
-  ],
   render: () => ({
     template: `
       <div style="${COL}">
         <mud-phone-input>
-          <span mudLabel>Telefon <strong>(mobil)</strong></span>
-          <span mudHelper>Folosit doar pentru <a href="#" (click)="$event.preventDefault()">notificări MNotify</a>.</span>
+          <mud-label>Telefon <strong>(mobil)</strong></mud-label>
+          <mud-inline-message hideIcon>Folosit doar pentru <a href="#" (click)="$event.preventDefault()">notificări MNotify</a>.</mud-inline-message>
         </mud-phone-input>
         <mud-phone-input invalid required>
-          <span mudLabel>Telefon de contact</span>
-          <mud-inline-message mudError variant="error" size="small" hideIcon>
-            Numărul nu a putut fi verificat.
-          </mud-inline-message>
+          <mud-label>Telefon de contact</mud-label>
+          <mud-inline-message variant="error" hideIcon>Numărul nu a putut fi verificat.</mud-inline-message>
         </mud-phone-input>
       </div>
     `,
@@ -211,19 +211,17 @@ export const ComposedContent: Story = {
 
 @Component({
   selector: 'mud-phone-reactive-demo',
-  imports: [MudPhoneInput, ReactiveFormsModule],
+  imports: [MudPhoneInput, MudLabel, MudInlineMessage, ReactiveFormsModule],
   template: `
     <div style="${COL}">
-      <mud-phone-input
-        label="Telefon"
-        required
-        clearable
-        [formControl]="phone"
-        [invalid]="phone.touched && phone.invalid"
-        errorText="Introduceți un număr moldovenesc complet (8 cifre)."
-        helperText="Format: XXX XX XXX"
-        (changed)="complete = $event.complete"
-      />
+      <mud-phone-input required clearable [formControl]="phone" [invalid]="phone.touched && phone.invalid" (changed)="complete = $event.complete">
+        <mud-label>Telefon</mud-label>
+        @if (phone.touched && phone.invalid) {
+          <mud-inline-message variant="error">Introduceți un număr moldovenesc complet (8 cifre).</mud-inline-message>
+        } @else {
+          <mud-inline-message hideIcon>Format: XXX XX XXX</mud-inline-message>
+        }
+      </mud-phone-input>
       <code>value: {{ phone.value || '—' }} | valid: {{ phone.valid }} | complete: {{ complete }}</code>
     </div>
   `,
@@ -238,17 +236,20 @@ class PhoneReactiveDemo {
 
 const REACTIVE_SOURCE = `
 @Component({
-  imports: [MudPhoneInput, ReactiveFormsModule],
+  imports: [MudPhoneInput, MudLabel, MudInlineMessage, ReactiveFormsModule],
   template: \`
     <mud-phone-input
-      label="Telefon"
       required
       clearable
       [formControl]="phone"
       [invalid]="phone.touched && phone.invalid"
-      errorText="Introduceți un număr moldovenesc complet (8 cifre)."
       (changed)="complete = $event.complete"
-    />
+    >
+      <mud-label>Telefon</mud-label>
+      @if (phone.touched && phone.invalid) {
+        <mud-inline-message variant="error">Introduceți un număr moldovenesc complet (8 cifre).</mud-inline-message>
+      }
+    </mud-phone-input>
   \`,
 })
 export class PhoneField {
@@ -274,10 +275,17 @@ export const ReactiveForms: Story = {
 
 @Component({
   selector: 'mud-phone-signal-demo',
-  imports: [MudPhoneInput, FormField],
+  imports: [MudPhoneInput, MudLabel, MudInlineMessage, FormField],
   template: `
     <div style="${COL}">
-      <mud-phone-input label="Telefon" clearable [formField]="form.phone" helperText="Format: XXX XX XXX" />
+      <mud-phone-input clearable [formField]="form.phone">
+        <mud-label>Telefon</mud-label>
+        @if (form.phone().touched() && form.phone().invalid()) {
+          <mud-inline-message variant="error">Numărul de telefon este obligatoriu.</mud-inline-message>
+        } @else {
+          <mud-inline-message hideIcon>Format: XXX XX XXX</mud-inline-message>
+        }
+      </mud-phone-input>
       <code>model: {{ model().phone || '—' }} | touched: {{ form.phone().touched() }}</code>
     </div>
   `,
@@ -291,15 +299,22 @@ class PhoneSignalDemo {
 
 const SIGNAL_SOURCE = `
 @Component({
-  imports: [MudPhoneInput, FormField],
-  template: \`<mud-phone-input label="Telefon" clearable [formField]="form.phone" />\`,
+  imports: [MudPhoneInput, MudLabel, MudInlineMessage, FormField],
+  template: \`
+    <mud-phone-input clearable [formField]="form.phone">
+      <mud-label>Telefon</mud-label>
+      @if (form.phone().touched() && form.phone().invalid()) {
+        <mud-inline-message variant="error">Numărul de telefon este obligatoriu.</mud-inline-message>
+      }
+    </mud-phone-input>
+  \`,
 })
 export class PhoneField {
   readonly model = signal({ phone: '' });
 
-  // Signal forms bind \`required\`, \`invalid\` and \`errors\` for you. The field
-  // value is the E.164 string, so \`required\` alone is enough here — unlike an
-  // array field, an empty string is what required already tests for.
+  // Signal forms bind \`required\` and \`invalid\` for you. The field value is
+  // the E.164 string, so \`required\` alone is enough here — unlike an array
+  // field, an empty string is what required already tests for.
   readonly form = form(this.model, (path) => {
     required(path.phone, { message: 'Numărul de telefon este obligatoriu.' });
   });

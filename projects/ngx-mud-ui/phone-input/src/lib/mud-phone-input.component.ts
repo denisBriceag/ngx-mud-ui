@@ -4,6 +4,7 @@ import {
   Component,
   computed,
   contentChild,
+  contentChildren,
   effect,
   forwardRef,
   inject,
@@ -26,8 +27,9 @@ import { DomSanitizer } from '@angular/platform-browser';
 import type { SafeUrl } from '@angular/platform-browser';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
-import type { FormValueControl, ValidationError } from '@angular/forms/signals';
-import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
+import type { FormValueControl } from '@angular/forms/signals';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import {
   MUD_PHONE_COUNTRIES,
   MUD_PHONE_DEFAULT_ISO,
@@ -64,7 +66,12 @@ let nextUniqueId = 0;
  * segment is only ever a rendering of it.
  *
  * ```html
- * <mud-phone-input label="Telefon" [formControl]="phone" required />
+ * <mud-phone-input [formField]="form.phone" required>
+ *   <mud-label>Telefon</mud-label>
+ *   @if (form.phone().touched() && form.phone().invalid()) {
+ *     <mud-inline-message variant="error">Număr invalid.</mud-inline-message>
+ *   }
+ * </mud-phone-input>
  * ```
  */
 @Component({
@@ -135,21 +142,6 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
 
   readonly name = input<string>('');
 
-  /** @description Plain-text label. Use the `[mudLabel]` slot for richer content. */
-  readonly label = input<string | undefined>(undefined);
-
-  /** @description Helper/hint below the field. Replaced by the error message when invalid. */
-  readonly helperText = input<string | undefined>(undefined);
-
-  /** @description Error message shown below the field when invalid. */
-  readonly errorText = input<string | undefined>(undefined);
-
-  /**
-   * @description Validation errors pushed by signal forms; the first message renders as
-   * the error line unless `errorText` overrides it.
-   */
-  readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
-
   /** @description Placeholder for the national segment. Defaults to the country's mask. */
   readonly placeholder = input<string | undefined>(undefined);
 
@@ -165,7 +157,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   /** @description Shown in the country list when the search matches nothing. Localize per app. */
   readonly countryEmptyText = input('No countries found');
 
-  /** @description Accessible name used when no visible `label` is set. */
+  /** @description Accessible name used when no `mud-label` is projected. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
   /** @description Extra id(s) merged into the native control's aria-describedby. */
@@ -190,15 +182,19 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   private readonly _configuredCountries = inject(MUD_PHONE_COUNTRIES_CONFIG, { optional: true });
   private readonly _appLocale = inject(LOCALE_ID);
 
-  /** @docs-private Projected region markers ([mudLabel] / [mudHelper] / [mudError]). */
-  protected readonly _projectedLabel = contentChild(MudFieldLabel);
-  protected readonly _projectedHelper = contentChild(MudFieldHelper);
-  protected readonly _projectedError = contentChild(MudFieldError);
+  /** @docs-private Projected label element (ngx-mud-ui/label). */
+  protected readonly _label = contentChild(MudLabel);
+
+  /** @docs-private Consumer-projected assistive messages. */
+  private readonly _messages = contentChildren(MudInlineMessage);
+
+  protected readonly _hasLabel = computed(() => !!this._label());
+
+  protected readonly _hasMessages = computed(() => this._messages().length > 0);
 
   protected readonly _id = `mud-phone-input-${nextUniqueId++}`;
   protected readonly _labelId = `${this._id}-label`;
-  protected readonly _helperId = `${this._id}-helper`;
-  protected readonly _errorId = `${this._id}-error`;
+  protected readonly _assistiveId = `${this._id}-assistive`;
   protected readonly _listBoxId = `${this._id}-listbox`;
   protected readonly _triggerId = `${this._id}-country`;
 
@@ -245,7 +241,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
 
   protected readonly _effectiveDisabled = computed(() => this.disabled() || this._cvaDisabled());
 
-  protected readonly _effectiveInvalid = computed(() => this.invalid() || this.errors().length > 0);
+  protected readonly _effectiveInvalid = computed(() => this.invalid());
 
   protected readonly _effectiveVariant = computed<MudPhoneInputVariant>(() =>
     this._effectiveInvalid() ? 'destructive' : this.variant(),
@@ -418,35 +414,10 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
       this._display().length > 0,
   );
 
-  protected readonly _errorMessage = computed<string | undefined>(() => {
-    if (!this._effectiveInvalid()) return undefined;
-
-    const explicit = this.errorText()?.trim();
-
-    if (explicit) return explicit;
-
-    return this.errors().find((error) => error.message)?.message ?? undefined;
-  });
-
-  protected readonly _helperMessage = computed(() => this.helperText()?.trim() || undefined);
-
-  protected readonly _showError = computed(
-    () => this._effectiveInvalid() && (!!this._projectedError() || !!this._errorMessage()),
-  );
-
-  protected readonly _showHelper = computed(
-    () => !this._showError() && (!!this._projectedHelper() || !!this._helperMessage()),
-  );
-
-  protected readonly _showLabel = computed(
-    () => !!this._projectedLabel() || !!this.label()?.trim(),
-  );
-
   protected readonly _describedBy = computed<string | null>(() => {
     const ids: string[] = [];
 
-    if (this._showError()) ids.push(this._errorId);
-    else if (this._showHelper()) ids.push(this._helperId);
+    if (this._hasMessages()) ids.push(this._assistiveId);
 
     const external = this.ariaDescribedby()?.trim();
 
@@ -456,7 +427,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   });
 
   protected readonly _ariaLabel = computed<string | null>(() =>
-    this._showLabel() ? null : (this.ariaLabel() ?? null),
+    this._hasLabel() ? null : (this.ariaLabel() ?? null),
   );
 
   protected readonly _hostClasses = computed(() => {

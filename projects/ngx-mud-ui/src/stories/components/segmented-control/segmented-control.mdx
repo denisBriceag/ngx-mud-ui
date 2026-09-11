@@ -72,9 +72,9 @@ The design-system stylesheet must be loaded once in your app:
 
 ## Signal forms
 
-The control implements `FormValueControl`, so `[formField]` binds the value, the
-disabled state and the validation errors. Render the message yourself — the
-control has no error region.
+The control implements `FormValueControl`, so `[formField]` binds the value and
+the disabled state. It has no `errors` input or error region of its own —
+render the message yourself from the field's own `errors()`.
 
 <Canvas of={SegmentedControlStories.SignalForms} />
 
@@ -104,11 +104,11 @@ Selector: `button[mud-segment]`
   deliberately stays out of it.
 - **It works in forms too.** It implements `ControlValueAccessor`, so
   `formControlName` and `ngModel` behave like any native control, and the
-  signal-forms `FormValueControl` contract, so `[formField]` binds the value and
-  pushes validation errors. `[(value)]` is just the standalone path.
-- **`errors` has no visual region here.** Signal forms can push validation
-  errors, but a segmented control is a view switcher rather than a field, so
-  nothing renders — surface them next to the control if they matter.
+  signal-forms `FormValueControl` contract, so `[formField]` binds the value.
+  `[(value)]` is just the standalone path.
+- **It has no `errors` input or visual error region.** A segmented control is
+  a view switcher rather than a field — read the field's own `errors()` and
+  render the message next to the control if it matters.
 - **Use it for switching views, not for choosing data.** More than about five
   options, or anything that belongs in a submitted form, is a radio group or a
   select.

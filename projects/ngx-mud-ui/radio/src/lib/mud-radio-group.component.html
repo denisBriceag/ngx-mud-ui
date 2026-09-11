@@ -1,6 +1,6 @@
-@if (_showLabel()) {
+@if (_hasLabel()) {
   <div class="radio-group__label" [id]="_labelId">
-    <ng-content select="[mudLabel]">{{ label() }}</ng-content>
+    <ng-content select="mud-label" />
     @if (required()) {
       <span class="radio-group__required" aria-hidden="true">*</span>
     }
@@ -9,8 +9,8 @@
 
 <ng-content />
 
-@if (_showError()) {
-  <div class="radio-group__error" role="alert" [id]="_errorId">
-    <ng-content select="[mudError]">{{ _errorMessage() }}</ng-content>
+@if (_hasMessages()) {
+  <div class="radio-group__assistive" role="alert" [id]="_assistiveId">
+    <ng-content select="mud-inline-message" />
   </div>
 }

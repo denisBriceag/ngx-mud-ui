@@ -12,10 +12,19 @@ plus a character counter and a resize policy.
 
 ```ts
 import { MudTextarea } from 'ngx-mud-ui/textarea';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 @Component({
-  imports: [MudTextarea],
-  template: `<mud-textarea label="Mesaj" [formControl]="message" [maxLength]="500" [rows]="6" />`,
+  imports: [MudTextarea, MudLabel, MudInlineMessage],
+  template: `
+    <mud-textarea [formControl]="message" [maxLength]="500" [rows]="6">
+      <mud-label>Mesaj</mud-label>
+      @if (message.touched && message.invalid) {
+        <mud-inline-message variant="error">Mesajul este obligatoriu.</mud-inline-message>
+      }
+    </mud-textarea>
+  `,
 })
 export class Demo {}
 ```
@@ -49,6 +58,21 @@ Selector: `mud-textarea`
 
 <ArgTypes of={TextareaStories} />
 
+### Label and messages
+
+The field renders no message text of its own. Project a `<mud-label>` for
+the visible label and any number of `<mud-inline-message>` elements for
+assistive text — *you* decide when they render:
+
+- Messages land in a field-owned `role="alert"` region wired into
+  `aria-describedby`, alongside the counter's id while it shows; toggling a
+  message on announces it to screen readers.
+- Inside a field, `mud-inline-message` is always the small size — its
+  `size` input is ignored.
+- The field's `invalid` input drives the red border and `aria-invalid`;
+  with signal forms it is bound automatically, with reactive forms bind
+  `[invalid]="ctrl.invalid && ctrl.touched"`.
+
 ## Usage tips
 
 - **The counter needs `maxLength`.** `showCounter` is on by default but renders
@@ -61,3 +85,7 @@ Selector: `mud-textarea`
   user can still drag it taller.
 - **`maxLength` is a hard native limit.** For a soft limit that warns but still
   accepts, leave it unset and validate in the form instead.
+- **`invalid` drives visuals; a projected message supplies the text.** Nothing
+  renders a message for you — pair `invalid` with an `@if`-guarded
+  `<mud-inline-message variant="error">` to show one only when it should
+  appear.

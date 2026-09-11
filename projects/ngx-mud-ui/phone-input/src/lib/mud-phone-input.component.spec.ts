@@ -3,13 +3,14 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form } from '@angular/forms/signals';
 import { MudPhoneInput } from './mud-phone-input.component';
+import { MudLabel } from '../../../label/src/public-api';
+import { MudInlineMessage } from '../../../inline-message/src/public-api';
 import type { MudPhoneInputChange } from './mud-phone-input.component';
 
 @Component({
-  imports: [MudPhoneInput],
+  imports: [MudPhoneInput, MudLabel, MudInlineMessage],
   template: `
     <mud-phone-input
-      label="Telefon"
       [(value)]="value"
       [(country)]="country"
       [disabled]="disabled()"
@@ -18,7 +19,17 @@ import type { MudPhoneInputChange } from './mud-phone-input.component';
       [invalid]="invalid()"
       [clearable]="clearable()"
       (changed)="changes.push($event)"
-    />
+    >
+      @if (withLabel()) {
+        <mud-label>Telefon</mud-label>
+      }
+      @if (showHelper()) {
+        <mud-inline-message hideIcon>Format: XXX XX XXX.</mud-inline-message>
+      }
+      @if (showError()) {
+        <mud-inline-message variant="error">Număr invalid.</mud-inline-message>
+      }
+    </mud-phone-input>
   `,
 })
 class Host {
@@ -29,6 +40,9 @@ class Host {
   readonly required = signal(false);
   readonly invalid = signal(false);
   readonly clearable = signal(false);
+  readonly withLabel = signal(true);
+  readonly showHelper = signal(false);
+  readonly showError = signal(false);
   readonly changes: MudPhoneInputChange[] = [];
 }
 
@@ -285,21 +299,130 @@ describe('MudPhoneInput local mode', () => {
     await fixture.whenStable();
     expect(native.value).toBe('791 23 456');
   });
+
+  it('renders the projected mud-label inside the field label element', async () => {
+    const { el, native } = await render();
+    const label = el.querySelector('.input-field__label') as HTMLLabelElement;
+
+    expect(label.textContent).toContain('Telefon');
+    expect(label.htmlFor).toBe(native().id);
+  });
+
+  it('renders no label element without a projected mud-label', async () => {
+    const { fixture, host, el } = await render();
+
+    host.withLabel.set(false);
+    await fixture.whenStable();
+
+    expect(el.querySelector('.input-field__label')).toBeNull();
+  });
+
+  it('renders no assistive wrapper and no describedby when nothing is projected', async () => {
+    const { el, native } = await render();
+
+    expect(el.querySelector('.input-field__assistive')).toBeNull();
+    expect(native().getAttribute('aria-describedby')).toBeNull();
+  });
+
+  it('projects inline-messages into a role=alert wrapper wired to aria-describedby on the tel input', async () => {
+    const { fixture, host, el, native } = await render();
+
+    host.showHelper.set(true);
+    await fixture.whenStable();
+
+    const wrapper = el.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(wrapper.getAttribute('role')).toBe('alert');
+    expect(wrapper.querySelector('mud-inline-message')?.textContent).toContain('Format: XXX XX XXX.');
+    expect(native().getAttribute('aria-describedby')).toBe(wrapper.id);
+  });
+
+  it('lets the consumer swap helper for error — both land in the same wrapper', async () => {
+    const { fixture, host, el } = await render();
+
+    host.showHelper.set(true);
+    await fixture.whenStable();
+    host.showHelper.set(false);
+    host.showError.set(true);
+    host.invalid.set(true);
+    await fixture.whenStable();
+
+    const wrapper = el.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(wrapper.textContent).toContain('Număr invalid.');
+    expect(wrapper.textContent).not.toContain('Format: XXX XX XXX.');
+    expect(el.classList.contains('input-field--destructive')).toBe(true);
+  });
+
+  it('can show two messages at once, in template order', async () => {
+    const { fixture, host, el } = await render();
+
+    host.showHelper.set(true);
+    host.showError.set(true);
+    await fixture.whenStable();
+
+    const messages = el.querySelectorAll('.input-field__assistive mud-inline-message');
+
+    expect(messages.length).toBe(2);
+    expect(messages[0].textContent).toContain('Format: XXX XX XXX.');
+    expect(messages[1].textContent).toContain('Număr invalid.');
+  });
+
+  it('merges external aria-describedby ids with the internal assistive id when a message is shown', async () => {
+    const fixture = TestBed.createComponent(ExternalDescribedHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const native = fixture.nativeElement.querySelector('.phone-field__native') as HTMLInputElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe('extra-id');
+
+    host.showMessage.set(true);
+    await fixture.whenStable();
+
+    const wrapper = fixture.nativeElement.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe(`${wrapper.id} extra-id`);
+  });
 });
 
 @Component({
-  imports: [MudPhoneInput, ReactiveFormsModule],
-  template: `<mud-phone-input label="Telefon" [formControl]="control" />`,
+  imports: [MudPhoneInput, ReactiveFormsModule, MudLabel],
+  template: `
+    <mud-phone-input [formControl]="control">
+      <mud-label>Telefon</mud-label>
+    </mud-phone-input>
+  `,
 })
 class ReactiveHost {
   readonly control = new FormControl('+37362123456', { nonNullable: true });
 }
 
 @Component({
-  imports: [MudPhoneInput, FormField],
-  template: `<mud-phone-input label="Telefon" [formField]="form.phone" />`,
+  imports: [MudPhoneInput, FormField, MudLabel],
+  template: `
+    <mud-phone-input [formField]="form.phone">
+      <mud-label>Telefon</mud-label>
+    </mud-phone-input>
+  `,
 })
 class SignalHost {
   readonly model = signal({ phone: '' });
   readonly form = form(this.model);
+}
+
+@Component({
+  imports: [MudPhoneInput, MudInlineMessage],
+  template: `
+    <mud-phone-input aria-describedby="extra-id" [(value)]="value">
+      @if (showMessage()) {
+        <mud-inline-message hideIcon>Format: XXX XX XXX.</mud-inline-message>
+      }
+    </mud-phone-input>
+    <p id="extra-id">Notă externă.</p>
+  `,
+})
+class ExternalDescribedHost {
+  readonly value = signal('');
+  readonly showMessage = signal(false);
 }

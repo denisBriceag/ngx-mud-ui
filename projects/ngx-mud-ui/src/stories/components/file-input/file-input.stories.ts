@@ -4,7 +4,7 @@ import { Component, computed, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField, form, minLength, required } from '@angular/forms/signals';
 import { MudFileInput, MudFileItem } from 'ngx-mud-ui/file-input';
-import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
+import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 // `document` is aliased so it cannot shadow the global inside this module.
 import {
@@ -18,16 +18,13 @@ import {
 
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:560px;padding:24px';
 
-type FileInputArgs = MudFileInput & { 'aria-label'?: string };
-
-const meta: Meta<FileInputArgs> = {
+const meta: Meta<MudFileInput> = {
   title: 'Components/File input',
   component: MudFileInput,
-  decorators: [moduleMetadata({ imports: [MudFileInput] })],
+  decorators: [moduleMetadata({ imports: [MudFileInput, MudLabel, MudInlineMessage] })],
   args: {
     variant: 'dropzone',
     size: 'medium',
-    label: 'Documente justificative',
     accept: '.pdf,image/jpeg,image/png',
     multiple: true,
     maxSize: 5 * 1024 * 1024,
@@ -35,30 +32,25 @@ const meta: Meta<FileInputArgs> = {
     required: false,
     invalid: false,
     showFileList: true,
-    helperText: 'Încărcați copia buletinului și dovada de plată.',
   },
 };
 
 export default meta;
 
-type Story = StoryObj<FileInputArgs>;
+type Story = StoryObj<MudFileInput>;
 
 /**
- * The captions under the drop zone are derived from `accept` and `maxSize`
- * unless you set `supportedFormatsText` / `maxSizeText` yourself.
+ * The captions under the drop zone are derived from `accept` and `maxSize`;
+ * localize their wording via the `formatsCaption` / `maxSizeCaption` functions.
  */
 export const Playground: Story = {
-  // Destructure the actual arg key, not `ariaLabel`, and pass it under a
-  // non-colliding prop name. A raw `ariaLabel` prop (or the aliased key left
-  // in `...args`) crashes the Storybook wrapper.
-  render: ({ 'aria-label': ariaLabel, ...args }) => ({
-    props: { ...args, ariaLabelText: ariaLabel },
+  render: (args) => ({
+    props: args,
     template: `
       <div style="${COL}">
         <mud-file-input
           [variant]="variant"
           [size]="size"
-          [label]="label"
           [accept]="accept"
           [multiple]="multiple"
           [maxFiles]="maxFiles"
@@ -67,10 +59,14 @@ export const Playground: Story = {
           [required]="required"
           [invalid]="invalid"
           [showFileList]="showFileList"
-          [helperText]="helperText"
-          [errorText]="errorText"
-          [aria-label]="ariaLabelText"
-        />
+        >
+          <mud-label>Documente justificative</mud-label>
+          @if (invalid) {
+            <mud-inline-message variant="error">Trebuie să încărcați cel puțin un document.</mud-inline-message>
+          } @else {
+            <mud-inline-message hideIcon>Încărcați copia buletinului și dovada de plată.</mud-inline-message>
+          }
+        </mud-file-input>
       </div>
     `,
   }),
@@ -85,8 +81,12 @@ export const Variants: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-file-input label="Dropzone" accept=".pdf" [maxSize]="5242880" multiple />
-        <mud-file-input variant="button" label="Buton" accept=".pdf" [maxSize]="5242880" multiple />
+        <mud-file-input accept=".pdf" [maxSize]="5242880" multiple>
+          <mud-label>Dropzone</mud-label>
+        </mud-file-input>
+        <mud-file-input variant="button" accept=".pdf" [maxSize]="5242880" multiple>
+          <mud-label>Buton</mud-label>
+        </mud-file-input>
       </div>
     `,
   }),
@@ -97,15 +97,21 @@ export const States: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-file-input label="Implicit" helperText="Un singur fișier PDF." accept=".pdf" />
-        <mud-file-input
-          label="Obligatoriu, invalid"
-          required
-          invalid
-          errorText="Trebuie să încărcați cel puțin un document."
-        />
-        <mud-file-input label="Dezactivat" disabled helperText="Nu este disponibil în această etapă." />
-        <mud-file-input label="Mare (large)" size="large" accept="image/*" [maxSize]="10485760" multiple />
+        <mud-file-input accept=".pdf">
+          <mud-label>Implicit</mud-label>
+          <mud-inline-message hideIcon>Un singur fișier PDF.</mud-inline-message>
+        </mud-file-input>
+        <mud-file-input required invalid>
+          <mud-label>Obligatoriu, invalid</mud-label>
+          <mud-inline-message variant="error">Trebuie să încărcați cel puțin un document.</mud-inline-message>
+        </mud-file-input>
+        <mud-file-input disabled>
+          <mud-label>Dezactivat</mud-label>
+          <mud-inline-message hideIcon>Nu este disponibil în această etapă.</mud-inline-message>
+        </mud-file-input>
+        <mud-file-input size="large" accept="image/*" [maxSize]="10485760" multiple>
+          <mud-label>Mare (large)</mud-label>
+        </mud-file-input>
       </div>
     `,
   }),
@@ -173,30 +179,21 @@ export const ProjectedIcon: Story = {
   }),
 };
 
-/**
- * Rich content via the shared slots: `[mudLabel]`, `[mudHelper]` and
- * `[mudError]` from `ngx-mud-ui/text-input`. Label association, aria-describedby
- * and `role="alert"` stay with the component.
- */
-export const ComposedContent: Story = {
+/** Any number of consumer-timed messages, and a rich label, can be projected. */
+export const Composable: Story = {
   parameters: { controls: { disable: true } },
-  decorators: [
-    moduleMetadata({
-      imports: [MudFileInput, MudFieldLabel, MudFieldHelper, MudFieldError, MudInlineMessage],
-    }),
-  ],
   render: () => ({
     template: `
       <div style="${COL}">
         <mud-file-input accept=".pdf" [maxSize]="5242880">
-          <span mudLabel>Contract semnat <strong>(obligatoriu)</strong></span>
-          <span mudHelper>Semnătura electronică se verifică prin <a href="#" (click)="$event.preventDefault()">MSign</a>.</span>
+          <mud-label>Contract semnat <strong>(obligatoriu)</strong></mud-label>
+          <mud-inline-message hideIcon>
+            Semnătura electronică se verifică prin <a href="#" (click)="$event.preventDefault()">MSign</a>.
+          </mud-inline-message>
         </mud-file-input>
         <mud-file-input invalid required accept=".pdf">
-          <span mudLabel>Dovada de plată</span>
-          <mud-inline-message mudError variant="error" size="small" hideIcon>
-            Documentul nu a putut fi validat. Încercați din nou.
-          </mud-inline-message>
+          <mud-label>Dovada de plată</mud-label>
+          <mud-inline-message variant="error">Documentul nu a putut fi validat. Încercați din nou.</mud-inline-message>
         </mud-file-input>
       </div>
     `,
@@ -211,20 +208,24 @@ export const ComposedContent: Story = {
  */
 @Component({
   selector: 'mud-file-input-reactive-demo',
-  imports: [MudFileInput, ReactiveFormsModule],
+  imports: [MudFileInput, MudLabel, MudInlineMessage, ReactiveFormsModule],
   template: `
     <div style="${COL}">
       <mud-file-input
-        label="Documente justificative"
         required
         accept=".pdf,image/*"
         multiple
         [maxSize]="2097152"
         [formControl]="documents"
         [invalid]="documents.touched && documents.invalid"
-        [errorText]="errorText"
-        helperText="Cel puțin un document; maximum 2 MB fiecare, 5 MB în total."
-      />
+      >
+        <mud-label>Documente justificative</mud-label>
+        @if (documents.touched && documents.invalid) {
+          <mud-inline-message variant="error">{{ errorText }}</mud-inline-message>
+        } @else {
+          <mud-inline-message hideIcon>Cel puțin un document; maximum 2 MB fiecare, 5 MB în total.</mud-inline-message>
+        }
+      </mud-file-input>
       <code>
         files: {{ names || '—' }} | touched: {{ documents.touched }} | valid: {{ documents.valid }}
       </code>
@@ -263,18 +264,21 @@ function totalSizeUnder(limit: number) {
  */
 const REACTIVE_FORMS_SOURCE = `
 @Component({
-  imports: [MudFileInput, ReactiveFormsModule],
+  imports: [MudFileInput, MudLabel, MudInlineMessage, ReactiveFormsModule],
   template: \`
     <mud-file-input
-      label="Documente justificative"
       required
       accept=".pdf,image/*"
       multiple
       [maxSize]="2097152"
       [formControl]="documents"
       [invalid]="documents.touched && documents.invalid"
-      [errorText]="errorText"
-    />
+    >
+      <mud-label>Documente justificative</mud-label>
+      @if (documents.touched && documents.invalid) {
+        <mud-inline-message variant="error">{{ errorText }}</mud-inline-message>
+      }
+    </mud-file-input>
   \`,
 })
 export class DocumentsField {
@@ -312,25 +316,23 @@ export const ReactiveForms: Story = {
 
 /**
  * Signal forms via the FormValueControl contract: `[formField]` binds the
- * value, the required marker and the validation errors — the message below
- * comes from the field's validator, not from an `errorText` input.
- * Note: this reflects signal forms' RAW invalid state (errors show
- * immediately). For custom display timing, skip `[formField]` and bind
- * manually: `[(value)]` + `[invalid]="form.x().invalid() && form.x().touched()"`.
+ * value, the required marker and the raw validation state. This reflects
+ * signal forms' RAW invalid state (errors show immediately), so the message
+ * is guarded on `touched()` to keep the display consumer-timed.
  */
 @Component({
   selector: 'mud-file-input-signal-demo',
-  imports: [MudFileInput, FormField],
+  imports: [MudFileInput, MudLabel, MudInlineMessage, FormField],
   template: `
     <div style="${COL}">
-      <mud-file-input
-        label="Documente justificative"
-        accept=".pdf,image/*"
-        multiple
-        [maxSize]="2097152"
-        [formField]="form.documents"
-        helperText="Cel puțin un document."
-      />
+      <mud-file-input accept=".pdf,image/*" multiple [maxSize]="2097152" [formField]="form.documents">
+        <mud-label>Documente justificative</mud-label>
+        @if (form.documents().touched() && form.documents().invalid()) {
+          <mud-inline-message variant="error">Încărcați cel puțin un document.</mud-inline-message>
+        } @else {
+          <mud-inline-message hideIcon>Cel puțin un document.</mud-inline-message>
+        }
+      </mud-file-input>
       <code>
         files: {{ names() || '—' }} | touched: {{ form.documents().touched() }} | valid:
         {{ form.documents().valid() }}
@@ -355,23 +357,22 @@ class FileInputSignalDemo {
  */
 const SIGNAL_FORMS_SOURCE = `
 @Component({
-  imports: [MudFileInput, FormField],
+  imports: [MudFileInput, MudLabel, MudInlineMessage, FormField],
   template: \`
-    <mud-file-input
-      label="Documente justificative"
-      accept=".pdf,image/*"
-      multiple
-      [maxSize]="2097152"
-      [formField]="form.documents"
-    />
+    <mud-file-input accept=".pdf,image/*" multiple [maxSize]="2097152" [formField]="form.documents">
+      <mud-label>Documente justificative</mud-label>
+      @if (form.documents().touched() && form.documents().invalid()) {
+        <mud-inline-message variant="error">Încărcați cel puțin un document.</mud-inline-message>
+      }
+    </mud-file-input>
   \`,
 })
 export class DocumentsField {
   readonly model = signal<{ documents: File[] }>({ documents: [] });
 
-  // Signal forms bind \`required\`, \`invalid\` and \`errors\` on the control for
-  // you — no errorText input needed. minLength(…, 1) is what makes an empty
-  // array fail; required alone only marks the field.
+  // Signal forms bind \`required\` and \`invalid\` on the control for you —
+  // minLength(…, 1) is what makes an empty array fail; required alone only
+  // marks the field. The message stays yours to project and time.
   readonly form = form(this.model, (path) => {
     required(path.documents, { message: 'Încărcați cel puțin un document.' });
     minLength(path.documents, 1, { message: 'Încărcați cel puțin un document.' });
@@ -394,17 +395,18 @@ export const SignalForms: Story = {
  */
 @Component({
   selector: 'mud-file-input-upload-demo',
-  imports: [MudFileInput, MudFileItem],
+  imports: [MudFileInput, MudLabel, MudFileItem],
   template: `
     <div style="${COL}">
       <mud-file-input
-        label="Documente"
         accept=".pdf,image/*"
         multiple
         [showFileList]="false"
         [value]="files()"
         (valueChange)="onPicked($event)"
-      />
+      >
+        <mud-label>Documente</mud-label>
+      </mud-file-input>
       @for (row of rows(); track row.file) {
         <mud-file-item
           [filename]="row.file.name"
@@ -444,16 +446,17 @@ class FileInputUploadDemo {
  */
 const UPLOAD_SOURCE = `
 @Component({
-  imports: [MudFileInput, MudFileItem],
+  imports: [MudFileInput, MudLabel, MudFileItem],
   template: \`
     <mud-file-input
-      label="Documente"
       accept=".pdf,image/*"
       multiple
       [showFileList]="false"
       [value]="files()"
       (valueChange)="onPicked($event)"
-    />
+    >
+      <mud-label>Documente</mud-label>
+    </mud-file-input>
     @for (row of rows(); track row.file) {
       <mud-file-item
         [filename]="row.file.name"

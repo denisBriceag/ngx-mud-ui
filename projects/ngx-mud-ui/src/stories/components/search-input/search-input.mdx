@@ -13,11 +13,15 @@ fires on Enter.
 
 ```ts
 import { MudSearchInput } from 'ngx-mud-ui/search-input';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 @Component({
-  imports: [MudSearchInput],
+  imports: [MudSearchInput, MudLabel, MudInlineMessage],
   template: `
-    <mud-search-input shape="circular" placeholder="Caută servicii" (searched)="find($event)" />
+    <mud-search-input shape="circular" placeholder="Caută servicii" (searched)="find($event)">
+      <mud-label>Căutare</mud-label>
+    </mud-search-input>
   `,
 })
 export class Demo {}
@@ -52,6 +56,20 @@ Selector: `mud-search-input`
 
 <ArgTypes of={SearchInputStories} />
 
+### Label and messages
+
+The field renders no message text of its own. Project a `<mud-label>` for
+the visible label and any number of `<mud-inline-message>` elements for
+assistive text — *you* decide when they render:
+
+- Messages land in a field-owned `role="alert"` region wired into
+  `aria-describedby`; toggling one on announces it to screen readers.
+- Inside a field, `mud-inline-message` is always the small size — its
+  `size` input is ignored.
+- The field's `invalid` input drives the red border and `aria-invalid`;
+  with signal forms it is bound automatically, with reactive forms bind
+  `[invalid]="ctrl.invalid && ctrl.touched"`.
+
 ## Usage tips
 
 - **`searched` is the one to bind**, not `valueChange`. It fires on Enter and on
@@ -65,6 +83,6 @@ Selector: `mud-search-input`
 - **`shape="circular"` is the hero-search silhouette.** Keep `rectangular` when
   the field sits in a form beside other inputs, so the rhythm matches.
 - **Label it even when the placeholder seems enough.** A placeholder disappears
-  on focus and is not a substitute for `label` or `aria-label`.
+  on focus and is not a substitute for a `<mud-label>` or `aria-label`.
 - **Localize `submitLabel` and `clearLabel`** — they default to the English
   `'Search'` and `'Clear'` and are the accessible names of those two buttons.

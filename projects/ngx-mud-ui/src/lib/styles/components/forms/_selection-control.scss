@@ -118,25 +118,20 @@
   margin-left: var(--spacing-4, 4px);
 }
 
-.selection-control__supporting {
-  font-size: var(--_sc-supporting-font);
-  line-height: var(--_sc-supporting-line);
-  font-weight: 400;
-  color: var(--color-text-base-tertiary);
-  overflow-wrap: anywhere;
+.selection-control__assistive {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4, 4px);
 }
 
-.selection-control__error,
-.selection-control__error-text {
-  font-size: var(--_sc-supporting-font);
-  line-height: var(--_sc-supporting-line);
-  font-weight: 400;
-  color: var(--color-text-danger-default);
-  overflow-wrap: anywhere;
+.selection-control__assistive .inline-message {
+  --_im-font-size: var(--_sc-supporting-font);
+  --_im-line-height: var(--_sc-supporting-line);
+  --_im-icon-size: 16px;
+  --_im-gap: var(--spacing-4, 4px);
 }
 
-.selection-control.is-invalid .selection-control__label,
-.selection-control.is-invalid .selection-control__supporting {
+.selection-control.is-invalid .selection-control__label {
   color: var(--color-text-danger-default);
 }
 
@@ -159,8 +154,7 @@
     cursor: not-allowed;
   }
 
-  .selection-control__label,
-  .selection-control__supporting {
+  .selection-control__label {
     color: var(--color-text-disabled-on-disabled, var(--color-text-disabled-default));
   }
 }
@@ -264,12 +258,22 @@
   font-size: 12px;
 }
 
-.radio-group__error {
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 400;
-  color: var(--color-text-danger-default);
-  overflow-wrap: anywhere;
+// Consumer-projected group messages. Layout only — each projected
+// mud-inline-message owns its own variant color (error/hideIcon/etc.). Font
+// size/line-height already match the default 14/20 inline-message rung; only
+// the icon/gap are tightened to the compact rhythm the old plain-text error
+// line had.
+.radio-group__assistive {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4, 4px);
+}
+
+.radio-group__assistive .inline-message {
+  --_im-font-size: 14px;
+  --_im-line-height: 20px;
+  --_im-icon-size: 16px;
+  --_im-gap: var(--spacing-4, 4px);
 }
 
 // ----- switch (mud-switch) --------------------------------------------------

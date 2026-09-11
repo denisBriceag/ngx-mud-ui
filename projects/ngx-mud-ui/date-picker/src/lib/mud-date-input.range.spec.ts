@@ -1,24 +1,28 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MudDateInput } from './mud-date-input.component';
+import { MudLabel } from '../../../label/src/public-api';
 import type { MudDateRange } from './date-value';
 
 @Component({
-  imports: [MudDateInput],
+  imports: [MudDateInput, MudLabel],
   template: `<mud-date-input
     mode="range"
-    [label]="label()"
     [(value)]="value"
     [required]="required()"
     [max]="max()"
     [aria-label]="ariaLabel()"
     locale="en-GB"
-  />`,
+  >
+    @if (withLabel()) {
+      <mud-label>Perioada</mud-label>
+    }
+  </mud-date-input>`,
 })
 class Host {
   readonly value = signal<MudDateRange | null>(null);
   readonly required = signal(false);
-  readonly label = signal<string | undefined>('Perioada');
+  readonly withLabel = signal(true);
   readonly max = signal<string | undefined>(undefined);
   readonly ariaLabel = signal<string | undefined>(undefined);
 }
@@ -83,7 +87,7 @@ describe('MudDateInput range mode', () => {
   it('falls back to the consumer aria-label when there is no visible label', async () => {
     const view = await render();
 
-    view.host.label.set(undefined);
+    view.host.withLabel.set(false);
     view.host.ariaLabel.set('Perioada de valabilitate');
     await view.fixture.whenStable();
 
@@ -94,7 +98,7 @@ describe('MudDateInput range mode', () => {
   it('names each segment on its own when the field has no name at all', async () => {
     const view = await render();
 
-    view.host.label.set(undefined);
+    view.host.withLabel.set(false);
     await view.fixture.whenStable();
 
     expect(view.accessibleName(view.start)).toBe('Start date');

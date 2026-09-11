@@ -4,12 +4,14 @@ import {
   Component,
   computed,
   contentChild,
+  contentChildren,
   inject,
   input,
   viewChild,
 } from '@angular/core';
 import type { ElementRef } from '@angular/core';
-import { MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { MudRadioGroup } from './mud-radio-group.component';
 
 let nextUniqueId = 0;
@@ -19,11 +21,11 @@ let nextUniqueId = 0;
  * the group's value (single source of truth); a radio cannot be used outside
  * a group — for a single yes/no toggle use `mud-checkbox`.
  *
- * `label` / `supportingText` accept the [mudLabel] / [mudHelper] projection
- * overrides from `ngx-mud-ui/text-input`.
- *
  * ```html
- * <mud-radio value="mpay" label="MPay" supportingText="Fără comision." />
+ * <mud-radio value="mpay">
+ *   <mud-label>MPay</mud-label>
+ *   <mud-inline-message hideIcon>Fără comision.</mud-inline-message>
+ * </mud-radio>
  * ```
  */
 @Component({
@@ -40,12 +42,6 @@ export class MudRadio<T = unknown> {
   /** @description The value this option contributes to the group (compared with Object.is). */
   readonly value = input.required<T>();
 
-  /** @description Plain-text label beside the dot. */
-  readonly label = input<string | undefined>(undefined);
-
-  /** @description Secondary line under the label. */
-  readonly supportingText = input<string | undefined>(undefined);
-
   /** @description Disables this option on top of the group-level disabled. */
   readonly disabled = input(false, { transform: booleanAttribute });
 
@@ -59,12 +55,18 @@ export class MudRadio<T = unknown> {
     this._native().nativeElement.focus(options);
   }
 
-  /** @docs-private Projected region markers. */
-  protected readonly _projectedLabel = contentChild(MudFieldLabel);
-  protected readonly _projectedHelper = contentChild(MudFieldHelper);
+  /** @docs-private Projected label element (ngx-mud-ui/label). */
+  protected readonly _label = contentChild(MudLabel);
+
+  /** @docs-private Consumer-projected assistive messages. */
+  private readonly _messages = contentChildren(MudInlineMessage);
+
+  protected readonly _hasLabel = computed(() => !!this._label());
+
+  protected readonly _hasMessages = computed(() => this._messages().length > 0);
 
   protected readonly _id = `mud-radio-${nextUniqueId++}`;
-  protected readonly _supportingId = `${this._id}-supporting`;
+  protected readonly _assistiveId = `${this._id}-assistive`;
 
   protected readonly _checked = computed(() => Object.is(this._group.value(), this.value()));
 
@@ -77,18 +79,12 @@ export class MudRadio<T = unknown> {
   protected readonly _readonly = computed(() => this._group.readonly());
   protected readonly _invalid = computed(() => this._group._effectiveInvalid());
 
-  protected readonly _showLabel = computed(() => !!this._projectedLabel() || !!this.label()?.trim());
-
-  protected readonly _showSupporting = computed(
-    () => !!this._projectedHelper() || !!this.supportingText()?.trim(),
-  );
-
   protected readonly _describedBy = computed<string | null>(() =>
-    this._showSupporting() ? this._supportingId : null,
+    this._hasMessages() ? this._assistiveId : null,
   );
 
   protected readonly _ariaLabel = computed<string | null>(() => {
-    if (this._showLabel()) return null;
+    if (this._hasLabel()) return null;
 
     return this.ariaLabel() ?? null;
   });

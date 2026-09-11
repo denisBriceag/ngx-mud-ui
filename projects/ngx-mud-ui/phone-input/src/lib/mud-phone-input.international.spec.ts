@@ -1,19 +1,21 @@
 import { Component, PLATFORM_ID, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MudPhoneInput } from './mud-phone-input.component';
+import { MudLabel } from '../../../label/src/public-api';
 
 @Component({
-  imports: [MudPhoneInput],
+  imports: [MudPhoneInput, MudLabel],
   template: `
     <mud-phone-input
-      label="Telefon"
       mode="international"
       [(value)]="value"
       [(country)]="country"
       [countries]="countries()"
       [disabled]="disabled()"
       [readonly]="readonly()"
-    />
+    >
+      <mud-label>Telefon</mud-label>
+    </mud-phone-input>
   `,
 })
 class Host {

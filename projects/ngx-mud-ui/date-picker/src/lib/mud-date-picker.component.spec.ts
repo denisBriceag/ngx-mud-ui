@@ -350,7 +350,7 @@ describe('MudDatePicker signal forms (FormValueControl)', () => {
     ).toBe('false');
   });
 
-  it('surfaces a required-validator error through the errors input', async () => {
+  it('reflects a required-validator error as aria-invalid via [formField]', async () => {
     const fixture = TestBed.createComponent(SignalHost);
 
     await fixture.whenStable();

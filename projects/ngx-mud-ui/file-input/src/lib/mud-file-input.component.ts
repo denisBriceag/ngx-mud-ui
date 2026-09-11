@@ -4,6 +4,7 @@ import {
   Component,
   computed,
   contentChild,
+  contentChildren,
   DestroyRef,
   ElementRef,
   forwardRef,
@@ -19,9 +20,10 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
-import type { FormValueControl, ValidationError } from '@angular/forms/signals';
+import type { FormValueControl } from '@angular/forms/signals';
 import { MudButton } from 'ngx-mud-ui/button';
-import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { MudFileItem } from './mud-file-item.component';
 
 export type MudFileInputVariant = 'dropzone' | 'button';
@@ -67,7 +69,12 @@ let nextUniqueId = 0;
  * and turn `showFileList` off when you do.
  *
  * ```html
- * <mud-file-input label="Documente" accept=".pdf,image/*" multiple [maxSize]="5242880" [formControl]="documents" />
+ * <mud-file-input [formField]="form.documents" accept=".pdf,image/*" multiple [maxSize]="5242880">
+ *   <mud-label>Documente</mud-label>
+ *   @if (form.documents().touched() && form.documents().invalid()) {
+ *     <mud-inline-message variant="error">Încărcați cel puțin un document.</mud-inline-message>
+ *   }
+ * </mud-file-input>
  * ```
  */
 @Component({
@@ -123,21 +130,6 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
 
   readonly name = input<string>('');
 
-  /** @description Plain-text label. Use the `[mudLabel]` slot for richer content. */
-  readonly label = input<string | undefined>(undefined);
-
-  /** @description Helper/hint below the control. Replaced by the error message when invalid. */
-  readonly helperText = input<string | undefined>(undefined);
-
-  /** @description Error message shown below the control when invalid. */
-  readonly errorText = input<string | undefined>(undefined);
-
-  /**
-   * @description Validation errors pushed by signal forms; the first message renders as
-   * the error line unless `errorText` overrides it.
-   */
-  readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
-
   /** @description Lead-in text of the drop-area call to action, before the browse link. Localize per app. */
   readonly ctaText = input('Drag and drop or ');
 
@@ -147,11 +139,11 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
   /** @description Drop-area text while a drag hovers it. Localize per app. */
   readonly dropzoneActiveText = input('Release to upload');
 
-  /** @description Left caption below the drop zone. Derived from `accept` when unset. */
-  readonly supportedFormatsText = input<string | undefined>(undefined);
+  /** @description Builds the left caption from the formats `accept` lists. Localize per app. */
+  readonly formatsCaption = input<(formats: string) => string>((formats) => `Accepted formats: ${formats}`);
 
-  /** @description Right caption below the drop zone. Derived from `maxSize` when unset. */
-  readonly maxSizeText = input<string | undefined>(undefined);
+  /** @description Builds the right caption from the formatted `maxSize`. Localize per app. */
+  readonly maxSizeCaption = input<(size: string) => string>((size) => `Max size: ${size}`);
 
   /** @description Accessible-label prefix of each row's remove button. Localize per app. */
   readonly removeLabel = input('Remove file');
@@ -184,7 +176,7 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
     (rejection) => `${rejection.file.name} was rejected`,
   );
 
-  /** @description Accessible name used when no visible `label` is set. */
+  /** @description Accessible name used when no `mud-label` is projected. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
   /** @description Extra id(s) merged into the browse control's aria-describedby. */
@@ -205,15 +197,19 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
   private readonly _host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  /** @docs-private Projected region markers ([mudLabel] / [mudHelper] / [mudError]). */
-  protected readonly _projectedLabel = contentChild(MudFieldLabel);
-  protected readonly _projectedHelper = contentChild(MudFieldHelper);
-  protected readonly _projectedError = contentChild(MudFieldError);
+  /** @docs-private Projected label element (ngx-mud-ui/label). */
+  protected readonly _label = contentChild(MudLabel);
+
+  /** @docs-private Consumer-projected assistive messages. */
+  private readonly _messages = contentChildren(MudInlineMessage);
+
+  protected readonly _hasLabel = computed(() => !!this._label());
+
+  protected readonly _hasMessages = computed(() => this._messages().length > 0);
 
   protected readonly _id = `mud-file-input-${nextUniqueId++}`;
   protected readonly _labelId = `${this._id}-label`;
-  protected readonly _helperId = `${this._id}-helper`;
-  protected readonly _errorId = `${this._id}-error`;
+  protected readonly _assistiveId = `${this._id}-assistive`;
   protected readonly _browseId = `${this._id}-browse`;
 
   /** @docs-private role=status live text announcing add / remove / reject. */
@@ -232,73 +228,34 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
 
   protected readonly _effectiveDisabled = computed(() => this.disabled() || this._cvaDisabled());
 
-  protected readonly _effectiveInvalid = computed(() => this.invalid() || this.errors().length > 0);
+  protected readonly _effectiveInvalid = computed(() => this.invalid());
 
   protected readonly _formatsCaption = computed<string | undefined>(() => {
-    const explicit = this.supportedFormatsText()?.trim();
-
-    if (explicit) return explicit;
-
     const accept = this.accept()?.trim();
 
     if (!accept) return undefined;
 
     const formats = this._formatsFromAccept(accept);
 
-    return formats ? `Accepted formats: ${formats}` : undefined;
+    return formats ? this.formatsCaption()(formats) : undefined;
   });
 
   protected readonly _maxSizeCaption = computed<string | undefined>(() => {
-    const explicit = this.maxSizeText()?.trim();
-
-    if (explicit) return explicit;
-
     const maxSize = this.maxSize();
 
     if (maxSize === undefined) return undefined;
 
-    return `Max size: ${this._formatBytes(maxSize)}`;
+    return this.maxSizeCaption()(this._formatBytes(maxSize));
   });
 
   protected readonly _hasCaptions = computed(
     () => !!this._formatsCaption() || !!this._maxSizeCaption(),
   );
 
-  protected readonly _errorMessage = computed<string | undefined>(() => {
-    if (!this._effectiveInvalid()) return undefined;
-
-    const explicit = this.errorText()?.trim();
-
-    if (explicit) return explicit;
-
-    return this.errors().find((error) => error.message)?.message ?? undefined;
-  });
-
-  protected readonly _helperMessage = computed<string | undefined>(() => {
-    const helper = this.helperText()?.trim();
-
-    return helper || undefined;
-  });
-
-  /** @docs-private The error region shows while invalid with any content to show. */
-  protected readonly _showError = computed(
-    () => this._effectiveInvalid() && (!!this._projectedError() || !!this._errorMessage()),
-  );
-
-  /** @docs-private The helper region yields to an active error region. */
-  protected readonly _showHelper = computed(
-    () => !this._showError() && (!!this._projectedHelper() || !!this._helperMessage()),
-  );
-
-  protected readonly _showLabel = computed(
-    () => !!this._projectedLabel() || !!this.label()?.trim(),
-  );
-
   protected readonly _describedBy = computed<string | null>(() => {
     const ids: string[] = [];
 
-    if (this._showError()) ids.push(this._errorId);
-    else if (this._showHelper()) ids.push(this._helperId);
+    if (this._hasMessages()) ids.push(this._assistiveId);
 
     const external = this.ariaDescribedby()?.trim();
 
@@ -308,7 +265,7 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
   });
 
   protected readonly _ariaLabel = computed<string | null>(() => {
-    if (this._showLabel()) return null;
+    if (this._hasLabel()) return null;
 
     return this.ariaLabel() ?? null;
   });

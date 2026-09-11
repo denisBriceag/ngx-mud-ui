@@ -17,7 +17,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
-import type { FormValueControl, ValidationError } from '@angular/forms/signals';
+import type { FormValueControl } from '@angular/forms/signals';
 
 export type MudSegmentedControlSize = 'medium' | 'small';
 
@@ -157,13 +157,6 @@ export class MudSegmentedControl<T = unknown>
   readonly fullWidth = input(false, { transform: booleanAttribute });
   readonly size = input<MudSegmentedControlSize>('medium');
   readonly value = model<T | undefined>(undefined);
-
-  /**
-   * @description Validation errors pushed by signal forms. The segmented control has no
-   * error region of its own (it is a view switcher, not a field), so bind them
-   * to a message beside it when they need to be shown.
-   */
-  readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
 
   readonly selectionChange = output<MudSegmentedControlChange<T>>();
 

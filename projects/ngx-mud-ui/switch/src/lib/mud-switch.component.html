@@ -18,8 +18,8 @@
   <span class="switch-control__thumb"></span>
 </span>
 
-@if (_showLabel()) {
+@if (_hasLabel()) {
   <label class="switch-control__label" [attr.for]="_id">
-    <ng-content select="[mudLabel]">{{ label() }}</ng-content>
+    <ng-content select="mud-label" />
   </label>
 }

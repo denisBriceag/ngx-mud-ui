@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { MudSelectInput } from './mud-select-input.component';
+import { MudLabel } from '../../../label/src/public-api';
+import { MudInlineMessage } from '../../../inline-message/src/public-api';
 import type { MudSelectOption } from './mud-select-input.component';
 
 const OPTIONS: MudSelectOption<string>[] = [
@@ -13,10 +15,9 @@ const OPTIONS: MudSelectOption<string>[] = [
 ];
 
 @Component({
-  imports: [MudSelectInput],
+  imports: [MudSelectInput, MudLabel, MudInlineMessage],
   template: `
     <mud-select-input
-      label="Raion"
       placeholder="Alegeți raionul"
       [options]="options()"
       [(value)]="value"
@@ -24,9 +25,17 @@ const OPTIONS: MudSelectOption<string>[] = [
       [disabled]="disabled()"
       [readonly]="readonly()"
       [invalid]="invalid()"
-      [errorText]="errorText()"
-      [helperText]="helperText()"
-    />
+    >
+      @if (withLabel()) {
+        <mud-label>Raion</mud-label>
+      }
+      @if (showHelper()) {
+        <mud-inline-message hideIcon>Raionul de reședință.</mud-inline-message>
+      }
+      @if (showError()) {
+        <mud-inline-message variant="error">Alegeți un raion.</mud-inline-message>
+      }
+    </mud-select-input>
   `,
 })
 class Host {
@@ -36,8 +45,9 @@ class Host {
   readonly disabled = signal(false);
   readonly readonly = signal(false);
   readonly invalid = signal(false);
-  readonly errorText = signal<string | undefined>(undefined);
-  readonly helperText = signal<string | undefined>(undefined);
+  readonly withLabel = signal(true);
+  readonly showHelper = signal(false);
+  readonly showError = signal(false);
 }
 
 async function render() {
@@ -168,27 +178,6 @@ describe('MudSelectInput', () => {
     expect(trigger.disabled).toBe(true);
   });
 
-  it('shows the error region (role=alert) replacing the helper, wired to the trigger', async () => {
-    const { fixture, host, el, trigger } = await render();
-
-    host.helperText.set('Raionul de reședință.');
-    await fixture.whenStable();
-
-    const helper = el.querySelector('.input-field__assistive')!;
-
-    expect(trigger.getAttribute('aria-describedby')).toContain(helper.id);
-
-    host.invalid.set(true);
-    host.errorText.set('Alegeți un raion.');
-    await fixture.whenStable();
-
-    const error = el.querySelector('.input-field__assistive')!;
-
-    expect(error.getAttribute('role')).toBe('alert');
-    expect(trigger.getAttribute('aria-invalid')).toBe('true');
-    expect(el.classList.contains('input-field--destructive')).toBe(true);
-  });
-
   it('shows the empty state when there are no options', async () => {
     const { fixture, host, trigger, panel } = await render();
 
@@ -246,7 +235,6 @@ describe('MudSelectInput', () => {
     host.model.set({ raion: '' });
     await fixture.whenStable();
     expect(el.classList.contains('input-field--destructive')).toBe(true);
-    expect(el.querySelector('.inline-message--error')?.textContent).toContain('Alegeți un raion');
   });
 
   it('supports non-string option values via Object.is', async () => {
@@ -264,11 +252,106 @@ describe('MudSelectInput', () => {
     expect(host.copies()).toBe(2);
     expect(trigger.textContent).toContain('Două exemplare');
   });
+
+  it('uses aria-label only when no visible label exists', async () => {
+    const fixture = TestBed.createComponent(UnlabelledHost);
+
+    await fixture.whenStable();
+    const trigger = fixture.nativeElement.querySelector('.select-field__trigger') as HTMLButtonElement;
+
+    expect(trigger.getAttribute('aria-label')).toBe('Alege un raion');
+    expect(trigger.getAttribute('aria-labelledby')).toBeNull();
+  });
+
+  it('renders no label element without a projected mud-label', async () => {
+    const { fixture, host, el, trigger } = await render();
+
+    host.withLabel.set(false);
+    await fixture.whenStable();
+
+    expect(el.querySelector('.input-field__label')).toBeNull();
+    expect(trigger.getAttribute('aria-labelledby')).toBeNull();
+  });
+
+  it('renders no assistive wrapper and no describedby when nothing is projected', async () => {
+    const { el, trigger } = await render();
+
+    expect(el.querySelector('.input-field__assistive')).toBeNull();
+    expect(trigger.getAttribute('aria-describedby')).toBeNull();
+  });
+
+  it('projects inline-messages into a role=alert wrapper wired to aria-describedby', async () => {
+    const { fixture, host, el, trigger } = await render();
+
+    host.showHelper.set(true);
+    await fixture.whenStable();
+
+    const wrapper = el.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(wrapper.getAttribute('role')).toBe('alert');
+    expect(wrapper.querySelector('mud-inline-message')?.textContent).toContain('Raionul de reședință.');
+    expect(trigger.getAttribute('aria-describedby')).toBe(wrapper.id);
+  });
+
+  it('lets the consumer swap helper for error — both land in the same wrapper, wired to the trigger', async () => {
+    const { fixture, host, el, trigger } = await render();
+
+    host.showHelper.set(true);
+    await fixture.whenStable();
+    host.showHelper.set(false);
+    host.showError.set(true);
+    host.invalid.set(true);
+    await fixture.whenStable();
+
+    const wrapper = el.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(wrapper.getAttribute('role')).toBe('alert');
+    expect(wrapper.textContent).toContain('Alegeți un raion.');
+    expect(wrapper.textContent).not.toContain('Raionul de reședință.');
+    expect(trigger.getAttribute('aria-describedby')).toContain(wrapper.id);
+    expect(trigger.getAttribute('aria-invalid')).toBe('true');
+    expect(el.classList.contains('input-field--destructive')).toBe(true);
+  });
+
+  it('can show two messages at once, in template order', async () => {
+    const { fixture, host, el } = await render();
+
+    host.showHelper.set(true);
+    host.showError.set(true);
+    await fixture.whenStable();
+
+    const messages = el.querySelectorAll('.input-field__assistive mud-inline-message');
+
+    expect(messages.length).toBe(2);
+    expect(messages[0].textContent).toContain('Raionul de reședință.');
+    expect(messages[1].textContent).toContain('Alegeți un raion.');
+  });
+
+  it('merges external aria-describedby ids with the internal assistive id when a message is shown', async () => {
+    const fixture = TestBed.createComponent(ExternalDescribedHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const trigger = fixture.nativeElement.querySelector('.select-field__trigger') as HTMLButtonElement;
+
+    expect(trigger.getAttribute('aria-describedby')).toBe('extra-id');
+
+    host.showMessage.set(true);
+    await fixture.whenStable();
+
+    const wrapper = fixture.nativeElement.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(trigger.getAttribute('aria-describedby')).toBe(`${wrapper.id} extra-id`);
+  });
 });
 
 @Component({
-  imports: [MudSelectInput, ReactiveFormsModule],
-  template: `<mud-select-input label="Raion" [options]="options" [formControl]="control" />`,
+  imports: [MudSelectInput, ReactiveFormsModule, MudLabel],
+  template: `
+    <mud-select-input [options]="options" [formControl]="control">
+      <mud-label>Raion</mud-label>
+    </mud-select-input>
+  `,
 })
 class ReactiveHost {
   readonly options = OPTIONS;
@@ -276,8 +359,12 @@ class ReactiveHost {
 }
 
 @Component({
-  imports: [MudSelectInput, FormField],
-  template: `<mud-select-input label="Raion" [options]="options" [formField]="form.raion" />`,
+  imports: [MudSelectInput, FormField, MudLabel],
+  template: `
+    <mud-select-input [options]="options" [formField]="form.raion">
+      <mud-label>Raion</mud-label>
+    </mud-select-input>
+  `,
 })
 class SignalHost {
   readonly options = OPTIONS;
@@ -288,8 +375,12 @@ class SignalHost {
 }
 
 @Component({
-  imports: [MudSelectInput],
-  template: `<mud-select-input label="Exemplare" [options]="options" [(value)]="copies" />`,
+  imports: [MudSelectInput, MudLabel],
+  template: `
+    <mud-select-input [options]="options" [(value)]="copies">
+      <mud-label>Exemplare</mud-label>
+    </mud-select-input>
+  `,
 })
 class NumberHost {
   readonly options: MudSelectOption<number>[] = [
@@ -297,6 +388,31 @@ class NumberHost {
     { value: 2, label: 'Două exemplare' },
   ];
   readonly copies = signal<number | undefined>(undefined);
+}
+
+@Component({
+  imports: [MudSelectInput],
+  template: `<mud-select-input aria-label="Alege un raion" [options]="options" />`,
+})
+class UnlabelledHost {
+  readonly options = OPTIONS;
+}
+
+@Component({
+  imports: [MudSelectInput, MudInlineMessage],
+  template: `
+    <mud-select-input aria-describedby="extra-id" [options]="options" [(value)]="value">
+      @if (showMessage()) {
+        <mud-inline-message hideIcon>Raionul de reședință.</mud-inline-message>
+      }
+    </mud-select-input>
+    <p id="extra-id">Notă externă.</p>
+  `,
+})
+class ExternalDescribedHost {
+  readonly options = OPTIONS;
+  readonly value = signal<string | undefined>(undefined);
+  readonly showMessage = signal(false);
 }
 
 describe('MudSelectInput orphan value diagnostics', () => {

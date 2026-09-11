@@ -3,36 +3,45 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField, form } from '@angular/forms/signals';
 import { MudCheckbox } from './mud-checkbox.component';
-import { MudFieldError, MudFieldLabel } from 'ngx-mud-ui/text-input';
+import { MudLabel } from '../../../label/src/public-api';
 import { MudInlineMessage } from '../../../inline-message/src/public-api';
+import type { MudCheckboxSize } from './mud-checkbox.component';
 
 @Component({
-  imports: [MudCheckbox],
+  imports: [MudCheckbox, MudLabel, MudInlineMessage],
   template: `
     <mud-checkbox
-      label="Accept termenii"
       [(checked)]="checked"
       [indeterminate]="indeterminate()"
-      [supportingText]="supportingText()"
-      [errorText]="errorText()"
       [invalid]="invalid()"
       [disabled]="disabled()"
       [readonly]="readonly()"
       [required]="requiredField()"
       [size]="size()"
-    />
+    >
+      @if (withLabel()) {
+        <mud-label>Accept termenii</mud-label>
+      }
+      @if (showHelper()) {
+        <mud-inline-message hideIcon>Se aplică termenii MPay.</mud-inline-message>
+      }
+      @if (showError()) {
+        <mud-inline-message variant="error">Trebuie să acceptați termenii.</mud-inline-message>
+      }
+    </mud-checkbox>
   `,
 })
 class Host {
   readonly checked = signal(false);
   readonly indeterminate = signal(false);
-  readonly supportingText = signal<string | undefined>(undefined);
-  readonly errorText = signal<string | undefined>(undefined);
   readonly invalid = signal(false);
   readonly disabled = signal(false);
   readonly readonly = signal(false);
   readonly requiredField = signal(false);
-  readonly size = signal<'medium' | 'small'>('medium');
+  readonly size = signal<MudCheckboxSize>('medium');
+  readonly withLabel = signal(true);
+  readonly showHelper = signal(false);
+  readonly showError = signal(false);
 }
 
 async function render() {
@@ -46,14 +55,11 @@ async function render() {
 }
 
 describe('MudCheckbox', () => {
-  it('renders a native checkbox with the label association', async () => {
+  it('renders a native checkbox inside the selection-control host', async () => {
     const { el, native } = await render();
-    const label = el.querySelector('.selection-control__label') as HTMLLabelElement;
 
     expect(el.classList.contains('selection-control')).toBe(true);
     expect(native).toBeTruthy();
-    expect(label.htmlFor).toBe(native.id);
-    expect(label.textContent).toContain('Accept termenii');
   });
 
   it('toggles the two-way model on user activation and blocks it while readonly', async () => {
@@ -86,30 +92,6 @@ describe('MudCheckbox', () => {
     expect(el.classList.contains('is-indeterminate')).toBe(true);
   });
 
-  it('wires supporting text and error via aria-describedby; error replaces supporting', async () => {
-    const { fixture, host, el, native } = await render();
-
-    host.supportingText.set('Se aplică termenii MPay.');
-    await fixture.whenStable();
-
-    const supporting = el.querySelector('.selection-control__supporting')!;
-
-    expect(native.getAttribute('aria-describedby')).toContain(supporting.id);
-
-    host.invalid.set(true);
-    host.errorText.set('Trebuie să acceptați termenii.');
-    await fixture.whenStable();
-
-    const error = el.querySelector('.selection-control__error')!;
-
-    expect(error.getAttribute('role')).toBe('alert');
-    expect(error.textContent).toContain('Trebuie să acceptați');
-    expect(el.querySelector('.selection-control__supporting')).toBeNull();
-    expect(native.getAttribute('aria-describedby')).toContain(error.id);
-    expect(native.getAttribute('aria-invalid')).toBe('true');
-    expect(el.classList.contains('is-invalid')).toBe(true);
-  });
-
   it('maps size small and required to their affordances', async () => {
     const { fixture, host, el, native } = await render();
 
@@ -120,6 +102,92 @@ describe('MudCheckbox', () => {
     expect(el.classList.contains('selection-control--sm')).toBe(true);
     expect(el.querySelector('.selection-control__required')).toBeTruthy();
     expect(native.required).toBe(true);
+  });
+
+  it('renders the projected mud-label inside the field label element', async () => {
+    const { el, native } = await render();
+    const label = el.querySelector('.selection-control__label') as HTMLLabelElement;
+
+    expect(label.textContent).toContain('Accept termenii');
+    expect(label.htmlFor).toBe(native.id);
+  });
+
+  it('renders no label element without a projected mud-label', async () => {
+    const { fixture, host, el } = await render();
+
+    host.withLabel.set(false);
+    await fixture.whenStable();
+
+    expect(el.querySelector('.selection-control__label')).toBeNull();
+  });
+
+  it('renders no assistive wrapper and no describedby when nothing is projected', async () => {
+    const { el, native } = await render();
+
+    expect(el.querySelector('.selection-control__assistive')).toBeNull();
+    expect(native.getAttribute('aria-describedby')).toBeNull();
+  });
+
+  it('projects inline-messages into a role=alert wrapper wired to aria-describedby', async () => {
+    const { fixture, host, el, native } = await render();
+
+    host.showHelper.set(true);
+    await fixture.whenStable();
+
+    const wrapper = el.querySelector('.selection-control__assistive') as HTMLElement;
+
+    expect(wrapper.getAttribute('role')).toBe('alert');
+    expect(wrapper.querySelector('mud-inline-message')?.textContent).toContain('Se aplică termenii MPay.');
+    expect(native.getAttribute('aria-describedby')).toBe(wrapper.id);
+  });
+
+  it('lets the consumer swap helper for error — both land in the same wrapper', async () => {
+    const { fixture, host, el, native } = await render();
+
+    host.showHelper.set(true);
+    await fixture.whenStable();
+    host.showHelper.set(false);
+    host.showError.set(true);
+    host.invalid.set(true);
+    await fixture.whenStable();
+
+    const wrapper = el.querySelector('.selection-control__assistive') as HTMLElement;
+
+    expect(wrapper.textContent).toContain('Trebuie să acceptați termenii.');
+    expect(wrapper.textContent).not.toContain('Se aplică termenii MPay.');
+    expect(el.classList.contains('is-invalid')).toBe(true);
+    expect(native.getAttribute('aria-invalid')).toBe('true');
+  });
+
+  it('can show two messages at once, in template order', async () => {
+    const { fixture, host, el } = await render();
+
+    host.showHelper.set(true);
+    host.showError.set(true);
+    await fixture.whenStable();
+
+    const messages = el.querySelectorAll('.selection-control__assistive mud-inline-message');
+
+    expect(messages.length).toBe(2);
+    expect(messages[0].textContent).toContain('Se aplică termenii MPay.');
+    expect(messages[1].textContent).toContain('Trebuie să acceptați termenii.');
+  });
+
+  it('merges external aria-describedby ids with the internal assistive id when a message is shown', async () => {
+    const fixture = TestBed.createComponent(ExternalDescribedHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const native = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe('extra-id');
+
+    host.showMessage.set(true);
+    await fixture.whenStable();
+
+    const wrapper = fixture.nativeElement.querySelector('.selection-control__assistive') as HTMLElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe(`${wrapper.id} extra-id`);
   });
 
   it('works as a reactive form control (boolean CVA)', async () => {
@@ -161,22 +229,11 @@ describe('MudCheckbox', () => {
     await fixture.whenStable();
     expect(native.checked).toBe(false);
   });
-
-  it('projected label and error content render inside the wired regions', async () => {
-    const fixture = TestBed.createComponent(SlottedHost);
-
-    await fixture.whenStable();
-    const el = fixture.nativeElement.querySelector('mud-checkbox') as HTMLElement;
-
-    expect(el.querySelector('.selection-control__label .custom-label')).toBeTruthy();
-    expect(el.querySelector('.selection-control__error mud-inline-message')).toBeTruthy();
-    expect(el.querySelector('.selection-control__error')!.getAttribute('role')).toBe('alert');
-  });
 });
 
 @Component({
   imports: [MudCheckbox, ReactiveFormsModule],
-  template: `<mud-checkbox label="Termeni" [formControl]="control" />`,
+  template: `<mud-checkbox [formControl]="control" />`,
 })
 class ReactiveHost {
   readonly control = new FormControl(true, { nonNullable: true, validators: [Validators.requiredTrue] });
@@ -184,7 +241,7 @@ class ReactiveHost {
 
 @Component({
   imports: [MudCheckbox, FormField],
-  template: `<mud-checkbox label="Abonare la noutăți" [formField]="form.subscribed" />`,
+  template: `<mud-checkbox [formField]="form.subscribed" />`,
 })
 class SignalHost {
   readonly model = signal({ subscribed: false });
@@ -192,12 +249,17 @@ class SignalHost {
 }
 
 @Component({
-  imports: [MudCheckbox, MudFieldLabel, MudFieldError, MudInlineMessage],
+  imports: [MudCheckbox, MudInlineMessage],
   template: `
-    <mud-checkbox invalid>
-      <span mudLabel class="custom-label">Accept <a href="/termeni">termenii</a></span>
-      <mud-inline-message mudError variant="error" size="small" hideIcon>Obligatoriu.</mud-inline-message>
+    <mud-checkbox aria-describedby="extra-id" [(checked)]="checked">
+      @if (showMessage()) {
+        <mud-inline-message hideIcon>Se aplică termenii MPay.</mud-inline-message>
+      }
     </mud-checkbox>
+    <p id="extra-id">Notă externă.</p>
   `,
 })
-class SlottedHost {}
+class ExternalDescribedHost {
+  readonly checked = signal(false);
+  readonly showMessage = signal(false);
+}

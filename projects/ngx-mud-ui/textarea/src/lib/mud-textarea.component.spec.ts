@@ -1,37 +1,46 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { MudTextarea } from './mud-textarea.component';
-import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
+import { MudLabel } from '../../../label/src/public-api';
 import { MudInlineMessage } from '../../../inline-message/src/public-api';
+import type { MudTextareaResize } from './mud-textarea.component';
 
 @Component({
-  imports: [MudTextarea],
+  imports: [MudTextarea, MudLabel, MudInlineMessage],
   template: `
     <mud-textarea
-      label="Mesaj"
       [(value)]="value"
       [invalid]="invalid()"
-      [errorText]="errorText()"
-      [helperText]="helperText()"
       [maxLength]="maxLength()"
       [showCounter]="showCounter()"
       [resize]="resize()"
       [rows]="6"
       [disabled]="disabled()"
-    />
+    >
+      @if (withLabel()) {
+        <mud-label>Mesaj</mud-label>
+      }
+      @if (showHelper()) {
+        <mud-inline-message hideIcon>Maxim 500 de caractere.</mud-inline-message>
+      }
+      @if (showError()) {
+        <mud-inline-message variant="error">Mesajul este obligatoriu.</mud-inline-message>
+      }
+    </mud-textarea>
   `,
 })
 class Host {
   readonly value = signal('');
   readonly invalid = signal(false);
-  readonly errorText = signal<string | undefined>(undefined);
-  readonly helperText = signal<string | undefined>(undefined);
   readonly maxLength = signal<number | undefined>(undefined);
   readonly showCounter = signal(true);
-  readonly resize = signal<'vertical' | 'none'>('vertical');
+  readonly resize = signal<MudTextareaResize>('vertical');
   readonly disabled = signal(false);
+  readonly withLabel = signal(true);
+  readonly showHelper = signal(false);
+  readonly showError = signal(false);
 }
 
 async function render() {
@@ -39,7 +48,7 @@ async function render() {
 
   await fixture.whenStable();
   const el = fixture.nativeElement.querySelector('mud-textarea') as HTMLElement;
-  const native = el.querySelector('textarea') as HTMLTextAreaElement;
+  const native = el.querySelector('textarea.input-field__native') as HTMLTextAreaElement;
 
   return { fixture, host: fixture.componentInstance, el, native };
 }
@@ -58,8 +67,20 @@ describe('MudTextarea', () => {
     expect(el.classList.contains('input-field')).toBe(true);
     expect(el.querySelector('.input-field__control--textarea')).toBeTruthy();
     expect(native.rows).toBe(6);
+    expect(label.textContent).toContain('Mesaj');
     expect(label.htmlFor).toBe(native.id);
     expect(native.getAttribute('aria-labelledby')).toBe(label.id);
+  });
+
+  it('renders no label element without a projected mud-label; ariaLabel takes over', async () => {
+    const fixture = TestBed.createComponent(UnlabelledHost);
+
+    await fixture.whenStable();
+    const native = fixture.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+
+    expect(fixture.nativeElement.querySelector('.input-field__label')).toBeNull();
+    expect(native.getAttribute('aria-label')).toBe('Mesaj');
+    expect(native.getAttribute('aria-labelledby')).toBeNull();
   });
 
   it('two-way binds value and shows the counter while maxLength is set', async () => {
@@ -90,30 +111,6 @@ describe('MudTextarea', () => {
     expect(el.querySelector('.input-field__counter')).toBeNull();
   });
 
-  it('error replaces helper in the footer, with role=alert and describedby wiring', async () => {
-    const { fixture, host, el, native } = await render();
-
-    host.helperText.set('Maxim 500 de caractere.');
-    await fixture.whenStable();
-
-    const helper = el.querySelector('.input-field__assistive')!;
-
-    expect(helper.textContent).toContain('Maxim 500');
-    expect(native.getAttribute('aria-describedby')).toContain(helper.id);
-
-    host.invalid.set(true);
-    host.errorText.set('Mesajul este obligatoriu.');
-    await fixture.whenStable();
-
-    const error = el.querySelector('.input-field__assistive')!;
-
-    expect(error.getAttribute('role')).toBe('alert');
-    expect(error.textContent).toContain('obligatoriu');
-    expect(el.textContent).not.toContain('Maxim 500');
-    expect(el.classList.contains('input-field--destructive')).toBe(true);
-    expect(native.getAttribute('aria-invalid')).toBe('true');
-  });
-
   it('renders a consumer-provided counterLabel as the announced sr-only text', async () => {
     const fixture = TestBed.createComponent(CounterLabelHost);
 
@@ -136,6 +133,83 @@ describe('MudTextarea', () => {
     host.resize.set('none');
     await fixture.whenStable();
     expect(el.classList.contains('input-field--no-resize')).toBe(true);
+  });
+
+  it('renders no footer and no describedby when nothing is projected and no counter shows', async () => {
+    const { el, native } = await render();
+
+    expect(el.querySelector('.input-field__footer')).toBeNull();
+    expect(el.querySelector('.input-field__assistive')).toBeNull();
+    expect(native.getAttribute('aria-describedby')).toBeNull();
+  });
+
+  it('helper swaps for error in the shared wrapper, with role=alert and describedby wiring', async () => {
+    const { fixture, host, el, native } = await render();
+
+    host.showHelper.set(true);
+    await fixture.whenStable();
+
+    const helper = el.querySelector('.input-field__assistive')!;
+
+    expect(helper.textContent).toContain('Maxim 500');
+    expect(native.getAttribute('aria-describedby')).toContain(helper.id);
+
+    host.showHelper.set(false);
+    host.invalid.set(true);
+    host.showError.set(true);
+    await fixture.whenStable();
+
+    const error = el.querySelector('.input-field__assistive')!;
+
+    expect(error.getAttribute('role')).toBe('alert');
+    expect(error.textContent).toContain('obligatoriu');
+    expect(el.textContent).not.toContain('Maxim 500');
+    expect(el.classList.contains('input-field--destructive')).toBe(true);
+    expect(native.getAttribute('aria-invalid')).toBe('true');
+  });
+
+  it('can show two messages at once, in template order', async () => {
+    const { fixture, host, el } = await render();
+
+    host.showHelper.set(true);
+    host.showError.set(true);
+    await fixture.whenStable();
+
+    const messages = el.querySelectorAll('.input-field__assistive mud-inline-message');
+
+    expect(messages.length).toBe(2);
+    expect(messages[0].textContent).toContain('Maxim 500');
+    expect(messages[1].textContent).toContain('obligatoriu');
+  });
+
+  it('includes both the assistive message and the counter in aria-describedby', async () => {
+    const { fixture, host, el, native } = await render();
+
+    host.showHelper.set(true);
+    host.maxLength.set(100);
+    await fixture.whenStable();
+
+    const wrapper = el.querySelector('.input-field__assistive') as HTMLElement;
+    const counter = el.querySelector('.input-field__counter') as HTMLElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe(`${wrapper.id} ${counter.id}`);
+  });
+
+  it('merges external aria-describedby ids with the internal assistive id when a message is shown', async () => {
+    const fixture = TestBed.createComponent(ExternalDescribedHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const native = fixture.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe('extra-id');
+
+    host.showMessage.set(true);
+    await fixture.whenStable();
+
+    const wrapper = fixture.nativeElement.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe(`${wrapper.id} extra-id`);
   });
 
   it('works as a reactive form control with touched-on-blur and disabling', async () => {
@@ -161,7 +235,7 @@ describe('MudTextarea', () => {
     expect(el.classList.contains('is-disabled')).toBe(true);
   });
 
-  it('binds signal forms through [formField], surfacing validator errors', async () => {
+  it('binds signal forms through [formField], surfacing validator errors via a consumer-projected message', async () => {
     const fixture = TestBed.createComponent(SignalHost);
 
     await fixture.whenStable();
@@ -173,34 +247,29 @@ describe('MudTextarea', () => {
     expect(host.model().message).toBe('un mesaj');
 
     await type(fixture, native, '');
+    native.dispatchEvent(new FocusEvent('blur'));
     await fixture.whenStable();
 
     expect(host.form.message().invalid()).toBe(true);
     expect(el.classList.contains('input-field--destructive')).toBe(true);
-    expect(el.querySelector('.inline-message--error')?.textContent).toContain('Mesajul este obligatoriu');
-  });
-
-  it('projected error content renders inside the announced wrapper', async () => {
-    const fixture = TestBed.createComponent(SlottedHost);
-
-    await fixture.whenStable();
-    const el = fixture.nativeElement.querySelector('mud-textarea') as HTMLElement;
-    const error = el.querySelector('.input-field__assistive')!;
-
-    expect(error.getAttribute('role')).toBe('alert');
-    expect(error.querySelector('mud-inline-message.custom-error')).toBeTruthy();
+    expect(el.querySelector('.input-field__assistive mud-inline-message')?.textContent).toContain(
+      'Mesajul este obligatoriu',
+    );
   });
 });
 
 @Component({
   imports: [MudTextarea],
+  template: `<mud-textarea aria-label="Mesaj" />`,
+})
+class UnlabelledHost {}
+
+@Component({
+  imports: [MudTextarea, MudLabel],
   template: `
-    <mud-textarea
-      label="Mesaj"
-      [(value)]="value"
-      [maxLength]="100"
-      [counterLabel]="value().length + ' din 100 de caractere'"
-    />
+    <mud-textarea [(value)]="value" [maxLength]="100" [counterLabel]="value().length + ' din 100 de caractere'">
+      <mud-label>Mesaj</mud-label>
+    </mud-textarea>
   `,
 })
 class CounterLabelHost {
@@ -208,16 +277,26 @@ class CounterLabelHost {
 }
 
 @Component({
-  imports: [MudTextarea, ReactiveFormsModule],
-  template: `<mud-textarea label="Mesaj" [formControl]="control" />`,
+  imports: [MudTextarea, MudLabel, ReactiveFormsModule],
+  template: `
+    <mud-textarea [formControl]="control">
+      <mud-label>Mesaj</mud-label>
+    </mud-textarea>
+  `,
 })
 class ReactiveHost {
-  readonly control = new FormControl('seed', { nonNullable: true });
+  readonly control = new FormControl('seed', { nonNullable: true, validators: [Validators.required] });
 }
 
 @Component({
-  imports: [MudTextarea, FormField],
-  template: `<mud-textarea label="Mesaj" [formField]="form.message" />`,
+  imports: [MudTextarea, FormField, MudInlineMessage],
+  template: `
+    <mud-textarea [formField]="form.message">
+      @if (form.message().touched() && form.message().invalid()) {
+        <mud-inline-message variant="error">Mesajul este obligatoriu.</mud-inline-message>
+      }
+    </mud-textarea>
+  `,
 })
 class SignalHost {
   readonly model = signal({ message: '' });
@@ -227,12 +306,17 @@ class SignalHost {
 }
 
 @Component({
-  imports: [MudTextarea, MudFieldLabel, MudFieldHelper, MudFieldError, MudInlineMessage],
+  imports: [MudTextarea, MudInlineMessage],
   template: `
-    <mud-textarea invalid>
-      <span mudLabel>Mesaj</span>
-      <mud-inline-message mudError class="custom-error" variant="error">Eroare proiectată.</mud-inline-message>
+    <mud-textarea aria-describedby="extra-id" [(value)]="value">
+      @if (showMessage()) {
+        <mud-inline-message hideIcon>Maxim 500 de caractere.</mud-inline-message>
+      }
     </mud-textarea>
+    <p id="extra-id">Notă externă.</p>
   `,
 })
-class SlottedHost {}
+class ExternalDescribedHost {
+  readonly value = signal('');
+  readonly showMessage = signal(false);
+}

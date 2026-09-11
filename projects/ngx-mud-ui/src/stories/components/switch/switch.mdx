@@ -13,10 +13,15 @@ toggles on click.
 
 ```ts
 import { MudSwitch } from 'ngx-mud-ui/switch';
+import { MudLabel } from 'ngx-mud-ui/label';
 
 @Component({
-  imports: [MudSwitch],
-  template: `<mud-switch label="Notificări prin e-mail" [formControl]="notifications" />`,
+  imports: [MudSwitch, MudLabel],
+  template: `
+    <mud-switch [formControl]="notifications">
+      <mud-label>Notificări prin e-mail</mud-label>
+    </mud-switch>
+  `,
 })
 export class Demo {}
 ```
@@ -46,6 +51,12 @@ Selector: `mud-switch`
 
 <ArgTypes of={SwitchStories} />
 
+### Label
+
+The switch renders no message text of its own. Project a `<mud-label>` for
+the visible label beside the track — without one, fall back to `aria-label`
+or `aria-labelledby` for the accessible name.
+
 ## Usage tips
 
 - **A switch takes effect immediately.** If the change only applies after a
@@ -54,10 +65,8 @@ Selector: `mud-switch`
 - **It is deliberately minimal**, matching the official switch: one size, and no
   invalid, readonly or supporting-text states. Attach an external message with
   `aria-describedby` when you need one.
-- **`errors` is accepted but has no visual region.** Signal forms can push
-  validation errors, but nothing renders — surface them yourself if they matter.
 - **It works with both forms systems**: signal forms via the `FormCheckboxControl`
   contract, reactive and template-driven forms via `ControlValueAccessor`, or
   standalone with `[(checked)]`.
-- **Use `[mudLabel]` for rich label content**; the `label` input is plain text
-  only.
+- **Use `aria-label` only when no `mud-label` is projected**; with both set
+  the accessible name silently replaces the visible one.

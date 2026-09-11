@@ -1,6 +1,6 @@
-@if (_showLabel()) {
+@if (_hasLabel()) {
   <label class="input-field__label" [attr.for]="_id" [id]="_labelId">
-    <span class="input-field__label-text"><ng-content select="[mudLabel]">{{ label() }}</ng-content></span>
+    <span class="input-field__label-text"><ng-content select="mud-label" /></span>
     @if (required()) {
       <span class="input-field__required" aria-hidden="true">*</span>
     }
@@ -19,7 +19,7 @@
     [attr.aria-controls]="open() ? _listBoxId : null"
     [attr.aria-activedescendant]="_activeDescendant()"
     [attr.aria-label]="_ariaLabel()"
-    [attr.aria-labelledby]="_showLabel() ? _labelId : null"
+    [attr.aria-labelledby]="_hasLabel() ? _labelId : null"
     [attr.aria-describedby]="_describedBy()"
     [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
     [attr.aria-required]="required() ? 'true' : null"
@@ -44,30 +44,11 @@
   </button>
 </div>
 
-@if (_showError()) {
-  <div class="input-field__assistive" role="alert" [id]="_errorId">
-    <ng-content select="[mudError]">
-      <div class="inline-message inline-message--error">
-        <span class="inline-message__icon" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false">
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M10 1.667a8.333 8.333 0 1 0 0 16.666 8.333 8.333 0 0 0 0-16.666m-.833 7.5c0-.459.416-.834.833-.834s.833.373.833.834v4.166a.833.833 0 0 1-1.666 0zM10 5.833A.833.833 0 1 0 10 7.5a.833.833 0 0 0 0-1.667"
-            />
-          </svg>
-        </span>
-        <span class="inline-message__text">{{ _errorMessage() }}</span>
-      </div>
-    </ng-content>
-  </div>
-} @else if (_showHelper()) {
-  <div class="input-field__assistive" [id]="_helperId">
-    <ng-content select="[mudHelper]">
-      <div class="inline-message">
-        <span class="inline-message__text">{{ _helperMessage() }}</span>
-      </div>
-    </ng-content>
+@if (_hasMessages()) {
+  <!-- Field-owned wrapper: stable id + role=alert survive whatever the
+       consumer projects; alert announces on insertion (WCAG 4.1.3). -->
+  <div class="input-field__assistive" role="alert" [id]="_assistiveId">
+    <ng-content select="mud-inline-message" />
   </div>
 }
 
@@ -76,8 +57,8 @@
     class="menu-panel"
     role="listbox"
     [id]="_listBoxId"
-    [attr.aria-labelledby]="_showLabel() ? _labelId : null"
-    [attr.aria-label]="!_showLabel() ? (ariaLabel() ?? 'Options') : null"
+    [attr.aria-labelledby]="_hasLabel() ? _labelId : null"
+    [attr.aria-label]="!_hasLabel() ? (ariaLabel() ?? 'Options') : null"
     (mousedown)="$event.preventDefault()"
   >
     @if (options().length === 0) {

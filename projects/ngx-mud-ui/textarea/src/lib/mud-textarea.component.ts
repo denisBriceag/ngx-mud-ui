@@ -4,6 +4,7 @@ import {
   Component,
   computed,
   contentChild,
+  contentChildren,
   forwardRef,
   inject,
   input,
@@ -18,8 +19,9 @@ import type { ElementRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
-import type { FormValueControl, ValidationError } from '@angular/forms/signals';
-import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
+import type { FormValueControl } from '@angular/forms/signals';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 export type MudTextareaVariant = 'default' | 'warning' | 'destructive' | 'success';
 export type MudTextareaSize = 'medium' | 'large';
@@ -29,7 +31,12 @@ let nextUniqueId = 0;
 
 /**
  * ```html
- * <mud-textarea label="Mesaj" [formControl]="message" [maxLength]="500" [rows]="6" />
+ * <mud-textarea [formField]="form.message" required>
+ *   <mud-label>Mesaj</mud-label>
+ *   @if (form.message().touched() && form.message().invalid()) {
+ *     <mud-inline-message variant="error">Mesajul este obligatoriu.</mud-inline-message>
+ *   }
+ * </mud-textarea>
  * ```
  */
 @Component({
@@ -88,23 +95,7 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
    */
   readonly counterLabel = input<string | undefined>(undefined);
 
-  /**
-   * @description Validation errors pushed by signal forms. When present the field turns
-   * destructive and the first error's message renders as the error line
-   * (unless `errorText` overrides it).
-   */
-  readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
-
-  /** @description Plain-text label above the field. */
-  readonly label = input<string | undefined>(undefined);
-
-  /** @description Helper/hint below the field. Replaced by the error message when invalid. */
-  readonly helperText = input<string | undefined>(undefined);
-
-  /** @description Error message shown below the field when invalid. */
-  readonly errorText = input<string | undefined>(undefined);
-
-  /** @description Accessible name used when no visible `label` is set. */
+  /** @description Accessible name used when no `mud-label` is projected. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
   /**
@@ -119,15 +110,19 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
   private readonly _native = viewChild.required<ElementRef<HTMLTextAreaElement>>('native');
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  /** @docs-private Projected region markers ([mudLabel] / [mudHelper] / [mudError]). */
-  protected readonly _projectedLabel = contentChild(MudFieldLabel);
-  protected readonly _projectedHelper = contentChild(MudFieldHelper);
-  protected readonly _projectedError = contentChild(MudFieldError);
+  /** @docs-private Projected label element (ngx-mud-ui/label). */
+  protected readonly _label = contentChild(MudLabel);
+
+  /** @docs-private Consumer-projected assistive messages. */
+  private readonly _messages = contentChildren(MudInlineMessage);
+
+  protected readonly _hasLabel = computed(() => !!this._label());
+
+  protected readonly _hasMessages = computed(() => this._messages().length > 0);
 
   protected readonly _id = `mud-textarea-${nextUniqueId++}`;
   protected readonly _labelId = `${this._id}-label`;
-  protected readonly _helperId = `${this._id}-helper`;
-  protected readonly _errorId = `${this._id}-error`;
+  protected readonly _assistiveId = `${this._id}-assistive`;
   protected readonly _counterId = `${this._id}-counter`;
 
   protected readonly _focused = signal(false);
@@ -138,49 +133,18 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
   /** @docs-private Input + forms-driven disabled state combined. */
   protected readonly _effectiveDisabled = computed(() => this.disabled() || this._cvaDisabled());
 
-  protected readonly _effectiveInvalid = computed(() => this.invalid() || this.errors().length > 0);
+  protected readonly _effectiveInvalid = computed(() => this.invalid());
 
   protected readonly _effectiveVariant = computed<MudTextareaVariant>(() =>
     this._effectiveInvalid() ? 'destructive' : this.variant(),
   );
-
-  protected readonly _errorMessage = computed<string | undefined>(() => {
-    if (!this._effectiveInvalid()) return undefined;
-
-    const explicit = this.errorText()?.trim();
-
-    if (explicit) return explicit;
-
-    const fromErrors = this.errors().find((error) => error.message)?.message;
-
-    return fromErrors ?? undefined;
-  });
-
-  protected readonly _helperMessage = computed<string | undefined>(() => {
-    const helper = this.helperText()?.trim();
-
-    return helper || undefined;
-  });
-
-  /** @docs-private The error region shows while invalid with any content to show. */
-  protected readonly _showError = computed(
-    () => this._effectiveInvalid() && (!!this._projectedError() || !!this._errorMessage()),
-  );
-
-  /** @docs-private The helper region yields to an active error region. */
-  protected readonly _showHelper = computed(
-    () => !this._showError() && (!!this._projectedHelper() || !!this._helperMessage()),
-  );
-
-  protected readonly _showLabel = computed(() => !!this._projectedLabel() || !!this.label()?.trim());
 
   protected readonly _showCounter = computed(() => this.showCounter() && this.maxLength() != null);
 
   protected readonly _describedBy = computed<string | null>(() => {
     const ids: string[] = [];
 
-    if (this._showError()) ids.push(this._errorId);
-    else if (this._showHelper()) ids.push(this._helperId);
+    if (this._hasMessages()) ids.push(this._assistiveId);
 
     if (this._showCounter()) ids.push(this._counterId);
 
@@ -192,7 +156,7 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
   });
 
   protected readonly _ariaLabel = computed<string | null>(() => {
-    if (this._showLabel()) return null;
+    if (this._hasLabel()) return null;
 
     return this.ariaLabel() ?? null;
   });

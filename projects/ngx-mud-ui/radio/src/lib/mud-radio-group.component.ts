@@ -18,8 +18,9 @@ import { isPlatformBrowser } from '@angular/common';
 import { MudRadio } from './mud-radio.component';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
-import type { FormValueControl, ValidationError } from '@angular/forms/signals';
-import { MudFieldError, MudFieldLabel } from 'ngx-mud-ui/text-input';
+import type { FormValueControl } from '@angular/forms/signals';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 export type MudRadioGroupSize = 'medium' | 'small';
 
@@ -27,9 +28,13 @@ let nextUniqueId = 0;
 
 /**
  * ```html
- * <mud-radio-group label="Metoda de plată" [formControl]="method" required>
- *   <mud-radio value="card" label="Card bancar" />
- *   <mud-radio value="mpay" label="MPay" supportingText="Fără comision." />
+ * <mud-radio-group [formField]="form.method" required>
+ *   <mud-label>Metoda de plată</mud-label>
+ *   <mud-radio value="card"><mud-label>Card bancar</mud-label></mud-radio>
+ *   <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
+ *   @if (form.method().touched() && form.method().invalid()) {
+ *     <mud-inline-message variant="error">Message.</mud-inline-message>
+ *   }
  * </mud-radio-group>
  * ```
  */
@@ -76,18 +81,6 @@ export class MudRadioGroup<T = unknown> implements ControlValueAccessor, FormVal
   /** @description Destructive visuals on every child + `aria-invalid`. Signal forms bind this automatically. */
   readonly invalid = input(false, { transform: booleanAttribute });
 
-  /**
-   * @description Validation errors pushed by signal forms; the first message renders as
-   * the group error line unless `errorText` overrides it.
-   */
-  readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
-
-  /** @description Plain-text group label. */
-  readonly label = input<string | undefined>(undefined);
-
-  /** @description Error message shown under the options when invalid. */
-  readonly errorText = input<string | undefined>(undefined);
-
   /** @description Accessible name when no visible label is rendered. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
@@ -105,13 +98,19 @@ export class MudRadioGroup<T = unknown> implements ControlValueAccessor, FormVal
 
   protected readonly _radios = contentChildren(forwardRef(() => MudRadio));
 
-  /** @docs-private Projected region markers. */
-  protected readonly _projectedLabel = contentChild(MudFieldLabel);
-  protected readonly _projectedError = contentChild(MudFieldError);
+  /** @docs-private Projected label element; descendants:false so a child mud-radio's own label isn't picked up instead. */
+  protected readonly _label = contentChild(MudLabel, { descendants: false });
+
+  /** @docs-private Consumer-projected assistive messages; same descendants:false reasoning as `_label`. */
+  private readonly _messages = contentChildren(MudInlineMessage, { descendants: false });
+
+  protected readonly _hasLabel = computed(() => !!this._label());
+
+  protected readonly _hasMessages = computed(() => this._messages().length > 0);
 
   private readonly _uid = `mud-radio-group-${nextUniqueId++}`;
   protected readonly _labelId = `${this._uid}-label`;
-  protected readonly _errorId = `${this._uid}-error`;
+  protected readonly _assistiveId = `${this._uid}-assistive`;
 
   /** @docs-private The native name shared by the children. */
   readonly _name = computed(() => this.name() || this._uid);
@@ -124,31 +123,14 @@ export class MudRadioGroup<T = unknown> implements ControlValueAccessor, FormVal
   readonly _effectiveDisabled = computed(() => this.disabled() || this._cvaDisabled());
 
   /** @docs-private */
-  readonly _effectiveInvalid = computed(() => this.invalid() || this.errors().length > 0);
-
-  protected readonly _errorMessage = computed<string | undefined>(() => {
-    if (!this._effectiveInvalid()) return undefined;
-
-    const explicit = this.errorText()?.trim();
-
-    if (explicit) return explicit;
-
-    return this.errors().find((error) => error.message)?.message ?? undefined;
-  });
-
-  protected readonly _showLabel = computed(() => !!this._projectedLabel() || !!this.label()?.trim());
-
-  /** @docs-private The error region shows while invalid with any content to show. */
-  protected readonly _showError = computed(
-    () => this._effectiveInvalid() && (!!this._projectedError() || !!this._errorMessage()),
-  );
+  readonly _effectiveInvalid = computed(() => this.invalid());
 
   protected readonly _ariaLabelledby = computed<string | null>(() => {
     const external = this.ariaLabelledby();
 
     if (external) return external;
 
-    return this._showLabel() ? this._labelId : null;
+    return this._hasLabel() ? this._labelId : null;
   });
 
   protected readonly _ariaLabel = computed<string | null>(() => {
@@ -160,7 +142,7 @@ export class MudRadioGroup<T = unknown> implements ControlValueAccessor, FormVal
   protected readonly _describedBy = computed<string | null>(() => {
     const ids: string[] = [];
 
-    if (this._showError()) ids.push(this._errorId);
+    if (this._hasMessages()) ids.push(this._assistiveId);
 
     const external = this.ariaDescribedby()?.trim();
 

@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MudPhoneInput } from './mud-phone-input.component';
+import { MudLabel } from '../../../label/src/public-api';
 import { provideMudPhoneCountries } from './provide-mud-phone-countries';
 import type { MudPhoneCountry } from './phone-countries';
 
@@ -17,15 +18,11 @@ const POLAND: MudPhoneCountry = {
 const FLAG = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2F%3E';
 
 @Component({
-  imports: [MudPhoneInput],
+  imports: [MudPhoneInput, MudLabel],
   template: `
-    <mud-phone-input
-      label="Telefon"
-      mode="international"
-      [(value)]="value"
-      [(country)]="country"
-      [countries]="countries()"
-    />
+    <mud-phone-input mode="international" [(value)]="value" [(country)]="country" [countries]="countries()">
+      <mud-label>Telefon</mud-label>
+    </mud-phone-input>
   `,
 })
 class Host {

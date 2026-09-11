@@ -14,10 +14,19 @@ inline for pages that show a calendar rather than a field.
 
 ```ts
 import { MudDateInput } from 'ngx-mud-ui/date-picker';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 @Component({
-  imports: [MudDateInput],
-  template: `<mud-date-input label="Data nașterii" [formControl]="dob" />`,
+  imports: [MudDateInput, MudLabel, MudInlineMessage],
+  template: `
+    <mud-date-input required [formControl]="dob">
+      <mud-label>Data nașterii</mud-label>
+      @if (dob.touched && dob.invalid) {
+        <mud-inline-message variant="error">Alegeți o dată.</mud-inline-message>
+      }
+    </mud-date-input>
+  `,
 })
 export class Demo {}
 ```
@@ -88,9 +97,9 @@ Two inputs rather than one control holding both dates, because two accessible
 names are what makes it announce correctly.
 
 Each input's accessible name is the field's own label **plus** the segment, so
-`<mud-date-input mode="range" label="Perioada">` announces "Perioada, start
-date" — composed with `aria-labelledby`, not an `aria-label` that would throw
-your label away.
+a `<mud-date-input mode="range">` with a projected `<mud-label>Perioada</mud-label>`
+announces "Perioada, start date" — composed with `aria-labelledby`, not an
+`aria-label` that would throw your label away.
 
 <Canvas of={DateStories.Range} />
 
@@ -147,6 +156,26 @@ standalone via `[(value)]`, and with signal forms via `[formField]` — both
 components implement the `FormValueControl` protocol.
 
 <Canvas of={DateStories.WithForms} />
+
+## Label and messages
+
+`MudDateInput` renders no label or message text of its own. Project a
+`<mud-label>` for the visible label and any number of `<mud-inline-message>`
+elements for assistive text — *you* decide when they render:
+
+- Messages land in a field-owned `role="alert"` region wired into
+  `aria-describedby`, alongside the field's own format hint; toggling one on
+  announces it to screen readers.
+- In range mode, the field's own label composes with each segment's own
+  "Start date" / "End date" name through `aria-labelledby` — see
+  [Range](#range) above.
+- The field's `invalid` input drives the red border and `aria-invalid`; with
+  signal forms it is bound automatically, with reactive forms bind
+  `[invalid]="ctrl.invalid && ctrl.touched"`.
+
+`MudDatePicker` renders no messages at all — it only takes `invalid` for the
+destructive grid styling and `aria-invalid`, since a standalone calendar has
+nowhere natural to put assistive text.
 
 ## Keyboard
 

@@ -6,27 +6,36 @@ import * as FileInputStories from './file-input.stories';
 
 # File input
 
-Drag-and-drop or click-to-browse file selection, with a label, captions, an
-error region and an inline list of the chosen files. The component owns
-**selection, validation and display** — the actual upload is yours to drive
-from the value. Works standalone via `[(value)]`, with reactive and
-template-driven forms via `ControlValueAccessor`, and with signal forms.
+Drag-and-drop or click-to-browse file selection, with captions and an inline
+list of the chosen files; the label and any assistive or error messages are
+projected as `<mud-label>` / `<mud-inline-message>` content the consumer
+controls. The component owns **selection, validation and display** — the
+actual upload is yours to drive from the value. Works standalone via
+`[(value)]`, with reactive and template-driven forms via
+`ControlValueAccessor`, and with signal forms.
 
 ## Import
 
 ```ts
 import { MudFileInput } from 'ngx-mud-ui/file-input';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 @Component({
-  imports: [MudFileInput],
+  imports: [MudFileInput, MudLabel, MudInlineMessage],
   template: `
     <mud-file-input
-      label="Documente"
       accept=".pdf,image/*"
       multiple
       [maxSize]="5242880"
       [formControl]="documents"
-    />
+      [invalid]="documents.touched && documents.invalid"
+    >
+      <mud-label>Documente</mud-label>
+      @if (documents.touched && documents.invalid) {
+        <mud-inline-message variant="error">Încărcați cel puțin un document.</mud-inline-message>
+      }
+    </mud-file-input>
   `,
 })
 export class Demo {}
@@ -51,12 +60,11 @@ The design-system stylesheet must be loaded once in your app:
 
 <Canvas of={FileInputStories.States} />
 
-## Composed content
+## Composable content
 
-Rich label, helper and error content is projected with the `[mudLabel]`,
-`[mudHelper]` and `[mudError]` directives from `ngx-mud-ui/text-input`.
+Any number of consumer-timed messages, and a rich label, can be projected.
 
-<Canvas of={FileInputStories.ComposedContent} />
+<Canvas of={FileInputStories.Composable} />
 
 ## Reactive forms
 
@@ -95,6 +103,20 @@ Selector: `mud-file-input`
 
 <ArgTypes of={MudFileItem} />
 
+### Label and messages
+
+The field renders no message text of its own. Project a `<mud-label>` for
+the visible label and any number of `<mud-inline-message>` elements for
+assistive text — *you* decide when they render:
+
+- Messages land in a field-owned `role="alert"` region wired into the browse
+  control's `aria-describedby`; toggling one on announces it to screen readers.
+- Inside a field, `mud-inline-message` is always the small size — its
+  `size` input is ignored.
+- The field's `invalid` input drives the destructive visuals and
+  `aria-invalid`; with signal forms it is bound automatically, with reactive
+  forms bind `[invalid]="ctrl.touched && ctrl.invalid"`.
+
 ## Usage tips
 
 - **Upload is not included.** The component never touches the network. Watch
@@ -107,13 +129,16 @@ Selector: `mud-file-input`
   `type` / `size` / `count` code, so surface your own message from that event;
   the built-in announcement only tells screen-reader users something was
   refused.
-- **Captions derive from `accept` and `maxSize`.** Set `supportedFormatsText` or
-  `maxSizeText` only when you want to override the derived copy.
+- **Captions derive from `accept` and `maxSize`.** Their wording defaults to
+  English — localize it per app via the `formatsCaption` / `maxSizeCaption`
+  function inputs, e.g. `[formatsCaption]="f => 'Formate acceptate: ' + f"`.
 - **`accept` is a filter, not a guarantee.** It is applied to the picker and
   re-checked on drop, but it matches on MIME type and extension — validate
   file contents server-side.
-- **`invalid` drives the visuals, `errorText` supplies the message.** Setting
-  the text alone shows nothing. Signal forms bind `invalid` and `errors` for you.
+- **`invalid` drives visuals; a projected message supplies the text.**
+  Nothing renders a message for you — pair `invalid` with an `@if`-guarded
+  `<mud-inline-message variant="error">` to show one only when it should
+  appear. Signal forms bind `invalid` for you.
 - **Image previews are automatic.** The component creates object URLs for
   `image/*` files and revokes them when the file leaves the list or the
   component is destroyed. Rows you render yourself own their own `previewSrc`.
@@ -138,5 +163,5 @@ Selector: `mud-file-input`
 - **Focus is managed on removal.** Removing a row moves focus to the row that
   takes its place, to the previous row when you delete the last one, or back to
   the browse control once the list is empty.
-- **Use `aria-label` only when no visible `label` is rendered**; with both set
+- **Use `aria-label` only when no `mud-label` is projected**; with both set
   the accessible name silently replaces the visible one.

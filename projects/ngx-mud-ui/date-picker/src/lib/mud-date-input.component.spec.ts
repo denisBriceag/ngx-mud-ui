@@ -3,12 +3,13 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { MudDateInput } from './mud-date-input.component';
+import { MudLabel } from '../../../label/src/public-api';
+import { MudInlineMessage } from '../../../inline-message/src/public-api';
 
 @Component({
-  imports: [MudDateInput],
+  imports: [MudDateInput, MudLabel, MudInlineMessage],
   template: `
     <mud-date-input
-      label="Data nașterii"
       [(value)]="value"
       [(open)]="open"
       [format]="format()"
@@ -18,7 +19,17 @@ import { MudDateInput } from './mud-date-input.component';
       [disabled]="disabled()"
       locale="en-GB"
       (cleared)="clearedCount.set(clearedCount() + 1)"
-    />
+    >
+      @if (withLabel()) {
+        <mud-label>Data nașterii</mud-label>
+      }
+      @if (showHelper()) {
+        <mud-inline-message hideIcon>Alegeți o dată din calendar.</mud-inline-message>
+      }
+      @if (showError()) {
+        <mud-inline-message variant="error">Dată invalidă.</mud-inline-message>
+      }
+    </mud-date-input>
   `,
 })
 class Host {
@@ -30,6 +41,9 @@ class Host {
   readonly clearable = signal(false);
   readonly disabled = signal(false);
   readonly clearedCount = signal(0);
+  readonly withLabel = signal(true);
+  readonly showHelper = signal(false);
+  readonly showError = signal(false);
 }
 
 async function render() {
@@ -87,6 +101,96 @@ describe('MudDateInput', () => {
     expect(view.native.getAttribute('aria-labelledby')).toBe(label.id);
     expect(view.native.getAttribute('aria-describedby')).toContain(hint.id);
     expect(hint.textContent!.trim()).toBe('Date format: DD/MM/YYYY');
+  });
+
+  it('renders the projected mud-label inside the field label element', async () => {
+    const view = await render();
+    const label = view.el.querySelector('.input-field__label') as HTMLLabelElement;
+
+    expect(label.textContent).toContain('Data nașterii');
+    expect(label.htmlFor).toBe(view.native.id);
+    expect(view.native.getAttribute('aria-labelledby')).toBe(label.id);
+  });
+
+  it('renders no label element without a projected mud-label; no labelledby either', async () => {
+    const view = await render();
+
+    view.host.withLabel.set(false);
+    await view.fixture.whenStable();
+
+    expect(view.el.querySelector('.input-field__label')).toBeNull();
+    expect(view.native.getAttribute('aria-labelledby')).toBeNull();
+  });
+
+  it('renders no assistive wrapper when nothing is projected; describedby keeps only the format hint', async () => {
+    const view = await render();
+    const hint = view.el.querySelector('.date-field__format-hint')!;
+
+    expect(view.el.querySelector('.input-field__assistive')).toBeNull();
+    expect(view.native.getAttribute('aria-describedby')).toBe(hint.id);
+  });
+
+  it('projects inline-messages into a role=alert wrapper wired to aria-describedby', async () => {
+    const view = await render();
+    const hint = view.el.querySelector('.date-field__format-hint')!;
+
+    view.host.showHelper.set(true);
+    await view.fixture.whenStable();
+
+    const wrapper = view.el.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(wrapper.getAttribute('role')).toBe('alert');
+    expect(wrapper.querySelector('mud-inline-message')?.textContent).toContain(
+      'Alegeți o dată din calendar.',
+    );
+    expect(view.native.getAttribute('aria-describedby')).toBe(`${hint.id} ${wrapper.id}`);
+  });
+
+  it('lets the consumer swap helper for error — both land in the same wrapper', async () => {
+    const view = await render();
+
+    view.host.showHelper.set(true);
+    await view.fixture.whenStable();
+    view.host.showHelper.set(false);
+    view.host.showError.set(true);
+    await view.fixture.whenStable();
+
+    const wrapper = view.el.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(wrapper.textContent).toContain('Dată invalidă.');
+    expect(wrapper.textContent).not.toContain('Alegeți o dată din calendar.');
+  });
+
+  it('can show two messages at once, in template order', async () => {
+    const view = await render();
+
+    view.host.showHelper.set(true);
+    view.host.showError.set(true);
+    await view.fixture.whenStable();
+
+    const messages = view.el.querySelectorAll('.input-field__assistive mud-inline-message');
+
+    expect(messages.length).toBe(2);
+    expect(messages[0].textContent).toContain('Alegeți o dată din calendar.');
+    expect(messages[1].textContent).toContain('Dată invalidă.');
+  });
+
+  it('merges external aria-describedby ids with the internal assistive id when a message is shown', async () => {
+    const fixture = TestBed.createComponent(ExternalDescribedHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const native = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    const hint = fixture.nativeElement.querySelector('.date-field__format-hint') as HTMLElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe(`${hint.id} extra-id`);
+
+    host.showMessage.set(true);
+    await fixture.whenStable();
+
+    const wrapper = fixture.nativeElement.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe(`${hint.id} ${wrapper.id} extra-id`);
   });
 
   it('masks digits as they are typed', async () => {
@@ -439,7 +543,7 @@ describe('MudDateInput', () => {
   it('drives a reactive form control', async () => {
     @Component({
       imports: [MudDateInput, ReactiveFormsModule],
-      template: `<mud-date-input label="Date" [formControl]="control" locale="en-GB" />`,
+      template: `<mud-date-input [formControl]="control" locale="en-GB" />`,
     })
     class ReactiveHost {
       readonly control = new FormControl<string | null>(null);
@@ -490,7 +594,7 @@ describe('MudDateInput signal forms (FormValueControl)', () => {
     expect(native.getAttribute('value')).toBe('05/08/2026');
   });
 
-  it('surfaces a required-validator error through the errors input', async () => {
+  it('surfaces the required-validator invalid state; the consumer projects the message', async () => {
     const fixture = TestBed.createComponent(SignalHost);
 
     await fixture.whenStable();
@@ -499,8 +603,9 @@ describe('MudDateInput signal forms (FormValueControl)', () => {
 
     // Asserting `form.dob().invalid()` here would only prove signal forms
     // works — it passes with this component deleted. What the COMPONENT owes
-    // the user is the invalid state on the control and the validator's own
-    // message rendered as assistive text.
+    // the user is the invalid state on the control; the message text is the
+    // consumer's own projected `mud-inline-message`, not something this
+    // component renders itself.
     expect(native.getAttribute('aria-invalid')).toBe('true');
     expect(el.classList).toContain('is-invalid');
     expect(el.querySelector('.input-field__assistive')!.textContent).toContain('Alegeți o dată.');
@@ -515,8 +620,15 @@ describe('MudDateInput signal forms (FormValueControl)', () => {
 });
 
 @Component({
-  imports: [MudDateInput, FormField],
-  template: `<mud-date-input label="Date" [formField]="form.dob" locale="en-GB" />`,
+  imports: [MudDateInput, FormField, MudLabel, MudInlineMessage],
+  template: `
+    <mud-date-input [formField]="form.dob" locale="en-GB">
+      <mud-label>Date</mud-label>
+      @if (form.dob().invalid()) {
+        <mud-inline-message variant="error">Alegeți o dată.</mud-inline-message>
+      }
+    </mud-date-input>
+  `,
 })
 class SignalHost {
   readonly model = signal<{ dob: string | null }>({ dob: null });
@@ -524,4 +636,20 @@ class SignalHost {
   readonly form = form(this.model, (path) => {
     required(path.dob, { message: 'Alegeți o dată.' });
   });
+}
+
+@Component({
+  imports: [MudDateInput, MudInlineMessage],
+  template: `
+    <mud-date-input aria-describedby="extra-id" [(value)]="value">
+      @if (showMessage()) {
+        <mud-inline-message hideIcon>Alegeți o dată din calendar.</mud-inline-message>
+      }
+    </mud-date-input>
+    <p id="extra-id">Notă externă.</p>
+  `,
+})
+class ExternalDescribedHost {
+  readonly value = signal<string | null>(null);
+  readonly showMessage = signal(false);
 }

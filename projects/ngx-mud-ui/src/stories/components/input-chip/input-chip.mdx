@@ -12,16 +12,23 @@ a separator character, and each confirmed value becomes a removable chip.
 
 ```ts
 import { MudInputChip } from 'ngx-mud-ui/input-chip';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 @Component({
-  imports: [MudInputChip],
+  imports: [MudInputChip, MudLabel, MudInlineMessage],
   template: `
     <mud-input-chip
-      label="Destinatari"
       [maxChips]="5"
       [validatePattern]="emailPattern"
       [formControl]="recipients"
-    />
+      [invalid]="recipients.touched && recipients.invalid"
+    >
+      <mud-label>Destinatari</mud-label>
+      @if (recipients.touched && recipients.invalid) {
+        <mud-inline-message variant="error">Adăugați cel puțin o adresă.</mud-inline-message>
+      }
+    </mud-input-chip>
   `,
 })
 export class Demo {}
@@ -55,6 +62,20 @@ The design-system stylesheet must be loaded once in your app:
 Selector: `mud-input-chip`
 
 <ArgTypes of={InputChipStories} />
+
+### Label and messages
+
+The field renders no message text of its own. Project a `<mud-label>` for
+the visible label and any number of `<mud-inline-message>` elements for
+assistive text — *you* decide when they render:
+
+- Messages land in a field-owned `role="alert"` region wired into
+  `aria-describedby`; toggling one on announces it to screen readers.
+- Inside the field, `mud-inline-message` is always the small size — its
+  `size` input is ignored.
+- The field's `invalid` input drives the destructive border and
+  `aria-invalid`; with signal forms it is bound automatically, with
+  reactive forms bind `[invalid]="ctrl.touched && ctrl.invalid"`.
 
 ## Usage tips
 

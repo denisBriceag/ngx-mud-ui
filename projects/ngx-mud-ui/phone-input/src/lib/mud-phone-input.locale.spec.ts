@@ -1,18 +1,15 @@
 import { Component, LOCALE_ID, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MudPhoneInput } from './mud-phone-input.component';
+import { MudLabel } from '../../../label/src/public-api';
 import type { MudPhoneCountry } from './phone-countries';
 
 @Component({
-  imports: [MudPhoneInput],
+  imports: [MudPhoneInput, MudLabel],
   template: `
-    <mud-phone-input
-      label="Telefon"
-      mode="international"
-      [country]="country()"
-      [locale]="locale()"
-      [countries]="countries()"
-    />
+    <mud-phone-input mode="international" [country]="country()" [locale]="locale()" [countries]="countries()">
+      <mud-label>Telefon</mud-label>
+    </mud-phone-input>
   `,
 })
 class Host {

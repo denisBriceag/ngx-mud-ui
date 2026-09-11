@@ -12,20 +12,18 @@ range, and a suffix slot for units or currency.
 
 ```ts
 import { MudNumericInput } from 'ngx-mud-ui/numeric-input';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 @Component({
-  imports: [MudNumericInput],
+  imports: [MudNumericInput, MudLabel, MudInlineMessage],
   template: `
-    <mud-numeric-input
-      label="Suma"
-      [min]="0"
-      [max]="10000"
-      [precision]="2"
-      locale="ro-MD"
-      showSteppers
-      [formControl]="amount"
-    >
+    <mud-numeric-input [min]="0" [max]="10000" [precision]="2" locale="ro-MD" showSteppers [formControl]="amount">
+      <mud-label>Suma</mud-label>
       <span suffix>MDL</span>
+      @if (amount.touched && amount.invalid) {
+        <mud-inline-message variant="error">Suma este obligatorie.</mud-inline-message>
+      }
     </mud-numeric-input>
   `,
 })
@@ -60,6 +58,21 @@ The design-system stylesheet must be loaded once in your app:
 Selector: `mud-numeric-input`
 
 <ArgTypes of={NumericInputStories} />
+
+### Label and messages
+
+The field renders no message text of its own. Project a `<mud-label>` for
+the visible label and any number of `<mud-inline-message>` elements for
+assistive text — *you* decide when they render:
+
+- Messages land in a field-owned `role="alert"` region wired into
+  `aria-describedby`, alongside the counter's id while it shows; toggling a
+  message on announces it to screen readers.
+- Inside a field, `mud-inline-message` is always the small size — its
+  `size` input is ignored.
+- The field's `invalid` input drives the red border and `aria-invalid`;
+  with signal forms it is bound automatically, with reactive forms bind
+  `[invalid]="ctrl.invalid && ctrl.touched"`.
 
 ## Usage tips
 

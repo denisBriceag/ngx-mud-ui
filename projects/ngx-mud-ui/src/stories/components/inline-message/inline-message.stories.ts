@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { MudIconComponent, provideMudIcons, sparkles } from 'ngx-mud-ui/icons';
-import { MudTextInput, MudFieldError } from 'ngx-mud-ui/text-input';
+import { MudTextInput } from 'ngx-mud-ui/text-input';
+import { MudLabel } from 'ngx-mud-ui/label';
 
 const COL = 'display:flex;flex-direction:column;gap:12px;align-items:flex-start;padding:24px';
 const ROW = 'display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding:24px';
@@ -12,7 +13,7 @@ const meta: Meta<MudInlineMessage> = {
   component: MudInlineMessage,
   decorators: [
     applicationConfig({ providers: [provideMudIcons([sparkles])] }),
-    moduleMetadata({ imports: [MudInlineMessage, MudIconComponent, MudTextInput, MudFieldError] }),
+    moduleMetadata({ imports: [MudInlineMessage, MudIconComponent, MudTextInput, MudLabel] }),
   ],
   argTypes: {
     variant: { control: 'inline-radio', options: ['info', 'warning', 'success', 'error'] },
@@ -110,36 +111,32 @@ export const Wrapping: Story = {
 };
 
 /**
- * The intended form-field wiring: the message is plain text (NOT a live
- * region), associated with the input via aria-describedby, with aria-invalid
- * set on the field itself.
- */
-/**
  * Two ways to attach a message to a real `mud-text-input`.
  *
- * **Projected** (`mudError`) is the usual one: the field owns the message, wires
- * `aria-describedby` itself, and announces it through its `role="alert"` region.
- * Reach for it when the error needs more than plain text — the `errorText`
- * input covers the plain-text case on its own.
+ * **Projected** is the usual one: project a `mud-inline-message` into the
+ * field and it wires `aria-describedby` itself, announcing it through its own
+ * `role="alert"` wrapper.
  *
  * **External** is for a message rendered outside the field, such as a summary
- * shared by several controls: give it an `id`, point the field's
- * `aria-describedby` at it, and leave `errorText` unset so the field renders no
- * message of its own.
+ * shared by several controls: give it an `id` and point the field's
+ * `aria-describedby` at it instead, leaving nothing projected into the field.
  */
 export const AsFieldError: Story = {
   parameters: { controls: { disable: true } },
   render: () => ({
     template: `
       <div style="${COL};gap:32px;max-width:420px;align-items:stretch">
-        <mud-text-input label="IDNP" value="12345" [maxLength]="13" invalid>
-          <mud-inline-message mudError variant="error" size="small">
+        <mud-text-input value="12345" [maxLength]="13" invalid>
+          <mud-label>IDNP</mud-label>
+          <mud-inline-message variant="error">
             IDNP-ul trebuie să conțină 13 cifre.
           </mud-inline-message>
         </mud-text-input>
 
         <div style="display:flex;flex-direction:column;gap:8px;width:100%">
-          <mud-text-input label="IDNP" value="12345" aria-describedby="idnp-error" invalid />
+          <mud-text-input value="12345" aria-describedby="idnp-error" invalid>
+            <mud-label>IDNP</mud-label>
+          </mud-text-input>
           <mud-inline-message variant="error" size="small" id="idnp-error">
             IDNP-ul trebuie să conțină 13 cifre.
           </mud-inline-message>

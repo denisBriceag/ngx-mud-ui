@@ -2,13 +2,15 @@
 import { moduleMetadata } from '@storybook/angular-vite';
 import { Component, signal } from '@angular/core';
 import { MudSearchInput } from 'ngx-mud-ui/search-input';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:420px;padding:24px';
 
 const meta: Meta<MudSearchInput> = {
   title: 'Components/Search input',
   component: MudSearchInput,
-  decorators: [moduleMetadata({ imports: [MudSearchInput] })],
+  decorators: [moduleMetadata({ imports: [MudSearchInput, MudLabel, MudInlineMessage] })],
   argTypes: {
     shape: { control: 'inline-radio', options: ['rectangular', 'circular'] },
     variant: { control: 'inline-radio', options: ['default', 'destructive'] },
@@ -18,7 +20,6 @@ const meta: Meta<MudSearchInput> = {
     loading: { control: 'boolean' },
     disabled: { control: 'boolean' },
     invalid: { control: 'boolean' },
-    label: { control: 'text' },
     placeholder: { control: 'text' },
   },
   args: {
@@ -30,7 +31,6 @@ const meta: Meta<MudSearchInput> = {
     loading: false,
     disabled: false,
     invalid: false,
-    label: 'Căutare',
     placeholder: 'Caută servicii...',
   },
 };
@@ -53,9 +53,10 @@ export const Playground: Story = {
           [loading]="loading"
           [disabled]="disabled"
           [invalid]="invalid"
-          [label]="label"
           [placeholder]="placeholder"
-        />
+        >
+          <mud-label>Căutare</mud-label>
+        </mud-search-input>
       </div>
     `,
   }),
@@ -67,10 +68,18 @@ export const Shapes: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-search-input label="Rectangular" placeholder="Caută..." value="pașaport" />
-        <mud-search-input label="Circular (pill)" shape="circular" placeholder="Caută..." value="pașaport" />
-        <mud-search-input label="Circular cu buton" shape="circular" withButton placeholder="Caută..." />
-        <mud-search-input label="Rectangular cu buton, large" size="large" withButton placeholder="Caută..." />
+        <mud-search-input placeholder="Caută..." value="pașaport">
+          <mud-label>Rectangular</mud-label>
+        </mud-search-input>
+        <mud-search-input shape="circular" placeholder="Caută..." value="pașaport">
+          <mud-label>Circular (pill)</mud-label>
+        </mud-search-input>
+        <mud-search-input shape="circular" withButton placeholder="Caută...">
+          <mud-label>Circular cu buton</mud-label>
+        </mud-search-input>
+        <mud-search-input size="large" withButton placeholder="Caută...">
+          <mud-label>Rectangular cu buton, large</mud-label>
+        </mud-search-input>
       </div>
     `,
   }),
@@ -82,9 +91,16 @@ export const States: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-search-input label="Se caută" loading value="acte de stare civilă" />
-        <mud-search-input label="Eroare" invalid errorText="Introduceți minim 3 caractere." value="ab" />
-        <mud-search-input label="Dezactivat" disabled placeholder="Indisponibil" />
+        <mud-search-input loading value="acte de stare civilă">
+          <mud-label>Se caută</mud-label>
+        </mud-search-input>
+        <mud-search-input invalid value="ab">
+          <mud-label>Eroare</mud-label>
+          <mud-inline-message variant="error">Introduceți minim 3 caractere.</mud-inline-message>
+        </mud-search-input>
+        <mud-search-input disabled placeholder="Indisponibil">
+          <mud-label>Dezactivat</mud-label>
+        </mud-search-input>
       </div>
     `,
   }),
@@ -93,17 +109,18 @@ export const States: Story = {
 /** Live demo: Enter or the submit button fires (search); clearing fires (cleared). */
 @Component({
   selector: 'mud-search-demo',
-  imports: [MudSearchInput],
+  imports: [MudSearchInput, MudLabel],
   template: `
     <div style="${COL}">
       <mud-search-input
-        label="Căutare servicii"
         shape="circular"
         withButton
         placeholder="De ex. buletin de identitate"
         (searched)="last.set($event)"
         (cleared)="last.set('(golit)')"
-      />
+      >
+        <mud-label>Căutare servicii</mud-label>
+      </mud-search-input>
       <code>ultima acțiune: {{ last() || '—' }}</code>
     </div>
   `,
@@ -118,16 +135,17 @@ class SearchDemo {
  */
 const INTERACTIVE_SOURCE = `
 @Component({
-  imports: [MudSearchInput],
+  imports: [MudSearchInput, MudLabel],
   template: \`
     <mud-search-input
-      label="Căutare servicii"
       shape="circular"
       withButton
       placeholder="De ex. buletin de identitate"
       (searched)="run($event)"
       (cleared)="reset()"
-    />
+    >
+      <mud-label>Căutare servicii</mud-label>
+    </mud-search-input>
   \`,
 })
 export class ServiceSearch {
