@@ -3,21 +3,21 @@ import { moduleMetadata } from '@storybook/angular-vite';
 import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MudRadio, MudRadioGroup } from 'ngx-mud-ui/radio';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 const COL = 'display:flex;flex-direction:column;gap:32px;max-width:420px;padding:24px';
 
 const meta: Meta<MudRadioGroup> = {
   title: 'Components/Radio',
   component: MudRadioGroup,
-  decorators: [moduleMetadata({ imports: [MudRadioGroup, MudRadio] })],
+  decorators: [moduleMetadata({ imports: [MudRadioGroup, MudRadio, MudLabel, MudInlineMessage] })],
   argTypes: {
     size: { control: 'inline-radio', options: ['medium', 'small'] },
     disabled: { control: 'boolean' },
     required: { control: 'boolean' },
     readonly: { control: 'boolean' },
     invalid: { control: 'boolean' },
-    label: { control: 'text' },
-    errorText: { control: 'text' },
   },
   args: {
     size: 'medium',
@@ -25,7 +25,6 @@ const meta: Meta<MudRadioGroup> = {
     required: false,
     readonly: false,
     invalid: false,
-    label: 'Metoda de plată',
   },
 };
 
@@ -44,12 +43,22 @@ export const Playground: Story = {
           [required]="required"
           [readonly]="readonly"
           [invalid]="invalid"
-          [label]="label"
-          [errorText]="errorText"
         >
-          <mud-radio value="card" label="Card bancar" supportingText="Visa, Mastercard." />
-          <mud-radio value="mpay" label="MPay" supportingText="Fără comision." />
-          <mud-radio value="cash" label="Numerar la ghișeu" />
+          <mud-label>Metoda de plată</mud-label>
+          <mud-radio value="card">
+            <mud-label>Card bancar</mud-label>
+            <mud-inline-message hideIcon>Visa, Mastercard.</mud-inline-message>
+          </mud-radio>
+          <mud-radio value="mpay">
+            <mud-label>MPay</mud-label>
+            <mud-inline-message hideIcon>Fără comision.</mud-inline-message>
+          </mud-radio>
+          <mud-radio value="cash">
+            <mud-label>Numerar la ghișeu</mud-label>
+          </mud-radio>
+          @if (invalid) {
+            <mud-inline-message variant="error">Alegeți o metodă de plată.</mud-inline-message>
+          }
         </mud-radio-group>
       </div>
     `,
@@ -62,25 +71,34 @@ export const States: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-radio-group label="Selectat" value="mpay">
-          <mud-radio value="card" label="Card bancar" />
-          <mud-radio value="mpay" label="MPay" />
+        <mud-radio-group value="mpay">
+          <mud-label>Selectat</mud-label>
+          <mud-radio value="card"><mud-label>Card bancar</mud-label></mud-radio>
+          <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
         </mud-radio-group>
-        <mud-radio-group label="Eroare" invalid errorText="Alegeți o metodă de plată." required>
-          <mud-radio value="card" label="Card bancar" />
-          <mud-radio value="mpay" label="MPay" />
+        <mud-radio-group invalid required>
+          <mud-label>Eroare</mud-label>
+          <mud-radio value="card"><mud-label>Card bancar</mud-label></mud-radio>
+          <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
+          <mud-inline-message variant="error">Alegeți o metodă de plată.</mud-inline-message>
         </mud-radio-group>
-        <mud-radio-group label="Cu opțiune dezactivată" value="card">
-          <mud-radio value="card" label="Card bancar" />
-          <mud-radio value="cash" label="Numerar" disabled />
+        <mud-radio-group value="card">
+          <mud-label>Cu opțiune dezactivată</mud-label>
+          <mud-radio value="card"><mud-label>Card bancar</mud-label></mud-radio>
+          <mud-radio value="cash" disabled><mud-label>Numerar</mud-label></mud-radio>
         </mud-radio-group>
-        <mud-radio-group label="Grup dezactivat" value="card" disabled>
-          <mud-radio value="card" label="Card bancar" />
-          <mud-radio value="mpay" label="MPay" />
+        <mud-radio-group value="card" disabled>
+          <mud-label>Grup dezactivat</mud-label>
+          <mud-radio value="card"><mud-label>Card bancar</mud-label></mud-radio>
+          <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
         </mud-radio-group>
-        <mud-radio-group label="Mic (small)" size="small" value="mpay">
-          <mud-radio value="card" label="Card bancar" supportingText="14/20 + dot 10px." />
-          <mud-radio value="mpay" label="MPay" />
+        <mud-radio-group size="small" value="mpay">
+          <mud-label>Mic (small)</mud-label>
+          <mud-radio value="card">
+            <mud-label>Card bancar</mud-label>
+            <mud-inline-message hideIcon>14/20 + dot 10px.</mud-inline-message>
+          </mud-radio>
+          <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
         </mud-radio-group>
       </div>
     `,
@@ -90,19 +108,17 @@ export const States: Story = {
 /** The group is the form control: reactive forms bind on mud-radio-group. */
 @Component({
   selector: 'mud-radio-reactive-demo',
-  imports: [MudRadioGroup, MudRadio, ReactiveFormsModule],
+  imports: [MudRadioGroup, MudRadio, MudLabel, MudInlineMessage, ReactiveFormsModule],
   template: `
     <div style="${COL}">
-      <mud-radio-group
-        label="Metoda de plată"
-        required
-        [formControl]="method"
-        [invalid]="method.touched && method.invalid"
-        errorText="Alegeți o metodă de plată."
-      >
-        <mud-radio value="card" label="Card bancar" />
-        <mud-radio value="mpay" label="MPay" />
-        <mud-radio value="cash" label="Numerar" />
+      <mud-radio-group required [formControl]="method" [invalid]="method.touched && method.invalid">
+        <mud-label>Metoda de plată</mud-label>
+        <mud-radio value="card"><mud-label>Card bancar</mud-label></mud-radio>
+        <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
+        <mud-radio value="cash"><mud-label>Numerar</mud-label></mud-radio>
+        @if (method.touched && method.invalid) {
+          <mud-inline-message variant="error">Alegeți o metodă de plată.</mud-inline-message>
+        }
       </mud-radio-group>
       <code>value: {{ method.value || '—' }} | touched: {{ method.touched }} | valid: {{ method.valid }}</code>
     </div>
@@ -118,18 +134,16 @@ class RadioReactiveDemo {
  */
 const REACTIVE_FORMS_SOURCE = `
 @Component({
-  imports: [MudRadioGroup, MudRadio, ReactiveFormsModule],
+  imports: [MudRadioGroup, MudRadio, MudLabel, MudInlineMessage, ReactiveFormsModule],
   template: \`
-    <mud-radio-group
-      label="Metoda de plată"
-      required
-      [formControl]="method"
-      [invalid]="method.touched && method.invalid"
-      errorText="Alegeți o metodă de plată."
-    >
-      <mud-radio value="card" label="Card bancar" />
-      <mud-radio value="mpay" label="MPay" />
-      <mud-radio value="cash" label="Numerar" />
+    <mud-radio-group required [formControl]="method" [invalid]="method.touched && method.invalid">
+      <mud-label>Metoda de plată</mud-label>
+      <mud-radio value="card"><mud-label>Card bancar</mud-label></mud-radio>
+      <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
+      <mud-radio value="cash"><mud-label>Numerar</mud-label></mud-radio>
+      @if (method.touched && method.invalid) {
+        <mud-inline-message variant="error">Alegeți o metodă de plată.</mud-inline-message>
+      }
     </mud-radio-group>
   \`,
 })
@@ -150,13 +164,17 @@ export const ReactiveForms: Story = {
 /** Standalone two-way binding with non-string values. */
 @Component({
   selector: 'mud-radio-model-demo',
-  imports: [MudRadioGroup, MudRadio],
+  imports: [MudRadioGroup, MudRadio, MudLabel, MudInlineMessage],
   template: `
     <div style="${COL}">
-      <mud-radio-group label="Numărul de copii ai cererii" [(value)]="copies">
-        <mud-radio [value]="1" label="Un exemplar" />
-        <mud-radio [value]="2" label="Două exemplare" />
-        <mud-radio [value]="5" label="Cinci exemplare" supportingText="Taxă suplimentară." />
+      <mud-radio-group [(value)]="copies">
+        <mud-label>Numărul de copii ai cererii</mud-label>
+        <mud-radio [value]="1"><mud-label>Un exemplar</mud-label></mud-radio>
+        <mud-radio [value]="2"><mud-label>Două exemplare</mud-label></mud-radio>
+        <mud-radio [value]="5">
+          <mud-label>Cinci exemplare</mud-label>
+          <mud-inline-message hideIcon>Taxă suplimentară.</mud-inline-message>
+        </mud-radio>
       </mud-radio-group>
       <code>copies: {{ copies() ?? '—' }} (number)</code>
     </div>
@@ -172,12 +190,16 @@ class RadioModelDemo {
  */
 const NON_STRING_VALUES_SOURCE = `
 @Component({
-  imports: [MudRadioGroup, MudRadio],
+  imports: [MudRadioGroup, MudRadio, MudLabel, MudInlineMessage],
   template: \`
-    <mud-radio-group label="Numărul de exemplare" [(value)]="copies">
-      <mud-radio [value]="1" label="Un exemplar" />
-      <mud-radio [value]="2" label="Două exemplare" />
-      <mud-radio [value]="5" label="Cinci exemplare" supportingText="Taxă suplimentară." />
+    <mud-radio-group [(value)]="copies">
+      <mud-label>Numărul de exemplare</mud-label>
+      <mud-radio [value]="1"><mud-label>Un exemplar</mud-label></mud-radio>
+      <mud-radio [value]="2"><mud-label>Două exemplare</mud-label></mud-radio>
+      <mud-radio [value]="5">
+        <mud-label>Cinci exemplare</mud-label>
+        <mud-inline-message hideIcon>Taxă suplimentară.</mud-inline-message>
+      </mud-radio>
     </mud-radio-group>
   \`,
 })

@@ -110,12 +110,15 @@ Every component is standalone: import the class and put it in a component's
 import { Component } from '@angular/core';
 import { MudButton } from 'ngx-mud-ui/button';
 import { MudTextInput } from 'ngx-mud-ui/text-input';
+import { MudLabel } from 'ngx-mud-ui/label';
 
 @Component({
   selector: 'app-request',
-  imports: [MudButton, MudTextInput],
+  imports: [MudButton, MudTextInput, MudLabel],
   template: `
-    <mud-text-input label="IDNP" required [(value)]="idnp" [maxLength]="13" />
+    <mud-text-input required [(value)]="idnp" [maxLength]="13">
+      <mud-label>IDNP</mud-label>
+    </mud-text-input>
     <button type="button" mudButton (click)="submit()">Continuă</button>
   `,
 })
@@ -175,6 +178,7 @@ the surrounding CSS `color`, and are decorative unless you give them an
     <tr><td><code>ngx-mud-ui/info-box</code></td><td>In-content callout</td></tr>
     <tr><td><code>ngx-mud-ui/inline-message</code></td><td>Inline message</td></tr>
     <tr><td><code>ngx-mud-ui/input-chip</code></td><td>Chip-list field</td></tr>
+    <tr><td><code>ngx-mud-ui/label</code></td><td>Field label projection element</td></tr>
     <tr><td><code>ngx-mud-ui/link</code></td><td>Link directive</td></tr>
     <tr><td><code>ngx-mud-ui/numeric-input</code></td><td>Numeric field with steppers and locale formatting</td></tr>
     <tr><td><code>ngx-mud-ui/progress-tracker</code></td><td>Stepper and step indicator</td></tr>
@@ -186,7 +190,7 @@ the surrounding CSS `color`, and are decorative unless you give them an
     <tr><td><code>ngx-mud-ui/switch</code></td><td>Switch</td></tr>
     <tr><td><code>ngx-mud-ui/tabs</code></td><td>Tab group, tab, tab label</td></tr>
     <tr><td><code>ngx-mud-ui/tag</code></td><td>Tag</td></tr>
-    <tr><td><code>ngx-mud-ui/text-input</code></td><td>Text field plus the label / helper / error projection slots</td></tr>
+    <tr><td><code>ngx-mud-ui/text-input</code></td><td>Single-line text field</td></tr>
     <tr><td><code>ngx-mud-ui/textarea</code></td><td>Multi-line field</td></tr>
     <tr><td><code>ngx-mud-ui/tooltip</code></td><td>Tooltip directive <em>(CDK overlay)</em></td></tr>
     <tr><td><code>{'ngx-mud-ui/styles/*'}</code></td><td>The design-system SCSS</td></tr>
@@ -227,17 +231,34 @@ Form controls work with whichever system your app uses:
 
 ```html
 <!-- reactive -->
-<mud-text-input label="IDNP" [formControl]="idnp" />
+<mud-text-input [formControl]="idnp" [invalid]="idnp.invalid && idnp.touched">
+  <mud-label>IDNP</mud-label>
+  @if (idnp.invalid && idnp.touched) {
+    <mud-inline-message variant="error">IDNP invalid.</mud-inline-message>
+  }
+</mud-text-input>
 
 <!-- signal forms -->
-<mud-text-input label="IDNP" [formField]="form.idnp" />
+<mud-text-input [formField]="form.idnp" required>
+  <mud-label>IDNP</mud-label>
+  @if (form.idnp().touched() && form.idnp().invalid()) {
+    <mud-inline-message variant="error">IDNP invalid.</mud-inline-message>
+  }
+</mud-text-input>
 
 <!-- standalone -->
-<mud-text-input label="IDNP" [(value)]="idnp" />
+<mud-text-input [(value)]="idnp">
+  <mud-label>IDNP</mud-label>
+</mud-text-input>
 ```
 
-With signal forms the `invalid` and `errors` inputs are bound for you, so
-validation messages appear without extra wiring.
+The label and any assistive message are projected content, not inputs: a
+projected `<mud-label>` wires `for`/`id` and a projected `<mud-inline-message>`
+gets a field-owned `role="alert"` wrapper and `aria-describedby` for free. The
+`invalid` flag and *when* a message appears stay entirely consumer-owned — the
+signal-forms example above shows the recommended timing, gating the message on
+`touched()` so it doesn't appear before the user has interacted with the
+field.
 
 ## Working on the library
 

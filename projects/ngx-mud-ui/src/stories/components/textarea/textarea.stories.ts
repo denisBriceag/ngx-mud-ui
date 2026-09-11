@@ -1,13 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { moduleMetadata } from '@storybook/angular-vite';
 import { MudTextarea } from 'ngx-mud-ui/textarea';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:420px;padding:24px';
 
 const meta: Meta<MudTextarea> = {
   title: 'Components/Textarea',
   component: MudTextarea,
-  decorators: [moduleMetadata({ imports: [MudTextarea] })],
+  decorators: [moduleMetadata({ imports: [MudTextarea, MudLabel, MudInlineMessage] })],
   argTypes: {
     variant: { control: 'inline-radio', options: ['default', 'warning', 'destructive', 'success'] },
     size: { control: 'inline-radio', options: ['medium', 'large'] },
@@ -24,9 +26,6 @@ const meta: Meta<MudTextarea> = {
     required: { control: 'boolean' },
     readonly: { control: 'boolean' },
     invalid: { control: 'boolean' },
-    label: { control: 'text' },
-    helperText: { control: 'text' },
-    errorText: { control: 'text' },
     placeholder: { control: 'text' },
   },
   args: {
@@ -41,8 +40,6 @@ const meta: Meta<MudTextarea> = {
     required: false,
     readonly: false,
     invalid: false,
-    label: 'Mesaj',
-    helperText: 'Descrieți problema întâlnită.',
     placeholder: 'Scrieți aici...',
   },
 };
@@ -68,11 +65,15 @@ export const Playground: Story = {
           [required]="required"
           [readonly]="readonly"
           [invalid]="invalid"
-          [label]="label"
-          [helperText]="helperText"
-          [errorText]="errorText"
           [placeholder]="placeholder"
-        />
+        >
+          <mud-label>Mesaj</mud-label>
+          @if (invalid) {
+            <mud-inline-message variant="error">Mesajul este obligatoriu.</mud-inline-message>
+          } @else {
+            <mud-inline-message hideIcon>Descrieți problema întâlnită.</mud-inline-message>
+          }
+        </mud-textarea>
       </div>
     `,
   }),
@@ -84,16 +85,20 @@ export const CounterAndStates: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-textarea
-          label="Cu contor"
-          [maxLength]="200"
-          helperText="Maxim 200 de caractere."
-          value="Un început de mesaj."
-          counterLabel="20 din 200 de caractere"
-        />
-        <mud-textarea label="Eroare" [maxLength]="200" invalid errorText="Mesajul este obligatoriu." />
-        <mud-textarea label="Doar contor" [maxLength]="200" value="Fără helper." />
-        <mud-textarea label="Dezactivat" [maxLength]="200" disabled value="Nu poate fi editat." />
+        <mud-textarea [maxLength]="200" value="Un început de mesaj." counterLabel="20 din 200 de caractere">
+          <mud-label>Cu contor</mud-label>
+          <mud-inline-message hideIcon>Maxim 200 de caractere.</mud-inline-message>
+        </mud-textarea>
+        <mud-textarea [maxLength]="200" invalid>
+          <mud-label>Eroare</mud-label>
+          <mud-inline-message variant="error">Mesajul este obligatoriu.</mud-inline-message>
+        </mud-textarea>
+        <mud-textarea [maxLength]="200" value="Fără helper.">
+          <mud-label>Doar contor</mud-label>
+        </mud-textarea>
+        <mud-textarea [maxLength]="200" disabled value="Nu poate fi editat.">
+          <mud-label>Dezactivat</mud-label>
+        </mud-textarea>
       </div>
     `,
   }),
@@ -105,9 +110,16 @@ export const ResizeAndSizes: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-textarea label="Redimensionabil vertical" helperText="Trageți de colț." />
-        <mud-textarea label="Fără redimensionare" resize="none" />
-        <mud-textarea label="Large" size="large" placeholder="16/24, min 150px" />
+        <mud-textarea>
+          <mud-label>Redimensionabil vertical</mud-label>
+          <mud-inline-message hideIcon>Trageți de colț.</mud-inline-message>
+        </mud-textarea>
+        <mud-textarea resize="none">
+          <mud-label>Fără redimensionare</mud-label>
+        </mud-textarea>
+        <mud-textarea size="large" placeholder="16/24, min 150px">
+          <mud-label>Large</mud-label>
+        </mud-textarea>
       </div>
     `,
   }),
@@ -122,11 +134,13 @@ export const Truncation: Story = {
   render: () => ({
     template: `
       <div style="${COL};max-width:280px">
-        <mud-textarea
-          label="O etichetă foarte foarte lungă care nu ar trebui să treacă niciodată pe al doilea rând"
-          helperText="Un text asistiv foarte lung care se întinde pe mai multe rânduri dar care trebuie tăiat cu puncte de suspensie după exact două rânduri de text vizibil."
-          [maxLength]="100"
-        />
+        <mud-textarea [maxLength]="100">
+          <mud-label>O etichetă foarte foarte lungă care nu ar trebui să treacă niciodată pe al doilea rând</mud-label>
+          <mud-inline-message hideIcon>
+            Un text asistiv foarte lung care se întinde pe mai multe rânduri dar care trebuie tăiat cu puncte de
+            suspensie după exact două rânduri de text vizibil.
+          </mud-inline-message>
+        </mud-textarea>
       </div>
     `,
   }),

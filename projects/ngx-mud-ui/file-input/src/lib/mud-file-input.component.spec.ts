@@ -3,6 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form } from '@angular/forms/signals';
 import { MudFileInput } from './mud-file-input.component';
+import { MudFileItem } from './mud-file-item.component';
+import { MudLabel } from '../../../label/src/public-api';
+import { MudInlineMessage } from '../../../inline-message/src/public-api';
 import type {
   MudFileInputRejection,
   MudFileInputRemove,
@@ -22,13 +25,14 @@ function dragEvent(type: string, files: File[] = []): Event {
 }
 
 @Component({
-  imports: [MudFileInput],
+  imports: [MudFileInput, MudLabel, MudInlineMessage],
   template: `
     <mud-file-input
-      label="Documente"
       [(value)]="files"
       [variant]="variant()"
       [accept]="accept()"
+      [formatsCaption]="formatsCaption()"
+      [maxSizeCaption]="maxSizeCaption()"
       [multiple]="multiple()"
       [maxFiles]="maxFiles()"
       [maxSize]="maxSize()"
@@ -39,13 +43,25 @@ function dragEvent(type: string, files: File[] = []): Event {
       [fileListLabel]="fileListLabel()"
       (rejected)="rejections.push($event)"
       (removed)="removals.push($event)"
-    />
+    >
+      @if (withLabel()) {
+        <mud-label>Documente</mud-label>
+      }
+      @if (showHelper()) {
+        <mud-inline-message hideIcon>Helper.</mud-inline-message>
+      }
+      @if (showError()) {
+        <mud-inline-message variant="error">Error.</mud-inline-message>
+      }
+    </mud-file-input>
   `,
 })
 class Host {
   readonly files = signal<File[]>([]);
   readonly variant = signal<MudFileInputVariant>('dropzone');
   readonly accept = signal<string | undefined>(undefined);
+  readonly formatsCaption = signal((formats: string) => `Accepted formats: ${formats}`);
+  readonly maxSizeCaption = signal((size: string) => `Max size: ${size}`);
   readonly multiple = signal(true);
   readonly maxFiles = signal<number | undefined>(undefined);
   readonly maxSize = signal<number | undefined>(undefined);
@@ -54,6 +70,9 @@ class Host {
   readonly invalid = signal(false);
   readonly showFileList = signal(true);
   readonly fileListLabel = signal('Selected files');
+  readonly withLabel = signal(true);
+  readonly showHelper = signal(false);
+  readonly showError = signal(false);
   readonly rejections: MudFileInputRejection[] = [];
   readonly removals: MudFileInputRemove[] = [];
 }
@@ -76,6 +95,7 @@ async function render() {
     captions: () => el.querySelector('.file-field__captions') as HTMLElement | null,
     items: () => Array.from(el.querySelectorAll<HTMLElement>('mud-file-item')),
     live: () => el.querySelector('[role="status"]') as HTMLElement,
+    assistive: () => el.querySelector('.input-field__assistive') as HTMLElement | null,
     error: () => el.querySelector('[role="alert"]') as HTMLElement | null,
   };
 }
@@ -120,6 +140,16 @@ describe('MudFileInput', () => {
     host.required.set(false);
     await fixture.whenStable();
     expect(label()?.textContent).not.toContain('required');
+  });
+
+  it('renders no label element without a projected mud-label; aria-labelledby drops too', async () => {
+    const { fixture, host, label, chooseBtn } = await render();
+
+    host.withLabel.set(false);
+    await fixture.whenStable();
+
+    expect(label()).toBeNull();
+    expect(chooseBtn()?.getAttribute('aria-labelledby')).toBeNull();
   });
 
   it('lands focus predictably after removing a row', async () => {
@@ -173,6 +203,19 @@ describe('MudFileInput', () => {
 
     expect(captions()?.textContent).toContain('Accepted formats: jpg, png, pdf');
     expect(captions()?.textContent).toContain('Max size: 5 MB');
+  });
+
+  it('localizes the captions through the formatsCaption and maxSizeCaption functions', async () => {
+    const { fixture, host, captions } = await render();
+
+    host.accept.set('.pdf');
+    host.maxSize.set(1024 * 1024);
+    host.formatsCaption.set((formats: string) => `Formate acceptate: ${formats}`);
+    host.maxSizeCaption.set((size: string) => `Dimensiune maximă: ${size}`);
+    await fixture.whenStable();
+
+    expect(captions()?.textContent).toContain('Formate acceptate: pdf');
+    expect(captions()?.textContent).toContain('Dimensiune maximă: 1 MB');
   });
 
   it('opens the native picker from the choose-files button and the dropzone surface', async () => {
@@ -365,16 +408,68 @@ describe('MudFileInput', () => {
     expect(items()).toHaveLength(0);
   });
 
-  it('marks the browse control invalid and shows the error region', async () => {
-    const { fixture, host, chooseBtn, error } = await render();
+  it('marks the browse control invalid via aria-invalid, independent of any message', async () => {
+    const { fixture, host, chooseBtn, assistive } = await render();
 
     expect(chooseBtn()?.getAttribute('aria-invalid')).toBeNull();
-    expect(error()).toBeNull();
+    expect(assistive()).toBeNull();
 
     host.invalid.set(true);
     await fixture.whenStable();
 
     expect(chooseBtn()?.getAttribute('aria-invalid')).toBe('true');
+    // `invalid` alone drives the visuals; it projects no message of its own.
+    expect(assistive()).toBeNull();
+  });
+
+  it('renders no assistive wrapper and no describedby when nothing is projected', async () => {
+    const { chooseBtn, assistive } = await render();
+
+    expect(assistive()).toBeNull();
+    expect(chooseBtn()?.getAttribute('aria-describedby')).toBeNull();
+  });
+
+  it('projects inline-messages into a role=alert wrapper wired to aria-describedby', async () => {
+    const { fixture, host, chooseBtn, assistive } = await render();
+
+    host.showHelper.set(true);
+    await fixture.whenStable();
+
+    const wrapper = assistive() as HTMLElement;
+
+    expect(wrapper.getAttribute('role')).toBe('alert');
+    expect(wrapper.querySelector('mud-inline-message')?.textContent).toContain('Helper.');
+    expect(chooseBtn()?.getAttribute('aria-describedby')).toBe(wrapper.id);
+  });
+
+  it('lets the consumer swap helper for error — both land in the same wrapper', async () => {
+    const { fixture, host, assistive } = await render();
+
+    host.showHelper.set(true);
+    await fixture.whenStable();
+    host.showHelper.set(false);
+    host.showError.set(true);
+    host.invalid.set(true);
+    await fixture.whenStable();
+
+    const wrapper = assistive() as HTMLElement;
+
+    expect(wrapper.textContent).toContain('Error.');
+    expect(wrapper.textContent).not.toContain('Helper.');
+  });
+
+  it('can show two messages at once, in template order', async () => {
+    const { fixture, host, assistive } = await render();
+
+    host.showHelper.set(true);
+    host.showError.set(true);
+    await fixture.whenStable();
+
+    const messages = assistive()!.querySelectorAll('mud-inline-message');
+
+    expect(messages.length).toBe(2);
+    expect(messages[0].textContent).toContain('Helper.');
+    expect(messages[1].textContent).toContain('Error.');
   });
 
   it('creates preview URLs for images and revokes them on removal', async () => {
@@ -483,11 +578,49 @@ describe('MudFileInput', () => {
     await fixture.whenStable();
     expect(el.querySelectorAll('mud-file-item')).toHaveLength(2);
   });
+
+  it('merges external aria-describedby ids with the internal assistive id when a message is shown', async () => {
+    const fixture = TestBed.createComponent(ExternalDescribedHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const chooseBtn = fixture.nativeElement.querySelector('.file-field__browse') as HTMLButtonElement;
+
+    expect(chooseBtn.getAttribute('aria-describedby')).toBe('extra-id');
+
+    host.showMessage.set(true);
+    await fixture.whenStable();
+
+    const wrapper = fixture.nativeElement.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(chooseBtn.getAttribute('aria-describedby')).toBe(`${wrapper.id} extra-id`);
+  });
+});
+
+// The messages `<ng-content select="mud-inline-message" />` is an element
+// selector; `mud-file-item`'s `[icon]` slot is an unrelated attribute
+// selector on a sibling component's own light DOM. This locks in that a page
+// projecting both keeps each in its own place.
+describe('MudFileInput alongside a projected mud-file-item icon', () => {
+  it('keeps the file-input message and the file-item icon in their own slots', async () => {
+    const fixture = TestBed.createComponent(BothProjectionsHost);
+
+    await fixture.whenStable();
+    const root = fixture.nativeElement as HTMLElement;
+    const wrapper = root.querySelector('.input-field__assistive') as HTMLElement;
+    const icon = root.querySelector('.custom-icon');
+
+    expect(wrapper.textContent).toContain('Documentul este invalid.');
+    expect(icon).not.toBeNull();
+    expect(icon?.closest('mud-file-item')).not.toBeNull();
+    // The icon never leaks into the file-input's own assistive wrapper.
+    expect(wrapper.querySelector('.custom-icon')).toBeNull();
+  });
 });
 
 @Component({
   imports: [MudFileInput, ReactiveFormsModule],
-  template: `<mud-file-input label="Documente" [formControl]="control" />`,
+  template: `<mud-file-input [formControl]="control" />`,
 })
 class ReactiveHost {
   readonly control = new FormControl<File[]>([], { nonNullable: true });
@@ -495,9 +628,37 @@ class ReactiveHost {
 
 @Component({
   imports: [MudFileInput, FormField],
-  template: `<mud-file-input label="Documente" [formField]="form.documents" />`,
+  template: `<mud-file-input [formField]="form.documents" />`,
 })
 class SignalHost {
   readonly model = signal({ documents: [] as File[] });
   readonly form = form(this.model);
 }
+
+@Component({
+  imports: [MudFileInput, MudInlineMessage],
+  template: `
+    <mud-file-input aria-describedby="extra-id" [(value)]="value">
+      @if (showMessage()) {
+        <mud-inline-message hideIcon>Helper.</mud-inline-message>
+      }
+    </mud-file-input>
+  `,
+})
+class ExternalDescribedHost {
+  readonly value = signal<File[]>([]);
+  readonly showMessage = signal(false);
+}
+
+@Component({
+  imports: [MudFileInput, MudFileItem, MudInlineMessage],
+  template: `
+    <mud-file-input invalid>
+      <mud-inline-message variant="error">Documentul este invalid.</mud-inline-message>
+    </mud-file-input>
+    <mud-file-item filename="raport.pdf">
+      <svg icon class="custom-icon" viewBox="0 0 20 20"></svg>
+    </mud-file-item>
+  `,
+})
+class BothProjectionsHost {}

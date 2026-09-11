@@ -48,24 +48,17 @@
   </span>
 
   <span class="selection-control__text">
-    @if (_showLabel()) {
+    @if (_hasLabel()) {
       <label class="selection-control__label" [attr.for]="_id">
-        <ng-content select="[mudLabel]">{{ label() }}</ng-content>
+        <ng-content select="mud-label" />
         @if (required()) {
           <span class="selection-control__required" aria-hidden="true">*</span>
         }
       </label>
     }
-    @if (_showSupporting()) {
-      <span class="selection-control__supporting" [id]="_supportingId">
-        <ng-content select="[mudHelper]">{{ _supportingMessage() }}</ng-content>
-      </span>
-    }
-    @if (_showError()) {
-      <div class="selection-control__error" role="alert" [id]="_errorId">
-        <ng-content select="[mudError]">
-          <span class="selection-control__error-text">{{ _errorMessage() }}</span>
-        </ng-content>
+    @if (_hasMessages()) {
+      <div class="selection-control__assistive" role="alert" [id]="_assistiveId">
+        <ng-content select="mud-inline-message" />
       </div>
     }
   </span>

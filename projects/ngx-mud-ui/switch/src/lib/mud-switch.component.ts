@@ -17,8 +17,8 @@ import type { ElementRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
-import type { FormCheckboxControl, ValidationError } from '@angular/forms/signals';
-import { MudFieldLabel } from 'ngx-mud-ui/text-input';
+import type { FormCheckboxControl } from '@angular/forms/signals';
+import { MudLabel } from 'ngx-mud-ui/label';
 
 let nextUniqueId = 0;
 
@@ -38,7 +38,9 @@ let nextUniqueId = 0;
  * `aria-describedby` when needed.
  *
  * ```html
- * <mud-switch label="Notificări prin e-mail" [formControl]="notifications" />
+ * <mud-switch [formControl]="notifications">
+ *   <mud-label>Notificări prin e-mail</mud-label>
+ * </mud-switch>
  * ```
  */
 @Component({
@@ -67,15 +69,6 @@ export class MudSwitch implements ControlValueAccessor, FormCheckboxControl {
 
   readonly name = input<string>('');
 
-  /**
-   * @description Validation errors pushed by signal forms (no visual region on the
-   * minimal switch; combine with an external message if needed).
-   */
-  readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
-
-  /** @description Plain-text label beside the track ([mudLabel] slot for rich content). */
-  readonly label = input<string | undefined>(undefined);
-
   /** @description Accessible name when no visible label is rendered. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
@@ -91,8 +84,8 @@ export class MudSwitch implements ControlValueAccessor, FormCheckboxControl {
   private readonly _native = viewChild.required<ElementRef<HTMLInputElement>>('native');
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  /** @docs-private Projected label marker ([mudLabel]). */
-  protected readonly _projectedLabel = contentChild(MudFieldLabel);
+  /** @docs-private Projected label element (ngx-mud-ui/label). */
+  protected readonly _label = contentChild(MudLabel);
 
   protected readonly _id = `mud-switch-${nextUniqueId++}`;
 
@@ -103,12 +96,12 @@ export class MudSwitch implements ControlValueAccessor, FormCheckboxControl {
   /** @docs-private Input + forms-driven disabled state combined. */
   protected readonly _effectiveDisabled = computed(() => this.disabled() || this._cvaDisabled());
 
-  protected readonly _showLabel = computed(() => !!this._projectedLabel() || !!this.label()?.trim());
+  protected readonly _hasLabel = computed(() => !!this._label());
 
   protected readonly _ariaLabel = computed<string | null>(() => {
     if (this.ariaLabelledby()) return null;
 
-    if (this._showLabel()) return null;
+    if (this._hasLabel()) return null;
 
     return this.ariaLabel() ?? null;
   });

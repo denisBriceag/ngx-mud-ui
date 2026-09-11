@@ -3,13 +3,15 @@ import { moduleMetadata } from '@storybook/angular-vite';
 import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MudNumericInput } from 'ngx-mud-ui/numeric-input';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:360px;padding:24px';
 
 const meta: Meta<MudNumericInput> = {
   title: 'Components/Numeric input',
   component: MudNumericInput,
-  decorators: [moduleMetadata({ imports: [MudNumericInput] })],
+  decorators: [moduleMetadata({ imports: [MudNumericInput, MudLabel, MudInlineMessage] })],
   argTypes: {
     variant: { control: 'inline-radio', options: ['default', 'warning', 'destructive', 'success'] },
     size: { control: 'inline-radio', options: ['medium', 'large'] },
@@ -26,9 +28,6 @@ const meta: Meta<MudNumericInput> = {
     readonly: { control: 'boolean' },
     invalid: { control: 'boolean' },
     loading: { control: 'boolean' },
-    label: { control: 'text' },
-    helperText: { control: 'text' },
-    errorText: { control: 'text' },
     placeholder: { control: 'text' },
   },
   args: {
@@ -43,8 +42,6 @@ const meta: Meta<MudNumericInput> = {
     readonly: false,
     invalid: false,
     loading: false,
-    label: 'Cantitate',
-    helperText: 'Numărul de exemplare solicitate.',
     placeholder: '0',
   },
 };
@@ -74,11 +71,15 @@ export const Playground: Story = {
           [readonly]="readonly"
           [invalid]="invalid"
           [loading]="loading"
-          [label]="label"
-          [helperText]="helperText"
-          [errorText]="errorText"
           [placeholder]="placeholder"
-        />
+        >
+          <mud-label>Cantitate</mud-label>
+          @if (invalid) {
+            <mud-inline-message variant="error">Valoarea depășește limita.</mud-inline-message>
+          } @else {
+            <mud-inline-message hideIcon>Numărul de exemplare solicitate.</mud-inline-message>
+          }
+        </mud-numeric-input>
       </div>
     `,
   }),
@@ -91,11 +92,10 @@ export const Playground: Story = {
  */
 @Component({
   selector: 'mud-numeric-currency-demo',
-  imports: [MudNumericInput],
+  imports: [MudNumericInput, MudLabel],
   template: `
     <div style="${COL}">
       <mud-numeric-input
-        label="Suma de achitat"
         locale="ro-MD"
         [precision]="2"
         [min]="0"
@@ -104,6 +104,7 @@ export const Playground: Story = {
         [(value)]="amount"
         placeholder="0,00"
       >
+        <mud-label>Suma de achitat</mud-label>
         <svg icon-start xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path
             fill-rule="evenodd"
@@ -127,10 +128,9 @@ class NumericCurrencyDemo {
  */
 const LOCALE_CURRENCY_SOURCE = `
 @Component({
-  imports: [MudNumericInput],
+  imports: [MudNumericInput, MudLabel],
   template: \`
     <mud-numeric-input
-      label="Suma de achitat"
       locale="ro-MD"
       [precision]="2"
       [min]="0"
@@ -139,6 +139,7 @@ const LOCALE_CURRENCY_SOURCE = `
       [(value)]="amount"
       placeholder="0,00"
     >
+      <mud-label>Suma de achitat</mud-label>
       <svg icon-start viewBox="0 0 20 20" aria-hidden="true"><!-- card glyph --></svg>
       <span suffix>MDL</span>
     </mud-numeric-input>
@@ -165,25 +166,37 @@ export const SteppersAndStates: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-numeric-input label="Cu steppers (0–10)" [min]="0" [max]="10" showSteppers [value]="8" />
-        <mud-numeric-input label="Doar întregi, fără negative" [allowDecimal]="false" [allowNegative]="false" showSteppers />
-        <mud-numeric-input label="Eroare" invalid errorText="Valoarea depășește limita." [value]="120" />
-        <mud-numeric-input label="Doar citire" readonly [value]="42" />
-        <mud-numeric-input label="Dezactivat" disabled [value]="7" showSteppers />
-        <mud-numeric-input label="Se încarcă" loading [value]="99" showSteppers />
+        <mud-numeric-input [min]="0" [max]="10" showSteppers [value]="8">
+          <mud-label>Cu steppers (0–10)</mud-label>
+        </mud-numeric-input>
+        <mud-numeric-input [allowDecimal]="false" [allowNegative]="false" showSteppers>
+          <mud-label>Doar întregi, fără negative</mud-label>
+        </mud-numeric-input>
+        <mud-numeric-input invalid [value]="120">
+          <mud-label>Eroare</mud-label>
+          <mud-inline-message variant="error">Valoarea depășește limita.</mud-inline-message>
+        </mud-numeric-input>
+        <mud-numeric-input readonly [value]="42">
+          <mud-label>Doar citire</mud-label>
+        </mud-numeric-input>
+        <mud-numeric-input disabled [value]="7" showSteppers>
+          <mud-label>Dezactivat</mud-label>
+        </mud-numeric-input>
+        <mud-numeric-input loading [value]="99" showSteppers>
+          <mud-label>Se încarcă</mud-label>
+        </mud-numeric-input>
       </div>
     `,
   }),
 };
 
-/** Reactive forms with number values and validators. */
+/** Reactive forms with number values and validators; the error message is consumer-gated on touched+invalid. */
 @Component({
   selector: 'mud-numeric-reactive-demo',
-  imports: [MudNumericInput, ReactiveFormsModule],
+  imports: [MudNumericInput, MudLabel, MudInlineMessage, ReactiveFormsModule],
   template: `
     <div style="${COL}">
       <mud-numeric-input
-        label="Numărul de copii"
         required
         [min]="1"
         [max]="10"
@@ -191,8 +204,12 @@ export const SteppersAndStates: Story = {
         [allowDecimal]="false"
         [formControl]="copies"
         [invalid]="copies.touched && copies.invalid"
-        errorText="Introduceți un număr între 1 și 10."
-      />
+      >
+        <mud-label>Numărul de copii</mud-label>
+        @if (copies.touched && copies.invalid) {
+          <mud-inline-message variant="error">Introduceți un număr între 1 și 10.</mud-inline-message>
+        }
+      </mud-numeric-input>
       <code>value: {{ copies.value ?? '—' }} | valid: {{ copies.valid }}</code>
     </div>
   `,
@@ -209,10 +226,9 @@ class NumericReactiveDemo {
  */
 const REACTIVE_FORMS_SOURCE = `
 @Component({
-  imports: [MudNumericInput, ReactiveFormsModule],
+  imports: [MudNumericInput, MudLabel, MudInlineMessage, ReactiveFormsModule],
   template: \`
     <mud-numeric-input
-      label="Numărul de copii"
       required
       [min]="1"
       [max]="10"
@@ -220,8 +236,12 @@ const REACTIVE_FORMS_SOURCE = `
       [allowDecimal]="false"
       [formControl]="copies"
       [invalid]="copies.touched && copies.invalid"
-      errorText="Introduceți un număr între 1 și 10."
-    />
+    >
+      <mud-label>Numărul de copii</mud-label>
+      @if (copies.touched && copies.invalid) {
+        <mud-inline-message variant="error">Introduceți un număr între 1 și 10.</mud-inline-message>
+      }
+    </mud-numeric-input>
   \`,
 })
 export class CopiesField {

@@ -6,7 +6,7 @@ import * as InlineMessageStories from './inline-message.stories';
 # Inline message
 
 A short contextual message with a semantic icon — used on its own, or projected
-into a form field's helper and error slots.
+into a form field's assistive-message region.
 
 ## Import
 
@@ -67,8 +67,8 @@ Selector: `mud-inline-message`
   text, which is why `info` reads as neutral supporting text rather than an
   alert.
 - **The component is not a live region.** It announces nothing on its own; when
-  projected as `[mudError]` into a field, the field's own `role="alert"` wrapper
-  does the announcing.
+  projected into a field, the field's own `role="alert"` wrapper does the
+  announcing.
 - **Give it an `id` when it describes a control** rendered outside the field, and
   point the control's `aria-describedby` at it.
 - **`hideIcon` is the icon-none variation** for dense layouts and for stacks of

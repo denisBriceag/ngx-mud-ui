@@ -14,10 +14,19 @@ overlay.
 ```ts
 import { MudSelectInput } from 'ngx-mud-ui/select-input';
 import type { MudSelectOption } from 'ngx-mud-ui/select-input';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 @Component({
-  imports: [MudSelectInput],
-  template: `<mud-select-input label="Raion" [options]="raions" [formControl]="raion" />`,
+  imports: [MudSelectInput, MudLabel, MudInlineMessage],
+  template: `
+    <mud-select-input required [options]="raions" [formControl]="raion">
+      <mud-label>Raion</mud-label>
+      @if (raion.touched && raion.invalid) {
+        <mud-inline-message variant="error">Alegeți un raion.</mud-inline-message>
+      }
+    </mud-select-input>
+  `,
 })
 export class Demo {
   readonly raions: readonly MudSelectOption<string>[] = [
@@ -55,6 +64,22 @@ The design-system stylesheet must be loaded once in your app:
 Selector: `mud-select-input`
 
 <ArgTypes of={SelectInputStories} />
+
+### Label and messages
+
+The field renders no message text of its own. Project a `<mud-label>` for
+the visible label and any number of `<mud-inline-message>` elements for
+assistive text — *you* decide when they render:
+
+- Messages land in a field-owned `role="alert"` region wired into
+  `aria-describedby` on the trigger; the overlay listbox itself also uses the
+  same label for its `aria-labelledby`/`aria-label` pair, so a projected
+  `mud-label` names both the trigger and the panel.
+- Inside a field, `mud-inline-message` is always the small size — its
+  `size` input is ignored.
+- The field's `invalid` input drives the destructive variant and
+  `aria-invalid`; with signal forms it is bound automatically, with reactive
+  forms bind `[invalid]="ctrl.invalid && ctrl.touched"`.
 
 ## Usage tips
 

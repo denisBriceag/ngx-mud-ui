@@ -4,6 +4,8 @@ import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MudSelectInput } from 'ngx-mud-ui/select-input';
 import type { MudSelectOption } from 'ngx-mud-ui/select-input';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:360px;padding:24px;min-height:360px';
 
@@ -19,7 +21,7 @@ const RAIONS: MudSelectOption<string>[] = [
 const meta: Meta<MudSelectInput> = {
   title: 'Components/Select input',
   component: MudSelectInput,
-  decorators: [moduleMetadata({ imports: [MudSelectInput] })],
+  decorators: [moduleMetadata({ imports: [MudSelectInput, MudLabel, MudInlineMessage] })],
   argTypes: {
     variant: { control: 'inline-radio', options: ['default', 'destructive'] },
     size: { control: 'inline-radio', options: ['medium', 'large'] },
@@ -27,10 +29,7 @@ const meta: Meta<MudSelectInput> = {
     required: { control: 'boolean' },
     readonly: { control: 'boolean' },
     invalid: { control: 'boolean' },
-    label: { control: 'text' },
     placeholder: { control: 'text' },
-    helperText: { control: 'text' },
-    errorText: { control: 'text' },
   },
   args: {
     variant: 'default',
@@ -39,9 +38,7 @@ const meta: Meta<MudSelectInput> = {
     required: false,
     readonly: false,
     invalid: false,
-    label: 'Raion',
     placeholder: 'Alegeți raionul',
-    helperText: 'Raionul de reședință.',
   },
 };
 
@@ -61,12 +58,16 @@ export const Playground: Story = {
           [required]="required"
           [readonly]="readonly"
           [invalid]="invalid"
-          [label]="label"
           [placeholder]="placeholder"
-          [helperText]="helperText"
-          [errorText]="errorText"
           [options]="options"
-        />
+        >
+          <mud-label>Raion</mud-label>
+          @if (invalid) {
+            <mud-inline-message variant="error">Alegeți un raion.</mud-inline-message>
+          } @else {
+            <mud-inline-message hideIcon>Raionul de reședință.</mud-inline-message>
+          }
+        </mud-select-input>
       </div>
     `,
   }),
@@ -79,11 +80,22 @@ export const States: Story = {
     props: { options: RAIONS },
     template: `
       <div style="${COL}">
-        <mud-select-input label="Cu selecție" value="balti" [options]="options" />
-        <mud-select-input label="Eroare" invalid errorText="Alegeți un raion." [options]="options" placeholder="Alegeți" />
-        <mud-select-input label="Doar citire" value="chisinau" readonly [options]="options" />
-        <mud-select-input label="Dezactivat" disabled [options]="options" placeholder="Indisponibil" />
-        <mud-select-input label="Fără opțiuni" [options]="[]" emptyText="Nicio opțiune disponibilă" placeholder="Gol" />
+        <mud-select-input value="balti" [options]="options">
+          <mud-label>Cu selecție</mud-label>
+        </mud-select-input>
+        <mud-select-input invalid [options]="options" placeholder="Alegeți">
+          <mud-label>Eroare</mud-label>
+          <mud-inline-message variant="error">Alegeți un raion.</mud-inline-message>
+        </mud-select-input>
+        <mud-select-input value="chisinau" readonly [options]="options">
+          <mud-label>Doar citire</mud-label>
+        </mud-select-input>
+        <mud-select-input disabled [options]="options" placeholder="Indisponibil">
+          <mud-label>Dezactivat</mud-label>
+        </mud-select-input>
+        <mud-select-input [options]="[]" emptyText="Nicio opțiune disponibilă" placeholder="Gol">
+          <mud-label>Fără opțiuni</mud-label>
+        </mud-select-input>
       </div>
     `,
   }),
@@ -92,18 +104,21 @@ export const States: Story = {
 /** The group is a regular form control: reactive forms with a required validator. */
 @Component({
   selector: 'mud-select-reactive-demo',
-  imports: [MudSelectInput, ReactiveFormsModule],
+  imports: [MudSelectInput, MudLabel, MudInlineMessage, ReactiveFormsModule],
   template: `
     <div style="${COL}">
       <mud-select-input
-        label="Raion"
         required
         placeholder="Alegeți raionul"
         [options]="options"
         [formControl]="raion"
         [invalid]="raion.touched && raion.invalid"
-        errorText="Alegeți un raion."
-      />
+      >
+        <mud-label>Raion</mud-label>
+        @if (raion.touched && raion.invalid) {
+          <mud-inline-message variant="error">Alegeți un raion.</mud-inline-message>
+        }
+      </mud-select-input>
       <code>value: {{ raion.value || '—' }} | touched: {{ raion.touched }} | valid: {{ raion.valid }}</code>
     </div>
   `,
@@ -119,17 +134,20 @@ class SelectReactiveDemo {
  */
 const REACTIVE_FORMS_SOURCE = `
 @Component({
-  imports: [MudSelectInput, ReactiveFormsModule],
+  imports: [MudSelectInput, MudLabel, MudInlineMessage, ReactiveFormsModule],
   template: \`
     <mud-select-input
-      label="Raion"
       required
       placeholder="Alegeți raionul"
       [options]="options"
       [formControl]="raion"
       [invalid]="raion.touched && raion.invalid"
-      errorText="Alegeți un raion."
-    />
+    >
+      <mud-label>Raion</mud-label>
+      @if (raion.touched && raion.invalid) {
+        <mud-inline-message variant="error">Alegeți un raion.</mud-inline-message>
+      }
+    </mud-select-input>
   \`,
 })
 export class RaionField {
@@ -154,10 +172,12 @@ export const ReactiveForms: Story = {
 /** Non-string values with Object.is comparison. */
 @Component({
   selector: 'mud-select-number-demo',
-  imports: [MudSelectInput],
+  imports: [MudSelectInput, MudLabel],
   template: `
     <div style="${COL}">
-      <mud-select-input label="Numărul de exemplare" placeholder="Alegeți" [options]="options" [(value)]="copies" />
+      <mud-select-input placeholder="Alegeți" [options]="options" [(value)]="copies">
+        <mud-label>Numărul de exemplare</mud-label>
+      </mud-select-input>
       <code>copies: {{ copies() ?? '—' }} (number)</code>
     </div>
   `,
@@ -177,9 +197,11 @@ class SelectNumberDemo {
  */
 const NON_STRING_VALUES_SOURCE = `
 @Component({
-  imports: [MudSelectInput],
+  imports: [MudSelectInput, MudLabel],
   template: \`
-    <mud-select-input label="Numărul de exemplare" placeholder="Alegeți" [options]="options" [(value)]="copies" />
+    <mud-select-input placeholder="Alegeți" [options]="options" [(value)]="copies">
+      <mud-label>Numărul de exemplare</mud-label>
+    </mud-select-input>
   \`,
 })
 export class CopiesSelect {

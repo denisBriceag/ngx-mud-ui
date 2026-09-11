@@ -3,24 +3,28 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form } from '@angular/forms/signals';
 import { MudSwitch } from './mud-switch.component';
-import { MudFieldLabel } from 'ngx-mud-ui/text-input';
+import { MudLabel } from '../../../label/src/public-api';
 
 @Component({
-  imports: [MudSwitch],
+  imports: [MudSwitch, MudLabel],
   template: `
     <mud-switch
-      label="Notificări"
       [(checked)]="checked"
       [disabled]="disabled()"
       [required]="requiredField()"
       (touch)="touches = touches + 1"
-    />
+    >
+      @if (withLabel()) {
+        <mud-label>Notificări</mud-label>
+      }
+    </mud-switch>
   `,
 })
 class Host {
   readonly checked = signal(false);
   readonly disabled = signal(false);
   readonly requiredField = signal(false);
+  readonly withLabel = signal(true);
   touches = 0;
 }
 
@@ -108,15 +112,25 @@ describe('MudSwitch', () => {
     expect(native.checked).toBe(false);
   });
 
-  it('renders a projected rich label and uses aria-label only without one', async () => {
-    const slotted = TestBed.createComponent(SlottedHost);
+  it('renders the projected mud-label inside the field label element', async () => {
+    const { el, native } = await render();
+    const label = el.querySelector('.switch-control__label') as HTMLLabelElement;
 
-    await slotted.whenStable();
-    const el = slotted.nativeElement.querySelector('mud-switch') as HTMLElement;
+    expect(label.textContent).toContain('Notificări');
+    expect(label.htmlFor).toBe(native.id);
+    expect(native.getAttribute('aria-label')).toBeNull();
+  });
 
-    expect(el.querySelector('.switch-control__label .custom-label')).toBeTruthy();
-    expect(el.querySelector('input')!.getAttribute('aria-label')).toBeNull();
+  it('renders no label element without a projected mud-label', async () => {
+    const { fixture, host, el } = await render();
 
+    host.withLabel.set(false);
+    await fixture.whenStable();
+
+    expect(el.querySelector('.switch-control__label')).toBeNull();
+  });
+
+  it('uses aria-label only when no label is projected', async () => {
     const unlabelled = TestBed.createComponent(UnlabelledHost);
 
     await unlabelled.whenStable();
@@ -128,7 +142,7 @@ describe('MudSwitch', () => {
 
 @Component({
   imports: [MudSwitch, ReactiveFormsModule],
-  template: `<mud-switch label="Notificări" [formControl]="control" />`,
+  template: `<mud-switch [formControl]="control" />`,
 })
 class ReactiveHost {
   readonly control = new FormControl(true, { nonNullable: true });
@@ -136,22 +150,12 @@ class ReactiveHost {
 
 @Component({
   imports: [MudSwitch, FormField],
-  template: `<mud-switch label="Notificări" [formField]="form.notifications" />`,
+  template: `<mud-switch [formField]="form.notifications" />`,
 })
 class SignalHost {
   readonly model = signal({ notifications: false });
   readonly form = form(this.model);
 }
-
-@Component({
-  imports: [MudSwitch, MudFieldLabel],
-  template: `
-    <mud-switch [checked]="true">
-      <span mudLabel class="custom-label">Notificări <strong>importante</strong></span>
-    </mud-switch>
-  `,
-})
-class SlottedHost {}
 
 @Component({
   imports: [MudSwitch],

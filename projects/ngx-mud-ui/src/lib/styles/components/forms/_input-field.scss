@@ -537,6 +537,19 @@ textarea.input-field__native {
   color: var(--color-text-disabled-on-disabled, var(--color-text-disabled-default));
 }
 
+.input-field__assistive {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4, 4px);
+}
+
+.input-field__assistive .inline-message {
+  --_im-font-size: 12px;
+  --_im-line-height: 16px;
+  --_im-icon-size: 16px;
+  --_im-gap: var(--spacing-4, 4px);
+}
+
 // Assistive text clamps at two lines inside a field (standalone
 // inline-messages are unaffected).
 .input-field__assistive .inline-message__text {

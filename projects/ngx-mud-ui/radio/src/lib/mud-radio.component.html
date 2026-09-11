@@ -19,15 +19,15 @@
   </span>
 
   <span class="selection-control__text">
-    @if (_showLabel()) {
+    @if (_hasLabel()) {
       <label class="selection-control__label" [attr.for]="_id">
-        <ng-content select="[mudLabel]">{{ label() }}</ng-content>
+        <ng-content select="mud-label" />
       </label>
     }
-    @if (_showSupporting()) {
-      <span class="selection-control__supporting" [id]="_supportingId">
-        <ng-content select="[mudHelper]">{{ supportingText() }}</ng-content>
-      </span>
+    @if (_hasMessages()) {
+      <div class="selection-control__assistive" [id]="_assistiveId">
+        <ng-content select="mud-inline-message" />
+      </div>
     }
   </span>
 </div>

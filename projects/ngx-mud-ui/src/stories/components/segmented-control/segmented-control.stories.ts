@@ -335,7 +335,8 @@ const SIGNAL_FORMS_SOURCE = `
 export class ViewSwitcher {
   readonly model = signal({ view: 'list' });
 
-  // [formField] binds value, disabled and errors through FormValueControl.
+  // [formField] binds value and disabled through FormValueControl; the field's
+  // own errors() are read directly since the control has no errors input.
   // A segmented control always holds one of its segment values — it self-heals
   // away from a value no segment carries — so validate a real selection rather
   // than an empty one; \`required\` would never fail here.
@@ -349,9 +350,10 @@ export class ViewSwitcher {
 
 /**
  * `MudSegmentedControl` implements the signal-forms `FormValueControl` contract,
- * so `[formField]` binds the value, the disabled state and the validation
- * errors. It has no error region of its own — a segmented control is a view
- * switcher, not a field — so the message is rendered beside it.
+ * so `[formField]` binds the value and the disabled state. It has no error
+ * region or `errors` input of its own — a segmented control is a view
+ * switcher, not a field — so the message reads the field's own `errors()`
+ * and is rendered beside it.
  *
  * Pick **Hartă** to see the validator fail.
  */

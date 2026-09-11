@@ -400,22 +400,19 @@ describe('MudSegmentedControl size and forms integration', () => {
     expect(buttons[0].getAttribute('aria-checked')).toBe('true');
   });
 
-  it('accepts validation errors pushed by signal forms', async () => {
+  it("exercises the signal-forms field's own validation state", async () => {
     const fixture = TestBed.createComponent(SignalHost);
 
     await fixture.whenStable();
     const host = fixture.componentInstance;
-    const control = fixture.debugElement.children[0]
-      .componentInstance as MudSegmentedControl<string>;
 
     host.model.set({ view: '' });
     await fixture.whenStable();
     expect(host.form.view().errors().length).toBeGreaterThan(0);
-    expect(control.errors().length).toBeGreaterThan(0);
 
     host.model.set({ view: 'grid' });
     await fixture.whenStable();
-    expect(control.errors().length).toBe(0);
+    expect(host.form.view().errors().length).toBe(0);
   });
 
   it('marks the control touched on blur', async () => {

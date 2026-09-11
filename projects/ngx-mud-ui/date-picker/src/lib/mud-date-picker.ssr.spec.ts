@@ -2,12 +2,15 @@ import { Component, PLATFORM_ID, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MudDateInput } from './mud-date-input.component';
 import { MudDatePicker } from './mud-date-picker.component';
+import { MudLabel } from '../../../label/src/public-api';
 
 @Component({
-  imports: [MudDatePicker, MudDateInput],
+  imports: [MudDatePicker, MudDateInput, MudLabel],
   template: `
     <mud-date-picker startAt="2026-08-15" locale="en-GB" />
-    <mud-date-input label="Date" [(open)]="open" locale="en-GB" />
+    <mud-date-input [(open)]="open" locale="en-GB">
+      <mud-label>Date</mud-label>
+    </mud-date-input>
   `,
 })
 class Host {

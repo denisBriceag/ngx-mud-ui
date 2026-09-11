@@ -4,6 +4,7 @@ import {
   Component,
   computed,
   contentChild,
+  contentChildren,
   DestroyRef,
   effect,
   forwardRef,
@@ -26,8 +27,9 @@ import type { OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
-import type { FormValueControl, ValidationError } from '@angular/forms/signals';
-import { MudFieldError, MudFieldHelper, MudFieldLabel } from 'ngx-mud-ui/text-input';
+import type { FormValueControl } from '@angular/forms/signals';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { isValidIso, isWithin, normalizeRange, toValidIsoOrUndefined } from './date-core';
 import { MUD_DATE_LABELS } from './date-labels';
 import {
@@ -52,7 +54,12 @@ let nextUniqueId = 0;
 
 /**
  * ```html
- * <mud-date-input label="Data nașterii" [formControl]="dob" />
+ * <mud-date-input [formField]="form.dob" required>
+ *   <mud-label>Data nașterii</mud-label>
+ *   @if (form.dob().touched() && form.dob().invalid()) {
+ *     <mud-inline-message variant="error">Alegeți o dată.</mud-inline-message>
+ *   }
+ * </mud-date-input>
  * ```
  */
 @Component({
@@ -103,10 +110,6 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   readonly invalid = input(false, { transform: booleanAttribute });
   readonly name = input<string>('');
   readonly placeholder = input<string | undefined>(undefined);
-  readonly label = input<string | undefined>(undefined);
-  readonly helperText = input<string | undefined>(undefined);
-  readonly errorText = input<string | undefined>(undefined);
-  readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
@@ -138,15 +141,19 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   private readonly _panelTemplate = viewChild.required<TemplateRef<unknown>>('panel');
   private readonly _picker = viewChild(MudDatePicker);
 
-  /** @docs-private Projected region markers ([mudLabel] / [mudHelper] / [mudError]). */
-  protected readonly _projectedLabel = contentChild(MudFieldLabel);
-  protected readonly _projectedHelper = contentChild(MudFieldHelper);
-  protected readonly _projectedError = contentChild(MudFieldError);
+  /** @docs-private Projected label element (ngx-mud-ui/label). */
+  protected readonly _label = contentChild(MudLabel);
+
+  /** @docs-private Consumer-projected assistive messages. */
+  private readonly _messages = contentChildren(MudInlineMessage);
+
+  protected readonly _hasLabel = computed(() => !!this._label());
+
+  protected readonly _hasMessages = computed(() => this._messages().length > 0);
 
   protected readonly _id = `mud-date-input-${nextUniqueId++}`;
   protected readonly _labelId = `${this._id}-label`;
-  protected readonly _helperId = `${this._id}-helper`;
-  protected readonly _errorId = `${this._id}-error`;
+  protected readonly _assistiveId = `${this._id}-assistive`;
   protected readonly _hintId = `${this._id}-hint`;
   protected readonly _dialogId = `${this._id}-dialog`;
   protected readonly _nameId = `${this._id}-name`;
@@ -272,35 +279,11 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   );
 
   protected readonly _effectiveDisabled = computed(() => this.disabled() || this._cvaDisabled());
-  protected readonly _effectiveInvalid = computed(() => this.invalid() || this.errors().length > 0);
+  protected readonly _effectiveInvalid = computed(() => this.invalid());
 
   protected readonly _effectiveVariant = computed<MudDateInputVariant>(() =>
     this._effectiveInvalid() ? 'destructive' : this.variant(),
   );
-
-  protected readonly _errorMessage = computed<string | undefined>(() => {
-    if (!this._effectiveInvalid()) return undefined;
-
-    const explicit = this.errorText()?.trim();
-
-    if (explicit) return explicit;
-
-    return this.errors().find((error) => error.message)?.message ?? undefined;
-  });
-
-  protected readonly _helperMessage = computed<string | undefined>(
-    () => this.helperText()?.trim() || undefined,
-  );
-
-  protected readonly _showError = computed(
-    () => this._effectiveInvalid() && (!!this._projectedError() || !!this._errorMessage()),
-  );
-
-  protected readonly _showHelper = computed(
-    () => !this._showError() && (!!this._projectedHelper() || !!this._helperMessage()),
-  );
-
-  protected readonly _showLabel = computed(() => !!this._projectedLabel() || !!this.label()?.trim());
 
   protected readonly _showClear = computed(() => {
     if (!this.clearable() || this._effectiveDisabled() || this.readonly()) return false;
@@ -315,8 +298,7 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   protected readonly _describedBy = computed<string | null>(() => {
     const ids = [this._hintId];
 
-    if (this._showError()) ids.push(this._errorId);
-    else if (this._showHelper()) ids.push(this._helperId);
+    if (this._hasMessages()) ids.push(this._assistiveId);
 
     const external = this.ariaDescribedby()?.trim();
 
@@ -326,7 +308,7 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   });
 
   protected readonly _ariaLabel = computed<string | null>(() =>
-    this._showLabel() ? null : (this.ariaLabel() ?? null),
+    this._hasLabel() ? null : (this.ariaLabel() ?? null),
   );
 
   /**
@@ -338,13 +320,13 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
    * announced "Start date" and the word "Perioada" never reached AT at all;
    * the consumer's own `[aria-label]` was equally inert. `aria-labelledby`
    * concatenates instead, and pointing it at the real `<label>` element keeps
-   * projected `[mudLabel]` content, which string concatenation would drop.
+   * projected `<mud-label>` content, which string concatenation would drop.
    *
    * `null` when the field has neither a label nor an `aria-label`: the segment
    * name alone is then the accessible name.
    */
   protected readonly _fieldNameId = computed<string | null>(() => {
-    if (this._showLabel()) return this._labelId;
+    if (this._hasLabel()) return this._labelId;
 
     return this._ariaLabel() ? this._nameId : null;
   });

@@ -5,18 +5,27 @@ import * as CheckboxStories from './checkbox.stories';
 
 # Checkbox
 
-A native checkbox with the design-system treatment, a label, supporting text and
-an error region. Works standalone via `[(checked)]`, with reactive and
+A native checkbox with the design-system treatment, a projected label and
+assistive messages. Works standalone via `[(checked)]`, with reactive and
 template-driven forms via `ControlValueAccessor`, and with signal forms.
 
 ## Import
 
 ```ts
 import { MudCheckbox } from 'ngx-mud-ui/checkbox';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 @Component({
-  imports: [MudCheckbox],
-  template: `<mud-checkbox label="Accept termenii" [formControl]="terms" required />`,
+  imports: [MudCheckbox, MudLabel, MudInlineMessage],
+  template: `
+    <mud-checkbox [formControl]="terms" required>
+      <mud-label>Accept termenii</mud-label>
+      @if (terms.touched && terms.invalid) {
+        <mud-inline-message variant="error">Trebuie să acceptați termenii.</mud-inline-message>
+      }
+    </mud-checkbox>
+  `,
 })
 export class Demo {}
 ```
@@ -38,8 +47,8 @@ The design-system stylesheet must be loaded once in your app:
 
 ## Composed content
 
-Rich label, helper and error content is projected with the `[mudLabel]`,
-`[mudHelper]` and `[mudError]` directives from `ngx-mud-ui/text-input`.
+Rich label and message content is projected directly — a link inside the
+label, an inline message with emphasis.
 
 <Canvas of={CheckboxStories.ComposedContent} />
 
@@ -53,17 +62,28 @@ Selector: `mud-checkbox`
 
 <ArgTypes of={CheckboxStories} />
 
+### Label and messages
+
+The checkbox renders no message text of its own. Project a `<mud-label>` for
+the visible label beside the box and any number of `<mud-inline-message>`
+elements for assistive text — *you* decide when they render:
+
+- Messages land in a field-owned `role="alert"` region wired into
+  `aria-describedby`; toggling one on announces it to screen readers.
+- The `invalid` input drives the red border and `aria-invalid`; with signal
+  forms it is bound automatically, with reactive forms bind
+  `[invalid]="ctrl.invalid && ctrl.touched"`.
+
 ## Usage tips
 
 - **`indeterminate` is consumer-owned.** Rendering follows the input only, and a
   user toggle does **not** clear it — you must update it yourself in the change
   handler. This is what makes the select-all pattern work.
-- **`errorText` replaces `supportingText`** while the field is invalid; they
-  never show at once, so you can leave both set.
-- **`invalid` drives the visuals, `errorText` supplies the message.** Setting
-  the text alone shows nothing. Signal forms bind `invalid` and `errors` for
-  you.
+- **`invalid` drives the visuals; a projected message supplies the text.**
+  Nothing renders a message for you — pair `invalid` with an `@if`-guarded
+  `<mud-inline-message variant="error">` to show one only when it should
+  appear.
 - **`readonly` still focusable.** It keeps the box reachable and readable but
   not toggleable — different from `disabled`, which removes it from the flow.
-- **Use `aria-label` only when no visible `label` is rendered**; with both set
+- **Use `aria-label` only when no `mud-label` is projected**; with both set
   the accessible name silently replaces the visible one.

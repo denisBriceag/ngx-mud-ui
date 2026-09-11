@@ -4,6 +4,7 @@ import {
   Component,
   computed,
   contentChild,
+  contentChildren,
   forwardRef,
   inject,
   input,
@@ -17,8 +18,9 @@ import type { ElementRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
-import type { FormValueControl, ValidationError } from '@angular/forms/signals';
-import { MudFieldError, MudFieldHelper, MudFieldLabel } from './mud-field-slots';
+import type { FormValueControl } from '@angular/forms/signals';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 export type MudTextInputVariant = 'default' | 'warning' | 'destructive' | 'success';
 export type MudTextInputSize = 'medium' | 'large';
@@ -40,11 +42,11 @@ function toRegExpArray(value: unknown): readonly RegExp[] {
 
 /**
  * ```html
- * <mud-text-input label="IDNP" required [formControl]="idnp" [maxLength]="13" />
- * <mud-text-input label="Email" type="email" [formField]="form.email" />
- * <mud-text-input [invalid]="ctrl.invalid">
- *   <span mudLabel>IDNP</span>
- *   <mud-inline-message mudError variant="error">IDNP invalid — <a href="/ajutor">format</a></mud-inline-message>
+ * <mud-text-input [formField]="form.idnp" required>
+ *   <mud-label>IDNP</mud-label>
+ *   @if (form.idnp().touched() && form.idnp().invalid()) {
+ *     <mud-inline-message variant="error">IDNP invalid.</mud-inline-message>
+ *   }
  * </mud-text-input>
  * ```
  */
@@ -83,8 +85,8 @@ export class MudTextInput implements ControlValueAccessor, FormValueControl<stri
   readonly readonly = input(false, { transform: booleanAttribute });
 
   /**
-   * @description Forces destructive visuals and `aria-invalid`. Pair with `errorText`
-   * to surface the message. Signal forms bind this automatically.
+   * @description Forces destructive visuals and `aria-invalid`. Pair with a projected
+   * `mud-inline-message` to surface the message. Signal forms bind this automatically.
    */
   readonly invalid = input(false, { transform: booleanAttribute });
 
@@ -117,49 +119,34 @@ export class MudTextInput implements ControlValueAccessor, FormValueControl<stri
   /** @docs-private First pattern as the native attribute (it holds a single regex). */
   protected readonly _patternAttr = computed(() => this.pattern()[0]?.source ?? null);
 
-  /**
-   * @description Validation errors pushed by signal forms. When present the field turns
-   * destructive and the first error's message renders as the error line
-   * (unless `errorText` overrides it).
-   */
-  readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
-
-  /** @description Plain-text label above the field. */
-  readonly label = input<string | undefined>(undefined);
-
-  /** @description Helper/hint below the field. Replaced by the error message when invalid. */
-  readonly helperText = input<string | undefined>(undefined);
-
-  /** @description Error message shown below the field when invalid. */
-  readonly errorText = input<string | undefined>(undefined);
-
   /** @description Accessible label for the clear button. Localize per app. */
   readonly clearLabel = input('Clear field');
 
-  /** @description Accessible name used when no visible `label` is set. */
+  /** @description Accessible name used when no `mud-label` is projected. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
-  /**
-   * @description Extra id(s) merged into the native control's aria-describedby —
-   * for messages rendered OUTSIDE the field (suppress the built-in ones by
-   * leaving helperText/errorText unset and not projecting mud-helper/mud-error).
-   */
+  /** @description Extra id(s) merged into the native control's aria-describedby. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
   readonly touch = output<void>();
 
   private readonly _native = viewChild.required<ElementRef<HTMLInputElement>>('native');
 
-  /** @docs-private Projected region markers ([mudLabel] / [mudHelper] / [mudError]). */
-  protected readonly _projectedLabel = contentChild(MudFieldLabel);
-  protected readonly _projectedHelper = contentChild(MudFieldHelper);
-  protected readonly _projectedError = contentChild(MudFieldError);
+  /** @docs-private Projected label element (ngx-mud-ui/label). */
+  protected readonly _label = contentChild(MudLabel);
+
+  /** @docs-private Consumer-projected assistive messages. */
+  private readonly _messages = contentChildren(MudInlineMessage);
+
+  protected readonly _hasLabel = computed(() => !!this._label());
+
+  protected readonly _hasMessages = computed(() => this._messages().length > 0);
+
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   protected readonly _id = `mud-text-input-${nextUniqueId++}`;
   protected readonly _labelId = `${this._id}-label`;
-  protected readonly _helperId = `${this._id}-helper`;
-  protected readonly _errorId = `${this._id}-error`;
+  protected readonly _assistiveId = `${this._id}-assistive`;
 
   protected readonly _focused = signal(false);
   private readonly _cvaDisabled = signal(false);
@@ -169,41 +156,11 @@ export class MudTextInput implements ControlValueAccessor, FormValueControl<stri
   /** @docs-private Input + forms-driven disabled state combined. */
   protected readonly _effectiveDisabled = computed(() => this.disabled() || this._cvaDisabled());
 
-  protected readonly _effectiveInvalid = computed(() => this.invalid() || this.errors().length > 0);
+  protected readonly _effectiveInvalid = computed(() => this.invalid());
 
   protected readonly _effectiveVariant = computed<MudTextInputVariant>(() =>
     this._effectiveInvalid() ? 'destructive' : this.variant(),
   );
-
-  protected readonly _errorMessage = computed<string | undefined>(() => {
-    if (!this._effectiveInvalid()) return undefined;
-
-    const explicit = this.errorText()?.trim();
-
-    if (explicit) return explicit;
-
-    const fromErrors = this.errors().find((error) => error.message)?.message;
-
-    return fromErrors ?? undefined;
-  });
-
-  protected readonly _helperMessage = computed<string | undefined>(() => {
-    const helper = this.helperText()?.trim();
-
-    return helper || undefined;
-  });
-
-  /** @docs-private The error region shows while invalid with any content to show. */
-  protected readonly _showError = computed(
-    () => this._effectiveInvalid() && (!!this._projectedError() || !!this._errorMessage()),
-  );
-
-  /** @docs-private The helper region yields to an active error region. */
-  protected readonly _showHelper = computed(
-    () => !this._showError() && (!!this._projectedHelper() || !!this._helperMessage()),
-  );
-
-  protected readonly _showLabel = computed(() => !!this._projectedLabel() || !!this.label()?.trim());
 
   protected readonly _showClear = computed(
     () =>
@@ -217,8 +174,7 @@ export class MudTextInput implements ControlValueAccessor, FormValueControl<stri
   protected readonly _describedBy = computed<string | null>(() => {
     const ids: string[] = [];
 
-    if (this._showError()) ids.push(this._errorId);
-    else if (this._showHelper()) ids.push(this._helperId);
+    if (this._hasMessages()) ids.push(this._assistiveId);
 
     const external = this.ariaDescribedby()?.trim();
 
@@ -228,7 +184,7 @@ export class MudTextInput implements ControlValueAccessor, FormValueControl<stri
   });
 
   protected readonly _ariaLabel = computed<string | null>(() => {
-    if (this._showLabel()) return null;
+    if (this._hasLabel()) return null;
 
     return this.ariaLabel() ?? null;
   });

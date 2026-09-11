@@ -19,7 +19,7 @@ import {
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
-import type { FormValueControl, ValidationError } from '@angular/forms/signals';
+import type { FormValueControl } from '@angular/forms/signals';
 import {
   addDays,
   addMonths,
@@ -136,9 +136,6 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   /** @description Destructive visuals + `aria-invalid`. Signal forms bind this automatically. */
   readonly invalid = input(false, { transform: booleanAttribute });
 
-  /** @description Validation errors pushed by signal forms. */
-  readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
-
   /** @description Accessible name for the whole calendar. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
@@ -171,7 +168,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   );
 
   protected readonly _effectiveDisabled = computed(() => this.disabled() || this._cvaDisabled());
-  protected readonly _effectiveInvalid = computed(() => this.invalid() || this.errors().length > 0);
+  protected readonly _effectiveInvalid = computed(() => this.invalid());
 
   /** Bounds arriving from a signal-forms schema are name-matched at runtime and
    *  are not type-checked, so anything that is not an ISO date is ignored. */

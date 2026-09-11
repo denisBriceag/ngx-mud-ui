@@ -3,24 +3,23 @@ import { moduleMetadata } from '@storybook/angular-vite';
 import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MudSwitch } from 'ngx-mud-ui/switch';
+import { MudLabel } from 'ngx-mud-ui/label';
 
 const COL = 'display:flex;flex-direction:column;gap:20px;max-width:420px;padding:24px';
 
 const meta: Meta<MudSwitch> = {
   title: 'Components/Switch',
   component: MudSwitch,
-  decorators: [moduleMetadata({ imports: [MudSwitch] })],
+  decorators: [moduleMetadata({ imports: [MudSwitch, MudLabel] })],
   argTypes: {
     checked: { control: 'boolean' },
     disabled: { control: 'boolean' },
     required: { control: 'boolean' },
-    label: { control: 'text' },
   },
   args: {
     checked: false,
     disabled: false,
     required: false,
-    label: 'Notificări prin e-mail',
   },
 };
 
@@ -33,7 +32,9 @@ export const Playground: Story = {
     props: args,
     template: `
       <div style="${COL}">
-        <mud-switch [checked]="checked" [disabled]="disabled" [required]="required" [label]="label" />
+        <mud-switch [checked]="checked" [disabled]="disabled" [required]="required">
+          <mud-label>Notificări prin e-mail</mud-label>
+        </mud-switch>
       </div>
     `,
   }),
@@ -44,10 +45,10 @@ export const States: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-switch label="Oprit" />
-        <mud-switch label="Pornit" [checked]="true" />
-        <mud-switch label="Dezactivat oprit" disabled />
-        <mud-switch label="Dezactivat pornit" [checked]="true" disabled />
+        <mud-switch><mud-label>Oprit</mud-label></mud-switch>
+        <mud-switch [checked]="true"><mud-label>Pornit</mud-label></mud-switch>
+        <mud-switch disabled><mud-label>Dezactivat oprit</mud-label></mud-switch>
+        <mud-switch [checked]="true" disabled><mud-label>Dezactivat pornit</mud-label></mud-switch>
         <mud-switch aria-label="Fără etichetă vizibilă" />
       </div>
     `,
@@ -57,11 +58,11 @@ export const States: Story = {
 /** The switch applies instantly — typical settings-panel usage with reactive forms. */
 @Component({
   selector: 'mud-switch-settings-demo',
-  imports: [MudSwitch, ReactiveFormsModule],
+  imports: [MudSwitch, MudLabel, ReactiveFormsModule],
   template: `
     <div style="${COL}">
-      <mud-switch label="Notificări prin e-mail" [formControl]="email" />
-      <mud-switch label="Notificări SMS" [formControl]="sms" />
+      <mud-switch [formControl]="email"><mud-label>Notificări prin e-mail</mud-label></mud-switch>
+      <mud-switch [formControl]="sms"><mud-label>Notificări SMS</mud-label></mud-switch>
       <code>email: {{ email.value }} | sms: {{ sms.value }}</code>
     </div>
   `,
@@ -77,10 +78,10 @@ class SwitchSettingsDemo {
  */
 const SETTINGS_PANEL_SOURCE = `
 @Component({
-  imports: [MudSwitch, ReactiveFormsModule],
+  imports: [MudSwitch, MudLabel, ReactiveFormsModule],
   template: \`
-    <mud-switch label="Notificări prin e-mail" [formControl]="email" />
-    <mud-switch label="Notificări SMS" [formControl]="sms" />
+    <mud-switch [formControl]="email"><mud-label>Notificări prin e-mail</mud-label></mud-switch>
+    <mud-switch [formControl]="sms"><mud-label>Notificări SMS</mud-label></mud-switch>
   \`,
 })
 export class NotificationSettings {

@@ -3,20 +3,17 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { MudTextInput } from './mud-text-input.component';
-import { MudFieldError, MudFieldHelper, MudFieldLabel } from './mud-field-slots';
+import { MudLabel } from '../../../label/src/public-api';
 import { MudInlineMessage } from '../../../inline-message/src/public-api';
 import type { MudTextInputSize, MudTextInputVariant } from './mud-text-input.component';
 
 @Component({
-  imports: [MudTextInput],
+  imports: [MudTextInput, MudLabel, MudInlineMessage],
   template: `
     <mud-text-input
-      [label]="label()"
       [variant]="variant()"
       [size]="size()"
       [(value)]="value"
-      [helperText]="helperText()"
-      [errorText]="errorText()"
       [invalid]="invalid()"
       [disabled]="disabled()"
       [readonly]="readonly()"
@@ -24,22 +21,32 @@ import type { MudTextInputSize, MudTextInputVariant } from './mud-text-input.com
       [clearable]="clearable()"
       [required]="requiredField()"
       placeholder="Type here"
-    />
+    >
+      @if (withLabel()) {
+        <mud-label>IDNP</mud-label>
+      }
+      @if (showHelper()) {
+        <mud-inline-message hideIcon>13 cifre.</mud-inline-message>
+      }
+      @if (showError()) {
+        <mud-inline-message variant="error">IDNP invalid.</mud-inline-message>
+      }
+    </mud-text-input>
   `,
 })
 class Host {
   readonly value = signal('');
-  readonly label = signal<string | undefined>('IDNP');
   readonly variant = signal<MudTextInputVariant>('default');
   readonly size = signal<MudTextInputSize>('medium');
-  readonly helperText = signal<string | undefined>(undefined);
-  readonly errorText = signal<string | undefined>(undefined);
   readonly invalid = signal(false);
   readonly disabled = signal(false);
   readonly readonly = signal(false);
   readonly loading = signal(false);
   readonly clearable = signal(false);
   readonly requiredField = signal(false);
+  readonly withLabel = signal(true);
+  readonly showHelper = signal(false);
+  readonly showError = signal(false);
 }
 
 async function render() {
@@ -59,14 +66,10 @@ async function type(fixture: { whenStable(): Promise<unknown> }, native: HTMLInp
 }
 
 describe('MudTextInput', () => {
-  it('renders label, control, and native input with the ARIA wiring', async () => {
+  it('renders control and native input with the placeholder', async () => {
     const { el, native } = await render();
-    const label = el.querySelector('.input-field__label') as HTMLLabelElement;
 
     expect(el.classList.contains('input-field')).toBe(true);
-    expect(label.textContent).toContain('IDNP');
-    expect(label.htmlFor).toBe(native.id);
-    expect(native.getAttribute('aria-labelledby')).toBe(label.id);
     expect(native.placeholder).toBe('Type here');
   });
 
@@ -94,32 +97,6 @@ describe('MudTextInput', () => {
     await fixture.whenStable();
     expect(el.classList.contains('input-field--destructive')).toBe(true);
     expect(el.classList.contains('is-invalid')).toBe(true);
-  });
-
-  it('shows helper text, replaced by the error message when invalid, with aria-describedby', async () => {
-    const { fixture, host, el, native } = await render();
-
-    host.helperText.set('13 digits');
-    await fixture.whenStable();
-
-    const helper = el.querySelector('.input-field__assistive')!;
-
-    expect(helper.textContent).toContain('13 digits');
-    expect(helper.querySelector('.inline-message')).toBeTruthy();
-    expect(native.getAttribute('aria-describedby')).toBe(helper.id);
-
-    host.invalid.set(true);
-    host.errorText.set('Invalid IDNP');
-    await fixture.whenStable();
-
-    const error = el.querySelector('.input-field__assistive')!;
-
-    expect(error.textContent).toContain('Invalid IDNP');
-    expect(error.querySelector('.inline-message--error')).toBeTruthy();
-    expect(error.getAttribute('role')).toBe('alert');
-    expect(el.textContent).not.toContain('13 digits');
-    expect(native.getAttribute('aria-describedby')).toBe(error.id);
-    expect(native.getAttribute('aria-invalid')).toBe('true');
   });
 
   it('marks required with an asterisk and the native attribute', async () => {
@@ -185,6 +162,93 @@ describe('MudTextInput', () => {
     expect(native.getAttribute('aria-label')).toBe('Search services');
     expect(native.getAttribute('aria-labelledby')).toBeNull();
   });
+
+  it('renders the projected mud-label inside the field label element', async () => {
+    const { el, native } = await render();
+    const label = el.querySelector('.input-field__label') as HTMLLabelElement;
+
+    expect(label.textContent).toContain('IDNP');
+    expect(label.htmlFor).toBe(native.id);
+    expect(native.getAttribute('aria-labelledby')).toBe(label.id);
+  });
+
+  it('renders no label element without a projected mud-label; ariaLabel takes over', async () => {
+    const { fixture, host, el, native } = await render();
+
+    host.withLabel.set(false);
+    await fixture.whenStable();
+
+    expect(el.querySelector('.input-field__label')).toBeNull();
+    expect(native.getAttribute('aria-labelledby')).toBeNull();
+  });
+
+  it('renders no assistive wrapper and no describedby when nothing is projected', async () => {
+    const { el, native } = await render();
+
+    expect(el.querySelector('.input-field__assistive')).toBeNull();
+    expect(native.getAttribute('aria-describedby')).toBeNull();
+  });
+
+  it('projects inline-messages into a role=alert wrapper wired to aria-describedby', async () => {
+    const { fixture, host, el, native } = await render();
+
+    host.showHelper.set(true);
+    await fixture.whenStable();
+
+    const wrapper = el.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(wrapper.getAttribute('role')).toBe('alert');
+    expect(wrapper.querySelector('mud-inline-message')?.textContent).toContain('13 cifre.');
+    expect(native.getAttribute('aria-describedby')).toBe(wrapper.id);
+  });
+
+  it('lets the consumer swap helper for error — both land in the same wrapper', async () => {
+    const { fixture, host, el } = await render();
+
+    host.showHelper.set(true);
+    await fixture.whenStable();
+    host.showHelper.set(false);
+    host.showError.set(true);
+    host.invalid.set(true);
+    await fixture.whenStable();
+
+    const wrapper = el.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(wrapper.textContent).toContain('IDNP invalid.');
+    expect(wrapper.textContent).not.toContain('13 cifre.');
+    expect(el.classList.contains('input-field--destructive')).toBe(true);
+  });
+
+  it('can show two messages at once, in template order', async () => {
+    const { fixture, host, el } = await render();
+
+    host.showHelper.set(true);
+    host.showError.set(true);
+    await fixture.whenStable();
+
+    const messages = el.querySelectorAll('.input-field__assistive mud-inline-message');
+
+    expect(messages.length).toBe(2);
+    expect(messages[0].textContent).toContain('13 cifre.');
+    expect(messages[1].textContent).toContain('IDNP invalid.');
+  });
+
+  it('merges external aria-describedby ids with the internal assistive id when a message is shown', async () => {
+    const fixture = TestBed.createComponent(ExternalDescribedHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const native = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe('extra-id');
+
+    host.showMessage.set(true);
+    await fixture.whenStable();
+
+    const wrapper = fixture.nativeElement.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe(`${wrapper.id} extra-id`);
+  });
 });
 
 describe('MudTextInput reactive forms (ControlValueAccessor)', () => {
@@ -249,7 +313,7 @@ describe('MudTextInput signal forms (FormValueControl)', () => {
     expect(native.value).toBe('programmatic');
   });
 
-  it('surfaces required-validator errors as the destructive error line after touch', async () => {
+  it('surfaces required-validator invalid/touched state without rendering a message itself', async () => {
     const fixture = TestBed.createComponent(SignalHost);
 
     await fixture.whenStable();
@@ -264,7 +328,6 @@ describe('MudTextInput signal forms (FormValueControl)', () => {
     expect(host.form.idnp().invalid()).toBe(true);
     expect(host.form.idnp().touched()).toBe(true);
     expect(el.classList.contains('input-field--destructive')).toBe(true);
-    expect(el.querySelector('.inline-message--error')?.textContent).toContain('IDNP is required');
     expect(native.required).toBe(true);
   });
 });
@@ -277,7 +340,7 @@ class UnlabelledHost {}
 
 @Component({
   imports: [MudTextInput, ReactiveFormsModule],
-  template: `<mud-text-input label="IDNP" [formControl]="control" />`,
+  template: `<mud-text-input [formControl]="control" />`,
 })
 class ReactiveHost {
   readonly control = new FormControl<string>('seed', { nonNullable: true, validators: [Validators.required] });
@@ -285,7 +348,7 @@ class ReactiveHost {
 
 @Component({
   imports: [MudTextInput, FormField],
-  template: `<mud-text-input label="IDNP" [formField]="form.idnp" />`,
+  template: `<mud-text-input [formField]="form.idnp" />`,
 })
 class SignalHost {
   readonly input = viewChild.required(MudTextInput);
@@ -295,72 +358,18 @@ class SignalHost {
   });
 }
 
-describe('MudTextInput composable slots', () => {
-  it('projected label/helper/error replace the defaults inside the wired wrappers', async () => {
-    const fixture = TestBed.createComponent(SlottedHost);
-
-    await fixture.whenStable();
-    const host = fixture.componentInstance;
-    const el = fixture.nativeElement.querySelector('mud-text-input') as HTMLElement;
-    const native = el.querySelector('input') as HTMLInputElement;
-
-    // Projected label renders inside the <label> and keeps the for-association.
-    const label = el.querySelector('.input-field__label') as HTMLLabelElement;
-
-    expect(label.querySelector('.custom-label')).toBeTruthy();
-    expect(label.htmlFor).toBe(native.id);
-
-    // Helper region hosts the projected inline-message and wires describedby.
-    const helper = el.querySelector('.input-field__assistive')!;
-
-    expect(helper.querySelector('mud-inline-message.custom-helper')).toBeTruthy();
-    expect(native.getAttribute('aria-describedby')).toContain(helper.id);
-
-    // Turning invalid swaps to the error region: projected content inside a
-    // component-owned role=alert wrapper, replacing the helper.
-    host.invalid.set(true);
-    await fixture.whenStable();
-
-    const error = el.querySelector('.input-field__assistive')!;
-
-    expect(error.getAttribute('role')).toBe('alert');
-    expect(error.querySelector('mud-inline-message.custom-error')).toBeTruthy();
-    expect(el.querySelector('.custom-helper')).toBeNull();
-    expect(native.getAttribute('aria-describedby')).toContain(error.id);
-    expect(el.classList.contains('input-field--destructive')).toBe(true);
-  });
-
-  it('merges external aria-describedby ids with the internal assistive id', async () => {
-    const fixture = TestBed.createComponent(ExternalDescribedHost);
-
-    await fixture.whenStable();
-    const native = fixture.nativeElement.querySelector('input') as HTMLInputElement;
-    const tokens = (native.getAttribute('aria-describedby') ?? '').split(/\s+/);
-
-    expect(tokens).toContain('external-note');
-    expect(tokens.some((token) => token.endsWith('-helper'))).toBe(true);
-  });
-});
-
 @Component({
-  imports: [MudTextInput, MudFieldLabel, MudFieldHelper, MudFieldError, MudInlineMessage],
+  imports: [MudTextInput, MudInlineMessage],
   template: `
-    <mud-text-input [invalid]="invalid()">
-      <span mudLabel class="custom-label">IDNP</span>
-      <mud-inline-message mudHelper class="custom-helper" hideIcon>13 cifre.</mud-inline-message>
-      <mud-inline-message mudError class="custom-error" variant="error">IDNP invalid.</mud-inline-message>
+    <mud-text-input aria-describedby="extra-id" [(value)]="value">
+      @if (showMessage()) {
+        <mud-inline-message hideIcon>13 cifre.</mud-inline-message>
+      }
     </mud-text-input>
+    <p id="extra-id">Notă externă.</p>
   `,
 })
-class SlottedHost {
-  readonly invalid = signal(false);
+class ExternalDescribedHost {
+  readonly value = signal('');
+  readonly showMessage = signal(false);
 }
-
-@Component({
-  imports: [MudTextInput],
-  template: `
-    <mud-text-input label="IDNP" helperText="13 cifre." aria-describedby="external-note" />
-    <p id="external-note">Notă externă.</p>
-  `,
-})
-class ExternalDescribedHost {}

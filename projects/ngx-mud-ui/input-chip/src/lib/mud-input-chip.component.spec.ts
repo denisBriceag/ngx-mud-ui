@@ -3,13 +3,14 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form } from '@angular/forms/signals';
 import { MudInputChip } from './mud-input-chip.component';
+import { MudLabel } from '../../../label/src/public-api';
+import { MudInlineMessage } from '../../../inline-message/src/public-api';
 import type { MudInputChipError } from './mud-input-chip.component';
 
 @Component({
-  imports: [MudInputChip],
+  imports: [MudInputChip, MudLabel, MudInlineMessage],
   template: `
     <mud-input-chip
-      label="Destinatari"
       placeholder="nume@exemplu.md"
       [(value)]="chips"
       [(draft)]="draft"
@@ -18,10 +19,21 @@ import type { MudInputChipError } from './mud-input-chip.component';
       [separators]="separators()"
       [disabled]="disabled()"
       [readonly]="readonly()"
+      [invalid]="invalid()"
       (chipAdded)="added.push($event.chip)"
       (chipRemoved)="removed.push($event.chip)"
       (errored)="errors.push($event)"
-    />
+    >
+      @if (withLabel()) {
+        <mud-label>Destinatari</mud-label>
+      }
+      @if (showHelper()) {
+        <mud-inline-message hideIcon>Confirmați cu Enter.</mud-inline-message>
+      }
+      @if (showError()) {
+        <mud-inline-message variant="error">Adresă invalidă.</mud-inline-message>
+      }
+    </mud-input-chip>
   `,
 })
 class Host {
@@ -32,6 +44,10 @@ class Host {
   readonly separators = signal(',');
   readonly disabled = signal(false);
   readonly readonly = signal(false);
+  readonly invalid = signal(false);
+  readonly withLabel = signal(true);
+  readonly showHelper = signal(false);
+  readonly showError = signal(false);
   readonly added: string[] = [];
   readonly removed: string[] = [];
   readonly errors: MudInputChipError[] = [];
@@ -82,6 +98,7 @@ describe('MudInputChip', () => {
 
     expect(group.getAttribute('role')).toBe('group');
     expect(group.getAttribute('aria-labelledby')).toBe(label.id);
+    expect(label.textContent).toContain('Destinatari');
     expect(native.getAttribute('placeholder')).toBe('nume@exemplu.md');
 
     host.chips.set(['ana@exemplu.md']);
@@ -251,6 +268,86 @@ describe('MudInputChip', () => {
     expect(removeBtns()[0].disabled).toBe(true);
   });
 
+  it('renders no label element without a projected mud-label; aria-labelledby is omitted', async () => {
+    const { fixture, host, el } = await render();
+
+    host.withLabel.set(false);
+    await fixture.whenStable();
+
+    const group = el.querySelector('.chip-field__control')!;
+
+    expect(el.querySelector('.input-field__label')).toBeNull();
+    expect(group.getAttribute('aria-labelledby')).toBeNull();
+  });
+
+  it('renders no assistive wrapper and no describedby when nothing is projected', async () => {
+    const { el, native } = await render();
+
+    expect(el.querySelector('.input-field__assistive')).toBeNull();
+    expect(native.getAttribute('aria-describedby')).toBeNull();
+  });
+
+  it('projects inline-messages into a role=alert wrapper wired to aria-describedby', async () => {
+    const { fixture, host, el, native } = await render();
+
+    host.showHelper.set(true);
+    await fixture.whenStable();
+
+    const wrapper = el.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(wrapper.getAttribute('role')).toBe('alert');
+    expect(wrapper.querySelector('mud-inline-message')?.textContent).toContain('Confirmați cu Enter.');
+    expect(native.getAttribute('aria-describedby')).toBe(wrapper.id);
+  });
+
+  it('lets the consumer swap helper for error — both land in the same wrapper', async () => {
+    const { fixture, host, el } = await render();
+
+    host.showHelper.set(true);
+    await fixture.whenStable();
+    host.showHelper.set(false);
+    host.showError.set(true);
+    host.invalid.set(true);
+    await fixture.whenStable();
+
+    const wrapper = el.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(wrapper.textContent).toContain('Adresă invalidă.');
+    expect(wrapper.textContent).not.toContain('Confirmați cu Enter.');
+    expect(el.classList.contains('input-field--destructive')).toBe(true);
+  });
+
+  it('can show two messages at once, in template order', async () => {
+    const { fixture, host, el } = await render();
+
+    host.showHelper.set(true);
+    host.showError.set(true);
+    await fixture.whenStable();
+
+    const messages = el.querySelectorAll('.input-field__assistive mud-inline-message');
+
+    expect(messages.length).toBe(2);
+    expect(messages[0].textContent).toContain('Confirmați cu Enter.');
+    expect(messages[1].textContent).toContain('Adresă invalidă.');
+  });
+
+  it('merges external aria-describedby ids with the internal assistive id when a message is shown', async () => {
+    const fixture = TestBed.createComponent(ExternalDescribedHost);
+
+    await fixture.whenStable();
+    const host = fixture.componentInstance;
+    const native = fixture.nativeElement.querySelector('.chip-field__native') as HTMLInputElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe('extra-id');
+
+    host.showMessage.set(true);
+    await fixture.whenStable();
+
+    const wrapper = fixture.nativeElement.querySelector('.input-field__assistive') as HTMLElement;
+
+    expect(native.getAttribute('aria-describedby')).toBe(`${wrapper.id} extra-id`);
+  });
+
   it('works as a reactive form control with array values', async () => {
     const fixture = TestBed.createComponent(ReactiveHost);
 
@@ -302,7 +399,7 @@ describe('MudInputChip', () => {
 
 @Component({
   imports: [MudInputChip, ReactiveFormsModule],
-  template: `<mud-input-chip label="Destinatari" [formControl]="control" />`,
+  template: `<mud-input-chip [formControl]="control" />`,
 })
 class ReactiveHost {
   readonly control = new FormControl<string[]>(['ana@exemplu.md'], { nonNullable: true });
@@ -310,11 +407,27 @@ class ReactiveHost {
 
 @Component({
   imports: [MudInputChip, FormField],
-  template: `<mud-input-chip label="Destinatari" [formField]="form.recipients" />`,
+  template: `<mud-input-chip [formField]="form.recipients" />`,
 })
 class SignalHost {
   readonly model = signal({ recipients: [] as string[] });
   readonly form = form(this.model);
+}
+
+@Component({
+  imports: [MudInputChip, MudInlineMessage],
+  template: `
+    <mud-input-chip aria-describedby="extra-id" [(value)]="value">
+      @if (showMessage()) {
+        <mud-inline-message hideIcon>Confirmați cu Enter.</mud-inline-message>
+      }
+    </mud-input-chip>
+    <p id="extra-id">Notă externă.</p>
+  `,
+})
+class ExternalDescribedHost {
+  readonly value = signal<string[]>([]);
+  readonly showMessage = signal(false);
 }
 
 describe('MudInputChip pre-filled beyond maxChips', () => {
