@@ -41,6 +41,7 @@
               "../checkbox/src/**/*.spec.ts",
               "../chip/src/**/*.spec.ts",
               "../date-picker/src/**/*.spec.ts",
+              "../dialog/src/**/*.spec.ts",
               "../file-input/src/**/*.spec.ts",
               "../icons/src/**/*.spec.ts",
               "../info-box/src/**/*.spec.ts",

@@ -22,6 +22,7 @@ export default defineConfig({
         include: [
           '@angular/cdk/a11y',
           '@angular/cdk/accordion',
+          '@angular/cdk/dialog',
           '@angular/cdk/overlay',
           '@angular/cdk/portal',
           '@angular/cdk/stepper',
