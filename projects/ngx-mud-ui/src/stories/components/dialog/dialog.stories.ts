@@ -238,6 +238,206 @@ class TemplateLauncher {
   }
 }
 
+const INJECT = `private readonly dialog = inject(MudDialog);`;
+
+const playgroundSource = (args: PlaygroundArgs): string => `import { Component, inject } from '@angular/core';
+import { MudDialog, MudDialogTitle, MudDialogContent, MudDialogActions, MudDialogClose } from 'ngx-mud-ui/dialog';
+
+@Component({
+  selector: 'app-confirm-dialog',
+  imports: [MudDialogTitle, MudDialogContent, MudDialogActions, MudDialogClose],
+  template: \`
+    <h2 mudDialogTitle>Confirmați modificările</h2>
+    <div mudDialogContent>Verificați datele înainte de a continua.</div>
+    <div mudDialogActions>
+      <button type="button" [mudDialogClose]="false">Anulează</button>
+      <button type="button" [mudDialogClose]="true">Salvează</button>
+    </div>
+  \`,
+})
+export class ConfirmDialog {}
+
+@Component({ selector: 'app-settings', template: \`<button type="button" (click)="edit()">Editează</button>\` })
+export class SettingsComponent {
+  ${INJECT}
+
+  edit(): void {
+    const ref = this.dialog.open<boolean>(ConfirmDialog, {
+      size: '${args.size}',
+      showCloseButton: ${args.showCloseButton},
+      disableClose: ${args.disableClose},
+      closeLabel: '${args.closeLabel}',
+      autoFocus: '${args.autoFocus}',
+    });
+
+    ref.closed.subscribe(({ result, reason }) => console.log(result, reason));
+  }
+}`;
+
+const CONFIRM_SOURCE = `import { Component, inject } from '@angular/core';
+import { MudDialog, MudDialogTitle, MudDialogContent, MudDialogActions, MudDialogClose } from 'ngx-mud-ui/dialog';
+import { MudButton } from 'ngx-mud-ui/button';
+
+@Component({
+  selector: 'app-delete-dialog',
+  imports: [MudDialogTitle, MudDialogContent, MudDialogActions, MudDialogClose, MudButton],
+  template: \`
+    <h2 mudDialogTitle>Ștergeți documentul?</h2>
+    <div mudDialogContent>Acțiunea nu poate fi anulată.</div>
+    <div mudDialogActions>
+      <button mudButton="outlined" [mudDialogClose]="false">Anulează</button>
+      <button mudButton color="destructive" [mudDialogClose]="true">Șterge</button>
+    </div>
+  \`,
+})
+export class DeleteDialog {}
+
+@Component({
+  selector: 'app-document-row',
+  imports: [MudButton],
+  template: \`<button mudButton color="destructive" (click)="confirm()">Șterge documentul…</button>\`,
+})
+export class DocumentRowComponent {
+  ${INJECT}
+
+  confirm(): void {
+    // mudDialogClose passes its value straight through as the result.
+    this.dialog.open<boolean>(DeleteDialog, { size: 'sm' }).closed.subscribe(({ result }) => {
+      if (result) this.delete();
+    });
+  }
+
+  private delete(): void {
+    /* … */
+  }
+}`;
+
+const IMAGE_SOURCE = `import { Component, inject } from '@angular/core';
+import { MudDialog, MudDialogImage, MudDialogTitle, MudDialogContent, MudDialogActions, MudDialogClose } from 'ngx-mud-ui/dialog';
+import { MudButton } from 'ngx-mud-ui/button';
+
+@Component({
+  selector: 'app-whats-new-dialog',
+  imports: [MudDialogImage, MudDialogTitle, MudDialogContent, MudDialogActions, MudDialogClose, MudButton],
+  template: \`
+    <!-- mudDialogImage is full-bleed; height is yours to set. -->
+    <img mudDialogImage src="/assets/hero.svg" alt="" style="height: 280px" />
+    <h2 mudDialogTitle>Serviciile digitale, la un clic distanță</h2>
+    <div mudDialogContent>Tabloul de bord a fost actualizat.</div>
+    <div mudDialogActions>
+      <button mudButton [mudDialogClose]="undefined">Am înțeles</button>
+    </div>
+  \`,
+})
+export class WhatsNewDialog {}
+
+@Component({ selector: 'app-shell', imports: [MudButton], template: \`<button mudButton (click)="announce()">Noutăți</button>\` })
+export class ShellComponent {
+  ${INJECT}
+
+  announce(): void {
+    this.dialog.open(WhatsNewDialog); // md is the default size
+  }
+}`;
+
+const STACKED_SOURCE = `import { Component, inject } from '@angular/core';
+import { MudDialog, MudDialogTitle, MudDialogContent, MudDialogActions, MudDialogClose } from 'ngx-mud-ui/dialog';
+import { MudButton } from 'ngx-mud-ui/button';
+
+@Component({
+  selector: 'app-session-dialog',
+  imports: [MudDialogTitle, MudDialogContent, MudDialogActions, MudDialogClose, MudButton],
+  template: \`
+    <h2 mudDialogTitle>Sesiune expirată</h2>
+    <div mudDialogContent>Autentificați-vă din nou pentru a continua.</div>
+
+    <!-- layout="stacked" forces one action per row at any width; the container
+         also auto-stacks below 480px, so this is only for deliberate stacking. -->
+    <div mudDialogActions layout="stacked">
+      <button mudButton="outlined" [mudDialogClose]="false">Anulează</button>
+      <button mudButton [mudDialogClose]="true">Autentificare</button>
+    </div>
+  \`,
+})
+export class SessionDialog {}
+
+@Component({ selector: 'app-session-guard', imports: [MudButton], template: \`<button mudButton (click)="prompt()">Simulează expirarea</button>\` })
+export class SessionGuardComponent {
+  ${INJECT}
+
+  prompt(): void {
+    this.dialog.open<boolean>(SessionDialog, { size: 'sm' });
+  }
+}`;
+
+const LONG_CONTENT_SOURCE = `import { Component, inject } from '@angular/core';
+import { MudDialog, MudDialogTitle, MudDialogContent, MudDialogActions, MudDialogClose } from 'ngx-mud-ui/dialog';
+import { MudButton } from 'ngx-mud-ui/button';
+
+@Component({
+  selector: 'app-terms-dialog',
+  imports: [MudDialogTitle, MudDialogContent, MudDialogActions, MudDialogClose, MudButton],
+  template: \`
+    <h2 mudDialogTitle>Actualizare a Termenilor de Utilizare</h2>
+
+    <!-- mudDialogContent IS the scroll region: the title and the action row stay
+         pinned while only this element scrolls. Do not add your own wrapper. -->
+    <div mudDialogContent>
+      @for (paragraph of paragraphs; track paragraph) {
+        <p>{{ paragraph }}</p>
+      }
+    </div>
+
+    <div mudDialogActions>
+      <button mudButton="outlined" [mudDialogClose]="false">Refuz</button>
+      <button mudButton [mudDialogClose]="true">Accept</button>
+    </div>
+  \`,
+})
+export class TermsDialog {
+  protected readonly paragraphs: readonly string[] = [/* … */];
+}
+
+@Component({ selector: 'app-terms-gate', imports: [MudButton], template: \`<button mudButton (click)="review()">Citește termenii</button>\` })
+export class TermsGateComponent {
+  ${INJECT}
+
+  review(): void {
+    this.dialog.open<boolean>(TermsDialog);
+  }
+}`;
+
+const TEMPLATE_SOURCE = `import { Component, inject, viewChild } from '@angular/core';
+import type { TemplateRef } from '@angular/core';
+import { MudDialog, MudDialogTitle, MudDialogContent, MudDialogActions, MudDialogClose } from 'ngx-mud-ui/dialog';
+import { MudButton } from 'ngx-mud-ui/button';
+
+@Component({
+  selector: 'app-report-row',
+  imports: [MudButton, MudDialogTitle, MudDialogContent, MudDialogActions, MudDialogClose],
+  template: \`
+    <button mudButton (click)="share()">Distribuie…</button>
+
+    <!-- \\\`let-data\\\` receives the config's \\\`data\\\` object. Use a template instead of
+         a component when the body is small and needs the host's own state. -->
+    <ng-template #tpl let-data>
+      <h2 mudDialogTitle>Distribuiți acest raport</h2>
+      <div mudDialogContent>Oricine cu acest link poate vizualiza „{{ data.reportName }}”.</div>
+      <div mudDialogActions>
+        <button mudButton="outlined" [mudDialogClose]="undefined">Închide</button>
+      </div>
+    </ng-template>
+  \`,
+})
+export class ReportRowComponent {
+  ${INJECT}
+  private readonly tpl = viewChild.required<TemplateRef<unknown>>('tpl');
+
+  share(): void {
+    this.dialog.open(this.tpl(), { data: { reportName: 'Raport T3 2026' }, size: 'sm' });
+  }
+}`;
+
 const meta: Meta<PlaygroundArgs> = {
   title: 'Components/Dialog',
   decorators: [moduleMetadata({ imports: [MudButton] })],
@@ -269,6 +469,11 @@ export default meta;
 type Story = StoryObj<PlaygroundArgs>;
 
 export const Playground: Story = {
+  parameters: {
+    // `transform`, not a static `code`: the snippet is rebuilt from the live
+    // args, so changing a control updates the open() config shown below.
+    docs: { source: { language: 'ts', transform: (_c: string, ctx: { args: PlaygroundArgs }) => playgroundSource(ctx.args) } },
+  },
   decorators: [moduleMetadata({ imports: [PlaygroundLauncher] })],
   render: (args) => ({
     props: args,
@@ -288,7 +493,10 @@ export const Playground: Story = {
 
 /** Title + body + two actions wired via `mudDialogClose`. */
 export const Confirm: Story = {
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: { source: { code: CONFIRM_SOURCE, language: 'ts' } },
+  },
   decorators: [moduleMetadata({ imports: [ConfirmLauncher] })],
   render: () => ({ template: `<div style="${WRAP}"><mud-dialog-story-confirm-launcher /></div>` }),
   play: async ({ canvasElement }) => {
@@ -317,14 +525,20 @@ export const Confirm: Story = {
 
 /** A full-bleed hero image; the recommended height is 280px desktop / 180px mobile. */
 export const WithImage: Story = {
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: { source: { code: IMAGE_SOURCE, language: 'ts' } },
+  },
   decorators: [moduleMetadata({ imports: [ImageLauncher] })],
   render: () => ({ template: `<div style="${WRAP}"><mud-dialog-story-image-launcher /></div>` }),
 };
 
 /** `layout="stacked"`: full-width buttons in a column, primary on top. */
 export const StackedActions: Story = {
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: { source: { code: STACKED_SOURCE, language: 'ts' } },
+  },
   decorators: [moduleMetadata({ imports: [StackedActionsLauncher] })],
   render: () => ({ template: `<div style="${WRAP}"><mud-dialog-story-stacked-launcher /></div>` }),
   play: async ({ canvasElement }) => {
@@ -359,14 +573,20 @@ export const StackedActions: Story = {
 
 /** A long body scrolls inside a pinned header/footer; a long title clamps at 3 lines. */
 export const LongContent: Story = {
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: { source: { code: LONG_CONTENT_SOURCE, language: 'ts' } },
+  },
   decorators: [moduleMetadata({ imports: [LongContentLauncher] })],
   render: () => ({ template: `<div style="${WRAP}"><mud-dialog-story-long-content-launcher /></div>` }),
 };
 
 /** `MudDialog.open()` also accepts a `TemplateRef`; `config.data` lands as `let-data`. */
 export const FromTemplate: Story = {
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: { source: { code: TEMPLATE_SOURCE, language: 'ts' } },
+  },
   decorators: [moduleMetadata({ imports: [TemplateLauncher] })],
   render: () => ({ template: `<div style="${WRAP}"><mud-dialog-story-template-launcher /></div>` }),
 };
