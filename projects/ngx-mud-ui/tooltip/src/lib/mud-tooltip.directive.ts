@@ -1,5 +1,6 @@
 import {
   booleanAttribute,
+  computed,
   DestroyRef,
   Directive,
   DOCUMENT,
@@ -48,18 +49,43 @@ export type MudTooltipCloseReason =
   host: {
     '(mouseenter)': 'onMouseEnter()',
     '(mouseleave)': 'onMouseLeave()',
-    '(focus)': 'onFocus()',
-    '(blur)': 'onBlur()',
+    '(focusin)': 'onFocus()',
+    '(focusout)': 'onBlur()',
     '(click)': 'onClick()',
   },
 })
 export class MudTooltip {
   private readonly _overlay = inject(Overlay);
-  private readonly _trigger = inject(ElementRef<HTMLElement>).nativeElement;
+  private readonly _host: HTMLElement = inject(ElementRef<HTMLElement>).nativeElement;
   private readonly _document = inject(DOCUMENT);
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  readonly mudTooltip = input.required<string>();
+  /** @description Tooltip text. Optional: an empty tooltip never opens. */
+  readonly mudTooltip = input('');
+
+  private readonly _pushedContent = signal<string | null>(null);
+  private readonly _pushedAnchor = signal<HTMLElement | null>(null);
+  private _describedElement: HTMLElement | null = null;
+
+  /** Content for host directives that decide the text themselves. */
+  setContent(text: string | null): void {
+    this._pushedContent.set(text);
+  }
+
+  /**
+   * @description Points positioning and `aria-describedby` at a descendant instead of the host.
+   * For a wrapper host (breadcrumb's `<li>`) the host is neither focusable nor the
+   * element a screen reader describes, so both must move to the inner control.
+   */
+  setAnchor(element: HTMLElement | null): void {
+    this._pushedAnchor.set(element);
+  }
+
+  private get _trigger(): HTMLElement {
+    return this._pushedAnchor() ?? this._host;
+  }
+
+  readonly content = computed(() => this.mudTooltip() || this._pushedContent() || '');
   readonly tooltipPlacement = input<MudTooltipPlacement>('top-center');
   readonly tooltipSize = input<MudTooltipSize>('small');
   /**
@@ -132,7 +158,7 @@ export class MudTooltip {
 
       if (!container) return;
 
-      container.setInput('message', this.mudTooltip());
+      container.setInput('message', this.content());
       container.setInput('size', this.tooltipSize());
       container.setInput('closeable', this.tooltipCloseable() || this._isCoach);
       container.setInput('closeAriaLabel', this.tooltipCloseAriaLabel());
@@ -226,6 +252,8 @@ export class MudTooltip {
      * */
     if (!this._isBrowser) return;
 
+    if (this.content().length === 0) return;
+
     if (this._overlayRef?.hasAttached()) return;
 
     const positions = connectedPositionsFor(this.tooltipPlacement());
@@ -254,7 +282,7 @@ export class MudTooltip {
     );
 
     containerRef.setInput('tooltipId', this._id);
-    containerRef.setInput('message', this.mudTooltip());
+    containerRef.setInput('message', this.content());
     containerRef.setInput('placement', this.tooltipPlacement());
     containerRef.setInput('size', this.tooltipSize());
     containerRef.setInput('closeable', this.tooltipCloseable() || this._isCoach);
@@ -292,7 +320,9 @@ export class MudTooltip {
     this._overlayRef.outsidePointerEvents().subscribe((event) => {
       const target = event.target as Node | null;
 
-      if (this._pinned && target && !this._trigger.contains(target)) this._dismiss('click-outside');
+      // The HOST, not the anchor: with a wrapper host the anchor is a subset of
+      // it, and a click on the wrapper's own padding is still "on the trigger".
+      if (this._pinned && target && !this._host.contains(target)) this._dismiss('click-outside');
     });
 
     this._pinned = this.tooltipCloseable() || this._isCoach;
@@ -301,12 +331,11 @@ export class MudTooltip {
      * aria-describedby is a token list the trigger may already use (form hints etc.)
      * append rather than replace, and remove only our own token again on detach.
      * */
-    const describedby = this._trigger.getAttribute('aria-describedby');
+    const described = this._trigger;
+    const describedby = described.getAttribute('aria-describedby');
 
-    this._trigger.setAttribute(
-      'aria-describedby',
-      describedby ? `${describedby} ${this._id}` : this._id,
-    );
+    described.setAttribute('aria-describedby', describedby ? `${describedby} ${this._id}` : this._id);
+    this._describedElement = described;
     this._document.addEventListener('keydown', this._onDocumentKeydown, { capture: true });
   }
 
@@ -323,20 +352,23 @@ export class MudTooltip {
     this._containerRef.set(null);
     this._document.removeEventListener('keydown', this._onDocumentKeydown, { capture: true });
 
-    const describedby = this._trigger.getAttribute('aria-describedby');
+    const described = this._describedElement;
+    const describedby = described?.getAttribute('aria-describedby') ?? null;
 
-    if (describedby !== null) {
+    if (described && describedby !== null) {
       const rest = describedby
         .split(/\s+/)
         .filter((token: string) => token && token !== this._id)
         .join(' ');
 
       if (rest) {
-        this._trigger.setAttribute('aria-describedby', rest);
+        described.setAttribute('aria-describedby', rest);
       } else {
-        this._trigger.removeAttribute('aria-describedby');
+        described.removeAttribute('aria-describedby');
       }
     }
+
+    this._describedElement = null;
 
     this._overlayRef?.dispose();
     this._overlayRef = null;

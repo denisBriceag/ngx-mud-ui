@@ -83,8 +83,11 @@ async function dispatch(fixture: ComponentFixture<unknown>, el: HTMLElement, ...
 
 const mouseenter = () => new MouseEvent('mouseenter');
 const mouseleave = () => new MouseEvent('mouseleave');
-const focus = () => new FocusEvent('focus');
-const blur = () => new FocusEvent('blur');
+// focusin/focusout, not focus/blur: the directive listens for the BUBBLING pair
+// so a wrapper host (breadcrumb's <li> around the consumer's <a>) still hears a
+// descendant being focused. `bubbles: true` is what jsdom needs to propagate.
+const focus = () => new FocusEvent('focusin', { bubbles: true });
+const blur = () => new FocusEvent('focusout', { bubbles: true });
 
 describe('MudTooltip', () => {
   it('renders no tooltip until triggered', async () => {
@@ -612,3 +615,175 @@ class ReasonHost {
 class CoachHost {
   readonly reasons: string[] = [];
 }
+
+describe('MudTooltip programmatic content', () => {
+  it('never opens while it has no content', async () => {
+    @Component({
+      imports: [MudTooltip],
+      template: `<button mudTooltip [tooltipShowDelay]="0">Filters</button>`,
+    })
+    class Empty {}
+
+    const fixture = TestBed.createComponent(Empty);
+
+    await fixture.whenStable();
+
+    const trigger = fixture.nativeElement.querySelector('button') as HTMLElement;
+
+    trigger.dispatchEvent(new MouseEvent('mouseenter'));
+    await tick();
+    await fixture.whenStable();
+
+    expect(document.querySelector('.tooltip')).toBeNull();
+  });
+
+  it('never sets aria-describedby while it has no content', async () => {
+    @Component({
+      imports: [MudTooltip],
+      template: `<button mudTooltip [tooltipShowDelay]="0">Filters</button>`,
+    })
+    class Empty {}
+
+    const fixture = TestBed.createComponent(Empty);
+
+    await fixture.whenStable();
+
+    const trigger = fixture.nativeElement.querySelector('button') as HTMLElement;
+
+    trigger.dispatchEvent(new MouseEvent('mouseenter'));
+    await tick();
+    await fixture.whenStable();
+
+    // A content-less tooltip must never wire up the trigger's accessible
+    // description — every ordinary (untruncated) breadcrumb crumb carries
+    // one of these, so a dangling aria-describedby here would ship on
+    // every short-labelled crumb in production.
+    expect(trigger.getAttribute('aria-describedby')).toBeNull();
+  });
+
+  it('opens with content pushed by a host directive', async () => {
+    @Component({
+      imports: [MudTooltip],
+      template: `<button mudTooltip [tooltipShowDelay]="0">Filters</button>`,
+    })
+    class Pushed {}
+
+    const fixture = TestBed.createComponent(Pushed);
+
+    await fixture.whenStable();
+
+    const trigger = fixture.nativeElement.querySelector('button') as HTMLElement;
+
+    fixture.debugElement
+      .query((node) => node.nativeElement === trigger)
+      .injector.get(MudTooltip)
+      .setContent('The full untruncated title');
+
+    trigger.dispatchEvent(new MouseEvent('mouseenter'));
+    // The directive opens after tooltipShowDelay; advance the same way the
+    // existing specs in this file do.
+    await tick();
+    await fixture.whenStable();
+
+    expect(document.body.textContent).toContain('The full untruncated title');
+  });
+
+  it('lets an explicit binding win over pushed content', async () => {
+    @Component({
+      imports: [MudTooltip],
+      template: `<button mudTooltip="Explicit" [tooltipShowDelay]="0">Filters</button>`,
+    })
+    class Explicit {}
+
+    const fixture = TestBed.createComponent(Explicit);
+
+    await fixture.whenStable();
+
+    const trigger = fixture.nativeElement.querySelector('button') as HTMLElement;
+
+    fixture.debugElement
+      .query((node) => node.nativeElement === trigger)
+      .injector.get(MudTooltip)
+      .setContent('Pushed');
+
+    trigger.dispatchEvent(new MouseEvent('mouseenter'));
+    await tick();
+    await fixture.whenStable();
+
+    expect(document.body.textContent).toContain('Explicit');
+    expect(document.body.textContent).not.toContain('Pushed');
+  });
+});
+
+// A wrapper host is the shape hostDirectives produces when the directive that
+// composes MudTooltip attaches to a container rather than to the control — the
+// breadcrumb <li> around the consumer's <a>. Two things have to hold for that
+// to work at all: the focus listeners must BUBBLE, and aria-describedby must
+// land on the control a screen reader actually focuses.
+describe('MudTooltip on a wrapper host', () => {
+  @Component({
+    imports: [MudTooltip],
+    template: `
+      <div mudTooltip="Wrapped" [tooltipShowDelay]="0" [tooltipHideDelay]="0">
+        <a href="/x">Inner</a>
+      </div>
+    `,
+  })
+  class WrapperHost {}
+
+  async function renderWrapper() {
+    const fixture = TestBed.createComponent(WrapperHost);
+
+    await fixture.whenStable();
+
+    const wrapper = fixture.nativeElement.querySelector('div') as HTMLElement;
+    const inner = fixture.nativeElement.querySelector('a') as HTMLAnchorElement;
+    const directive = fixture.debugElement
+      .query((node) => node.nativeElement === wrapper)
+      .injector.get(MudTooltip);
+
+    return { fixture, wrapper, inner, directive };
+  }
+
+  it('opens when a DESCENDANT is focused, because focusin bubbles', async () => {
+    const { fixture, inner } = await renderWrapper();
+
+    inner.focus();
+    await tick();
+    await fixture.whenStable();
+
+    expect(document.querySelector('[role="tooltip"]')?.textContent).toContain('Wrapped');
+  });
+
+  it('describes the anchor element it was pointed at, and cleans it up again', async () => {
+    const { fixture, wrapper, inner, directive } = await renderWrapper();
+
+    directive.setAnchor(inner);
+    inner.focus();
+    await tick();
+    await fixture.whenStable();
+
+    const id = document.querySelector('.tooltip-inner')?.id;
+
+    expect(inner.getAttribute('aria-describedby')).toBe(id);
+    expect(wrapper.getAttribute('aria-describedby')).toBeNull();
+
+    inner.blur();
+    await tick();
+    await fixture.whenStable();
+
+    expect(inner.getAttribute('aria-describedby')).toBeNull();
+  });
+
+  it('falls back to the host when no anchor was pushed', async () => {
+    const { fixture, wrapper, inner } = await renderWrapper();
+
+    inner.focus();
+    await tick();
+    await fixture.whenStable();
+
+    expect(wrapper.getAttribute('aria-describedby')).toBe(
+      document.querySelector('.tooltip-inner')?.id,
+    );
+  });
+});

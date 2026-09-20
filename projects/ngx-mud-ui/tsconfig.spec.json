@@ -13,6 +13,7 @@
     "avatar/src/**/*.spec.ts",
     "badge/src/**/*.spec.ts",
     "banner/src/**/*.spec.ts",
+    "breadcrumb/src/**/*.spec.ts",
     "button/src/**/*.spec.ts",
     "checkbox/src/**/*.spec.ts",
     "chip/src/**/*.spec.ts",
