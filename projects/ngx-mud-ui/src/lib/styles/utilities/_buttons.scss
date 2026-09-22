@@ -106,6 +106,20 @@
   }
 }
 
+.#{mud.mud-class('btn')}.#{mud.mud-class('btn-icon')}.#{mud.mud-class('btn-sm')} {
+  padding: var(--spacing-8, 0.5rem);
+  border-radius: 50%;
+  width: 32px;
+  min-width: 32px;
+  max-width: 32px;
+  height: 32px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
 .#{mud.mud-class('btn-group')} {
   display: inline-flex;
   gap: var(--spacing-12, 0.75rem);

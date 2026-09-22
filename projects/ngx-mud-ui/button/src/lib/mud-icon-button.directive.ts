@@ -1,7 +1,9 @@
-import { afterNextRender, computed, Directive } from '@angular/core';
+import { afterNextRender, computed, Directive, input } from '@angular/core';
 import { MudButtonBase } from './mud-button-base';
 
 declare const ngDevMode: boolean | undefined;
+
+export type MudIconButtonSize = 'medium' | 'small';
 
 /**
  * Icon-only button: a transparent circle that must be given an accessible
@@ -11,6 +13,7 @@ declare const ngDevMode: boolean | undefined;
  * <button mudIconButton aria-label="Add">
  *   <svg>...</svg>
  * </button>
+ * <button mudIconButton size="small" aria-label="Edit"><mud-icon name="edit" [scale]="16" /></button>
  * ```
  */
 @Directive({
@@ -18,9 +21,18 @@ declare const ngDevMode: boolean | undefined;
   exportAs: 'mudIconButton',
 })
 export class MudIconButton extends MudButtonBase {
-  protected override readonly _hostClasses = computed(() =>
-    this.loading() ? 'mud-btn mud-btn-icon mud-btn-loading' : 'mud-btn mud-btn-icon',
-  );
+  /** @description Circle size: 'medium' 40px with a 20px glyph (default), 'small' 32px with a 16px glyph — the size that fits a 40px table row. */
+  readonly size = input<MudIconButtonSize>('medium');
+
+  protected override readonly _hostClasses = computed(() => {
+    const classes = ['mud-btn', 'mud-btn-icon'];
+
+    if (this.size() === 'small') classes.push('mud-btn-sm');
+
+    if (this.loading()) classes.push('mud-btn-loading');
+
+    return classes.join(' ');
+  });
 
   constructor() {
     super();

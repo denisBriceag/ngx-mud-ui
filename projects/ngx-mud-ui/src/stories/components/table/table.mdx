@@ -1,0 +1,244 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as TableStories from './table.stories';
+import { MudTable, MudSort, MudSortHeader, MudColumnDef, MudRow } from 'ngx-mud-ui/table';
+
+<Meta of={TableStories} />
+
+# Table
+
+A data table for lists of records — applications, payments, people. It is the
+Angular CDK table with our styling and a Material-shaped sort mechanism: if you
+know `mat-table` and `matSort`, swap the prefix and you are done. Everything the
+CDK table can do (sticky rows and columns, footers, multiple row templates,
+`trackBy`, row recycling) works unchanged.
+
+```html
+<table mud-table [dataSource]="rows" mudSort (sortChange)="reload($event)">
+  <ng-container mudColumnDef="nume">
+    <th mud-header-cell *mudHeaderCellDef mud-sort-header>Nume</th>
+    <td mud-cell *mudCellDef="let row">{{ row.nume }}</td>
+  </ng-container>
+  <tr mud-header-row *mudHeaderRowDef="columns"></tr>
+  <tr mud-row *mudRowDef="let row; columns: columns"></tr>
+</table>
+```
+
+## Import
+
+```ts
+import {
+  MudTable, MudColumnDef, MudHeaderCellDef, MudCellDef, MudHeaderCell, MudCell,
+  MudHeaderRowDef, MudRowDef, MudHeaderRow, MudRow, MudSort, MudSortHeader, MudTableDataSource,
+} from 'ngx-mud-ui/table';
+```
+
+Import only the pieces you use — every directive is standalone. The design-system
+stylesheet must be loaded once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Playground
+
+<Canvas of={TableStories.Playground} />
+<Controls of={TableStories.Playground} />
+
+## Header styles
+
+Three header treatments, all with 12px/16px medium text:
+
+<table>
+  <thead>
+    <tr><th>headerStyle</th><th>Background</th><th>When</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>subtle</code> (default)</td><td>light grey (<code>--color-background-base-tertiary</code>)</td><td>most tables</td></tr>
+    <tr><td><code>strong</code></td><td>dark (<code>--color-background-base-inverse-default</code>), white text</td><td>emphasis, dashboards</td></tr>
+    <tr><td><code>white</code></td><td>same as the body, 0.5px bottom line</td><td>tables inside cards</td></tr>
+  </tbody>
+</table>
+
+<Canvas of={TableStories.HeaderStyles} />
+
+## Row styles
+
+`default` draws a 0.5px divider under every body row. `zebra` keeps the divider
+and alternates the row background. Add `hoverable` for a hover background and
+pointer cursor; put your own `(click)` on the row.
+
+<Canvas of={TableStories.RowStyles} />
+
+## Sorting
+
+Put `mudSort` on the table and `mud-sort-header` on each sortable header cell.
+The header renders a real button with the column label and a `chevron-grabber`
+icon; once sorted it shows a single chevron for the direction. Clicking cycles
+ascending → descending → unsorted (set `disableClear` to skip the last step,
+`start="desc"` to begin descending). `sortChange` emits `{ active, direction }`,
+and `active`/`direction` are two-way bindable. A header with `disabled` (or inside
+a disabled `mudSort`) keeps its button but renders it disabled, without a chevron
+or `aria-sort`; screen readers announce it as an unavailable button.
+
+To sort in memory, hand a `MudTableDataSource` the sort:
+
+```ts
+readonly source = new MudTableDataSource(rows);
+readonly sort = viewChild.required(MudSort);
+
+constructor() {
+  afterNextRender(() => { this.source.sort = this.sort(); });
+}
+```
+
+Override `sortingDataAccessor` for nested or derived fields, or `sortData` to
+replace the comparator. Empty values always sort to the bottom. For server-side
+sorting skip the data source and handle `sortChange` yourself.
+
+## Data from an HTTP request
+
+When the server does the sorting, skip `MudTableDataSource`: bind the array to
+`[dataSource]`, keep the sort state in a signal, feed it to `rxResource`, and let
+`(sortChange)` update the signal so the request re-runs with `sort` and `dir`
+parameters. The `*mudNoDataRow` doubles as the loading state (a `mud-spinner`) and
+the error state, `aria-busy` marks the table while a request is in flight, and a
+polite live region announces the result count. The story answers `/api/cereri`
+from an `HttpInterceptorFn` with a 700ms delay because Storybook has no server;
+the component itself is what you would ship.
+
+<Canvas of={TableStories.AsyncData} />
+
+## Sticky rows and columns
+
+`sticky: true` on the header row definition and `sticky`/`stickyEnd` on a column
+definition. Wrap the table in a scroll container — `.mud-data-table-container` gives
+you horizontal scrolling; add `tabindex="0"` so keyboard users can scroll it.
+
+<Canvas of={TableStories.Sticky} />
+
+## Footer
+
+<Canvas of={TableStories.Footer} />
+
+## Empty state
+
+`*mudNoDataRow` renders while the data source is empty. Span every column with
+`colspan`.
+
+<Canvas of={TableStories.Empty} />
+
+## Flex layout
+
+Use `<mud-table>`, `<mud-header-row>`, `<mud-row>` and `<mud-cell>` when a
+native `<table>` is not an option. The roles a screen reader needs are set for you.
+
+<Canvas of={TableStories.FlexLayout} />
+
+## Selection
+
+The table has no selection input. A selection column is an ordinary consumer
+column: a `mud-checkbox` per row plus a CDK `SelectionModel`. Add
+`class="mud-data-table__selection-cell"` to its header and body cells for the narrow
+width, and bind `[selected]` on the row (`<tr mud-row … [selected]="selection.isSelected(row)">`)
+to paint it in the brand selection colour; it also sets `aria-selected` on the row.
+
+<Canvas of={TableStories.SelectionRecipe} />
+
+## Status tags
+
+A cell takes any component. The usual case is a status column: map each state to a
+`mud-tag` colour and render the tag in the cell.
+
+<Canvas of={TableStories.StatusTags} />
+
+## Row actions
+
+Put actions in a trailing column. Use `mudIconButton size="small"` (a 32px circle
+with a 16px glyph) and add `class="mud-data-table__actions-cell"` to that column's
+header and body cells: the helper trims the block padding to 4px so the row keeps its
+40px height. An icon-only button needs a per-row accessible name
+(`[attr.aria-label]="'Editează ' + row.nume"`); the header keeps a visible label.
+Register the icon once with `provideMudIcons([edit])` — the library never populates
+the icon registry for you.
+
+<Canvas of={TableStories.RowActions} />
+
+## API
+
+### `MudTable`
+
+Selector: `mud-table, table[mud-table]`. Inherits every CDK table input
+(`dataSource`, `trackBy`, `multiTemplateDataRows`, `fixedLayout`, `recycleRows`).
+
+<ArgTypes of={MudTable} />
+
+### `MudSort`
+
+Selector: `[mudSort]`
+
+<ArgTypes of={MudSort} />
+
+### `MudSortHeader`
+
+Selector: `[mud-sort-header]`. Put it on a header cell inside a `mudSort`.
+
+<ArgTypes of={MudSortHeader} />
+
+### `MudColumnDef`
+
+Selector: `[mudColumnDef]`. `sticky` and `stickyEnd` pin the column.
+
+<ArgTypes of={MudColumnDef} />
+
+### `MudRow`
+
+Selector: `mud-row, tr[mud-row]`. `selected` paints the row and sets `aria-selected`.
+
+<ArgTypes of={MudRow} />
+
+### Structural directives
+
+<table>
+  <thead>
+    <tr><th>Directive</th><th>Selector</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>MudHeaderCellDef</code> / <code>MudCellDef</code> / <code>MudFooterCellDef</code></td><td><code>*mudHeaderCellDef</code>, <code>*mudCellDef="let row"</code>, <code>*mudFooterCellDef</code></td></tr>
+    <tr><td><code>MudHeaderRowDef</code></td><td><code>*mudHeaderRowDef="columns; sticky: true"</code></td></tr>
+    <tr><td><code>MudRowDef</code></td><td><code>*mudRowDef="let row; columns: columns; when: predicate"</code></td></tr>
+    <tr><td><code>MudFooterRowDef</code></td><td><code>*mudFooterRowDef="columns; sticky: true"</code></td></tr>
+    <tr><td><code>MudNoDataRow</code></td><td><code>*mudNoDataRow</code></td></tr>
+    <tr><td><code>MudHeaderCell</code> / <code>MudCell</code> / <code>MudFooterCell</code></td><td><code>th[mud-header-cell]</code>, <code>td[mud-cell]</code>, <code>td[mud-footer-cell]</code> (or the element forms)</td></tr>
+    <tr><td><code>MudHeaderRow</code> / <code>MudRow</code> / <code>MudFooterRow</code></td><td><code>tr[mud-header-row]</code>, <code>tr[mud-row]</code>, <code>tr[mud-footer-row]</code> (or the element forms)</td></tr>
+  </tbody>
+</table>
+
+## Accessibility
+
+- **Native `<table>` by default.** Use it whenever you can; screen readers get
+  row and column navigation for free. The flex layout receives
+  `role="table|row|columnheader|cell|rowgroup"` from the CDK.
+- **Name the table** with `aria-label` or `aria-labelledby`.
+- **Sortable headers are buttons.** Each `mud-sort-header` renders a native
+  `<button>` whose name is the header text, described by a hidden "Sort" text
+  (`sortActionDescription`, translate it). The `<th>` carries `aria-sort`, so
+  the column state is announced. Enter, Space and click all sort.
+- **Direction is shown by shape, not colour.** Unsorted columns show the
+  two-way grabber; the sorted column shows one chevron.
+- **Scrollable wrappers need `tabindex="0"`** so keyboard users can scroll.
+- **Selection is conveyed by the checkbox.** `selected` on a row adds `aria-selected`,
+  which is valid on a table row but only reliably announced inside a `grid`; the
+  per-row `mud-checkbox` is what screen readers use to tell selected rows apart.
+- **Contrast** of every text/background pair is at least 4.5:1 in both themes;
+  `table.contrast.spec.ts` pins the numbers.
+
+## Usage tips
+
+- **Column width:** every cell of a column gets `mud-column-<name>`; style it
+  from your component (`.mud-column-suma { width: 120px }`).
+- **Alignment is start everywhere.** Numbers are not right-aligned by design.
+- **Keep `mudSort` on the table element** so the header cells find it.
+- **`recycleRows`** is a CDK input (`<table mud-table recycleRows>`); do not
+  combine it with row animations.
+- **Padding tightens at ≤640px viewport** (24px → 16px), matching the design's
+  mobile breakpoint.

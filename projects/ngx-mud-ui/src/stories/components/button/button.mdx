@@ -106,8 +106,9 @@ Selector: `button[mudButton], a[mudButton]` · `exportAs: 'mudButton'`
 
 Selector: `button[mudIconButton], a[mudIconButton]` · `exportAs: 'mudIconButton'`
 
-`mudIconButton` has no styling inputs — it is always a transparent circle. It
-shares `disabled` and `loading` with `mudButton`.
+`mudIconButton` is always a transparent circle; its one styling input is `size`:
+`medium` (40px, 20px glyph, default) or `small` (32px, 16px glyph — the size that fits a
+40px table row). It shares `disabled` and `loading` with `mudButton`.
 
 <ArgTypes of={MudIconButton} />
 
