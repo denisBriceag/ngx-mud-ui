@@ -44,12 +44,13 @@ class AnchorHost {
 @Component({
   imports: [MudIconButton],
   template: `
-    <button mudIconButton aria-label="Add" [disabled]="disabled()" [loading]="loading()" (click)="clicks = clicks + 1">
+    <button mudIconButton aria-label="Add" [size]="size()" [disabled]="disabled()" [loading]="loading()" (click)="clicks = clicks + 1">
       <svg></svg>
     </button>
   `,
 })
 class IconButtonHost {
+  readonly size = signal<'medium' | 'small'>('medium');
   readonly disabled = signal(false);
   readonly loading = signal(false);
   clicks = 0;
@@ -217,6 +218,18 @@ describe('MudIconButton', () => {
     const { el } = await render(IconButtonHost, 'button');
 
     expect(el.classList.contains('mud-btn')).toBe(true);
+    expect(el.classList.contains('mud-btn-icon')).toBe(true);
+  });
+
+  it('adds the sm size class only for size="small"', async () => {
+    const { fixture, host, el } = await render(IconButtonHost, 'button');
+
+    expect(el.classList.contains('mud-btn-sm')).toBe(false);
+
+    host.size.set('small');
+    await fixture.whenStable();
+
+    expect(el.classList.contains('mud-btn-sm')).toBe(true);
     expect(el.classList.contains('mud-btn-icon')).toBe(true);
   });
 

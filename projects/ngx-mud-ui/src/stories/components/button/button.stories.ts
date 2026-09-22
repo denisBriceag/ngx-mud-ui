@@ -157,7 +157,7 @@ export const WithIcons: Story = {
   }),
 };
 
-/** Icon-only transparent circular button. An `aria-label` is required. */
+/** Icon-only transparent circular button. An `aria-label` is required. `size="small"` gives a 32px circle with a 16px glyph. */
 export const IconButton: Story = {
   parameters: { controls: { disable: true } },
   render: () => ({
@@ -165,6 +165,8 @@ export const IconButton: Story = {
       <div style="${ROW}">
         <button type="button" mudIconButton aria-label="Add"><mud-icon name="plus-large" [scale]="20" /></button>
         <button type="button" mudIconButton aria-label="Add" disabled><mud-icon name="plus-large" [scale]="20" /></button>
+        <button type="button" mudIconButton size="small" aria-label="Add"><mud-icon name="plus-small" [scale]="16" /></button>
+        <button type="button" mudIconButton size="small" aria-label="Add" disabled><mud-icon name="plus-small" [scale]="16" /></button>
       </div>
     `,
   }),
