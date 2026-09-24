@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MudMenu } from './mud-menu.component';
 import { MudMenuItem } from './mud-menu-item.component';
+import { MudMenuTrigger } from './mud-menu-trigger.directive';
 import type { MudMenuType } from './mud-menu.types';
 
 @Component({
@@ -234,5 +235,62 @@ describe('MudMenu inline open transition (regression)', () => {
     items[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }));
     await fixture.whenStable();
     expect(document.activeElement).toBe(items[1]);
+  });
+});
+
+@Component({
+  imports: [MudMenu, MudMenuItem, MudMenuTrigger],
+  template: `
+    <button [mudMenuTriggerFor]="menu">Open</button>
+    <mud-menu #menu [panelClass]="panelClass()" aria-label="Pages">
+      <mud-menu-item value="1">1</mud-menu-item>
+    </mud-menu>
+    <mud-menu [open]="true" panelClass="inline-extra" aria-label="Inline">
+      <mud-menu-item value="a">A</mud-menu-item>
+    </mud-menu>
+  `,
+})
+class PanelClassHost {
+  readonly panelClass = signal<string | string[] | undefined>('mud-pagination__menu');
+}
+
+describe('MudMenu panelClass', () => {
+  afterEach(() => document.querySelector('.cdk-overlay-container')?.remove());
+
+  it('adds the classes to the overlay panel without dropping .menu', async () => {
+    const fixture = TestBed.createComponent(PanelClassHost);
+
+    await fixture.whenStable();
+    (fixture.nativeElement.querySelector('button') as HTMLButtonElement).click();
+    await fixture.whenStable();
+
+    const panel = document.querySelector<HTMLElement>('.cdk-overlay-container .menu');
+
+    expect(panel?.classList.contains('mud-pagination__menu')).toBe(true);
+    expect(panel?.classList.contains('menu')).toBe(true);
+  });
+
+  it('accepts an array', async () => {
+    const fixture = TestBed.createComponent(PanelClassHost);
+
+    fixture.componentInstance.panelClass.set(['one', 'two']);
+    await fixture.whenStable();
+    (fixture.nativeElement.querySelector('button') as HTMLButtonElement).click();
+    await fixture.whenStable();
+
+    const panel = document.querySelector<HTMLElement>('.cdk-overlay-container .menu');
+
+    expect(panel?.classList.contains('one')).toBe(true);
+    expect(panel?.classList.contains('two')).toBe(true);
+  });
+
+  it('applies to the inline panel too', async () => {
+    const fixture = TestBed.createComponent(PanelClassHost);
+
+    await fixture.whenStable();
+
+    const inline = fixture.nativeElement.querySelector('.menu.inline-extra') as HTMLElement | null;
+
+    expect(inline).not.toBeNull();
   });
 });

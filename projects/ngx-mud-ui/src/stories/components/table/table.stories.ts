@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
-import { afterNextRender, ChangeDetectionStrategy, Component, inject, input, output, signal, viewChild } from '@angular/core';
+import { afterNextRender, ChangeDetectionStrategy, Component, inject, input, linkedSignal, output, signal, viewChild } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { HttpClient, HttpResponse, provideHttpClient, withInterceptors } from '@angular/common/http';
 import type { HttpInterceptorFn } from '@angular/common/http';
@@ -10,6 +10,7 @@ import { MudSpinner } from 'ngx-mud-ui/spinner';
 import { MudCheckbox } from 'ngx-mud-ui/checkbox';
 import { MudTag } from 'ngx-mud-ui/tag';
 import { MudIconButton } from 'ngx-mud-ui/button';
+import { MudPagination } from 'ngx-mud-ui/pagination';
 import { edit, MudIconComponent, provideMudIcons } from 'ngx-mud-ui/icons';
 import {
   MudCell,
@@ -51,6 +52,19 @@ const CERERI: Cerere[] = [
 ];
 
 const COLUMNS = ['nume', 'localitate', 'depusa', 'suma'];
+
+// 47 generated requests for the pagination stories (five rows would fit on one page).
+const NUME = ['Ana Rusu', 'Ion Ceban', 'Maria Popescu', 'Vasile Lungu', 'Elena Moraru', 'Victor Cojocaru', 'Natalia Grosu'];
+const LOCALITATI = ['Chișinău', 'Bălți', 'Cahul', 'Orhei', 'Ungheni', 'Soroca', 'Comrat'];
+const STARI = ['În examinare', 'Aprobată', 'Respinsă'];
+const CERERI_MANY: Cerere[] = Array.from({ length: 47 }, (_v, i) => ({
+  id: i + 1,
+  nume: NUME[i % NUME.length],
+  localitate: LOCALITATI[(i * 3 + Math.floor(i / NUME.length)) % LOCALITATI.length],
+  depusa: `2026-0${String(8 + (i % 2))}-${String((i % 28) + 1).padStart(2, '0')}`,
+  suma: ((i * 137) % 1900) + 50,
+  stare: STARI[i % STARI.length],
+}));
 
 const TABLE_IMPORTS = [
   MudTable,
@@ -221,13 +235,9 @@ class TableStorySelection {
   }
 }
 
-/** Demo backend: answers GET /api/cereri from the sample rows, sorted by ?sort=&dir=, after 700ms. */
-const fakeCereriApi: HttpInterceptorFn = (req, next) => {
-  if (!req.url.endsWith('/api/cereri')) return next(req);
-
-  const active = req.params.get('sort') ?? '';
-  const direction = req.params.get('dir') ?? '';
-  const body = [...CERERI].sort((a, b) => {
+/** Sorts demo rows the way the fake backends do: strings by Romanian collation, empty sort = original order. */
+function sortCereri(rows: Cerere[], active: string, direction: string): Cerere[] {
+  return [...rows].sort((a, b) => {
     if (!active || !direction) return 0;
 
     const valueA = a[active as keyof Cerere];
@@ -243,8 +253,34 @@ const fakeCereriApi: HttpInterceptorFn = (req, next) => {
 
     return direction === 'asc' ? order : -order;
   });
+}
+
+/** Demo backend: answers GET /api/cereri from the sample rows, sorted by ?sort=&dir=, after 700ms. */
+const fakeCereriApi: HttpInterceptorFn = (req, next) => {
+  if (!req.url.endsWith('/api/cereri')) return next(req);
+
+  const body = sortCereri(CERERI, req.params.get('sort') ?? '', req.params.get('dir') ?? '');
 
   return of(new HttpResponse({ status: 200, body })).pipe(delay(700));
+};
+
+interface CereriPage {
+  items: Cerere[];
+  total: number;
+}
+
+const EMPTY_PAGE: CereriPage = { items: [], total: 0 };
+
+/** Demo backend: GET /api/cereri/page?sort=&dir=&page=&size= returns one sorted page plus the total, after 500ms. */
+const fakeCereriPageApi: HttpInterceptorFn = (req, next) => {
+  if (!req.url.endsWith('/api/cereri/page')) return next(req);
+
+  const page = Number(req.params.get('page') ?? 0);
+  const size = Number(req.params.get('size') ?? 10);
+  const sorted = sortCereri(CERERI_MANY, req.params.get('sort') ?? '', req.params.get('dir') ?? '');
+  const body: CereriPage = { items: sorted.slice(page * size, page * size + size), total: sorted.length };
+
+  return of(new HttpResponse({ status: 200, body })).pipe(delay(500));
 };
 
 /** Story-only host: rows come from HttpClient, sorting is done by the "server" (re-request on sortChange). */
@@ -308,6 +344,134 @@ class TableStoryAsync {
       this._http.get<Cerere[]>('/api/cereri', { params: { sort: params.active, dir: params.direction } }),
     defaultValue: [] as Cerere[],
   });
+}
+
+/** Story-only host: MudTableDataSource sorts and pages the rows in memory. */
+@Component({
+  selector: 'mud-table-story-paginated',
+  imports: [...TABLE_IMPORTS, MudPagination],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <div class="mud-data-table-container" tabindex="0">
+      <table mud-table [dataSource]="source" mudSort (sortChange)="paginator().firstPage()" aria-label="Cereri depuse">
+        <ng-container mudColumnDef="nume">
+          <th mud-header-cell *mudHeaderCellDef mud-sort-header sortActionDescription="Sortează">Nume</th>
+          <td mud-cell *mudCellDef="let row">{{ row.nume }}</td>
+        </ng-container>
+        <ng-container mudColumnDef="localitate">
+          <th mud-header-cell *mudHeaderCellDef mud-sort-header sortActionDescription="Sortează">Localitate</th>
+          <td mud-cell *mudCellDef="let row">{{ row.localitate }}</td>
+        </ng-container>
+        <ng-container mudColumnDef="depusa">
+          <th mud-header-cell *mudHeaderCellDef mud-sort-header sortActionDescription="Sortează">Depusă la</th>
+          <td mud-cell *mudCellDef="let row">{{ row.depusa }}</td>
+        </ng-container>
+        <ng-container mudColumnDef="suma">
+          <th mud-header-cell *mudHeaderCellDef mud-sort-header start="desc" sortActionDescription="Sortează">Suma (MDL)</th>
+          <td mud-cell *mudCellDef="let row">{{ row.suma }}</td>
+        </ng-container>
+        <tr mud-header-row *mudHeaderRowDef="columns"></tr>
+        <tr mud-row *mudRowDef="let row; columns: columns"></tr>
+      </table>
+    </div>
+    <mud-pagination [pageSize]="10" style="justify-content: flex-end; margin-block-start: 16px" />
+  `,
+})
+class TableStoryPaginated {
+  readonly columns = COLUMNS;
+  readonly source = new MudTableDataSource(CERERI_MANY);
+  readonly sort = viewChild.required(MudSort);
+  readonly paginator = viewChild.required(MudPagination);
+
+  constructor() {
+    afterNextRender(() => {
+      this.source.sort = this.sort();
+      this.source.paginator = this.paginator();
+    });
+  }
+}
+
+/** Story-only host: the "server" sorts and pages; the paginator only reports the page and shows the total. */
+@Component({
+  selector: 'mud-table-story-server-paging',
+  imports: [...TABLE_IMPORTS, MudPagination, MudSpinner],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <div class="mud-data-table-container" tabindex="0">
+      <table
+        mud-table
+        [dataSource]="shown().items"
+        mudSort
+        (sortChange)="onSort($event)"
+        [attr.aria-busy]="page.isLoading() ? 'true' : null"
+        aria-label="Cereri depuse"
+      >
+        <ng-container mudColumnDef="nume">
+          <th mud-header-cell *mudHeaderCellDef mud-sort-header sortActionDescription="Sortează">Nume</th>
+          <td mud-cell *mudCellDef="let row">{{ row.nume }}</td>
+        </ng-container>
+        <ng-container mudColumnDef="localitate">
+          <th mud-header-cell *mudHeaderCellDef mud-sort-header sortActionDescription="Sortează">Localitate</th>
+          <td mud-cell *mudCellDef="let row">{{ row.localitate }}</td>
+        </ng-container>
+        <ng-container mudColumnDef="depusa">
+          <th mud-header-cell *mudHeaderCellDef mud-sort-header sortActionDescription="Sortează">Depusă la</th>
+          <td mud-cell *mudCellDef="let row">{{ row.depusa }}</td>
+        </ng-container>
+        <ng-container mudColumnDef="suma">
+          <th mud-header-cell *mudHeaderCellDef mud-sort-header start="desc" sortActionDescription="Sortează">Suma (MDL)</th>
+          <td mud-cell *mudCellDef="let row">{{ row.suma }}</td>
+        </ng-container>
+        <tr mud-header-row *mudHeaderRowDef="columns"></tr>
+        <tr mud-row *mudRowDef="let row; columns: columns"></tr>
+        <tr *mudNoDataRow>
+          <td [attr.colspan]="columns.length">
+            @if (page.isLoading()) {
+              <mud-spinner size="small" aria-label="Se încarcă cererile" />
+            } @else if (page.error()) {
+              Nu am putut încărca cererile. Încearcă din nou.
+            } @else {
+              Nu există cereri depuse.
+            }
+          </td>
+        </tr>
+      </table>
+    </div>
+    <mud-pagination
+      [length]="shown().total"
+      [pageSize]="pageSize"
+      [(pageIndex)]="pageIndex"
+      [disabled]="page.isLoading()"
+      style="justify-content: flex-end; margin-block-start: 16px"
+    />
+  `,
+})
+class TableStoryServerPaging {
+  private readonly _http = inject(HttpClient);
+
+  readonly columns = COLUMNS;
+  readonly pageSize = 10;
+  readonly sort = signal<MudSortState>({ active: '', direction: '' });
+  readonly pageIndex = signal(0);
+  // Re-runs the request whenever the sort or the page changes.
+  readonly page = rxResource({
+    params: () => ({ sort: this.sort(), pageIndex: this.pageIndex() }),
+    stream: ({ params }) =>
+      this._http.get<CereriPage>('/api/cereri/page', {
+        params: { sort: params.sort.active, dir: params.sort.direction, page: params.pageIndex, size: this.pageSize },
+      }),
+    defaultValue: EMPTY_PAGE,
+  });
+  // rxResource shows defaultValue while a new page loads; keep the last page so rows and paginator don't collapse.
+  readonly shown = linkedSignal<CereriPage | undefined, CereriPage>({
+    source: () => (this.page.status() === 'resolved' ? this.page.value() : undefined),
+    computation: (next, previous) => next ?? previous?.value ?? EMPTY_PAGE,
+  });
+
+  onSort(state: MudSortState): void {
+    this.sort.set(state);
+    this.pageIndex.set(0);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -866,6 +1030,183 @@ const fakeCereriApi: HttpInterceptorFn = (req, next) => {
   ],
 }).replace("} from 'ngx-mud-ui/table';", "} from 'ngx-mud-ui/table';\nimport type { MudSortState } from 'ngx-mud-ui/table';");
 
+const MANY_ROWS_SNIPPET = `// 47 generated requests, enough for several pages.
+const NUME = ['Ana Rusu', 'Ion Ceban', 'Maria Popescu', 'Vasile Lungu', 'Elena Moraru', 'Victor Cojocaru', 'Natalia Grosu'];
+const LOCALITATI = ['Chișinău', 'Bălți', 'Cahul', 'Orhei', 'Ungheni', 'Soroca', 'Comrat'];
+const STARI = ['În examinare', 'Aprobată', 'Respinsă'];
+const CERERI: Cerere[] = Array.from({ length: 47 }, (_v, i) => ({
+  id: i + 1,
+  nume: NUME[i % NUME.length],
+  localitate: LOCALITATI[(i * 3 + Math.floor(i / NUME.length)) % LOCALITATI.length],
+  depusa: ${BT}2026-0\${8 + (i % 2)}-\${String((i % 28) + 1).padStart(2, '0')}${BT},
+  suma: ((i * 137) % 1900) + 50,
+  stare: STARI[i % STARI.length],
+}));`;
+
+const SORTABLE_COLUMNS = `<ng-container mudColumnDef="nume">
+  <th mud-header-cell *mudHeaderCellDef mud-sort-header sortActionDescription="Sortează">Nume</th>
+  <td mud-cell *mudCellDef="let row">{{ row.nume }}</td>
+</ng-container>
+<ng-container mudColumnDef="localitate">
+  <th mud-header-cell *mudHeaderCellDef mud-sort-header sortActionDescription="Sortează">Localitate</th>
+  <td mud-cell *mudCellDef="let row">{{ row.localitate }}</td>
+</ng-container>
+<ng-container mudColumnDef="depusa">
+  <th mud-header-cell *mudHeaderCellDef mud-sort-header sortActionDescription="Sortează">Depusă la</th>
+  <td mud-cell *mudCellDef="let row">{{ row.depusa }}</td>
+</ng-container>
+<ng-container mudColumnDef="suma">
+  <th mud-header-cell *mudHeaderCellDef mud-sort-header start="desc" sortActionDescription="Sortează">Suma (MDL)</th>
+  <td mud-cell *mudCellDef="let row">{{ row.suma }}</td>
+</ng-container>
+<tr mud-header-row *mudHeaderRowDef="columns"></tr>
+<tr mud-row *mudRowDef="let row; columns: columns"></tr>`;
+
+const PAGINATED_SOURCE = componentSource({
+  selector: 'app-cereri-paginated',
+  className: 'CereriPaginatedComponent',
+  coreImports: ['afterNextRender', 'viewChild'],
+  extraImportLines: ["import { MudPagination } from 'ngx-mud-ui/pagination';"],
+  tableImports: [...BASE_IMPORTS, 'MudSort', 'MudSortHeader'],
+  extraComponentImports: ['MudPagination'],
+  valueImports: ['MudTableDataSource'],
+  interfaceOnly: true,
+  beforeComponent: MANY_ROWS_SNIPPET,
+  template: `<div class="mud-data-table-container" tabindex="0">
+  <!-- re-sorting goes back to page 1; drop the handler to keep the current page -->
+  <table mud-table [dataSource]="source" mudSort (sortChange)="paginator().firstPage()" aria-label="Cereri depuse">
+${indent(SORTABLE_COLUMNS, 4)}
+  </table>
+</div>
+<mud-pagination [pageSize]="10" style="justify-content: flex-end; margin-block-start: 16px" />`,
+  fields: [
+    "  readonly columns = ['nume', 'localitate', 'depusa', 'suma'];",
+    '  // Sorts, then slices one page; it also keeps the paginator\'s length up to date.',
+    '  readonly source = new MudTableDataSource(CERERI);',
+    '  readonly sort = viewChild.required(MudSort);',
+    '  readonly paginator = viewChild.required(MudPagination);',
+    '',
+    '  constructor() {',
+    '    afterNextRender(() => {',
+    '      this.source.sort = this.sort();',
+    '      this.source.paginator = this.paginator();',
+    '    });',
+    '  }',
+  ],
+});
+
+const SERVER_PAGING_SOURCE = componentSource({
+  selector: 'app-cereri-server-paging',
+  className: 'CereriServerPagingComponent',
+  coreImports: ['inject', 'linkedSignal', 'signal'],
+  extraImportLines: [
+    "import { rxResource } from '@angular/core/rxjs-interop';",
+    "import { HttpClient, HttpResponse } from '@angular/common/http';",
+    "import type { HttpInterceptorFn } from '@angular/common/http';",
+    "import { delay, of } from 'rxjs';",
+    "import { MudPagination } from 'ngx-mud-ui/pagination';",
+    "import { MudSpinner } from 'ngx-mud-ui/spinner';",
+  ],
+  tableImports: [...BASE_IMPORTS, 'MudNoDataRow', 'MudSort', 'MudSortHeader'],
+  extraComponentImports: ['MudPagination', 'MudSpinner'],
+  interfaceOnly: true,
+  beforeComponent: `${MANY_ROWS_SNIPPET}
+
+interface CereriPage {
+  items: Cerere[];
+  total: number;
+}
+
+const EMPTY_PAGE: CereriPage = { items: [], total: 0 };
+
+// DEMO ONLY — stands in for the backend so the story runs without a server. Register it
+// where HttpClient is provided (app.config.ts):
+//   provideHttpClient(withInterceptors([fakeCereriPageApi]))
+// In a real app keep provideHttpClient() and delete the interceptor; the component below does not change.
+const fakeCereriPageApi: HttpInterceptorFn = (req, next) => {
+  if (!req.url.endsWith('/api/cereri/page')) return next(req);
+  const active = req.params.get('sort') ?? '';
+  const direction = req.params.get('dir') ?? '';
+  const page = Number(req.params.get('page') ?? 0);
+  const size = Number(req.params.get('size') ?? 10);
+  const sorted = [...CERERI].sort((a, b) => {
+    if (!active || !direction) return 0;
+    const valueA = a[active as keyof Cerere];
+    const valueB = b[active as keyof Cerere];
+    const order =
+      typeof valueA === 'string' && typeof valueB === 'string'
+        ? valueA.localeCompare(valueB, 'ro')
+        : valueA === valueB
+          ? 0
+          : valueA > valueB
+            ? 1
+            : -1;
+    return direction === 'asc' ? order : -order;
+  });
+  const body: CereriPage = { items: sorted.slice(page * size, page * size + size), total: sorted.length };
+  return of(new HttpResponse({ status: 200, body })).pipe(delay(500));
+};`,
+  template: `<!-- the server sorts and pages, so no MudTableDataSource: bind the current page's rows -->
+<div class="mud-data-table-container" tabindex="0">
+  <table
+    mud-table
+    [dataSource]="shown().items"
+    mudSort
+    (sortChange)="onSort($event)"
+    [attr.aria-busy]="page.isLoading() ? 'true' : null"
+    aria-label="Cereri depuse"
+  >
+${indent(SORTABLE_COLUMNS, 4)}
+    <tr *mudNoDataRow>
+      <td [attr.colspan]="columns.length">
+        @if (page.isLoading()) {
+          <mud-spinner size="small" aria-label="Se încarcă cererile" />
+        } @else if (page.error()) {
+          Nu am putut încărca cererile. Încearcă din nou.
+        } @else {
+          Nu există cereri depuse.
+        }
+      </td>
+    </tr>
+  </table>
+</div>
+<!-- length is the server's total; (pageIndex) drives the request -->
+<mud-pagination
+  [length]="shown().total"
+  [pageSize]="pageSize"
+  [(pageIndex)]="pageIndex"
+  [disabled]="page.isLoading()"
+  style="justify-content: flex-end; margin-block-start: 16px"
+/>`,
+  fields: [
+    '  private readonly http = inject(HttpClient);',
+    '',
+    "  readonly columns = ['nume', 'localitate', 'depusa', 'suma'];",
+    '  readonly pageSize = 10;',
+    "  readonly sort = signal<MudSortState>({ active: '', direction: '' });",
+    '  readonly pageIndex = signal(0);',
+    '  // Re-runs the request whenever the sort or the page changes.',
+    '  readonly page = rxResource({',
+    '    params: () => ({ sort: this.sort(), pageIndex: this.pageIndex() }),',
+    '    stream: ({ params }) =>',
+    "      this.http.get<CereriPage>('/api/cereri/page', {",
+    '        params: { sort: params.sort.active, dir: params.sort.direction, page: params.pageIndex, size: this.pageSize },',
+    '      }),',
+    '    defaultValue: EMPTY_PAGE,',
+    '  });',
+    "  // rxResource shows defaultValue while a new page loads; keep the last page so rows and paginator don't collapse.",
+    '  readonly shown = linkedSignal<CereriPage | undefined, CereriPage>({',
+    "    source: () => (this.page.status() === 'resolved' ? this.page.value() : undefined),",
+    '    computation: (next, previous) => next ?? previous?.value ?? EMPTY_PAGE,',
+    '  });',
+    '',
+    '  onSort(state: MudSortState): void {',
+    '    this.sort.set(state);',
+    '    this.pageIndex.set(0);',
+    '  }',
+  ],
+}).replace("} from 'ngx-mud-ui/table';", "} from 'ngx-mud-ui/table';\nimport type { MudSortState } from 'ngx-mud-ui/table';");
+
 /** Render helper for the HeaderStyles/RowStyles stories (not a snippet). */
 const STATIC_TABLE = (attrs: string): string => `
   <table mud-table [dataSource]="rows" ${attrs} aria-label="Cereri depuse">
@@ -879,11 +1220,21 @@ const meta: Meta<PlaygroundArgs> = {
   component: MudTable,
   decorators: [
     moduleMetadata({
-      imports: [...TABLE_IMPORTS, TableStoryPlayground, TableStorySelection, TableStoryAsync, MudTag, MudIconButton, MudIconComponent],
+      imports: [
+        ...TABLE_IMPORTS,
+        TableStoryPlayground,
+        TableStorySelection,
+        TableStoryAsync,
+        TableStoryPaginated,
+        TableStoryServerPaging,
+        MudTag,
+        MudIconButton,
+        MudIconComponent,
+      ],
     }),
     // The StatusTags/RowActions recipes render <mud-icon>; the registry is consumer-populated.
-    // HttpClient + the demo interceptor back the AsyncData story (environment providers, so app level).
-    applicationConfig({ providers: [provideMudIcons([edit]), provideHttpClient(withInterceptors([fakeCereriApi]))] }),
+    // HttpClient + the demo interceptors back the AsyncData and ServerPaging stories (environment providers, so app level).
+    applicationConfig({ providers: [provideMudIcons([edit]), provideHttpClient(withInterceptors([fakeCereriApi, fakeCereriPageApi]))] }),
   ],
   argTypes: {
     headerStyle: { control: 'inline-radio', options: ['subtle', 'strong', 'white'] },
@@ -1174,4 +1525,16 @@ export const RowActions: Story = {
 export const AsyncData: Story = {
   parameters: { controls: { disable: true }, docs: { source: { code: ASYNC_SOURCE, language: 'ts' } } },
   render: () => ({ template: `<mud-table-story-async />` }),
+};
+
+/** MudTableDataSource sorts and pages 47 rows in memory; re-sorting returns to page 1. */
+export const Paginated: Story = {
+  parameters: { controls: { disable: true }, docs: { source: { code: PAGINATED_SOURCE, language: 'ts' } } },
+  render: () => ({ template: `<mud-table-story-paginated />` }),
+};
+
+/** The server sorts and pages: bind the total to length and let (pageIndex) re-run the request. */
+export const ServerPaging: Story = {
+  parameters: { controls: { disable: true }, docs: { source: { code: SERVER_PAGING_SOURCE, language: 'ts' } } },
+  render: () => ({ template: `<mud-table-story-server-paging />` }),
 };

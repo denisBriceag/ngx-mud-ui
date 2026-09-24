@@ -1,6 +1,7 @@
 <ng-template #panelTpl>
   <div
     class="menu"
+    [class]="panelClass() ?? ''"
     [class.menu--selection]="type() === 'selection'"
     [id]="_panelId"
     [attr.role]="type() === 'selection' ? 'listbox' : 'menu'"

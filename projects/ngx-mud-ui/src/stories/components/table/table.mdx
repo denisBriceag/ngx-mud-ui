@@ -108,6 +108,49 @@ the component itself is what you would ship.
 
 <Canvas of={TableStories.AsyncData} />
 
+## Pagination
+
+Pair the table with `<mud-pagination>` from `ngx-mud-ui/pagination` (see the
+Pagination page for its full API). Place it below the table; it is a block-level flex
+container, so `justify-content: flex-end` right-aligns it.
+
+### In memory
+
+Give the data source the paginator, the same way as the sort. It sorts first, then
+slices one page, keeps the paginator's `length` equal to the row count, and moves
+back to the last page if the data shrinks under the current one.
+
+```ts
+readonly source = new MudTableDataSource(rows);
+readonly sort = viewChild.required(MudSort);
+readonly paginator = viewChild.required(MudPagination);
+
+constructor() {
+  afterNextRender(() => {
+    this.source.sort = this.sort();
+    this.source.paginator = this.paginator();
+  });
+}
+```
+
+Re-sorting keeps the current page, as in Angular Material. The story goes back to
+page 1 with `(sortChange)="paginator().firstPage()"`; drop it if you prefer to stay.
+
+<Canvas of={TableStories.Paginated} />
+
+### From the server
+
+For large datasets the server sorts and pages. Skip `MudTableDataSource`: bind the
+current page's rows to `[dataSource]`, the server's total to `[length]`, and
+two-way bind `[(pageIndex)]` to a signal that feeds `rxResource` together with the
+sort, so a click on a page or a header re-runs the request. Reset `pageIndex` to 0
+when the sort changes. `rxResource` falls back to its `defaultValue` while a new
+request is in flight, so the story keeps the last page in a `linkedSignal`: the rows
+stay on screen (with `aria-busy`) and the paginator keeps its page count instead of
+collapsing between pages. The paginator is `disabled` while a page loads.
+
+<Canvas of={TableStories.ServerPaging} />
+
 ## Sticky rows and columns
 
 `sticky: true` on the header row definition and `sticky`/`stickyEnd` on a column

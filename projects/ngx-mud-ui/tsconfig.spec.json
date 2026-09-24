@@ -28,6 +28,7 @@
     "link/src/**/*.spec.ts",
     "menu/src/**/*.spec.ts",
     "numeric-input/src/**/*.spec.ts",
+    "pagination/src/**/*.spec.ts",
     "phone-input/src/**/*.spec.ts",
     "progress-tracker/src/**/*.spec.ts",
     "radio/src/**/*.spec.ts",
