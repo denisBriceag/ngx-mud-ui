@@ -64,6 +64,9 @@ export class MudMenu implements MudMenuPanel {
   /** @description Accessible name for the panel. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
+  /** @description Extra classes for the panel root, e.g. a component-specific modifier. */
+  readonly panelClass = input<string | string[] | undefined>(undefined);
+
   /** @description Fired when any item is activated, with the item value ('' when it has none). */
   readonly selected = output<string>();
 

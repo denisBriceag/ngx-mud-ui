@@ -151,6 +151,29 @@ describe('MudMenuTrigger (root)', () => {
     expect(document.activeElement).not.toBe(trigger);
   });
 
+  it('destroying the host while open disposes the overlay without emitting closed or logging NG0953', async () => {
+    const { fixture, host, trigger, panel } = await render();
+
+    trigger.click();
+    await fixture.whenStable();
+    expect(panel()).toBeTruthy();
+
+    const errorSpy = vi.spyOn(console, 'error');
+    const warnSpy = vi.spyOn(console, 'warn');
+
+    fixture.destroy();
+
+    expect(document.querySelector('.cdk-overlay-container .menu')).toBeNull();
+    expect(host.closedCount).toBe(0);
+    const ng0953Logged = [...errorSpy.mock.calls, ...warnSpy.mock.calls].some((args) =>
+      args.some((arg) => String(arg).includes('NG0953')),
+    );
+
+    expect(ng0953Logged).toBe(false);
+    errorSpy.mockRestore();
+    warnSpy.mockRestore();
+  });
+
   it('selection menus advertise listbox on the trigger', async () => {
     const fixture = TestBed.createComponent(SelectionHost);
 

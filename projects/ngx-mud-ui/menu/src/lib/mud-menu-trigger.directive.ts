@@ -105,9 +105,12 @@ export class MudMenuTrigger implements MudMenuTriggerHandle {
   /** @docs-private */
   readonly _isOpen = signal(false);
 
+  private _destroyed = false;
+
   constructor() {
     this._hostItem?._hasSubmenu.set(true);
     inject(DestroyRef).onDestroy(() => {
+      this._destroyed = true;
       this._clearHoverTimer();
       this.close(false);
     });
@@ -182,7 +185,7 @@ export class MudMenuTrigger implements MudMenuTriggerHandle {
 
     if (restoreFocus) this._host.nativeElement.focus();
 
-    this.closed.emit();
+    if (!this._destroyed) this.closed.emit();
   }
 
   /** Closes the whole chain from its root. */
