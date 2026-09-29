@@ -5,20 +5,75 @@ import { JsonPipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { expect, userEvent, within } from 'storybook/test';
-import { MudDateInput, MudDatePicker, mudToday, provideMudDateLabels } from 'ngx-mud-ui/date-picker';
+import { MudDateInput, MudDatePicker, mudAddDays, mudDateToDate, mudToday, provideMudDateLabels } from 'ngx-mud-ui/date-picker';
 import type { MudDateRange } from 'ngx-mud-ui/date-picker';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:560px;padding:24px';
 
-const meta: Meta<MudDateInput> = {
+// A function has no Storybook control, so the Playground offers named presets
+// that `mapping` resolves to the real `dateFilter` predicate.
+const DATE_FILTERS: Record<string, ((iso: string) => boolean) | undefined> = {
+  none: undefined,
+  weekdaysOnly: (iso) => {
+    const day = mudDateToDate(iso).getDay();
+
+    return day !== 0 && day !== 6;
+  },
+  fromToday: (iso) => iso >= mudToday(),
+  firstHalfOfMonth: (iso) => Number(iso.slice(8, 10)) <= 15,
+};
+
+// The same for `disabledDates`, an ISO list: a JSON editor can express it, but
+// named presets are quicker to try and read.
+const DISABLED_DATES: Record<string, readonly string[]> = {
+  none: [],
+  augustHolidays: ['2026-08-27', '2026-08-31'],
+  nextSevenDays: Array.from({ length: 7 }, (_, i) => mudAddDays(mudToday(), i + 1)),
+};
+
+type DateArgs = Omit<MudDateInput, 'dateFilter' | 'disabledDates'> & {
+  dateFilter?: keyof typeof DATE_FILTERS;
+  disabledDates?: keyof typeof DISABLED_DATES;
+};
+
+const meta: Meta<DateArgs> = {
   title: 'Components/Date picker',
   component: MudDateInput,
   decorators: [
     moduleMetadata({ imports: [MudDateInput, MudDatePicker, MudLabel, MudInlineMessage] }),
   ],
+  argTypes: {
+    dateFilter: {
+      control: 'select',
+      options: Object.keys(DATE_FILTERS),
+      mapping: DATE_FILTERS,
+      description: [
+        'Return `true` for a SELECTABLE date. Runs after `min`/`max` and `disabledDates`. The presets:',
+        '```ts',
+        'weekdaysOnly:     (iso) => { const day = mudDateToDate(iso).getDay(); return day !== 0 && day !== 6; }',
+        'fromToday:        (iso) => iso >= mudToday()',
+        'firstHalfOfMonth: (iso) => Number(iso.slice(8, 10)) <= 15',
+        '```',
+      ].join('\n'),
+    },
+    disabledDates: {
+      control: 'select',
+      options: Object.keys(DISABLED_DATES),
+      mapping: DISABLED_DATES,
+      description: [
+        'ISO dates to disable, e.g. public holidays. The presets:',
+        '```ts',
+        "augustHolidays: ['2026-08-27', '2026-08-31']",
+        'nextSevenDays:  Array.from({ length: 7 }, (_, i) => mudAddDays(mudToday(), i + 1))',
+        '```',
+      ].join('\n'),
+    },
+  },
   args: {
+    dateFilter: 'none',
+    disabledDates: 'none',
     format: 'DD/MM/YYYY',
     size: 'medium',
     variant: 'default',
@@ -31,7 +86,7 @@ const meta: Meta<MudDateInput> = {
 
 export default meta;
 
-type Story = StoryObj<MudDateInput>;
+type Story = StoryObj<DateArgs>;
 
 /** The 90% case: one tag, a label, and a calendar the user can also type into. */
 export const Playground: Story = {
@@ -47,6 +102,8 @@ export const Playground: Story = {
           [disabled]="disabled"
           [required]="required"
           [invalid]="invalid"
+          [dateFilter]="dateFilter"
+          [disabledDates]="disabledDates"
         >
           <mud-label>Data nașterii</mud-label>
           @if (invalid) {

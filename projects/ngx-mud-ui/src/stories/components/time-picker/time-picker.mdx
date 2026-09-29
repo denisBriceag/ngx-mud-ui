@@ -1,0 +1,139 @@
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import { MudTimePicker } from 'ngx-mud-ui/time-picker';
+import * as TimeStories from './time-picker.stories';
+
+<Meta of={TimeStories} />
+
+# Time picker
+
+Two components in one entry point: `MudTimeInput`, a masked `HH:MM` field that
+opens an hour/minute picker in a popover, and `MudTimePicker`, the picker
+itself, usable inline. The pair mirrors the date picker entry.
+
+## Import
+
+```ts
+import { MudTimeInput } from 'ngx-mud-ui/time-picker';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+
+@Component({
+  imports: [MudTimeInput, MudLabel, MudInlineMessage],
+  template: `
+    <mud-time-input required [formControl]="start">
+      <mud-label>Ora de început</mud-label>
+      @if (start.touched && start.invalid) {
+        <mud-inline-message variant="error">Alegeți o oră.</mud-inline-message>
+      }
+    </mud-time-input>
+  `,
+})
+export class Demo {}
+```
+
+The popover renders through the CDK overlay, so the overlay stylesheet must be
+loaded alongside the design-system one:
+
+```ts
+import '@angular/cdk/overlay-prebuilt.css';
+```
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## The value is a 24-hour `HH:MM` string
+
+`value` is `'09:30'`, never a `Date`: a time of day has no date and no time
+zone. `null` means unset. `min` and `max` take the same shape and are
+inclusive; a malformed bound is ignored rather than allowed to block every
+entry.
+
+<Canvas of={TimeStories.Playground} />
+<Controls of={TimeStories.Playground} />
+
+## Typing
+
+- Digits only; the field writes the `:` itself once a minute digit exists.
+- `placeholder` is the format pattern, shown while empty and as the ghost
+  behind the caret while typing, so it must keep the `HH:MM` shape: two
+  non-digit characters, a colon, two non-digit characters (`OO:MM`, `--:--`).
+  Anything else falls back to `HH:MM` with a warning in development builds.
+- A first hour digit of 3–9 becomes `03`–`09`; a first minute digit of 6–9
+  becomes `06`–`09`. A second digit that would overflow (`2` then `7`) is
+  dropped.
+- `:` after a lone hour digit pads it (`2` → `02`).
+- The value commits as soon as the entry is complete and within `min`/`max`.
+  Leaving the field with an incomplete or out-of-range entry reverts it to the
+  last usable time; emptying the field is a deliberate "no time" and stays.
+- The field renders no error text of its own. Validation messages come from
+  your validators and a projected `mud-inline-message`, as with every other
+  field.
+
+## The picker
+
+The clock button (or Alt+ArrowDown) opens the picker and moves focus into it.
+Pick an hour, then a minute; the minute pick completes the time, writes it
+into the field and closes the popover. Re-picking the hour of a complete time
+keeps the popover open until a minute is picked again.
+
+Keyboard inside the picker:
+
+- Up / Down: previous / next value in the column
+- Home / End: first / last value
+- Right / Left: switch between the hour and minute columns
+- Enter / Space: pick the focused value
+- Escape: close and return focus to the field
+
+<Canvas of={TimeStories.StandalonePicker} />
+
+### Restricting the selectable times
+
+Two inputs, on the field and on the standalone picker alike, narrow what can be
+picked or typed. Both are applied after `min` and `max`.
+
+- `minuteStep` (`1`, `5`, `10`, `15` or `30`) renders only the matching
+  minutes, so `15` gives a four-row minute column of 00, 15, 30 and 45. A typed
+  minute off the step is refused like an out-of-range time. Any other value
+  falls back to `1` with a warning in development builds.
+- `timeFilter` is a predicate over `HH:MM` that returns `true` for a selectable
+  time, the same shape as the date picker's `dateFilter`. An hour with no
+  selectable minute is disabled; a minute is disabled when it is not selectable
+  for the chosen hour, or, while no hour is chosen, when no hour can select it.
+  The predicate runs for every hour and minute pair when the constraints change
+  (up to 1,440 calls, twice that while no hour is chosen), so keep it cheap.
+
+<Canvas of={TimeStories.MinMax} />
+<Canvas of={TimeStories.WorkingHours} />
+
+<ArgTypes of={MudTimePicker} />
+
+## Sizes, variants, states
+
+<Canvas of={TimeStories.Sizes} />
+<Canvas of={TimeStories.Variants} />
+<Canvas of={TimeStories.States} />
+
+## Forms
+
+Both forms systems are supported on the same component: `[formField]` from
+signal forms and `[formControl]` / `formControlName` from reactive forms.
+
+<Canvas of={TimeStories.SignalForms} />
+<Canvas of={TimeStories.ReactiveForms} />
+
+## Labels and localisation
+
+Every string the components render comes from the `MUD_TIME_LABELS` token,
+overridden app-wide with one `provideMudTimeLabels` call. Pass a signal (or a
+factory returning one) and a language switch re-renders live.
+
+```ts
+provideMudTimeLabels(() => {
+  const i18n = inject(I18nService);
+
+  return computed(() => (i18n.lang() === 'ro' ? RO_TIME_LABELS : {}));
+});
+```
+
+<Canvas of={TimeStories.Labels} />

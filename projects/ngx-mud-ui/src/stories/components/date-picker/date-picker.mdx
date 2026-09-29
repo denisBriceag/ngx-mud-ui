@@ -87,6 +87,13 @@ naming the fix, rather than being silently truncated at the `T`.
 `format` sets both the entry mask and the display order. The value stays ISO
 regardless.
 
+`placeholder` is the format pattern the user sees: shown while the field is
+empty and as the ghost behind the caret while typing. It must mirror the
+format's shape, with the format's separators in place and a non-digit
+character everywhere else, for example `ZZ/LL/AAAA` for `DD/MM/YYYY`.
+Anything else falls back to the format itself with a warning in development
+builds.
+
 <Canvas of={DateStories.Formats} />
 
 ## Range

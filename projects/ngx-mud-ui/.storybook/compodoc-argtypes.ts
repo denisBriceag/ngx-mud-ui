@@ -18,7 +18,13 @@ interface CompodocVariable {
   defaultValue?: string;
 }
 
+interface CompodocInterface {
+  name?: string;
+  properties?: { type?: string }[];
+}
+
 interface CompodocJson {
+  interfaces?: CompodocInterface[];
   miscellaneous?: {
     typealiases?: CompodocTypeAlias[];
     variables?: CompodocVariable[];
@@ -27,10 +33,42 @@ interface CompodocJson {
 
 const misc = (docJson as CompodocJson).miscellaneous ?? {};
 
+const NULLISH = new Set(['undefined', 'null']);
+
+const INTERFACES = new Map<string, Required<CompodocInterface>>(
+  ((docJson as CompodocJson).interfaces ?? [])
+    .filter((entry): entry is Required<CompodocInterface> => !!entry.name && !!entry.properties)
+    .map((entry) => [entry.name, entry]),
+);
+
+/**
+ * Compodoc drops the index from an indexed-access alias, so
+ * `type MudDateValue<M> = MudDateValueMap[M]` is recorded as the bare map
+ * name and would render `valueChange` as `MudDateValueMap<M>`. The union of
+ * the map's member types is what the alias can resolve to.
+ */
+const indexedAliasUnion = (rawtype: string): string | null => {
+  const members = INTERFACES.get(rawtype)?.properties.flatMap((property) =>
+    (property.type ?? '').split('|').map((member) => member.trim()),
+  );
+
+  if (!members?.length) return null;
+
+  const unique = [...new Set(members.filter(Boolean))];
+  const nullish = unique.filter((member) => NULLISH.has(member));
+
+  return [...unique.filter((member) => !NULLISH.has(member)), ...nullish].join(' | ');
+};
+
 const TYPE_ALIASES = new Map<string, string>(
   (misc.typealiases ?? [])
-    .filter((alias): alias is Required<CompodocTypeAlias> => !!alias.name && !!alias.rawtype)
-    .map((alias) => [alias.name, alias.rawtype.replace(/"/g, "'")]),
+    // Compodoc records a function-typed alias as the bare word `function`, which
+    // would replace `MudTimeFilter` with something less informative than the name.
+    .filter(
+      (alias): alias is Required<CompodocTypeAlias> =>
+        !!alias.name && !!alias.rawtype && alias.rawtype !== 'function',
+    )
+    .map((alias) => [alias.name, indexedAliasUnion(alias.rawtype) ?? alias.rawtype.replace(/"/g, "'")]),
 );
 
 const CONST_UNIONS = new Map<string, string>(
@@ -75,7 +113,6 @@ const resolveType = (type: string): string => {
   return current;
 };
 
-const NULLISH = new Set(['undefined', 'null']);
 const PRIMITIVES = new Set(['string', 'number', 'boolean']);
 const STRING_LITERAL = /^'(.*)'$/;
 
@@ -203,7 +240,7 @@ export const extractArgTypes = (component: unknown): ArgTypes | undefined => {
         // a member would otherwise act as a replacement pattern.
         const inlined = acc === name || !resolved.includes('|') ? resolved : `(${resolved})`;
 
-        return acc.replace(new RegExp(`\\b${name}\\b`, 'g'), () => inlined);
+        return acc.replace(new RegExp(`\\b${name}\\b(<[^<>]*>)?`, 'g'), () => inlined);
       }, summary);
 
       argType.table = {
@@ -222,6 +259,23 @@ export const extractArgTypes = (component: unknown): ArgTypes | undefined => {
     // useful and, if typed into, assigns over the OutputEmitterRef.
     if (argType.table?.category === 'outputs') {
       argType.control = false as typeof argType.control;
+
+      // Compodoc reports a plain `output<T>()` as just `T` (or `void`), while
+      // Storybook renders a model's change output as `(e: T) => void`. Show
+      // every output as the handler signature so the payload type reads the
+      // same way in both rows.
+      const emitted = argType.table.type?.summary;
+
+      if (typeof emitted === 'string' && !emitted.includes('=>')) {
+        argType.table = {
+          ...argType.table,
+          type: {
+            ...argType.table.type,
+            summary: emitted === 'void' ? '() => void' : `(e: ${emitted}) => void`,
+          },
+        };
+      }
+
       continue;
     }
 

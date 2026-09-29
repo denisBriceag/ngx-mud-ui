@@ -12,8 +12,11 @@
 @use '../src/lib/styles/components/forms/input-field';
 @use '../src/lib/styles/components/forms/file-input';
 @use '../src/lib/styles/components/forms/input-phone-number';
+@use '../src/lib/styles/components/forms/field-panel';
 @use '../src/lib/styles/components/forms/input-date';
 @use '../src/lib/styles/components/forms/date-picker';
+@use '../src/lib/styles/components/forms/time-picker';
+@use '../src/lib/styles/components/forms/input-time';
 @use '../src/lib/styles/components/forms/selection-control';
 @use '../src/lib/styles/components/menu-panel';
 @use '../src/lib/styles/components/forms/tags';

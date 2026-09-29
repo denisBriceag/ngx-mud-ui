@@ -1,0 +1,103 @@
+.time-picker {
+  background: var(--color-background-base-default);
+  border-radius: var(--border-radius-12, 12px);
+  box-sizing: border-box;
+  color: var(--color-text-base-default);
+  display: inline-flex;
+  font-family: var(--font-family-base);
+  padding: var(--spacing-12, 12px);
+  width: 202px;
+}
+
+.time-picker--elevated {
+  box-shadow:
+    var(
+      --drop-shadow-300,
+      0 8px 12px 4px rgba(40, 46, 55, 0.06),
+      0 2px 4px 0 rgba(40, 46, 55, 0.06)
+    );
+}
+
+.time-picker--flat {
+  box-shadow: none;
+}
+
+.time-picker__columns {
+  display: flex;
+  gap: var(--spacing-8, 8px);
+  height: calc(40px * 7 + var(--spacing-8, 8px) * 6);
+  width: 100%;
+}
+
+.time-picker__column {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: var(--spacing-8, 8px);
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  position: relative;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.time-picker__option,
+.time-picker__separator-cell {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 auto;
+  font-size: var(--font-size-14, 14px);
+  font-weight: 500;
+  height: 40px;
+  justify-content: center;
+  line-height: 20px;
+  padding: var(--spacing-6, 6px) var(--spacing-8, 8px);
+}
+
+.time-picker__option {
+  border-radius: var(--border-radius-6, 6px);
+  cursor: pointer;
+  user-select: none;
+
+  &:hover:not(.is-disabled):not(.is-selected) {
+    background: var(--color-background-base-default-hover);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-outer-width, 3px) solid
+      var(--focus-ring-outer-color, var(--blue-sky-500));
+    outline-offset: -2px;
+  }
+
+  &.is-selected {
+    background: var(--color-background-brand-secondary);
+    color: var(--color-text-brand-on-secondary);
+  }
+
+  &.is-selected.is-active {
+    background: var(--color-background-brand-default);
+    color: var(--color-text-base-inverse-on-color);
+  }
+
+  &.is-disabled {
+    color: var(--color-text-disabled-default);
+    cursor: default;
+  }
+}
+
+.time-picker__separator {
+  display: flex;
+  flex: 0 0 var(--spacing-12, 12px);
+  flex-direction: column;
+  gap: var(--spacing-8, 8px);
+  overflow: hidden;
+}
+
+.time-picker__separator-cell {
+  padding-inline: 0;
+}

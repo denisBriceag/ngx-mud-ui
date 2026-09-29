@@ -1,0 +1,102 @@
+@if (_hasLabel()) {
+  <label class="input-field__label" [attr.for]="_id" [id]="_labelId">
+    <span class="input-field__label-text"><ng-content select="mud-label" /></span>
+    @if (required()) {
+      <span class="input-field__required" aria-hidden="true">*</span>
+    }
+  </label>
+}
+
+<div class="input-field__control time-field__control" #control>
+  <span class="time-field__entry">
+    <input
+      #native
+      type="text"
+      inputmode="numeric"
+      autocomplete="off"
+      class="input-field__native time-field__native"
+      [id]="_id"
+      [attr.value]="_draft()"
+      [attr.name]="name() || null"
+      [attr.placeholder]="_pattern()"
+      [attr.aria-label]="_ariaLabel()"
+      [attr.aria-labelledby]="_hasLabel() ? _labelId : null"
+      [attr.aria-describedby]="_describedBy()"
+      [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
+      [attr.aria-required]="required() ? 'true' : null"
+      [readonly]="readonly()"
+      [disabled]="_effectiveDisabled()"
+      (input)="_onInput($event)"
+      (keydown)="_onKeydown($event)"
+      (focus)="_onFocus()"
+      (blur)="_onBlur()"
+    />
+    <span class="time-field__ghost-row" aria-hidden="true"
+      [class.time-field__ghost-row--hidden]="!_draft() || !_ghost()"
+      ><span class="time-field__ghost-typed">{{ _draft() }}</span
+      ><span class="time-field__ghost">{{ _ghost() }}</span></span
+    >
+  </span>
+
+  @if (_showClear()) {
+    <button
+      type="button"
+      class="input-field__clear"
+      [attr.aria-label]="_labels().clear"
+      (click)="_onClear()"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false" aria-hidden="true">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M5.244 5.244a.833.833 0 0 1 1.179 0L10 8.821l3.577-3.577a.833.833 0 1 1 1.179 1.179L11.179 10l3.577 3.577a.833.833 0 0 1-1.179 1.179L10 11.179l-3.577 3.577a.833.833 0 0 1-1.179-1.179L8.821 10 5.244 6.423a.833.833 0 0 1 0-1.179" />
+      </svg>
+    </button>
+  }
+
+  <button
+    type="button"
+    class="time-field__toggle"
+    aria-haspopup="dialog"
+    [attr.aria-label]="_labels().openPicker"
+    [attr.aria-expanded]="open() ? 'true' : 'false'"
+    [attr.aria-controls]="open() ? _dialogId : null"
+    [disabled]="_effectiveDisabled() || readonly()"
+    (click)="_toggle()"
+  >
+    <svg class="time-field__toggle-icon--md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+      <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M10 3.25a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5M1.75 10a8.25 8.25 0 1 1 16.5 0 8.25 8.25 0 0 1-16.5 0M10 5.917a.75.75 0 0 1 .75.75v3.022l1.864 1.864a.75.75 0 0 1-1.061 1.06L9.47 10.53a.75.75 0 0 1-.22-.53V6.667a.75.75 0 0 1 .75-.75" />
+    </svg>
+    <svg class="time-field__toggle-icon--lg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+      <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M12 3.9a8.1 8.1 0 1 0 0 16.2 8.1 8.1 0 0 0 0-16.2M2.1 12c0-5.468 4.432-9.9 9.9-9.9s9.9 4.432 9.9 9.9-4.432 9.9-9.9 9.9-9.9-4.432-9.9-9.9M12 7.1a.9.9 0 0 1 .9.9v3.627l2.236 2.237a.9.9 0 1 1-1.272 1.272l-2.5-2.5A.9.9 0 0 1 11.1 12V8a.9.9 0 0 1 .9-.9" />
+    </svg>
+  </button>
+</div>
+
+<span class="input-field__sr-only time-field__format-hint" [id]="_hintId">{{ _formatHint() }}</span>
+
+@if (_hasMessages()) {
+  <div class="input-field__assistive" role="alert" [id]="_assistiveId">
+    <ng-content select="mud-inline-message" />
+  </div>
+}
+
+<ng-template #panel>
+  <div
+    class="time-field__panel"
+    role="dialog"
+    aria-modal="true"
+    cdkTrapFocus
+    [cdkTrapFocusAutoCapture]="false"
+    [id]="_dialogId"
+    [attr.aria-label]="_labels().picker"
+    (keydown)="_onPanelKeydown($event)"
+  >
+    <mud-time-picker
+      appearance="flat"
+      [value]="_valueTime()"
+      [min]="_minTime()"
+      [max]="_maxTime()"
+      [minuteStep]="minuteStep()"
+      [timeFilter]="timeFilter()"
+      (valueChange)="_onPickerChange($event)"
+    />
+  </div>
+</ng-template>
