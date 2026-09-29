@@ -38,10 +38,9 @@ import {
   displayToIso,
   formatMasked,
   formatSpec,
-  ghostRemainder,
   isoToDisplay,
 } from './date-mask';
-import type { MudDateFormat } from './date-mask';
+import type { MudDateFormat, MudDateFormatSpec } from './date-mask';
 import { MudDatePicker } from './mud-date-picker.component';
 import type { MudDateInputMode, MudDateRange, MudDateValue } from './date-value';
 
@@ -51,6 +50,16 @@ export type MudDateInputSize = 'medium' | 'large';
 export type MudDateInputVariant = 'default' | 'warning' | 'destructive' | 'success';
 
 let nextUniqueId = 0;
+
+/** The shape a placeholder must have for a format: its separators in place, a non-digit everywhere else. */
+function placeholderShape(spec: MudDateFormatSpec): RegExp {
+  const separator = spec.separator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const body = Array.from(spec.format, (char) =>
+    char === spec.separator ? separator : `[^\\d${separator}]`,
+  ).join('');
+
+  return new RegExp(`^${body}$`);
+}
 
 /**
  * ```html
@@ -78,12 +87,6 @@ let nextUniqueId = 0;
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-// `FormValueControl<TValue>` types its optional `min`/`max` slots as
-// `NonNullable<TValue> | undefined` — i.e. shaped like the *value*. Ours are
-// always ISO date scalars regardless of mode (a range's min is still a single
-// date, not a `MudDateRange`), so they can never structurally satisfy that
-// slot for a generic `M`, and are Omit'd below to keep the class compiling.
-// See `MudDatePicker` for the full rationale — same wall, same fix.
 export class MudDateInput<M extends MudDateInputMode = 'single'>
   implements ControlValueAccessor, Omit<FormValueControl<MudDateValue<M>>, 'min' | 'max'>
 {
@@ -109,6 +112,7 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   readonly readonly = input(false, { transform: booleanAttribute });
   readonly invalid = input(false, { transform: booleanAttribute });
   readonly name = input<string>('');
+  /** @description Format pattern shown while empty and as the typing ghost; must mirror the format's shape (e.g. `ZZ/LL/AAAA`). Defaults to the format. */
   readonly placeholder = input<string | undefined>(undefined);
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
@@ -169,6 +173,12 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
 
   protected readonly _spec = computed(() => formatSpec(this.format()));
 
+  protected readonly _pattern = computed(() => {
+    const custom = this.placeholder()?.trim();
+
+    return custom && placeholderShape(this._spec()).test(custom) ? custom : this._spec().format;
+  });
+
   /** The single-mode ISO value, or null when unset/unusable. */
   protected readonly _valueIso = computed<string | null>(() => {
     const value = this.value();
@@ -176,31 +186,16 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
     return typeof value === 'string' && isValidIso(value) ? value : null;
   });
 
-  /** Bounds arriving from a signal-forms schema are name-matched at runtime and
-   *  are not type-checked, so anything that is not an ISO date is ignored. Also
-   *  guards `isWithin`/`compareIso`, which do bare lexicographic comparison
-   *  with no format validation of their own — and are the same computeds fed
-   *  to the embedded `<mud-date-picker>`, so the two can never disagree about
-   *  what a malformed bound means. */
   protected readonly _minIso = computed(() => toValidIsoOrUndefined(this.min()));
 
   protected readonly _maxIso = computed(() => toValidIsoOrUndefined(this.max()));
 
-  /**
-   * What the input shows. A `linkedSignal` rather than an effect: it derives
-   * from the committed value, resets when that value or the format changes,
-   * and stays directly writable while the user types.
-   *
-   * The source is a primitive `"iso|format"` key, not an object — see
-   * `_draftKey`/`_draftFromKey` for why a primitive key ALONE is not enough
-   * and `computation` has to consult `previous` itself.
-   */
   protected readonly _draft = linkedSignal<string, string>({
     source: () => this._draftKey(this._valueIso()),
     computation: (key, previous) => this._draftFromKey(key, previous),
   });
 
-  protected readonly _ghost = computed(() => ghostRemainder(this._draft(), this._spec()));
+  protected readonly _ghost = computed(() => this._pattern().slice(this._draft().length));
 
   protected readonly _isRange = computed(() => this.mode() === 'range');
 
@@ -213,19 +208,6 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
     };
   });
 
-  /**
-   * `_range()` always returns a fresh object literal, so its `linkedSignal`
-   * subscribers (`_startDraft`/`_endDraft` below, and `_draft` above through
-   * `_valueIso`) are always notified of a *possible* change on every commit,
-   * even one that never touches them — `Object.is` never sees two calls to
-   * `_range()` as equal, object identity included. A primitive key derived
-   * from just this endpoint fixes what gets PASSED to `computation`, but
-   * `linkedSignal` itself does not compare the key against the previous one
-   * before invoking `computation` — that comparison has to happen inside
-   * `computation`, using its `previous` argument, or the draft is
-   * recomputed (and a manual `.set()` write discarded) on every notification
-   * regardless of whether this endpoint's key actually changed.
-   */
   private _draftKey(iso: string | null): string {
     return `${iso ?? ''}|${this.format()}`;
   }
@@ -248,29 +230,15 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
     computation: (key, previous) => this._draftFromKey(key, previous),
   });
 
-  protected readonly _startGhost = computed(() => ghostRemainder(this._startDraft(), this._spec()));
-  protected readonly _endGhost = computed(() => ghostRemainder(this._endDraft(), this._spec()));
+  protected readonly _startGhost = computed(() => this._pattern().slice(this._startDraft().length));
+  protected readonly _endGhost = computed(() => this._pattern().slice(this._endDraft().length));
 
-  /**
-   * The last usable date each entry held, which blur reverts an unusable entry
-   * to — see `_settleOnBlur`. Typing an incomplete, impossible or out-of-bounds
-   * date commits `null` (deliberate, and unchanged), so `value()` alone cannot
-   * say what was there a keystroke earlier.
-   *
-   * Plain fields sampled by `_rememberUsable` rather than signals: the sample
-   * has to be taken synchronously, in the same task as the keystroke that
-   * destroys the value, and a `linkedSignal` only starts accumulating history
-   * from the first time something reads it.
-   */
   private _lastValueIso: string | null = null;
   private _lastStartIso: string | null = null;
   private _lastEndIso: string | null = null;
 
-  /**
-   * Set while the component moves focus between the two range segments itself.
-   * A blur the COMPONENT caused is not the user leaving the field, so it must
-   * not settle an entry the user is still editing — see `_settleOnBlur`.
-   */
+  private _lastEmitted: MudDateValue<M> = null as MudDateValue<M>;
+
   private _movingFocusInternally = false;
 
   /** The month the popover calendar opens on. */
@@ -293,7 +261,7 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
       : this._draft().length > 0;
   });
 
-  protected readonly _formatHint = computed(() => this._labels().formatHint(this.format()));
+  protected readonly _formatHint = computed(() => this._labels().formatHint(this._pattern()));
 
   protected readonly _describedBy = computed<string | null>(() => {
     const ids = [this._hintId];
@@ -311,20 +279,6 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
     this._hasLabel() ? null : (this.ariaLabel() ?? null),
   );
 
-  /**
-   * Range mode composes each input's accessible name out of the field's own
-   * name plus a per-segment sr-only span, through `aria-labelledby`.
-   *
-   * `aria-label="Start date"` on the inputs — what this used to do — OVERRIDES
-   * the associated `<label>`, so `<mud-date-input mode="range" label="Perioada">`
-   * announced "Start date" and the word "Perioada" never reached AT at all;
-   * the consumer's own `[aria-label]` was equally inert. `aria-labelledby`
-   * concatenates instead, and pointing it at the real `<label>` element keeps
-   * projected `<mud-label>` content, which string concatenation would drop.
-   *
-   * `null` when the field has neither a label nor an `aria-label`: the segment
-   * name alone is then the accessible name.
-   */
   protected readonly _fieldNameId = computed<string | null>(() => {
     if (this._hasLabel()) return this._labelId;
 
@@ -361,6 +315,19 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
     effect(() => {
       if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
 
+      const placeholder = this.placeholder()?.trim();
+
+      if (!placeholder || placeholderShape(this._spec()).test(placeholder)) return;
+
+      console.warn(
+        `[mud-date-input] placeholder ${JSON.stringify(placeholder)} does not have the ${this.format()} shape ` +
+          `(the format's separators in place, non-digits elsewhere); using the format.`,
+      );
+    });
+
+    effect(() => {
+      if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
+
       const value = this.value();
 
       if (typeof value !== 'string' || value === '' || isValidIso(value)) return;
@@ -371,13 +338,6 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
       );
     });
 
-    // Keeps each input's live `value` PROPERTY in step with its draft. The
-    // template binds `[attr.value]`, which the browser stops honouring the
-    // moment the user types into the field (the dirty value flag), so every
-    // rewrite the COMPONENT decides on — a clear, an external value write, a
-    // blur revert, a normalizing range swap — has to reach the DOM from here.
-    // Writing only on a real difference is what keeps this from stamping on the
-    // caret mid-typing. Same shape as `phone-input`'s display sync.
     effect(() => {
       const entries: [ElementRef<HTMLInputElement> | undefined, string][] = [
         [this._native(), this._draft()],
@@ -395,6 +355,10 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
     });
 
     effect(() => {
+      if (this.value() !== this._lastEmitted) this._forgetUsable();
+    });
+
+    effect(() => {
       if (!this._isBrowser) return;
 
       if (this.open()) this._attachPanel();
@@ -407,6 +371,7 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   // ----- ControlValueAccessor -----
 
   writeValue(value: MudDateValue<M>): void {
+    this._forgetUsable();
     this.value.set(value);
   }
 
@@ -431,16 +396,6 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
 
   // ----- typing -----
 
-  /**
-   * Re-masks what the native input now holds and puts the caret back after the
-   * digit the user just touched — re-masking rewrites the whole field, which
-   * would otherwise fling the caret to the end. Returns the masked display.
-   *
-   * Shared by both entry paths on purpose: the single field and each range
-   * segment ran two copies of this, in inverted statement order, which is how
-   * a caret fix lands in one and not the other. jsdom cannot observe selection
-   * at all; the browser-mode story from Task 14 is what covers this.
-   */
   private _maskAndRestoreCaret(native: HTMLInputElement): string {
     const raw = native.value;
     const caret = native.selectionStart ?? raw.length;
@@ -457,12 +412,6 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
     return masked;
   }
 
-  /**
-   * Snapshots the dates the field holds RIGHT NOW, before the commit below can
-   * replace one of them with `null`. Reading the live committed value here is
-   * what makes external writes (a form patch, `writeValue`) count too, with no
-   * second bookkeeping path to keep in sync.
-   */
   private _rememberUsable(): void {
     if (this._isRange()) {
       const { start, end } = this._range();
@@ -484,11 +433,8 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
 
     const masked = this._maskAndRestoreCaret(event.target as HTMLInputElement);
 
-    // Commit BEFORE writing the draft: committing an incomplete entry emits
-    // null, which is `_draft`'s linkedSignal source, and a source change
-    // discards any manual write that preceded it. Writing the draft last
-    // ensures the visible ghost/clear-button state reflects what was just
-    // typed rather than snapping back to empty for a render.
+    if (masked === '') this._lastValueIso = null;
+
     this._commitFrom(masked);
     this._draft.set(masked);
   }
@@ -502,53 +448,24 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
 
     const draft = part === 'start' ? this._startDraft : this._endDraft;
 
-    // Captured before any write below: the handoff to the end field must
-    // fire only on the transition into completeness, not on every keystroke
-    // that happens to leave a start segment at full length (e.g. fixing one
-    // digit of an already-complete date via the caret, not by typing at the
-    // end of it).
     const wasComplete = this._startDraft().length === this._spec().length;
     const masked = this._maskAndRestoreCaret(event.target as HTMLInputElement);
 
-    // Commit BEFORE writing the draft, same reasoning as `_onInput`: an emit
-    // sets `value` to a freshly-built `{ start, end }` object, which is a new
-    // reference every time and so is always seen as "changed" — that resets
-    // BOTH `_startDraft` and `_endDraft`'s linkedSignal, discarding a manual
-    // write that preceded it. `_commitRange` takes the just-masked display
-    // explicitly (the OTHER segment's draft signal is already current) so it
-    // does not need to read this segment's draft before it has been written.
+    // Deleting everything is a deliberate "no date": nothing to revert to.
+    if (masked === '' && part === 'start') this._lastStartIso = null;
+    else if (masked === '') this._lastEndIso = null;
+
     if (this._commitRange(part, masked)) {
-      // A normalizing swap moved BOTH committed endpoints, so writing the typed
-      // text back into this segment would pin the field to the pre-swap order.
       this._showRangeEndpoints();
     } else {
       draft.set(masked);
     }
 
-    // A start segment BECOMING complete hands off to the end field, so the
-    // user keeps typing without reaching for the mouse or Tab. Correcting an
-    // already-complete start (still full length afterwards) must not steal
-    // focus mid-edit.
-    //
-    // Deliberately NOT gated on the entry being usable: auto-advance is about
-    // the user having typed ten digits, not about whether those digits name a
-    // date this field accepts. `_focusSegment` is what keeps the handoff from
-    // settling the entry it just left.
     if (part === 'start' && !wasComplete && masked.length === this._spec().length) {
       this._focusSegment(this._endNative());
     }
   }
 
-  /**
-   * Moves focus between the two range segments. `focus()` dispatches `blur` on
-   * the outgoing input SYNCHRONOUSLY, before it returns, so the flag is still
-   * set while `_settleOnBlur` runs and the `finally` reset cannot strand it.
-   *
-   * Without this, completing a REFUSED date in the start segment (`31/02/2026`,
-   * or anything outside `min`/`max`) handed off to the end field and blanked
-   * the start field on the way out — the blur revert firing on the very entry
-   * the user was still working in.
-   */
   private _focusSegment(ref: ElementRef<HTMLInputElement> | undefined): void {
     if (!ref) return;
 
@@ -561,17 +478,6 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
     }
   }
 
-  /**
-   * Commits both endpoints. Returns whether the endpoints had to be SWAPPED,
-   * which the caller needs in order to stop rewriting the typed text over the
-   * new order.
-   *
-   * Entering the later date first still yields a valid range — the calendar
-   * swaps the endpoints too, through this same `normalizeRange` helper, so the
-   * field and the calendar cannot disagree about what a reversed range means.
-   * Nullifying the end instead (what this used to do) both threw away a date
-   * the user had just typed and left it on screen next to `end: null`.
-   */
   private _commitRange(part: 'start' | 'end', display: string): boolean {
     const startDisplay = part === 'start' ? display : this._startDraft();
     const endDisplay = part === 'end' ? display : this._endDraft();
@@ -592,9 +498,6 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
     return false;
   }
 
-  /** Redraws both entries from the committed endpoints, after a swap has moved
-   *  the one the user was not editing. The display-sync effect carries these
-   *  into the DOM. */
   private _showRangeEndpoints(): void {
     const { start, end } = this._range();
 
@@ -615,8 +518,6 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
 
     if (event.key === 'Backspace' && (native.selectionStart ?? 0) === 0) {
       event.preventDefault();
-      // Same shape as the start→end handoff: the walk-back must not settle the
-      // end entry the user is deleting their way out of.
       this._focusSegment(this._startNative());
 
       return;
@@ -630,8 +531,20 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   }
 
   private _emit(value: MudDateValue<M>): void {
+    this._lastEmitted = value;
     this.value.set(value);
     this._onChange(value);
+  }
+
+  private _forgetUsable(): void {
+    this._lastValueIso = null;
+    this._lastStartIso = null;
+    this._lastEndIso = null;
+  }
+
+  /** An entry whose text is exactly the display of its committed date was not edited. */
+  private _isUntouched(display: string, iso: string | null): boolean {
+    return display === (iso ? isoToDisplay(iso, this._spec()) : '');
   }
 
   protected _onFocus(): void {
@@ -645,27 +558,12 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
     this.touch.emit();
   }
 
-  /**
-   * Commit-on-blur, the same contract `numeric-input` uses: leaving behind an
-   * entry the field cannot use — incomplete, impossible, or refused by
-   * `min`/`max`/`disabledDates`/`dateFilter` — reverts to the last usable date
-   * instead of stranding the rejected text on screen next to a `null` value.
-   * That also stops a refused edit from destroying the value the field already
-   * held, and puts the field in step with the calendar, where an out-of-range
-   * click is a plain no-op that keeps the current selection.
-   *
-   * Only the entry that blurred is settled: in range mode the other segment may
-   * be the one focus is moving INTO, mid-entry.
-   *
-   * Fires only when the USER leaves a field. A blur the component caused itself
-   * (`_focusSegment`, for the start→end handoff and the Backspace walk-back) is
-   * not the user going anywhere, and settling then would revert the entry they
-   * are still typing.
-   */
   private _settleOnBlur(part?: 'start' | 'end'): void {
     if (this._movingFocusInternally) return;
 
     if (!this._isRange()) {
+      if (this._isUntouched(this._draft(), this._valueIso())) return;
+
       const iso = this._settledIso(this._draft(), this._lastValueIso);
 
       if (iso !== this._valueIso()) this._emit(iso as MudDateValue<M>);
@@ -678,6 +576,11 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
     if (!part) return;
 
     const current = this._range();
+
+    if (part === 'start' && this._isUntouched(this._startDraft(), current.start)) return;
+
+    if (part === 'end' && this._isUntouched(this._endDraft(), current.end)) return;
+
     const settledStart =
       part === 'start' ? this._settledIso(this._startDraft(), this._lastStartIso) : current.start;
     const settledEnd =
@@ -693,10 +596,6 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
       this._emit({ start, end } as MudDateValue<M>);
     }
 
-    // A swap moved the segment the user was NOT editing as well, so both have
-    // to be redrawn. Otherwise only the one that blurred: redrawing the other
-    // would wipe an entry the user is still part-way through — very often the
-    // one focus is moving INTO.
     if (start !== settledStart) this._showRangeEndpoints();
     else if (part === 'start') this._rewriteDraft(this._startDraft, start);
     else this._rewriteDraft(this._endDraft, end);
@@ -736,11 +635,7 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   }
 
   protected _onClear(): void {
-    // An explicit clear is not a failed edit: blur must not put the cleared
-    // date back, so the revert history goes with it.
-    this._lastValueIso = null;
-    this._lastStartIso = null;
-    this._lastEndIso = null;
+    this._forgetUsable();
 
     if (this._isRange()) {
       this._startDraft.set('');
@@ -779,7 +674,6 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   protected _onPickerChange(value: string | MudDateRange | null): void {
     this._emit(value as MudDateValue<M>);
 
-    // Single mode is done in one pick; a range closes only once both ends are set.
     if (!this._isRange()) {
       this._close();
 
@@ -820,8 +714,6 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
 
     this._overlayRef.attach(new TemplatePortal(this._panelTemplate(), this._viewContainerRef));
 
-    // Focus lands in the day grid, so arrow keys drive the calendar the moment
-    // it opens rather than editing the text behind it.
     this._picker()?.focus();
 
     this._overlayRef.outsidePointerEvents().subscribe((event) => {

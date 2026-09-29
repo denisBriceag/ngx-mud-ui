@@ -1,0 +1,41 @@
+<div class="time-picker__columns">
+  @for (column of _columns; track column) {
+    @if (column === 'minutes') {
+      <div class="time-picker__separator" aria-hidden="true">
+        @for (row of _separatorRows; track row) {
+          <span class="time-picker__separator-cell">:</span>
+        }
+      </div>
+    }
+
+    <!-- The listbox delegates keyboard handling for its options, which carry the
+         roving tabindex; the container itself is deliberately not focusable. -->
+    <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -->
+    <div
+      class="time-picker__column"
+      role="listbox"
+      [class.is-active]="_activeColumn() === column"
+      [attr.aria-label]="column === 'hours' ? _labels().hours : _labels().minutes"
+      [attr.data-column]="column"
+      (keydown)="_onKeydown($event, column)"
+    >
+      @for (n of _options(column); track n) {
+        <!-- Enter/Space are handled by the listbox's keydown above. -->
+        <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
+        <div
+          class="time-picker__option"
+          role="option"
+          [attr.data-value]="n"
+          [class.is-selected]="_selected(column) === n"
+          [class.is-active]="_selected(column) === n && _activeColumn() === column"
+          [class.is-disabled]="_isDisabled(column, n)"
+          [attr.tabindex]="_tabStopOf(column) === n ? 0 : -1"
+          [attr.aria-selected]="_selected(column) === n ? 'true' : 'false'"
+          [attr.aria-disabled]="_isDisabled(column, n) ? 'true' : null"
+          (click)="_pick(column, n)"
+          (focus)="_onOptionFocus(column, n)"
+        >{{ _pad(n) }}</div>
+      }
+    </div>
+  }
+</div>

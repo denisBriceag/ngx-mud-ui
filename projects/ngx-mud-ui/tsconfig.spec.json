@@ -42,6 +42,7 @@
     "tag/src/**/*.spec.ts",
     "text-input/src/**/*.spec.ts",
     "textarea/src/**/*.spec.ts",
+    "time-picker/src/**/*.spec.ts",
     "toast/src/**/*.spec.ts",
     "tooltip/src/**/*.spec.ts"
   ]

@@ -30,6 +30,65 @@ const config: StorybookConfig = {
       ];
     }
 
+    // Everything the stories reach must be pre-bundled up front. Vite otherwise
+    // discovers a dependency the first time a story imports it, re-optimizes and
+    // reloads the preview mid-navigation, and from then on every docs page
+    // throws "Illegal invocation" from addon-docs' focus polyfill (the runtime
+    // and blocks chunks end up on different optimized copies). One missing
+    // entry is enough, so the list is the full `optimized` set Vite's cache
+    // metadata reports, not just our direct imports. Same reason as
+    // `optimizeDeps.include` in vitest.config.ts.
+    viteConfig.optimizeDeps ??= {};
+    viteConfig.optimizeDeps.include = [
+      ...(viteConfig.optimizeDeps.include ?? []),
+      '@angular/cdk/a11y',
+      '@angular/cdk/accordion',
+      '@angular/cdk/collections',
+      '@angular/cdk/dialog',
+      '@angular/cdk/keycodes',
+      '@angular/cdk/overlay',
+      '@angular/cdk/portal',
+      '@angular/cdk/stepper',
+      '@angular/cdk/table',
+      '@angular/common',
+      '@angular/common/http',
+      '@angular/compiler',
+      '@angular/core',
+      '@angular/core/rxjs-interop',
+      '@angular/forms',
+      '@angular/forms/signals',
+      '@angular/platform-browser',
+      '@angular/platform-browser/animations',
+      '@mdx-js/react',
+      '@storybook/addon-docs',
+      '@storybook/addon-docs > @mdx-js/react',
+      '@storybook/addon-docs > @storybook/react-dom-shim',
+      '@storybook/addon-docs/angular',
+      '@storybook/addon-docs/blocks',
+      '@storybook/angular-vite',
+      '@storybook/angular-vite/client',
+      '@storybook/angular-vite/client/config',
+      '@storybook/global',
+      '@storybook/react-dom-shim',
+      'axe-core',
+      'react',
+      'react-dom/client',
+      'react/jsx-runtime',
+      'rxjs',
+      'rxjs/operators',
+      'storybook/highlight',
+      'storybook/internal/client-logger',
+      'storybook/internal/core-events',
+      'storybook/internal/docs-tools',
+      'storybook/internal/preview-errors',
+      'storybook/internal/preview/runtime',
+      'storybook/preview-api',
+      'storybook/test',
+      'telejson',
+      'ts-dedent',
+      'tslib',
+    ];
+
     return viteConfig;
   },
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],

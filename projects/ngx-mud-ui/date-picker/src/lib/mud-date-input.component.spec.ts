@@ -17,6 +17,7 @@ import { MudInlineMessage } from '../../../inline-message/src/public-api';
       [max]="max()"
       [clearable]="clearable()"
       [disabled]="disabled()"
+      [placeholder]="placeholder()"
       locale="en-GB"
       (cleared)="clearedCount.set(clearedCount() + 1)"
     >
@@ -39,6 +40,7 @@ class Host {
   readonly min = signal<string | undefined>(undefined);
   readonly max = signal<string | undefined>(undefined);
   readonly clearable = signal(false);
+  readonly placeholder = signal<string | undefined>(undefined);
   readonly disabled = signal(false);
   readonly clearedCount = signal(0);
   readonly withLabel = signal(true);
@@ -561,6 +563,100 @@ describe('MudDateInput', () => {
 
     expect(fixture.componentInstance.control.value).toBe('2026-04-15');
   });
+  it('leaves an untouched entry alone on blur when the bounds changed after it was committed', async () => {
+    const view = await render();
+
+    await view.type('15/04/2026');
+    await view.type('20/04/2026');
+    expect(view.host.value()).toBe('2026-04-20');
+
+    // The start/end pair case: the consumer raises min after the end date was
+    // committed, then the user tabs through the field without typing.
+    view.host.min.set('2026-05-01');
+    await view.fixture.whenStable();
+
+    await view.blur();
+
+    expect(view.host.value()).toBe('2026-04-20');
+    expect(view.native.getAttribute('value')).toBe('20/04/2026');
+  });
+
+  it('does not resurrect a value the consumer reset', async () => {
+    const view = await render();
+
+    // Two commits, so the revert history holds the first date when the reset lands.
+    await view.type('15/04/2026');
+    await view.type('20/04/2026');
+    expect(view.host.value()).toBe('2026-04-20');
+
+    view.host.value.set(null);
+    await view.fixture.whenStable();
+    expect(view.native.getAttribute('value')).toBe('');
+
+    await view.type('1');
+    await view.blur();
+
+    expect(view.native.getAttribute('value')).toBe('');
+    expect(view.host.value()).toBeNull();
+  });
+
+  it('does not resurrect a value the user deleted before typing afresh', async () => {
+    const view = await render();
+
+    await view.type('15/04/2026');
+    await view.type('');
+    await view.type('1');
+    await view.blur();
+
+    expect(view.native.getAttribute('value')).toBe('');
+    expect(view.host.value()).toBeNull();
+  });
+
+  it('derives the ghost and the format hint from a same-shape placeholder', async () => {
+    const view = await render();
+
+    view.host.placeholder.set('ZZ/LL/AAAA');
+    await view.fixture.whenStable();
+
+    expect(view.native.getAttribute('placeholder')).toBe('ZZ/LL/AAAA');
+    expect(view.el.querySelector('.date-field__format-hint')!.textContent!.trim()).toBe('Date format: ZZ/LL/AAAA');
+
+    // Typing must not reveal the internal DD/MM/YYYY pattern behind the consumer's.
+    await view.type('1');
+    expect(view.ghost()).toBe('Z/LL/AAAA');
+
+    await view.type('15/04/2026');
+    await view.type('1');
+    expect(view.ghost()).toBe('Z/LL/AAAA');
+  });
+
+  it('ignores a placeholder that does not have the format shape, warning in dev mode', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const view = await render();
+
+    view.host.placeholder.set('Data');
+    await view.fixture.whenStable();
+
+    expect(view.native.getAttribute('placeholder')).toBe('DD/MM/YYYY');
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('[mud-date-input] placeholder'));
+
+    // Digits would blend into typed input; a shape for ANOTHER format is wrong too.
+    view.host.placeholder.set('00/00/0000');
+    await view.fixture.whenStable();
+    expect(view.native.getAttribute('placeholder')).toBe('DD/MM/YYYY');
+
+    view.host.placeholder.set('AAAA-LL-ZZ');
+    await view.fixture.whenStable();
+    expect(view.native.getAttribute('placeholder')).toBe('DD/MM/YYYY');
+
+    // The same string is right once the format matches it.
+    view.host.format.set('YYYY-MM-DD');
+    await view.fixture.whenStable();
+    expect(view.native.getAttribute('placeholder')).toBe('AAAA-LL-ZZ');
+
+    warn.mockRestore();
+  });
+
 });
 
 describe('MudDateInput signal forms (FormValueControl)', () => {

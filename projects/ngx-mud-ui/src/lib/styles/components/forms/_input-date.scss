@@ -1,3 +1,5 @@
+@use 'field-panel';
+
 .date-field .date-field__control {
   align-items: center;
   display: flex;
@@ -138,28 +140,5 @@
 }
 
 .date-field__panel {
-  background: var(--color-background-base-default);
-  border-radius: var(--border-radius-12, 12px);
-  box-shadow:
-    var(
-      --drop-shadow-300,
-      0 8px 12px 4px rgba(40, 46, 55, 0.06),
-      0 2px 4px 0 rgba(40, 46, 55, 0.06)
-    );
-
-  @media (prefers-reduced-motion: no-preference) {
-    animation: date-field-panel-in 120ms ease-out;
-  }
-}
-
-@keyframes date-field-panel-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  @include field-panel.field-panel;
 }

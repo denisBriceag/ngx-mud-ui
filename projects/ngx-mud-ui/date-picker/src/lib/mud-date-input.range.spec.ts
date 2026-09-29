@@ -11,6 +11,7 @@ import type { MudDateRange } from './date-value';
     [(value)]="value"
     [required]="required()"
     [max]="max()"
+    [placeholder]="placeholder()"
     [aria-label]="ariaLabel()"
     locale="en-GB"
   >
@@ -24,6 +25,7 @@ class Host {
   readonly required = signal(false);
   readonly withLabel = signal(true);
   readonly max = signal<string | undefined>(undefined);
+  readonly placeholder = signal<string | undefined>(undefined);
   readonly ariaLabel = signal<string | undefined>(undefined);
 }
 
@@ -407,4 +409,35 @@ describe('MudDateInput range mode', () => {
     expect(view.host.value()).toEqual({ start: '2026-04-15', end: '2026-04-20' });
     expect(document.querySelector('.date-picker')).toBeNull();
   });
+  it('leaves an untouched endpoint alone on blur when the bounds changed after it was committed', async () => {
+    const view = await render();
+
+    await view.type(view.start, '15/04/2026');
+    await view.type(view.end, '20/04/2026');
+    expect(view.host.value()).toEqual({ start: '2026-04-15', end: '2026-04-20' });
+
+    view.host.max.set('2026-04-01');
+    await view.fixture.whenStable();
+
+    await view.blur(view.start);
+    await view.blur(view.end);
+
+    expect(view.host.value()).toEqual({ start: '2026-04-15', end: '2026-04-20' });
+    expect(view.start.getAttribute('value')).toBe('15/04/2026');
+    expect(view.end.getAttribute('value')).toBe('20/04/2026');
+  });
+
+  it('applies a same-shape placeholder to both segments and their ghosts', async () => {
+    const view = await render();
+
+    view.host.placeholder.set('ZZ/LL/AAAA');
+    await view.fixture.whenStable();
+
+    expect(view.start.getAttribute('placeholder')).toBe('ZZ/LL/AAAA');
+    expect(view.end.getAttribute('placeholder')).toBe('ZZ/LL/AAAA');
+
+    await view.type(view.end, '2');
+    expect(view.el.querySelectorAll('.date-field__ghost')[1].textContent).toBe('Z/LL/AAAA');
+  });
+
 });
