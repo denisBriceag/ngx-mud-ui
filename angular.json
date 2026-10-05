@@ -68,7 +68,9 @@
               "../textarea/src/**/*.spec.ts",
               "../time-picker/src/**/*.spec.ts",
               "../toast/src/**/*.spec.ts",
-              "../tooltip/src/**/*.spec.ts"
+              "../tooltip/src/**/*.spec.ts",
+              "../tree/src/**/*.spec.ts",
+              "../tree-item/src/**/*.spec.ts"
             ]
           }
         },
