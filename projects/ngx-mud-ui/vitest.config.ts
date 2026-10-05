@@ -24,6 +24,7 @@ export default defineConfig({
           '@angular/cdk/accordion',
           '@angular/cdk/collections',
           '@angular/cdk/dialog',
+          '@angular/cdk/layout',
           '@angular/cdk/overlay',
           '@angular/cdk/portal',
           '@angular/cdk/stepper',

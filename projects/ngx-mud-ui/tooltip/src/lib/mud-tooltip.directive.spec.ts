@@ -233,6 +233,53 @@ describe('MudTooltip', () => {
     expect(tooltip()).toBeNull();
   });
 
+  // A tooltip that repeats the trigger's own accessible name (the sidebar's
+  // compact rail) would be announced twice if it were also the description.
+  it('leaves aria-describedby alone when tooltipDescribesTrigger is false', async () => {
+    @Component({
+      imports: [MudTooltip],
+      template: `<button mudTooltip="Tip" tooltipTrigger="manual" [tooltipDescribesTrigger]="false">x</button>`,
+    })
+    class NoDescribe {}
+
+    const fixture = TestBed.createComponent(NoDescribe);
+
+    await fixture.whenStable();
+    const button = (fixture.nativeElement as HTMLElement).querySelector('button') as HTMLButtonElement;
+    const tooltip = fixture.debugElement.children[0].injector.get(MudTooltip);
+
+    tooltip.show();
+    await fixture.whenStable();
+    expect(document.querySelector('[role="tooltip"]')).not.toBeNull();
+    expect(button.hasAttribute('aria-describedby')).toBe(false);
+    tooltip.hide();
+  });
+
+  // The opt-out must not touch a describedby the consumer owns, on show or on hide.
+  it('keeps a pre-existing aria-describedby exactly as is when tooltipDescribesTrigger is false', async () => {
+    @Component({
+      imports: [MudTooltip],
+      template: `<button mudTooltip="Tip" tooltipTrigger="manual" [tooltipDescribesTrigger]="false" aria-describedby="hint">x</button>`,
+    })
+    class NoDescribeHint {}
+
+    const fixture = TestBed.createComponent(NoDescribeHint);
+
+    await fixture.whenStable();
+    const button = (fixture.nativeElement as HTMLElement).querySelector('button') as HTMLButtonElement;
+    const tooltip = fixture.debugElement.children[0].injector.get(MudTooltip);
+
+    tooltip.show();
+    await fixture.whenStable();
+    expect(document.querySelector('[role="tooltip"]')).not.toBeNull();
+    expect(button.getAttribute('aria-describedby')).toBe('hint');
+
+    tooltip.hide();
+    await fixture.whenStable();
+    expect(document.querySelector('[role="tooltip"]')).toBeNull();
+    expect(button.getAttribute('aria-describedby')).toBe('hint');
+  });
+
   it('dismisses on Escape without hiding on other keys', async () => {
     const { fixture, trigger, tooltip } = await render();
 

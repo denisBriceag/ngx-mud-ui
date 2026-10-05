@@ -59,6 +59,7 @@
               "../search-input/src/**/*.spec.ts",
               "../segmented-control/src/**/*.spec.ts",
               "../select-input/src/**/*.spec.ts",
+              "../sidebar/src/**/*.spec.ts",
               "../spinner/src/**/*.spec.ts",
               "../switch/src/**/*.spec.ts",
               "../table/src/**/*.spec.ts",
