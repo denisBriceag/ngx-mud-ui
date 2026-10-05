@@ -1,0 +1,206 @@
+import { Meta, Canvas } from '@storybook/addon-docs/blocks';
+import * as TreeStories from './tree.stories';
+
+<Meta of={TreeStories} />
+
+# Tree
+
+`<mud-tree>` displays hierarchical navigation, such as the menu of a sidebar. Sections open to
+reveal their pages, and the page you are on is highlighted.
+
+The tree is built on the Angular CDK tree. Every row is a
+[Tree Item](?path=/docs/components-tree-item--docs), so it has the same look and the same slots.
+
+<Canvas of={TreeStories.Navigation} />
+
+## Import
+
+```ts
+import { MudTree, MudTreeNode, MudTreeNodeDef } from 'ngx-mud-ui/tree';
+```
+
+Load the design-system stylesheet once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Creating a tree
+
+A tree needs two things: your data, and a template for its rows.
+
+**Data.** Pass the top-level items to `dataSource`, and tell the tree how to find an item's children
+with `childrenAccessor`:
+
+```ts
+interface NavNode {
+  label: string;
+  url?: string;
+  children?: NavNode[];
+}
+
+readonly nav: NavNode[] = [/* … */];
+readonly childrenOf = (node: NavNode) => node.children ?? [];
+```
+
+**Row templates.** Mark a row template with `*mudTreeNodeDef`. You can have several templates and
+pick one per item with `when`. A template without `when` is the default.
+
+Write `let node of nav`, naming the same data you pass to `dataSource`. Then `node` has your type
+in the template, and a typo like `node.lable` is a compile error. Without `of`, `node` is untyped.
+
+```html
+<mud-tree [dataSource]="nav" [childrenAccessor]="childrenOf" aria-label="Main navigation">
+  <a mud-tree-node *mudTreeNodeDef="let node of nav" [routerLink]="node.url"
+     routerLinkActive #rla="routerLinkActive" [selected]="rla.isActive">
+    {{ node.label }}
+  </a>
+  <button mud-tree-node type="button" *mudTreeNodeDef="let node of nav; when: isSection" [isExpandable]="true">
+    {{ node.label }}
+  </button>
+</mud-tree>
+```
+
+The tree renders every row as a sibling element and works out each row's level and indent for you.
+Only open sections are rendered.
+
+The tree supports nested data through `childrenAccessor` only. `levelAccessor` (flat data with a
+level number per item) is not supported: collapsed rows would stay reachable with the arrow keys.
+
+## Pages and sections
+
+A tree has two kinds of rows. Use the element that matches what the row does.
+
+- **A page** is a link: `<a mud-tree-node [routerLink]>`. Clicking it navigates. Bind `selected` to
+  `routerLinkActive` so the current page is highlighted.
+- **A section** is a button: `<button mud-tree-node>`. It has no page of its own; clicking it opens
+  and closes it.
+
+A page can also have children, like a settings page with sub-pages. Clicking it navigates and
+opens it. Only the chevron closes it again, so arriving on the page never hides its children.
+
+<Canvas of={TreeStories.PageParents} />
+
+Sections can be nested to any depth. Each level is indented 32px more than its parent.
+
+<Canvas of={TreeStories.Nested} />
+
+## Expanding and collapsing
+
+Set `[isExpandable]` on every row that has children. It shows the chevron and tells screen readers
+the row can open.
+
+```html
+<a mud-tree-node *mudTreeNodeDef="let node of nav" [isExpandable]="!!node.children?.length">…</a>
+```
+
+Users open and close rows with a click, the chevron or the arrow keys. To do it from code, use the
+tree's methods: `expand()`, `collapse()`, `toggle()`, `expandAll()` and `collapseAll()`. Get the
+tree with a template reference (`#tree="mudTree"`) or `viewChild(MudTree)`.
+
+<Canvas of={TreeStories.ExpandAll} />
+
+## Row content
+
+Each row takes the same content as a Tree Item: an `icon`, a filled `selectedIcon`, a
+`secondaryLabel` and `trailing` content such as a badge or a tag. Rows with children get the
+chevron after the trailing content.
+
+```html
+<a mud-tree-node *mudTreeNodeDef="let node of nav" [routerLink]="node.url" [isExpandable]="!!node.children?.length">
+  @if (node.icon) { <mud-icon icon [name]="node.icon" [scale]="20" /> }
+  @if (node.icon) { <mud-icon selectedIcon [name]="node.icon" variant="filled" [scale]="20" /> }
+  {{ node.label }}
+  @if (node.count) { <span trailing class="badge badge--xl badge--solid-neutral">{{ node.count }}</span> }
+</a>
+```
+
+Give each slotted element its own `@if`. Angular can only place an `@if` block in a slot when the
+block contains a single element.
+
+Counts use the library's [Badge](?path=/docs/components-badge--docs#inline-and-nested) in its
+inline form, the `.badge` classes. The `mudBadge` directive is for corner badges only.
+
+<Canvas of={TreeStories.BadgeAndChevron} />
+
+## Your own data on a node
+
+A node can carry any extra data your app needs, such as an id, a permission or an analytics key.
+The tree accepts any object, so add a field to your own interface:
+
+```ts
+interface NavNode<D = unknown> {
+  label: string;
+  url?: string;
+  children?: NavNode<D>[];
+  data?: D;
+}
+
+readonly nav: NavNode<PageInfo>[] = [
+  { label: 'Utilizatori', url: '/utilizatori', data: { id: 'users', permission: 'admin' } },
+];
+```
+
+In the row template, `node` is the whole object, so you can read `node.data` there or pass it to
+a handler. With `let node of nav`, `node.data` has your type (`PageInfo` here), so the template
+is type-checked too:
+
+```html
+<a mud-tree-node *mudTreeNodeDef="let node of nav" [routerLink]="node.url" (click)="open(node.data)">
+  {{ node.label }}
+  @if (node.data?.permission === 'admin') { <mud-tag trailing size="small" color="brand">Admin</mud-tag> }
+</a>
+```
+
+<Canvas of={TreeStories.CustomData} />
+
+## Choosing several rows
+
+Some trees are not navigation but a list of choices, like filters. Add `multiple` to `<mud-tree>`,
+keep the chosen items yourself, and bind each row's `selected` to them. Rows look the same as a
+selected page; screen readers announce them as chosen instead.
+
+```html
+<mud-tree [dataSource]="filters" [childrenAccessor]="childrenOf" multiple aria-label="Filter documents">
+  <button mud-tree-node type="button" *mudTreeNodeDef="let node of filters"
+          [selected]="chosen().has(node.id)" (click)="toggle(node.id)">
+    {{ node.label }}
+  </button>
+</mud-tree>
+```
+
+In this example, each section's badge counts how many of its children are chosen.
+
+<Canvas of={TreeStories.MultipleChoice} />
+
+## Disabled rows
+
+Set `[isDisabled]` to disable a row. A disabled row stays visible but can't be clicked, and the
+arrow keys skip it. A disabled section keeps its chevron but doesn't open.
+
+Only `button` and `div` rows can be disabled. A link can't be disabled; leave the link out instead.
+
+<Canvas of={TreeStories.Disabled} />
+
+## Accessibility
+
+The tree follows the [WAI-ARIA tree view pattern](https://www.w3.org/WAI/ARIA/apg/patterns/treeview/).
+
+**Name the tree.** Give `<mud-tree>` an `aria-label` or `aria-labelledby`, for example
+"Main navigation". The tree warns in development if it has neither.
+
+**Keyboard.** The whole tree is a single Tab stop. Inside it:
+
+- **↓ / ↑** move to the next or previous visible row.
+- **→** opens a closed row, or moves to its first child.
+- **←** closes an open row, or moves to its parent.
+- **Home / End** move to the first or last row.
+- **Enter / Space** follow a link, toggle a section, or toggle a choice.
+- **`*`** opens all rows at the current level.
+- **A letter** moves to the next row whose label starts with it.
+
+**Current page and choices.** In a navigation tree, `selected` marks the current page
+(`aria-current="page"`). In a `multiple` tree, it marks a chosen row (`aria-selected`).
+
+**Events.** Rows also emit the CDK's `(activation)` event, but only for Enter and Space. To react to
+both mouse and keyboard, use `(click)` or `routerLink`.

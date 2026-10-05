@@ -1,0 +1,137 @@
+import { Meta, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import * as TreeItemStories from './tree-item.stories';
+
+<Meta of={TreeItemStories} />
+
+# Tree Item
+
+`mud-tree-item` is a single navigation row: an optional icon, a label, and optional content at the
+end, such as a secondary label, a badge or a tag.
+
+It is the row that [Tree](?path=/docs/components-tree--docs) is built from. Use it on its own
+wherever you need a list of links without a hierarchy, like a settings menu.
+
+<Canvas of={TreeItemStories.Playground} />
+<Controls of={TreeItemStories.Playground} />
+
+## Import
+
+```ts
+import { MudTreeItem } from 'ngx-mud-ui/tree-item';
+```
+
+Load the design-system stylesheet once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Using a tree item
+
+Add `mud-tree-item` to your own `<a>` or `<button>`. The element stays yours, so `routerLink`,
+`routerLinkActive` and `(click)` work as usual.
+
+```html
+<a mud-tree-item routerLink="/users" routerLinkActive #rla="routerLinkActive" [selected]="rla.isActive">
+  Users
+</a>
+```
+
+Use a link for a row that goes to a page, and a button for a row that does something else.
+
+## Selected
+
+Set `selected` on the row for the page the user is on. The row gets a blue background, a bold
+label and a bar on its leading edge. Screen readers hear it as the current page.
+
+In an app, bind `selected` to `routerLinkActive`, as above, so it follows the router.
+
+## Icons
+
+Put an icon before the label with the `icon` attribute. Icons are shown at 20×20.
+
+To switch to a filled icon while the row is selected, add a second icon with `selectedIcon`. Without
+one, the row keeps its outline icon and turns it blue.
+
+```html
+<a mud-tree-item routerLink="/users">
+  <mud-icon icon name="group" [scale]="20" />
+  <mud-icon selectedIcon name="group" variant="filled" [scale]="20" />
+  Users
+</a>
+```
+
+The start padding is the same with or without an icon.
+
+<Canvas of={TreeItemStories.Icons} />
+
+## Secondary label
+
+Add short supporting text with `secondaryLabel`. It sits at the end of the row, in a smaller, lighter
+font. When the row is too narrow, the main label shortens first.
+
+```html
+<a mud-tree-item routerLink="/requests">
+  Requests
+  <span secondaryLabel>12 new</span>
+</a>
+```
+
+<Canvas of={TreeItemStories.SecondaryLabel} />
+
+## Badges and tags
+
+Put a badge or a tag at the end of the row with `trailing`. It comes after the secondary label.
+
+A badge is the library's [Badge](?path=/docs/components-badge--docs#inline-and-nested) in its
+inline form: a `<span>` with the `.badge` classes. Use `badge--xl` for the size and
+`badge--solid-<color>` for the colour, for example `badge--solid-danger`. Inside a row, a badge is
+always exactly 24×24. (The `mudBadge` directive is for badges on the corner of an element, not
+inline ones.)
+
+```html
+<a mud-tree-item routerLink="/messages">
+  Messages
+  <span trailing class="badge badge--xl badge--solid-danger">3</span>
+</a>
+```
+
+<Canvas of={TreeItemStories.TrailingBadge} />
+
+A tag is the regular [Tag](?path=/docs/components-tag--docs) component, `<mud-tag trailing>`.
+Inside a row, a tag is always 24px tall.
+
+<Canvas of={TreeItemStories.TrailingTag} />
+
+## Levels
+
+Use `level` to indent a row under another one. Level 1 has the standard indent, and each level after
+that adds 32px.
+
+Inside a `mud-tree`, don't set `level`: the tree sets it for you.
+
+<Canvas of={TreeItemStories.Levels} />
+
+## States
+
+Rows change on hover and show a focus ring when you Tab to them. A selected row stays highlighted
+on hover.
+
+To disable a row, use a button with the native `disabled` attribute. A link can't be disabled; leave
+the link out instead.
+
+<Canvas of={TreeItemStories.States} />
+
+## Accessibility
+
+**Use the right element.** A row is your own `<a>` or `<button>`, so it keeps its native
+behaviour: Tab, Enter, Space, opening in a new tab, and the screen-reader role.
+
+**Current page.** `selected` sets `aria-current="page"` on a link (`aria-current="true"` on a
+button), so screen readers announce which page is open. Without `selected`, there is no
+`aria-current`.
+
+**Icons** are decorative and hidden from screen readers. Make sure the label says what the row is.
+
+**Badges** are read as part of the row's name, for example "Messages 3". If the number needs
+context, add it to the label, for example `<span class="sr-only">unread</span>`.

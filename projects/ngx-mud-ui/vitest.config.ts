@@ -28,6 +28,7 @@ export default defineConfig({
           '@angular/cdk/portal',
           '@angular/cdk/stepper',
           '@angular/cdk/table',
+          '@angular/cdk/tree',
           '@angular/common',
           '@angular/common/http',
           '@angular/compiler',
@@ -37,6 +38,7 @@ export default defineConfig({
           '@angular/forms/signals',
           '@angular/platform-browser',
           '@angular/platform-browser/animations',
+          '@angular/router',
           '@storybook/addon-docs',
           // pnpm-nested deps of addon-docs, unreachable as bare ids from this
           // root — the `>` chain is how vite's include addresses them.
