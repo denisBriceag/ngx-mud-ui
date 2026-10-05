@@ -109,6 +109,8 @@ export class MudTooltip {
   readonly tooltipInteractive = input(false, { transform: booleanAttribute });
   readonly tooltipCloseable = input(false, { transform: booleanAttribute });
   readonly tooltipDisabled = input(false, { transform: booleanAttribute });
+  /** @description Off when the tooltip only repeats the trigger's accessible name (it would be read twice). */
+  readonly tooltipDescribesTrigger = input(true, { transform: booleanAttribute });
   readonly tooltipMaxWidth = input('280px');
   readonly tooltipShowDelay = input(200, { transform: numberAttribute });
   readonly tooltipHideDelay = input(150, { transform: numberAttribute });
@@ -179,6 +181,11 @@ export class MudTooltip {
 
   hide(): void {
     this._detach();
+  }
+
+  /** @description True while the bubble is attached, whoever opened or closed it. */
+  get isOpen(): boolean {
+    return this._overlayRef?.hasAttached() ?? false;
   }
 
   protected onMouseEnter(): void {
@@ -331,11 +338,14 @@ export class MudTooltip {
      * aria-describedby is a token list the trigger may already use (form hints etc.)
      * append rather than replace, and remove only our own token again on detach.
      * */
-    const described = this._trigger;
-    const describedby = described.getAttribute('aria-describedby');
+    if (this.tooltipDescribesTrigger()) {
+      const described = this._trigger;
+      const describedby = described.getAttribute('aria-describedby');
 
-    described.setAttribute('aria-describedby', describedby ? `${describedby} ${this._id}` : this._id);
-    this._describedElement = described;
+      described.setAttribute('aria-describedby', describedby ? `${describedby} ${this._id}` : this._id);
+      this._describedElement = described;
+    }
+
     this._document.addEventListener('keydown', this._onDocumentKeydown, { capture: true });
   }
 
