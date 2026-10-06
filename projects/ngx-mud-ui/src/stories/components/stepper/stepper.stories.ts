@@ -3,15 +3,15 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { form, required } from '@angular/forms/signals';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { moduleMetadata } from '@storybook/angular-vite';
-import { MudIndicatorStep, MudProgressTracker, MudStep, MudStepIndicator } from 'ngx-mud-ui/progress-tracker';
+import { MudIndicatorStep, MudStepper, MudStep, MudStepIndicator } from 'ngx-mud-ui/stepper';
 
 const PAD = 'padding:24px';
 
 @Component({
-  selector: 'mud-progress-tracker-linear-reactive-demo',
-  imports: [MudProgressTracker, MudStep, ReactiveFormsModule],
+  selector: 'mud-stepper-linear-reactive-demo',
+  imports: [MudStepper, MudStep, ReactiveFormsModule],
   template: `
-    <mud-progress-tracker #tracker [linear]="true">
+    <mud-stepper #stepper [linear]="true">
       <mud-step label="Identity" supportingText="Who you are" errorMessage="Complete your identity" [stepControl]="identity">
         <form [formGroup]="identity" style="display:grid;gap:8px;max-width:320px">
           <label for="pt-name">Full name (required)</label>
@@ -27,23 +27,23 @@ const PAD = 'padding:24px';
       <mud-step label="Review" supportingText="Check and submit">
         <p>All done — review your data.</p>
       </mud-step>
-    </mud-progress-tracker>
+    </mud-stepper>
     <div style="margin-top:16px;display:flex;gap:8px">
-      <button type="button" (click)="tracker.previous()">Back</button>
-      <button type="button" (click)="tracker.next()">Next</button>
+      <button type="button" (click)="stepper.previous()">Back</button>
+      <button type="button" (click)="stepper.next()">Next</button>
     </div>
   `,
 })
-class ProgressTrackerLinearReactiveDemo {
+class StepperLinearReactiveDemo {
   readonly identity = new FormGroup({ name: new FormControl('', Validators.required) });
   readonly address = new FormGroup({ street: new FormControl('', Validators.required) });
 }
 
 @Component({
-  selector: 'mud-progress-tracker-linear-signal-forms-demo',
-  imports: [MudProgressTracker, MudStep],
+  selector: 'mud-stepper-linear-signal-forms-demo',
+  imports: [MudStepper, MudStep],
   template: `
-    <mud-progress-tracker #tracker [linear]="true">
+    <mud-stepper #stepper [linear]="true">
       <mud-step label="Identity" [stepControl]="identity">
         <div style="display:grid;gap:8px;max-width:320px">
           <label for="pt-sf-name">Full name (required)</label>
@@ -53,14 +53,14 @@ class ProgressTrackerLinearReactiveDemo {
       <mud-step label="Review">
         <p>Signal-forms flow complete.</p>
       </mud-step>
-    </mud-progress-tracker>
+    </mud-stepper>
     <div style="margin-top:16px;display:flex;gap:8px">
-      <button type="button" (click)="tracker.previous()">Back</button>
-      <button type="button" (click)="tracker.next()">Next</button>
+      <button type="button" (click)="stepper.previous()">Back</button>
+      <button type="button" (click)="stepper.next()">Next</button>
     </div>
   `,
 })
-class ProgressTrackerLinearSignalFormsDemo {
+class StepperLinearSignalFormsDemo {
   readonly model = signal({ name: '' });
   readonly identity = form(this.model, (path) => {
     required(path.name);
@@ -71,18 +71,18 @@ class ProgressTrackerLinearSignalFormsDemo {
   }
 }
 
-const meta: Meta<MudProgressTracker> = {
-  title: 'Components/Progress Tracker',
-  component: MudProgressTracker,
+const meta: Meta<MudStepper> = {
+  title: 'Components/Stepper',
+  component: MudStepper,
   decorators: [
     moduleMetadata({
       imports: [
-        MudProgressTracker,
+        MudStepper,
         MudStep,
         MudStepIndicator,
         MudIndicatorStep,
-        ProgressTrackerLinearReactiveDemo,
-        ProgressTrackerLinearSignalFormsDemo,
+        StepperLinearReactiveDemo,
+        StepperLinearSignalFormsDemo,
       ],
     }),
   ],
@@ -90,20 +90,23 @@ const meta: Meta<MudProgressTracker> = {
     linear: { control: 'boolean', description: 'Gate navigation on completing previous steps' },
     orientation: { control: 'inline-radio', options: ['horizontal', 'vertical'] },
     selectedIndex: { control: { type: 'number', min: 0, max: 3, step: 1 } },
+    compact: { control: 'boolean', description: 'Force the number-less dot rail at every width' },
+    stepClick: { control: false },
   },
   args: {
     linear: false,
     orientation: 'horizontal',
     selectedIndex: 0,
+    compact: false,
   },
 };
 
 export default meta;
 
-type Story = StoryObj<MudProgressTracker>;
+type Story = StoryObj<MudStepper>;
 
 /**
- * Interactive tracker driven by the controls panel. Non-linear by
+ * Interactive stepper driven by the controls panel. Non-linear by
  * default, so every step is reachable — click a circle or use
  * Arrow keys + Enter on a focused header to navigate; completed and
  * blocked states derive from each step's control once visited. Toggle
@@ -114,16 +117,17 @@ export const Playground: Story = {
     props: { ...args },
     template: `
       <div style="${PAD}">
-        <mud-progress-tracker
+        <mud-stepper
           [linear]="linear"
           [orientation]="orientation"
           [selectedIndex]="selectedIndex"
+          [compact]="compact"
         >
           <mud-step label="Step" supportingText="Supporting Text"><p>One</p></mud-step>
           <mud-step label="Step" supportingText="Supporting Text"><p>Two</p></mud-step>
           <mud-step label="Step"><p>Three</p></mud-step>
           <mud-step label="Step"><p>Four</p></mud-step>
-        </mud-progress-tracker>
+        </mud-stepper>
       </div>
     `,
   }),
@@ -135,13 +139,13 @@ export const States: Story = {
   render: () => ({
     template: `
       <div style="${PAD}">
-        <mud-progress-tracker selectedIndex="0">
+        <mud-stepper selectedIndex="0">
           <mud-step label="Current"><p></p></mud-step>
           <mud-step label="Completed" state="completed"><p></p></mud-step>
           <mud-step label="Available" state="available"><p></p></mud-step>
           <mud-step label="Blocked" state="blocked"><p></p></mud-step>
           <mud-step label="Incomplete" state="incomplete"><p></p></mud-step>
-        </mud-progress-tracker>
+        </mud-stepper>
       </div>
     `,
   }),
@@ -154,9 +158,9 @@ export const States: Story = {
  */
 const LINEAR_REACTIVE_SOURCE = `
 @Component({
-  imports: [MudProgressTracker, MudStep, ReactiveFormsModule],
+  imports: [MudStepper, MudStep, ReactiveFormsModule],
   template: \`
-    <mud-progress-tracker #tracker [linear]="true">
+    <mud-stepper #stepper [linear]="true">
       <mud-step
         label="Identity"
         supportingText="Who you are"
@@ -173,10 +177,10 @@ const LINEAR_REACTIVE_SOURCE = `
         </form>
       </mud-step>
       <mud-step label="Review">All done — review your data.</mud-step>
-    </mud-progress-tracker>
+    </mud-stepper>
 
-    <button type="button" (click)="tracker.previous()">Back</button>
-    <button type="button" (click)="tracker.next()">Next</button>
+    <button type="button" (click)="stepper.previous()">Back</button>
+    <button type="button" (click)="stepper.next()">Next</button>
   \`,
 })
 export class ApplicationWizard {
@@ -193,7 +197,7 @@ export const LinearReactiveForms: Story = {
     docs: { source: { code: LINEAR_REACTIVE_SOURCE, language: 'ts' } },
   },
   render: () => ({
-    template: `<div style="${PAD}"><mud-progress-tracker-linear-reactive-demo /></div>`,
+    template: `<div style="${PAD}"><mud-stepper-linear-reactive-demo /></div>`,
   }),
 };
 
@@ -204,17 +208,17 @@ export const LinearReactiveForms: Story = {
  */
 const LINEAR_SIGNAL_SOURCE = `
 @Component({
-  imports: [MudProgressTracker, MudStep],
+  imports: [MudStepper, MudStep],
   template: \`
-    <mud-progress-tracker #tracker [linear]="true">
+    <mud-stepper #stepper [linear]="true">
       <mud-step label="Identity" [stepControl]="identity">
         <input [value]="model().name" (input)="setName($event)" />
       </mud-step>
       <mud-step label="Review">Signal-forms flow complete.</mud-step>
-    </mud-progress-tracker>
+    </mud-stepper>
 
-    <button type="button" (click)="tracker.previous()">Back</button>
-    <button type="button" (click)="tracker.next()">Next</button>
+    <button type="button" (click)="stepper.previous()">Back</button>
+    <button type="button" (click)="stepper.next()">Next</button>
   \`,
 })
 export class SignalFormsWizard {
@@ -235,7 +239,7 @@ export const LinearSignalForms: Story = {
     docs: { source: { code: LINEAR_SIGNAL_SOURCE, language: 'ts' } },
   },
   render: () => ({
-    template: `<div style="${PAD}"><mud-progress-tracker-linear-signal-forms-demo /></div>`,
+    template: `<div style="${PAD}"><mud-stepper-linear-signal-forms-demo /></div>`,
   }),
 };
 
@@ -245,11 +249,11 @@ export const Vertical: Story = {
   render: () => ({
     template: `
       <div style="${PAD};max-width:480px">
-        <mud-progress-tracker orientation="vertical">
+        <mud-stepper orientation="vertical">
           <mud-step label="Identity" supportingText="Who you are"><p>Identity form</p></mud-step>
           <mud-step label="Address"><p>Address form</p></mud-step>
           <mud-step label="Review"><p>Review</p></mud-step>
-        </mud-progress-tracker>
+        </mud-stepper>
       </div>
     `,
   }),
@@ -266,12 +270,12 @@ export const Mobile: Story = {
   render: () => ({
     template: `
       <div style="${PAD};max-width:360px">
-        <mud-progress-tracker>
+        <mud-stepper>
           <mud-step label="One" state="completed"><p></p></mud-step>
           <mud-step label="Two"><p></p></mud-step>
           <mud-step label="Three"><p></p></mud-step>
           <mud-step label="Four"><p></p></mud-step>
-        </mud-progress-tracker>
+        </mud-stepper>
       </div>
     `,
   }),
@@ -299,7 +303,7 @@ export const StepIndicator: Story = {
 };
 
 /**
- * The number-less dot rail. Forced here via `compact`; horizontal trackers
+ * The number-less dot rail. Forced here via `compact`; horizontal steppers
  * also switch to it automatically when their container is narrower than
  * 600px. Labels stay in the DOM for assistive tech.
  */
@@ -308,11 +312,11 @@ export const Compact: Story = {
   render: () => ({
     template: `
       <div style="max-width:420px">
-        <mud-progress-tracker compact>
+        <mud-stepper compact>
           <mud-step label="Identity">Step one content</mud-step>
           <mud-step label="Documents">Step two content</mud-step>
           <mud-step label="Review">Step three content</mud-step>
-        </mud-progress-tracker>
+        </mud-stepper>
       </div>
     `,
   }),

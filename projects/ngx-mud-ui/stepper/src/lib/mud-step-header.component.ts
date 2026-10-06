@@ -1,23 +1,23 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { CdkStepHeader } from '@angular/cdk/stepper';
 
-/** @docs-private All five visual states a tracker step can be in. */
+/** @docs-private All five visual states a stepper step can be in. */
 export const MUD_STEP_STATES = ['current', 'completed', 'incomplete', 'blocked', 'available'] as const;
 
 export type MudStepState = (typeof MUD_STEP_STATES)[number];
 
 /**
- * @docs-private Visual header of one tracker step: state circle
+ * @docs-private Visual header of one stepper step: state circle
  * (number / check / exclamation) plus heading and supporting text.
- * Rendered by {@link MudProgressTracker}; not part of the public API.
+ * Rendered by {@link MudStepper}; not part of the public API.
  */
 @Component({
   selector: 'mud-step-header',
   template: `
-    <span class="progress-step__circle" aria-hidden="true">
+    <span class="stepper-step__circle" aria-hidden="true">
       @switch (state()) {
         @case ('completed') {
-          <svg class="progress-step__icon progress-step__icon--check" viewBox="0 0 12 10" fill="none">
+          <svg class="stepper-step__icon stepper-step__icon--check" viewBox="0 0 12 10" fill="none">
             <path
               fill-rule="evenodd"
               clip-rule="evenodd"
@@ -27,7 +27,7 @@ export type MudStepState = (typeof MUD_STEP_STATES)[number];
           </svg>
         }
         @case ('blocked') {
-          <svg class="progress-step__icon progress-step__icon--blocked" viewBox="0 0 3 12" fill="none">
+          <svg class="stepper-step__icon stepper-step__icon--blocked" viewBox="0 0 3 12" fill="none">
             <path
               d="M0.35197 7.68001L0.15997 1.14441e-05H2.01597L1.82397 7.68001H0.35197ZM1.08797 11.44C0.89597 11.44 0.714637 11.3973 0.54397 11.312C0.38397 11.2267 0.250637 11.0987 0.14397 10.928C0.0479703 10.7573 -2.96831e-05 10.5653 -2.96831e-05 10.352C-2.96831e-05 10.1173 0.0479703 9.92001 0.14397 9.76001C0.23997 9.58934 0.373304 9.46134 0.54397 9.37601C0.714637 9.29068 0.901304 9.24801 1.10397 9.24801C1.39197 9.24801 1.64264 9.34934 1.85597 9.55201C2.07997 9.74401 2.19197 10.0107 2.19197 10.352C2.19197 10.5653 2.13864 10.7573 2.03197 10.928C1.93597 11.0987 1.80264 11.2267 1.63197 11.312C1.47197 11.3973 1.29064 11.44 1.08797 11.44Z"
               fill="currentColor"
@@ -35,24 +35,28 @@ export type MudStepState = (typeof MUD_STEP_STATES)[number];
           </svg>
         }
         @default {
-          <span class="progress-step__number">{{ index() + 1 }}</span>
+          <span class="stepper-step__number">{{ index() + 1 }}</span>
         }
       }
     </span>
     @if (label() || secondaryText()) {
-      <span class="progress-step__label">
+      <span class="stepper-step__label">
         @if (label()) {
-          <span class="progress-step__heading">{{ label() }}</span>
+          <span class="stepper-step__heading">{{ label() }}</span>
         }
         @if (secondaryText(); as text) {
-          <span class="progress-step__supporting">{{ text }}</span>
+          <span class="stepper-step__supporting">{{ text }}</span>
         }
       </span>
     }
+    @if (stateLabel(); as text) {
+      <!-- The check / exclamation glyphs are aria-hidden; this names the state for AT. -->
+      <span class="stepper-step__state">, {{ text }}</span>
+    }
   `,
   host: {
-    class: 'progress-step__header',
-    // Overrides CdkStepHeader's role="tab": the tracker uses the
+    class: 'stepper-step__header',
+    // Overrides CdkStepHeader's role="tab": the stepper uses the
     // list + aria-current="step" pattern, not tablist/tab/tabpanel —
     // a tablist may not contain the vertical mode's inline panels
     // (axe aria-required-children), so headers are plain buttons.
@@ -65,4 +69,5 @@ export class MudStepHeader extends CdkStepHeader {
   readonly index = input.required<number>();
   readonly label = input<string | undefined>(undefined);
   readonly secondaryText = input<string | undefined>(undefined);
+  readonly stateLabel = input<string | undefined>(undefined);
 }

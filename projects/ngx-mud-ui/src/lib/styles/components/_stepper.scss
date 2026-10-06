@@ -1,15 +1,31 @@
-.progress-tracker-container {
+// Off-screen but still read by assistive tech (the state suffix always,
+// the labels in compact mode). Local: no shared mixin exists, only base's
+// `.sr-only` utility class, which component partials do not depend on.
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  min-width: 0;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.stepper-container {
   display: block;
 }
 
-.progress-tracker {
+.stepper {
   display: flex;
   align-items: flex-start;
   width: 100%;
   max-width: 996px;
 }
 
-.progress-step {
+.stepper-step {
   position: relative;
   display: flex;
   align-items: flex-start;
@@ -21,13 +37,13 @@
   &:first-child {
     flex: 0 0 auto;
 
-    .progress-step__connector {
+    .stepper-step__connector {
       display: none;
     }
   }
 }
 
-.progress-step__connector {
+.stepper-step__connector {
   flex: 1 1 auto;
   height: 1.5px;
   min-width: var(--spacing-16, 16px);
@@ -36,7 +52,7 @@
   background-color: var(--color-border-base-secondary);
 }
 
-.progress-step__header {
+.stepper-step__header {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -53,7 +69,7 @@
   // label trick keeps step spacing even), so a header background would paint
   // a stripe behind part of the overflowing text. Hover reads as a halo
   // around the dot instead; vertical mode (below) restores the full pill.
-  &:hover:not([aria-disabled='true']) .progress-step__circle {
+  &:hover:not([aria-disabled='true']) .stepper-step__circle {
     box-shadow: 0 0 0 4px var(--color-background-base-tertiary);
   }
 
@@ -70,7 +86,7 @@
   }
 }
 
-.progress-step__circle {
+.stepper-step__circle {
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -87,12 +103,12 @@
     box-shadow 150ms ease-out;
 }
 
-.progress-step__icon {
+.stepper-step__icon {
   width: 12px;
   height: 12px;
 }
 
-.progress-step__number {
+.stepper-step__number {
   font-size: 14px;
   line-height: 1;
   font-weight: 500;
@@ -102,7 +118,12 @@
 // Labels center under their circle; the width-0 trick keeps a wide label from
 // stretching the flex column. First/last steps anchor inward so their labels
 // don't spill past the track edges.
-.progress-step__label {
+.stepper-step__label {
+  // Above the following (transparent) step boxes: the overflowing text would
+  // otherwise paint beneath them, and axe abstains from color-contrast on
+  // text "overlapped by another element".
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -112,17 +133,17 @@
   text-align: center;
 }
 
-.progress-step:first-child .progress-step__label {
+.stepper-step:first-child .stepper-step__label {
   align-items: flex-start;
-  text-align: left;
+  text-align: start;
 }
 
-.progress-step:last-child .progress-step__label {
+.stepper-step:last-child .stepper-step__label {
   align-items: flex-end;
-  text-align: right;
+  text-align: end;
 }
 
-.progress-step__heading {
+.stepper-step__heading {
   font-size: 14px;
   line-height: 20px;
   font-weight: 400;
@@ -130,53 +151,59 @@
   color: var(--color-text-base-secondary);
 }
 
-.progress-step__supporting {
+.stepper-step__supporting {
   font-size: 12px;
   line-height: 20px;
   white-space: nowrap;
   color: var(--color-text-base-tertiary);
 }
 
+// ", completed" / ", has errors" — the glyphs are aria-hidden, this is the
+// programmatic state. Never visible, so it must not take layout space either.
+.stepper-step__state {
+  @include visually-hidden;
+}
+
 // ----- states ---------------------------------------------------------
 
-.progress-step--current {
-  .progress-step__connector {
+.stepper-step--current {
+  .stepper-step__connector {
     background-color: var(--color-border-brand-default);
   }
 
-  .progress-step__circle {
+  .stepper-step__circle {
     border-color: var(--color-border-brand-default);
   }
 
-  .progress-step__number {
+  .stepper-step__number {
     color: var(--color-text-brand-default);
   }
 
-  .progress-step__heading {
+  .stepper-step__heading {
     font-weight: 500;
   }
 }
 
-.progress-step--available {
-  .progress-step__circle {
+.stepper-step--available {
+  .stepper-step__circle {
     border-color: var(--color-border-brand-default);
   }
 
-  .progress-step__number {
+  .stepper-step__number {
     color: var(--color-text-brand-default);
   }
 
-  .progress-step__heading {
+  .stepper-step__heading {
     color: var(--color-text-brand-default);
   }
 }
 
-.progress-step--completed {
-  .progress-step__connector {
+.stepper-step--completed {
+  .stepper-step__connector {
     background-color: var(--color-border-brand-default);
   }
 
-  .progress-step__circle {
+  .stepper-step__circle {
     border-color: var(--color-border-brand-default);
     background-color: var(--color-background-brand-default);
     color: var(--color-text-base-inverse-on-color);
@@ -184,54 +211,54 @@
 }
 
 // Completed steps that can be revisited read as links (actionable label).
-.progress-step--completed .progress-step__header:not([aria-disabled='true']) .progress-step__heading {
+.stepper-step--completed .stepper-step__header:not([aria-disabled='true']) .stepper-step__heading {
   color: var(--color-text-brand-default);
 }
 
-.progress-step--blocked {
-  .progress-step__connector {
+.stepper-step--blocked {
+  .stepper-step__connector {
     background-color: var(--color-border-danger-default);
   }
 
-  .progress-step__circle {
+  .stepper-step__circle {
     border-color: var(--color-border-danger-default);
     color: var(--color-icon-danger-default);
   }
 
-  .progress-step__supporting {
+  .stepper-step__supporting {
     color: var(--color-text-danger-default);
   }
 }
 
 // Disabled (non-navigable) interactive steps mute entirely.
-.progress-step__header[aria-disabled='true'] {
-  .progress-step__circle {
+.stepper-step__header[aria-disabled='true'] {
+  .stepper-step__circle {
     border-color: var(--color-border-disabled-default);
   }
 
-  .progress-step__number,
-  .progress-step__heading {
+  .stepper-step__number,
+  .stepper-step__heading {
     color: var(--color-text-disabled-default);
   }
 }
 
 // ----- content panels (horizontal) ------------------------------------
 
-.progress-tracker__content {
+.stepper__content {
   display: block;
 }
 
-.progress-tracker__panel {
+.stepper__panel {
   padding-top: var(--spacing-24, 24px);
 }
 
 // ----- vertical orientation -------------------------------------------
 
-.progress-tracker--vertical {
+.stepper--vertical {
   flex-direction: column;
   max-width: none;
 
-  .progress-step {
+  .stepper-step {
     display: block;
     flex: none;
     width: 100%;
@@ -240,7 +267,7 @@
       min-height: 84px;
     }
 
-    &:last-child .progress-step__connector {
+    &:last-child .stepper-step__connector {
       display: none;
     }
 
@@ -248,14 +275,14 @@
     // circle, alongside the inline panel, down to the next circle -
     // so the FIRST step shows it and the LAST hides it. State colors
     // come from the shared state rules above; only geometry changes.
-    &:first-child .progress-step__connector {
+    &:first-child .stepper-step__connector {
       display: block;
     }
   }
 
-  .progress-step__connector {
+  .stepper-step__connector {
     position: absolute;
-    left: 13px; // interactive padding (2px) + circle center (24px / 2) - half the line
+    inset-inline-start: 13px; // interactive padding (2px) + circle center (24px / 2) - half the line
     top: 36px; // padding + circle 24px + 8px gap
     bottom: var(--spacing-8, 8px);
     width: 1.5px;
@@ -265,7 +292,7 @@
     flex: none;
   }
 
-  .progress-step__header {
+  .stepper-step__header {
     flex-direction: row;
     align-items: flex-start;
     gap: var(--spacing-12, 12px);
@@ -275,76 +302,68 @@
     &:hover:not([aria-disabled='true']) {
       background-color: var(--color-background-base-tertiary);
 
-      .progress-step__circle {
+      .stepper-step__circle {
         box-shadow: none;
       }
     }
   }
 
-  .progress-step__label,
-  .progress-step:first-child .progress-step__label,
-  .progress-step:last-child .progress-step__label {
+  .stepper-step__label,
+  .stepper-step:first-child .stepper-step__label,
+  .stepper-step:last-child .stepper-step__label {
     width: auto;
     min-width: 0;
     align-items: flex-start;
-    text-align: left;
+    text-align: start;
   }
 
-  .progress-step__heading,
-  .progress-step__supporting {
+  .stepper-step__heading,
+  .stepper-step__supporting {
     white-space: normal;
   }
 
-  .progress-step__panel {
-    padding: var(--spacing-8, 8px) 0 var(--spacing-16, 16px) calc(24px + var(--spacing-12, 12px) + var(--spacing-2, 2px));
+  .stepper-step__panel {
+    padding-block: var(--spacing-8, 8px) var(--spacing-16, 16px);
+    padding-inline-start: calc(24px + var(--spacing-12, 12px) + var(--spacing-2, 2px));
   }
 }
 
 // ----- pending connectors are thinner (official thicknessPending: 1px) --
 
-.progress-step--incomplete .progress-step__connector,
-.progress-step--available .progress-step__connector {
+.stepper-step--incomplete .stepper-step__connector,
+.stepper-step--available .stepper-step__connector {
   height: 1px;
 }
 
-.progress-tracker--vertical .progress-step--incomplete .progress-step__connector,
-.progress-tracker--vertical .progress-step--available .progress-step__connector {
+.stepper--vertical .stepper-step--incomplete .stepper-step__connector,
+.stepper--vertical .stepper-step--available .stepper-step__connector {
   height: auto;
   width: 1px;
 }
 
 // ----- compact (number-less dot rail) ----------------------------------
 // Set by the component: the `compact` input, or automatically when a
-// horizontal tracker's container is narrower than 600px. Indicators keep
+// horizontal stepper's container is narrower than 600px. Indicators keep
 // their full 24px size; numbers and the error glyph go, the completed
 // check stays. Labels stay in the DOM for AT (visually hidden).
-.progress-tracker--compact {
-  .progress-step__number,
-  .progress-step__icon--blocked {
+.stepper--compact {
+  .stepper-step__number,
+  .stepper-step__icon--blocked {
     display: none;
   }
 
-  .progress-step__label {
-    position: absolute;
-    width: 1px;
-    min-width: 0;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-    border: 0;
+  .stepper-step__label {
+    @include visually-hidden;
   }
 
-  &.progress-tracker--vertical .progress-step:not(:last-child) {
+  &.stepper--vertical .stepper-step:not(:last-child) {
     min-height: 56px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .progress-step__header,
-  .progress-step__circle {
+  .stepper-step__header,
+  .stepper-step__circle {
     transition: none;
   }
 }
@@ -373,11 +392,11 @@
 }
 
 // Real element for the same axe color-contrast reason as
-// .progress-step__connector. Absolutely positioned, so it takes no
+// .stepper-step__connector. Absolutely positioned, so it takes no
 // grid track in the .indicator-step grid.
 .indicator-step__connector {
   position: absolute;
-  left: 11px;
+  inset-inline-start: 11px;
   top: 32px;
   bottom: 4px;
   width: 1.5px;
