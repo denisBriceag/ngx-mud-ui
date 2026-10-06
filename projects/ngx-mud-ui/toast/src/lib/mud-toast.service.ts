@@ -1,4 +1,4 @@
-import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
+import { Overlay, OverlayConfig, OverlayContainer } from '@angular/cdk/overlay';
 import type { OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import type { ComponentType } from '@angular/cdk/portal';
@@ -43,6 +43,7 @@ interface StackHandle {
 @Injectable({ providedIn: 'root' })
 export class MudToast {
   private readonly _overlay = inject(Overlay);
+  private readonly _overlayContainer = inject(OverlayContainer);
   private readonly _injector = inject(Injector);
   private readonly _announcer = inject(LiveAnnouncer);
   private readonly _errorHandler = inject(ErrorHandler);
@@ -53,6 +54,7 @@ export class MudToast {
   private readonly _queue: MudToastEntry[] = [];
   private _visible = 0;
   private readonly _dismissing = new Set<MudToastEntry>();
+  private _otherOverlays: MutationObserver | null = null;
 
   private get _maxVisible(): number {
     return this._appDefaults?.maxVisible ?? MUD_TOAST_FALLBACK_OPTIONS.maxVisible;
@@ -285,6 +287,7 @@ export class MudToast {
     const handle: StackHandle = { overlayRef, componentRef, entries: [] };
 
     this._stacks.set(key, handle);
+    this._watchOtherOverlays();
 
     return handle;
   }
@@ -296,6 +299,43 @@ export class MudToast {
 
     handle.overlayRef.dispose();
     this._stacks.delete(key);
+
+    if (this._stacks.size === 0) {
+      this._otherOverlays?.disconnect();
+      this._otherOverlays = null;
+    }
+  }
+
+  // CDK 22 shows overlays in the browser top layer, where z-index is ignored and
+  // the last-shown overlay wins — a toast opened before a dialog would sit under
+  // its backdrop. Watching the overlay container for any other overlay and
+  // re-showing the toast stacks keeps toasts on top whatever the open order.
+  private _watchOtherOverlays(): void {
+    if (!this._isBrowser || this._otherOverlays || typeof MutationObserver === 'undefined') return;
+
+    this._otherOverlays = new MutationObserver((records) => {
+      const ownHosts = new Set<Node>([...this._stacks.values()].map((handle) => handle.overlayRef.hostElement));
+      const otherAdded = records.some((record) => [...record.addedNodes].some((node) => !ownHosts.has(node)));
+
+      if (otherAdded) this._raiseStacks();
+    });
+    this._otherOverlays.observe(this._overlayContainer.getContainerElement(), { childList: true });
+  }
+
+  private _raiseStacks(): void {
+    for (const { overlayRef } of this._stacks.values()) {
+      const host = overlayRef.hostElement;
+
+      // Only top-layer hosts need it; without popover support CDK falls back to
+      // z-index, where the stack pane's 1001 already wins.
+      if (!host.hasAttribute('popover') || !host.matches(':popover-open')) continue;
+
+      // hide + show is the only way to move an element to the top of the top layer.
+      // It doesn't replay the toast's enter animation: CDK's display:flex on the
+      // host overrides the hidden popover's display:none, so nothing is re-rendered.
+      host.hidePopover();
+      host.showPopover();
+    }
   }
 
   private _keyFor(config: ResolvedToastConfig): string {
