@@ -1,0 +1,185 @@
+import { Meta, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import * as StepperStories from './stepper.stories';
+
+<Meta of={StepperStories} />
+
+# Stepper
+
+`<mud-stepper>` guides a user through a multi-step flow, such as an application form split into
+pages. The rail shows every step and its state; the selected step's content shows below it or
+inline under its header.
+
+The stepper is built on the Angular CDK stepper, so `linear`, `selectedIndex`, `next()` and
+`previous()` all come from there.
+
+<Canvas of={StepperStories.Playground} />
+<Controls of={StepperStories.Playground} />
+
+## Import
+
+```ts
+import { MudStepper, MudStep } from 'ngx-mud-ui/stepper';
+```
+
+Load the design-system stylesheet once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Creating a stepper
+
+Put one `<mud-step>` per step inside `<mud-stepper>`. Give each step a `label`, and optionally a
+`supportingText` line under it. Whatever you put inside a step is its content.
+
+```html
+<mud-stepper>
+  <mud-step label="Identity" supportingText="Who you are">…</mud-step>
+  <mud-step label="Address">…</mud-step>
+  <mud-step label="Review">…</mud-step>
+</mud-stepper>
+```
+
+Read or set the selected step with `selectedIndex`, or two-way bind it with
+`[(selectedIndex)]`. `selectionChange` fires with the previous and the new step. Move
+programmatically with `next()`, `previous()` and `reset()` on the stepper instance.
+
+## Step states
+
+Each step derives one of five states, and the rail draws it:
+
+- **current**: the selected step.
+- **completed**: a step the user visited whose control is valid. The circle fills with a check.
+- **blocked**: a visited step whose control is invalid. The circle shows an exclamation mark, and the
+  step's `errorMessage` replaces its supporting text.
+- **available**: a step the user may jump to (only in non-linear mode).
+- **incomplete**: a step the user cannot reach yet (only in linear mode).
+
+Override the derived state with `state="completed"` and friends, or with the CDK's `completed` and
+`hasError` inputs. A `state` value that is not one of the five is ignored.
+
+<Canvas of={StepperStories.States} />
+
+## Validating with forms
+
+Give a step a `stepControl` to make its state follow a form: a `FormGroup`, a `FormControl` or a
+signal-forms field. The step becomes *completed* when the user leaves it valid, and *blocked* when
+they leave it invalid. A control that turns valid later, for instance after an async check, updates
+the rail without any further wiring.
+
+Add `linear` to stop the user moving forward past an invalid step. `next()` and clicks on a later
+header are refused until the current step's control is valid. `linear` only does something when
+steps carry a `stepControl`.
+
+```html
+<mud-stepper #stepper [linear]="true">
+  <mud-step label="Identity" errorMessage="Complete your identity" [stepControl]="identity">
+    <form [formGroup]="identity">…</form>
+  </mud-step>
+  <mud-step label="Review">…</mud-step>
+</mud-stepper>
+<button type="button" (click)="stepper.next()">Next</button>
+```
+
+<Canvas of={StepperStories.LinearReactiveForms} />
+
+The same works with signal forms: pass the field returned by `form()`.
+
+<Canvas of={StepperStories.LinearSignalForms} />
+
+## Reacting to a step click
+
+`stepClick` fires when the user activates a header by click, Enter or Space, before the selection
+changes. Call `preventDefault()` on the event to keep the current step, for example to ask about
+unsaved changes first. Headers the user cannot reach do not fire it.
+
+```html
+<mud-stepper (stepClick)="confirmLeave($event)">…</mud-stepper>
+```
+
+```ts
+confirmLeave(event: MudStepperStepClick): void {
+  if (this.form.dirty && !confirm('Discard your changes?')) event.preventDefault();
+}
+```
+
+## Vertical layout
+
+Add `orientation="vertical"` to stack the steps. Each step's content then renders inline under its
+header, which suits long forms on narrow pages.
+
+<Canvas of={StepperStories.Vertical} />
+
+## Compact rail
+
+A horizontal stepper narrower than 600px switches by itself to a number-less dot rail. The
+threshold is the stepper's own width, measured live, not the viewport. Labels stay in the page for
+screen readers but are hidden visually.
+
+<Canvas of={StepperStories.Mobile} />
+
+Add `compact` to force the dot rail at every width and in both orientations.
+
+<Canvas of={StepperStories.Compact} />
+
+## Step indicator
+
+`<mud-step-indicator>` lists the stages of a process without any navigation, for a landing or
+information page. Each `<mud-indicator-step>` takes a `heading`; anything you put inside it renders
+under the heading as supporting text or an action. Steps are numbered in order, so put them
+directly inside the indicator with no wrapper element.
+
+```ts
+import { MudStepIndicator, MudIndicatorStep } from 'ngx-mud-ui/stepper';
+```
+
+```html
+<mud-step-indicator>
+  <mud-indicator-step heading="Create account">
+    Register using your government ID.
+    <button mudButton type="button">Start</button>
+  </mud-indicator-step>
+  <mud-indicator-step heading="Verify identity">Upload the requested documents.</mud-indicator-step>
+</mud-step-indicator>
+```
+
+<Canvas of={StepperStories.StepIndicator} />
+
+## Translating the state suffixes
+
+Screen readers hear a completed step as "Identity, completed" and a blocked one as "Address, has
+errors". Translate those two words once per app with `provideMudStepperLabels`. Pass a plain
+object, or a signal to switch language at runtime.
+
+```ts
+import { provideMudStepperLabels } from 'ngx-mud-ui/stepper';
+
+bootstrapApplication(App, {
+  providers: [provideMudStepperLabels({ completed: 'finalizat', blocked: 'conține erori' })],
+});
+```
+
+## Accessibility
+
+**Name it.** Each header is named by its `label` and `supportingText`. To announce something else,
+set `aria-label` or `aria-labelledby` on the `<mud-step>`; `aria-label` wins when both are set. The
+rail is a plain list, so screen readers announce "step 2 of 4" on their own.
+
+**Keyboard.** The rail is a single Tab stop on the selected step. Inside it:
+
+- **→ / ↓** and **← / ↑** move between headers, wrapping at the ends. Arrows only move focus.
+- **Home / End** jump to the first or last header.
+- **Enter / Space** select the focused header, through the same `stepClick` as a click.
+- **Tab** leaves the rail into the selected step's content.
+
+**States.** The selected header carries `aria-current="step"`. Completed and blocked headers add a
+visually hidden ", completed" or ", has errors" to their name (see *Translating the state
+suffixes*). A blocked step's `errorMessage` is read as its supporting text. Headers the user cannot
+reach in linear mode are `aria-disabled`; they stay reachable with the arrow keys but do not take
+focus on click.
+
+**Content.** Each step's content is a region labelled by its header, and the inactive ones are
+hidden. The rail's circles and connectors are decorative and hidden from assistive technology.
+
+**What you must do.** Label the form fields inside each step as usual, and keep the `label` short:
+on the horizontal rail it is a single line that does not wrap.
