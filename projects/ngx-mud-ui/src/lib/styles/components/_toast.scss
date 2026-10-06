@@ -73,14 +73,14 @@
   pointer-events: auto;
 }
 
-// Every `.cdk-overlay-pane` (and `.cdk-overlay-container`, `.cdk-overlay-backdrop`,
-// `.cdk-overlay-connected-position-bounding-box`) ships at `z-index: 1000` in
-// @angular/cdk/overlay-prebuilt.css (verified in node_modules — v22 baseline).
-// Panes at equal z-index stack by DOM/paint order, so a toast opened *before* a
-// dialog would sit under the dialog's backdrop even though the toast should
-// always outrank a modal surface. This class is passed as `panelClass` on the
-// toast overlay's config, landing on its `.cdk-overlay-pane`, and pushes it one
-// step above that shared baseline regardless of creation order.
+// FALLBACK ONLY. In browsers with the popover API, CDK 22 puts every overlay in
+// the top layer, where z-index is ignored and the last-shown overlay wins; there
+// MudToast keeps toasts on top by re-showing their hosts whenever another
+// overlay opens (see `_raiseStacks` in mud-toast.service.ts). Without popover
+// support CDK falls back to z-index: every `.cdk-overlay-*` ships at 1000 and
+// equal panes stack by DOM order, so a toast opened *before* a dialog would sit
+// under its backdrop. This class (the toast overlay's `panelClass`) lifts the
+// toast pane one step above that baseline for that case.
 .mud-toast-stack-pane {
   z-index: 1001;
 }

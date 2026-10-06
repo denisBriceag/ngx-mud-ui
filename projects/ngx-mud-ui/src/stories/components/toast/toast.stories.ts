@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { applicationConfig } from '@storybook/angular-vite';
 import { Component, inject, input } from '@angular/core';
 import { MUD_TOAST_DEFAULT_OPTIONS, MudToast } from 'ngx-mud-ui/toast';
@@ -8,6 +9,7 @@ import type {
   MudToastVerticalPosition,
 } from 'ngx-mud-ui/toast';
 import { MudButton } from 'ngx-mud-ui/button';
+import { MudDialog, MudDialogActions, MudDialogClose, MudDialogContent, MudDialogTitle } from 'ngx-mud-ui/dialog';
 
 const quote = (value: string) => `'${value.replace(/'/g, "\\'")}'`;
 
@@ -286,5 +288,79 @@ export const AppWideDefaults: Story = {
   parameters: {
     controls: { disable: true },
     docs: { source: { code: MAX_VISIBLE_SOURCE, language: 'ts' } },
+  },
+};
+
+@Component({
+  selector: 'mud-toast-story-dialog-content',
+  imports: [MudDialogTitle, MudDialogContent, MudDialogActions, MudDialogClose, MudButton],
+  template: `
+    <h2 mudDialogTitle>Trimiteți cererea?</h2>
+    <div mudDialogContent>Toast-ul deschis înainte rămâne vizibil deasupra acestui dialog.</div>
+    <div mudDialogActions>
+      <button mudButton [mudDialogClose]="true">Trimite</button>
+    </div>
+  `,
+})
+class ToastOverDialogContent {}
+
+@Component({
+  selector: 'mud-toast-story-over-dialog',
+  imports: [MudButton],
+  template: `<button mudButton (click)="saveThenConfirm()">Salvează și trimite</button>`,
+})
+class ToastOverDialogLauncher {
+  private readonly _toast = inject(MudToast);
+  private readonly _dialog = inject(MudDialog);
+
+  saveThenConfirm(): void {
+    const ref = this._toast.open({ variant: 'success', duration: 0, data: { message: 'Modificările au fost salvate.' } });
+
+    // Open the dialog once the toast has finished entering — the order that used to bury it.
+    ref.opened.subscribe(() => this._dialog.open(ToastOverDialogContent, { size: 'sm' }));
+  }
+}
+
+const OVER_DIALOG_SOURCE = `// Nothing to configure: a toast stays above dialogs, drawers and other overlays,
+// even when it was opened first.
+const ref = this.toast.open({ variant: 'success', data: { message: 'Modificările au fost salvate.' } });
+
+ref.opened.subscribe(() => this.dialog.open(ConfirmDialog));`;
+
+/** A toast opened BEFORE a dialog still sits above the dialog and its backdrop. */
+export const OverADialog: Story = {
+  render: () => ({ template: `<mud-toast-story-over-dialog />`, moduleMetadata: { imports: [ToastOverDialogLauncher] } }),
+  parameters: {
+    controls: { disable: true },
+    docs: { source: { code: OVER_DIALOG_SOURCE, language: 'ts' } },
+  },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getByRole('button', { name: 'Salvează și trimite' }));
+
+    // Overlays render outside canvasElement (CDK overlay container under <body>).
+    await waitFor(() => expect(document.querySelector('.mud-toast')).toBeTruthy());
+    const toast = document.querySelector('.mud-toast') as HTMLElement;
+    // Captured while the slide-in still runs (the dialog only opens once it ends).
+    // A replay would cancel it and create a NEW animation object. Guards the
+    // re-show: it is replay-free only because CDK's display:flex on the overlay
+    // host keeps the briefly hidden popover rendered.
+    const enter = toast.getAnimations();
+
+    await waitFor(() => expect(document.querySelector('mud-dialog-container')).toBeTruthy());
+    const dialog = document.querySelector('mud-dialog-container') as HTMLElement;
+
+    await Promise.all(dialog.getAnimations({ subtree: true }).map((animation) => animation.finished));
+    const box = toast.getBoundingClientRect();
+    const topmost = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+
+    // The toast, not the dialog's backdrop, is what the user sees and clicks.
+    await expect(toast.contains(topmost)).toBe(true);
+    await expect(toast.getAnimations().filter((animation) => !enter.includes(animation))).toHaveLength(0);
+
+    // Canvas must rest: close the dialog, then the toast.
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Trimite' }));
+    await waitFor(() => expect(document.querySelector('mud-dialog-container')).toBeNull());
+    await userEvent.click(toast.querySelector('.mud-toast__close') as HTMLButtonElement);
+    await waitFor(() => expect(document.querySelector('.mud-toast')).toBeNull());
   },
 };

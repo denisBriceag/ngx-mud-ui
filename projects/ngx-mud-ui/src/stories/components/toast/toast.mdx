@@ -126,6 +126,14 @@ queue and enter as slots free.
 
 <Canvas of={ToastStories.Stacking} />
 
+### Above dialogs and drawers
+
+Toasts always stay above other overlays, such as a [Dialog](?path=/docs/components-dialog--docs)
+or a [Drawer](?path=/docs/components-drawer--docs). This holds even when the toast opened first.
+You don't need to configure anything.
+
+<Canvas of={ToastStories.OverADialog} />
+
 ### App-wide defaults
 
 `maxVisible` is the only setting that cannot be passed per toast — it comes from

@@ -35,6 +35,10 @@
   .mud-dialog-backdrop { transition: none; }
 }
 
+@media (forced-colors: active) {
+  .dialog { border: 1px solid CanvasText; }
+}
+
 .dialog--sm { --_dlg-width: min(480px, 100vw - 32px); }
 .dialog--lg { --_dlg-width: min(720px, 100vw - 32px); }
 

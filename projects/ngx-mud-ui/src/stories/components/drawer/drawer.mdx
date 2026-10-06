@@ -1,0 +1,195 @@
+import { Meta, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import * as DrawerStories from './drawer.stories';
+
+<Meta of={DrawerStories} />
+
+# Drawer
+
+`MudDrawer` opens a panel that slides in from one edge of the screen, such as a filter panel or a
+cookie banner. The page behind it is dimmed with the same backdrop as the
+[Dialog](?path=/docs/components-dialog--docs).
+
+The drawer is only a surface. You supply everything inside it, including the close button.
+
+<Canvas of={DrawerStories.Playground} />
+<Controls of={DrawerStories.Playground} />
+
+## Import
+
+```ts
+import { MudDrawer, MudDrawerRef, MUD_DRAWER_DATA, MudDrawerTitle, MudDrawerClose } from 'ngx-mud-ui/drawer';
+```
+
+Load the design-system stylesheet once in your app:
+
+```scss
+@use 'ngx-mud-ui/styles/main';
+```
+
+## Opening a drawer
+
+There is no `<mud-drawer>` element. Inject `MudDrawer` and call `open()` with a component or a
+`TemplateRef`. It returns a `MudDrawerRef`.
+
+```ts
+export class CatalogComponent {
+  private readonly drawer = inject(MudDrawer);
+
+  filter(): void {
+    const ref = this.drawer.open<string>(FiltersDrawer, { data: { category: 'taxes' } });
+
+    ref.closed.subscribe(({ result, reason }) => console.log(result, reason));
+  }
+}
+```
+
+Read `data` in the opened component with `inject(MUD_DRAWER_DATA)`. A template receives it as
+`let-data`.
+
+## Choosing an edge
+
+Set `position` to `'top'`, `'right'`, `'bottom'` or `'left'`. The default is `'right'`.
+
+```ts
+this.drawer.open(FiltersDrawer, { position: 'left' });
+```
+
+The drawer slides in from that edge in 225ms. The slide is skipped when the user prefers reduced
+motion.
+
+<Canvas of={DrawerStories.Positions} />
+
+## Setting the size
+
+A left or right drawer is as tall as the screen. Its width is `width`, 382px by default.
+
+A top or bottom drawer is as wide as the screen. Its height is `height`, which defaults to `auto`:
+the drawer is as tall as its content, up to the screen height.
+
+```ts
+this.drawer.open(FiltersDrawer, { position: 'right', width: '480px' });
+this.drawer.open(NoticeDrawer, { position: 'bottom', height: '240px' });
+```
+
+Any CSS length works. A percentage is a share of the screen: `width: '50%'` is half the screen
+width.
+
+Each option applies to its own edges only. `width` is ignored for top and bottom drawers, and
+`height` for left and right ones.
+
+On screens 480px wide or less, a left or right drawer always takes the full width.
+
+When the content is taller than the drawer, the drawer scrolls. The page behind it does not.
+
+## Scrolling content
+
+When the content is taller than the drawer, the whole drawer scrolls by default, header included.
+
+To keep a header and an action row in view, make only the middle block scroll. The drawer lays
+out its children in a column, so this takes three CSS lines on that block:
+
+```css
+:host { display: contents; } /* your blocks become the drawer's children */
+
+.body {
+  flex: 1 1 auto;
+  min-height: 0; /* lets the block shrink below its content */
+  overflow-y: auto;
+}
+```
+
+The header and the actions keep their natural height. The block between them takes the rest and
+scrolls.
+
+Make the scrolling block reachable by keyboard. When it holds only text, nothing inside it can take
+focus, so arrow keys can't scroll it. Give it `tabindex="0"`, `role="region"` and a name, plus a
+visible focus style:
+
+```html
+<div class="body" tabindex="0" role="region" aria-label="Textul termenilor">…</div>
+```
+
+```css
+.body:focus-visible {
+  outline: 3px solid var(--focus-ring-outer-color);
+  outline-offset: -3px;
+}
+```
+
+<Canvas of={DrawerStories.ScrollableContent} />
+
+## Adding a close button
+
+The drawer has no close button of its own. Add one where your design needs it, with
+`mudDrawerClose`:
+
+```html
+<header>
+  <h2 mudDrawerTitle>Filtre</h2>
+  <button mudIconButton aria-label="Închide" mudDrawerClose><svg>…</svg></button>
+</header>
+```
+
+A bare `mudDrawerClose` closes with no result. Bind a value to close with a result:
+`[mudDrawerClose]="'applied'"`. The directive sets `type="button"`, so it never submits a form.
+
+You can also close from code with `ref.close(result)`. Inject `MudDrawerRef` in the opened
+component to do that.
+
+<Canvas of={DrawerStories.WithCloseButton} />
+
+## Reacting to the close
+
+`ref.closed` emits once, with the result and the reason, then completes. You don't need to
+unsubscribe.
+
+- `'backdrop'`: the user clicked outside the drawer.
+- `'escape'`: the user pressed Escape.
+- `'action'`: a `mudDrawerClose` button or `ref.close()` closed it.
+
+The drawer has no exit animation. It disappears as soon as it closes.
+
+## Requiring a choice
+
+Set `disableClose: true` to ignore backdrop clicks and Escape. The drawer then closes only from
+your own buttons. Use this when the user must decide, as in a cookie banner.
+
+To show a drawer as soon as the page loads, open it inside `afterNextRender()` in the constructor.
+That code runs only in the browser, so server-side rendering never outputs the drawer.
+
+## Rounding the corners
+
+The drawer has square corners. To round the corners that face the page, set
+`--mud-drawer-radius` through `panelClass`:
+
+```ts
+this.drawer.open(CookieBanner, { position: 'bottom', panelClass: 'cookie-drawer' });
+```
+
+```scss
+.cookie-drawer .drawer {
+  --mud-drawer-radius: 16px;
+}
+```
+
+A bottom drawer rounds its top corners, and a right drawer its left corners. `panelClass` also
+lets you change anything else about the drawer's look.
+
+<Canvas of={DrawerStories.CookieBanner} />
+
+## Accessibility
+
+**Name it.** Put `mudDrawerTitle` on the drawer's heading, and the drawer is labelled by it. If
+there is no visible heading, pass `ariaLabel` instead. `ariaLabel` wins when both are present.
+
+**Focus.** Opening the drawer moves focus to its first element you can Tab to. If there is none,
+focus goes to the drawer itself. Change the target with `autoFocus`. Focus stays inside the drawer while it is open. When it closes, focus returns to
+the element that had it before, unless you set `restoreFocus: false`.
+
+**Keyboard.**
+
+- **Tab / Shift+Tab** move between the drawer's controls and wrap around inside it.
+- **Escape** closes the drawer, unless `disableClose` is set.
+
+**What you must do.** Give your close button an `aria-label`, because the × alone has no name.
+Keep a visible way to close the drawer, especially with `disableClose`.
