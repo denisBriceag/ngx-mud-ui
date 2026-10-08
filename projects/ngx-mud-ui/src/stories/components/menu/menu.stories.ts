@@ -1,6 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { moduleMetadata } from '@storybook/angular-vite';
-import { MudMenu, MudMenuItem, MudMenuTrigger } from 'ngx-mud-ui/menu';
+import {
+  MudMegaMenu,
+  MudMegaMenuColumn,
+  MudMegaMenuLink,
+  MudMegaMenuOrigin,
+  MudMegaMenuTrigger,
+  MudMenu,
+  MudMenuItem,
+  MudMenuTrigger,
+} from 'ngx-mud-ui/menu';
 import { MudButton } from 'ngx-mud-ui/button';
 
 const WRAP = 'display:flex;gap:32px;align-items:flex-start;padding:24px;min-height:420px';
@@ -11,8 +20,25 @@ type MenuArgs = MudMenu & { 'aria-label'?: string };
 const meta: Meta<MenuArgs> = {
   title: 'Components/Menu',
   component: MudMenu,
-  subcomponents: { MudMenuItem, MudMenuTrigger },
-  decorators: [moduleMetadata({ imports: [MudMenu, MudMenuItem, MudMenuTrigger, MudButton] })],
+  subcomponents: {
+    MudMenuItem,
+    MudMenuTrigger,
+  },
+  decorators: [
+    moduleMetadata({
+      imports: [
+        MudMenu,
+        MudMenuItem,
+        MudMenuTrigger,
+        MudMegaMenu,
+        MudMegaMenuColumn,
+        MudMegaMenuLink,
+        MudMegaMenuOrigin,
+        MudMegaMenuTrigger,
+        MudButton,
+      ],
+    }),
+  ],
   args: {
     type: 'contextual',
     xPosition: 'after',
@@ -164,6 +190,87 @@ export const Nested: Story = {
           <mud-menu-item value="email">Email</mud-menu-item>
           <mud-menu-item value="copy">Copy link</mud-menu-item>
         </mud-menu>
+      </div>
+    `,
+  }),
+};
+
+// Fake header chrome for the full-width stories. The styles are scoped to the
+// story's template, which is fine: the trigger and bar live in the story, and
+// the panel is styled by the library partial, not by this block.
+const HEADER_STYLES = `
+  .demo-page { min-height: 560px; font-family: var(--font-family-primary, inherit); }
+  .demo-pre { display:flex; justify-content:space-between; align-items:center; height:32px; padding:0 24px;
+    background: var(--color-background-base-secondary); color: var(--color-text-base-default); font-size:12px; font-weight:500; }
+  .demo-pre span + span { font-weight: 400; letter-spacing: 0.4em; }
+  .demo-bar { display:flex; align-items:stretch; height:72px; padding:0 24px; gap:16px;
+    background: var(--color-background-base-default); border-bottom: 1px solid var(--color-border-base-default); }
+  .demo-logo { display:flex; align-items:center; gap:12px; font-weight:600; color: var(--color-text-base-default); }
+  .demo-logo i { display:block; width:40px; height:40px; border-radius:8px; background: var(--color-background-brand-default); }
+  .demo-logo small { display:block; font-size:11px; font-weight:400; color: var(--color-text-base-secondary); }
+  .demo-nav { display:flex; align-items:stretch; gap:6px; }
+  .demo-plain { display:inline-flex; align-items:center; padding:0 16px; border:0; background:transparent;
+    color: var(--color-text-base-default); font-size: 16px; line-height: 24px; font-weight: 500; font-family: inherit; cursor:pointer; }
+  .demo-plain:hover { background: var(--color-background-base-default-hover); }
+  .demo-actions { display:flex; align-items:center; gap:12px; margin-left:auto; }
+`;
+
+const COLUMN = (heading: string, prefix: string) => `
+  <mud-mega-menu-column heading="${heading}">
+    ${[1, 2, 3, 4, 5, 6, 7].map((n) => `<a mudMegaMenuLink href="#${prefix}-${n}">Option</a>`).join('\n    ')}
+  </mud-mega-menu-column>`;
+
+/** A header bar marked with `mudMegaMenuOrigin`; the panel spans exactly that bar. Two expandable items share it. */
+export const FullWidth: Story = {
+  parameters: { controls: { disable: true }, layout: 'fullscreen' },
+  render: () => ({
+    styles: [HEADER_STYLES],
+    template: `
+      <div class="demo-page">
+        <div class="demo-pre"><span>Guvernul Republicii Moldova</span><span>Ro Ru En</span></div>
+        <header class="demo-bar" mudMegaMenuOrigin>
+          <div class="demo-logo"><i></i><div>mpay<small>serviciul guvernamental de plăți electronice</small></div></div>
+          <nav class="demo-nav" aria-label="Principal">
+            <button [mudMegaMenuTriggerFor]="services">Servicii</button>
+            <button [mudMegaMenuTriggerFor]="about">Despre</button>
+            <button class="demo-plain" type="button">Option</button>
+          </nav>
+          <div class="demo-actions">
+            <button mudButton shape="circular" size="medium">Autentifică-te</button>
+            <button mudButton color="secondary" shape="circular" size="medium">Obține semnătura</button>
+          </div>
+        </header>
+
+        <mud-mega-menu #services>
+          ${COLUMN('Heading', 'a')}
+          ${COLUMN('Heading', 'b')}
+          ${COLUMN('Heading', 'c')}
+        </mud-mega-menu>
+        <mud-mega-menu #about>
+          ${COLUMN('Despre noi', 'd')}
+          ${COLUMN('Contacte', 'e')}
+        </mud-mega-menu>
+      </div>
+    `,
+  }),
+};
+
+/** No `mudMegaMenuOrigin` anywhere: the panel falls back to the full viewport width under the button. */
+export const FullWidthNoOrigin: Story = {
+  parameters: { controls: { disable: true }, layout: 'fullscreen' },
+  render: () => ({
+    styles: [HEADER_STYLES],
+    template: `
+      <div class="demo-page">
+        <header class="demo-bar">
+          <nav class="demo-nav" aria-label="Principal">
+            <button [mudMegaMenuTriggerFor]="services">Servicii</button>
+          </nav>
+        </header>
+        <mud-mega-menu #services>
+          ${COLUMN('Heading', 'a')}
+          ${COLUMN('Heading', 'b')}
+        </mud-mega-menu>
       </div>
     `,
   }),
