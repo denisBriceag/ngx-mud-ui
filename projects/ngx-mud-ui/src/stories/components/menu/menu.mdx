@@ -1,5 +1,6 @@
 import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
 import * as MenuStories from './menu.stories';
+import { MudMegaMenu, MudMegaMenuColumn, MudMegaMenuTrigger } from 'ngx-mud-ui/menu';
 
 <Meta of={MenuStories} />
 
@@ -12,7 +13,16 @@ ARIA listbox whose chosen option carries a trailing check).
 ## Import
 
 ```ts
-import { MudMenu, MudMenuItem, MudMenuTrigger } from 'ngx-mud-ui/menu';
+import {
+  MudMenu,
+  MudMenuItem,
+  MudMenuTrigger,
+  MudMegaMenu,
+  MudMegaMenuColumn,
+  MudMegaMenuLink,
+  MudMegaMenuOrigin,
+  MudMegaMenuTrigger,
+} from 'ngx-mud-ui/menu';
 ```
 
 ## Usage
@@ -60,8 +70,109 @@ hover-open, ArrowRight/ArrowLeft and chain dismissal included.
 
 <Canvas of={MenuStories.Nested} />
 
+## Full-width menu
+
+A header nav item that expands a panel spanning the whole header, laid out as
+columns of a heading over navigation links. Use it for the "Servicii" style
+entry in a site header; the regular menu above is for actions on one element.
+
+Mark the header bar with `mudMegaMenuOrigin`, put `[mudMegaMenuTriggerFor]` on
+a `<button>` inside it, and project columns of your own anchors (`href` or
+`routerLink`) into `<mud-mega-menu>`. The button renders its own chevron.
+
+```html
+<header mudMegaMenuOrigin>
+  <button [mudMegaMenuTriggerFor]="services">Servicii</button>
+</header>
+
+<mud-mega-menu #services>
+  <mud-mega-menu-column heading="Plăți">
+    <a mudMegaMenuLink routerLink="/mpay">MPay</a>
+    <a mudMegaMenuLink href="https://msign.gov.md">MSign</a>
+  </mud-mega-menu-column>
+</mud-mega-menu>
+```
+
+The panel takes the origin's exact width and sits flush under it; triggers that
+share an origin close each other. Without an origin the panel spans the viewport
+under the button, which suits fixed or top-of-page headers. It closes on a link
+click (after navigation starts), Escape, an outside click, or the button again.
+
+<Canvas of={MenuStories.FullWidth} />
+<Canvas of={MenuStories.FullWidthNoOrigin} />
+
+### Reacting to open and close
+
+The button emits `opened` and `closed` when the panel actually opens or closes.
+`<mud-mega-menu>` has its own `closed` output for close requests raised inside
+the panel: Escape, a link click, or Tab past the last link.
+
+To drive the panel from code, grab the button with a template reference or
+`viewChild` and call `open()`, `close(restoreFocus)` or `toggle()`.
+
+```html
+<button [mudMegaMenuTriggerFor]="menu" (opened)="track('open')">Servicii</button>
+```
+
+```ts
+readonly services = viewChild.required(MudMegaMenuTrigger);
+
+closeFromCode() {
+  this.services().close(true); // true returns focus to the button
+}
+```
+
+### Styling the panel
+
+Add your own classes to the panel root with `panelClass`. The panel renders in
+the overlay container, so style it with global CSS rather than component styles.
+
+```html
+<mud-mega-menu #menu panelClass="app-services" aria-label="Toate serviciile">
+```
+
+The panel is named by its button (`aria-labelledby`), so the name is the
+button's text, or the button's own `aria-label` for an icon-only button. An
+`aria-label` on `<mud-mega-menu>` overrides it.
+
+## Accessibility
+
+### Full-width menu
+
+**Name it**: the panel is a `nav` labelled by its button (`aria-labelledby`), so
+its name follows the button's text or `aria-label`, even if the label changes
+while the panel is open. Set `aria-label` on `<mud-mega-menu>` to override it.
+
+**Keyboard**:
+- **Enter / Space** toggles the panel; focus stays on the button.
+- **↓** opens the panel and moves to the first link.
+- With the panel open, **Tab** from the button enters it; from the last link it
+  closes the panel and continues on the page.
+- **Shift+Tab** from the first link returns to the button and keeps the panel
+  open; from the button it closes the panel.
+- **Esc** closes and returns focus to the button.
+
+**States**: `aria-expanded` on the button; `aria-controls` points at the open
+panel. Links are plain anchors, so screen readers announce them as links.
+
+**What you must do**: give the header's own `<nav>` an `aria-label`, and keep
+the mega menu's headings consistent with your page's heading outline (they
+render as `h3`).
+
 ## API
 
 ### MudMenu
 
 <ArgTypes of={MenuStories} />
+
+### MudMegaMenu
+
+<ArgTypes of={MudMegaMenu} />
+
+### MudMegaMenuTrigger
+
+<ArgTypes of={MudMegaMenuTrigger} />
+
+### MudMegaMenuColumn
+
+<ArgTypes of={MudMegaMenuColumn} />
