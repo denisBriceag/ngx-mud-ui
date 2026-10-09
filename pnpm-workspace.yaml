@@ -1,0 +1,8 @@
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true
+overrides:
+  # Analog lists build-angular as an optional peer and pnpm installs it anyway; nothing here uses it.
+  '@analogjs/vite-plugin-angular>@angular-devkit/build-angular': '-'
