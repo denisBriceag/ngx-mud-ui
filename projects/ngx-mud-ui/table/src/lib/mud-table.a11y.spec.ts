@@ -20,25 +20,22 @@ const ROWS: Cerere[] = [
   { id: 3, nume: 'Maria Popescu', suma: 80 },
 ];
 
-const IMPORTS = [
+const BASE_IMPORTS = [
   MudTable,
   MudColumnDef,
   MudHeaderCellDef,
   MudCellDef,
-  MudFooterCellDef,
   MudHeaderCell,
   MudCell,
-  MudFooterCell,
   MudHeaderRowDef,
   MudRowDef,
-  MudFooterRowDef,
   MudHeaderRow,
   MudRow,
-  MudFooterRow,
-  MudNoDataRow,
   MudSort,
   MudSortHeader,
 ];
+
+const IMPORTS = [...BASE_IMPORTS, MudFooterCellDef, MudFooterCell, MudFooterRowDef, MudFooterRow, MudNoDataRow];
 
 @Component({
   imports: IMPORTS,
@@ -89,7 +86,7 @@ class NativeHost {
 }
 
 @Component({
-  imports: IMPORTS,
+  imports: BASE_IMPORTS,
   template: `
     <mud-table [dataSource]="rows" mudSort aria-label="Cereri depuse">
       <ng-container mudColumnDef="nume">

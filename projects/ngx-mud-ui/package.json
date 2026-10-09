@@ -1,6 +1,6 @@
 {
   "name": "ngx-mud-ui",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Angular component library implementing MUD — the Moldova Unified Design system by eGov Moldova",
   "repository": {
     "type": "git",
@@ -16,11 +16,11 @@
     }
   },
   "peerDependencies": {
-    "@angular/cdk": "^22.1.0",
-    "@angular/common": "^22.1.0",
-    "@angular/core": "^22.1.0",
-    "@angular/forms": "^22.1.0",
-    "@angular/platform-browser": "^22.1.0"
+    "@angular/cdk": "^22.2.0",
+    "@angular/common": "^22.2.0",
+    "@angular/core": "^22.2.0",
+    "@angular/forms": "^22.2.0",
+    "@angular/platform-browser": "^22.2.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

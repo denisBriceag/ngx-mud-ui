@@ -11,7 +11,7 @@ interface Cerere {
   suma: number;
 }
 
-const IMPORTS = [
+const BASE_IMPORTS = [
   MudTable,
   MudColumnDef,
   MudHeaderCellDef,
@@ -22,10 +22,11 @@ const IMPORTS = [
   MudRowDef,
   MudHeaderRow,
   MudRow,
-  MudNoDataRow,
   MudSort,
   MudSortHeader,
 ];
+
+const IMPORTS = [...BASE_IMPORTS, MudNoDataRow];
 
 @Component({
   imports: IMPORTS,
@@ -56,7 +57,7 @@ class NativeHost {
 }
 
 @Component({
-  imports: IMPORTS,
+  imports: BASE_IMPORTS,
   template: `
     <mud-table [dataSource]="rows" mudSort>
       <ng-container mudColumnDef="nume">
