@@ -61,7 +61,7 @@ export const Playground: Story = {
           <button mud-segment value="grid">Grid</button>
           <button mud-segment value="map">Map</button>
         </mud-segmented-control>
-        <p style="color:var(--color-text-base-secondary)">Selected: {{ value }}</p>
+        <p style="color:var(--mud-color-text-base-secondary)">Selected: {{ value }}</p>
       </div>
     `,
   }),
@@ -201,15 +201,15 @@ export const DesktopAndMobile: Story = {
     props: { desktop: 'week', mobile: 'week' },
     template: `
       <div style="${PAD}">
-        <p style="color:var(--color-text-base-secondary)">Desktop — inline, content-sized</p>
+        <p style="color:var(--mud-color-text-base-secondary)">Desktop — inline, content-sized</p>
         <mud-segmented-control [(value)]="desktop" aria-label="Period (desktop)">
           <button mud-segment value="day">Day</button>
           <button mud-segment value="week">Week</button>
           <button mud-segment value="month">Month</button>
         </mud-segmented-control>
 
-        <p style="color:var(--color-text-base-secondary);margin-top:32px">Mobile (360px) — fullWidth</p>
-        <div style="width:360px;border:1px dashed var(--color-border-base-secondary);border-radius:12px;padding:16px">
+        <p style="color:var(--mud-color-text-base-secondary);margin-top:32px">Mobile (360px) — fullWidth</p>
+        <div style="width:360px;border:1px dashed var(--mud-color-border-base-secondary);border-radius:12px;padding:16px">
           <mud-segmented-control [(value)]="mobile" fullWidth aria-label="Period (mobile)">
             <button mud-segment value="day">Day</button>
             <button mud-segment value="week">Week</button>

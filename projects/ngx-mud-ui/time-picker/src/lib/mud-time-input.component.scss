@@ -1,0 +1,121 @@
+@use '../../../src/lib/styles/abstracts/mixins/field-panel';
+@use '../../../src/lib/styles/abstracts/mixins/host';
+
+@include host.typography('mud-time-input');
+
+.time-field .time-field__control {
+  align-items: center;
+  display: flex;
+  gap: var(--mud-spacing-4, 4px);
+}
+
+.time-field__entry {
+  display: inline-grid;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.time-field__entry > .time-field__native,
+.time-field__entry > .time-field__ghost-row {
+  grid-area: 1 / 1;
+  font-family: var(--mud-font-family-base);
+  font-size: var(--_if-font-size);
+  line-height: var(--_if-line-height);
+  letter-spacing: inherit;
+}
+
+// Two classes: restyles the shared `.input-field__native` by specificity, not load order
+// (its 4-class disabled state still wins, as it should).
+.input-field__native.time-field__native {
+  background: transparent;
+  border: 0;
+  caret-color: var(--mud-color-text-brand-default);
+  color: inherit;
+  min-width: 0;
+  outline: none;
+  padding: 0;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.time-field__ghost-row {
+  overflow: hidden;
+  pointer-events: none;
+  white-space: pre;
+}
+
+.time-field__ghost-row--hidden {
+  visibility: hidden;
+}
+
+.time-field__ghost-typed {
+  visibility: hidden;
+}
+
+.time-field__ghost {
+  color: var(--mud-color-text-base-secondary);
+}
+
+.time-field.is-disabled .time-field__ghost {
+  color: var(--mud-color-text-disabled-default);
+}
+
+.time-field__toggle {
+  align-items: center;
+  background: none;
+  border: 0;
+  border-radius: var(--mud-border-radius-6, 6px);
+  color: var(--mud-color-icon-base-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 24px;
+  justify-content: center;
+  padding: 0;
+  position: relative;
+  width: 24px;
+
+  &:hover:not(:disabled) {
+    color: var(--mud-color-icon-base-default);
+  }
+
+  @media (pointer: coarse) {
+    &::before {
+      content: '';
+      inset: -8px;
+      position: absolute;
+    }
+  }
+
+  &:focus-visible {
+    outline: var(--mud-focus-ring-outer-width, 3px) solid
+      var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500));
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    color: var(--mud-color-text-disabled-default);
+    cursor: default;
+  }
+
+  svg {
+    height: 20px;
+    width: 20px;
+  }
+}
+
+.time-field__toggle-icon--lg,
+.input-field--lg .time-field__toggle-icon--md {
+  display: none;
+}
+
+.input-field--lg .time-field__toggle-icon--lg {
+  display: block;
+  height: 24px;
+  width: 24px;
+}
+
+.time-field__panel {
+  @include field-panel.field-panel;
+}

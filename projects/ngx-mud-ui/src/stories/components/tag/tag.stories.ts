@@ -57,7 +57,7 @@ export const Matrix: Story = {
           @if (color !== 'info') {
             <mud-tag [color]="color" type="outlined">Label</mud-tag>
           }
-          <span style="width:8ch;color:var(--color-text-base-secondary)">{{ color }}</span>
+          <span style="width:8ch;color:var(--mud-color-text-base-secondary)">{{ color }}</span>
         </div>
       }
     `,

@@ -12,6 +12,8 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { CdkTreeNode, CdkTreeNodeToggle } from '@angular/cdk/tree';
 import { MudTree } from './mud-tree.component';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudTreeItemStyles } from 'ngx-mud-ui/tree-item';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -20,7 +22,7 @@ declare const ngDevMode: boolean | undefined;
  * <a mud-tree-node *mudTreeNodeDef="let node of nav" [routerLink]="node.url" [isExpandable]="!!node.children?.length">
  *   <mud-icon icon name="group" [scale]="20" />
  *   {{ node.label }}
- *   <span class="badge badge--xl badge--solid-neutral" trailing>{{ node.count }}</span>
+ *   <mud-badge trailing [count]="node.count" variant="neutral" size="xl" />
  * </a>
  * ```
  */
@@ -63,6 +65,14 @@ export class MudTreeNode<T, K = T> extends CdkTreeNode<T, K> implements OnInit {
   protected readonly _ariaCurrent = computed(() =>
     this.selected() && !this._multiple() ? (this._isAnchor ? 'page' : 'true') : null,
   );
+
+  constructor() {
+    super();
+
+    const styles = inject(MudStyleLoader);
+
+    styles.load(_MudTreeItemStyles);
+  }
 
   /** In a multiple tree every choice carries aria-selected; an unchosen section (it only opens) carries none. */
   protected _ariaSelected(): 'true' | 'false' | null {

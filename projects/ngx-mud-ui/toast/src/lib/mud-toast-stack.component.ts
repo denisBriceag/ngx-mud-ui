@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, viewChildren } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, viewChildren, ViewEncapsulation } from '@angular/core';
 import type { MudToastVerticalPosition } from './mud-toast-config';
 import type { MudToastEntry } from './mud-toast-entry';
 import { MudToastItem } from './mud-toast-item.component';
@@ -13,6 +13,8 @@ interface PositionedEntry {
 /** The overlay-hosted column for one screen position. */
 @Component({
   selector: 'mud-toast-stack',
+  styleUrl: './mud-toast-stack.component.scss',
+  encapsulation: ViewEncapsulation.None,
   imports: [MudToastItem],
   template: `
     @for (item of positioned(); track item.entry.id) {

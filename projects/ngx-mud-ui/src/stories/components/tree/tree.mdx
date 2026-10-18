@@ -19,10 +19,10 @@ The tree is built on the Angular CDK tree. Every row is a
 import { MudTree, MudTreeNode, MudTreeNodeDef } from 'ngx-mud-ui/tree';
 ```
 
-Load the design-system stylesheet once in your app:
+Add the base stylesheet to your app's `angular.json` `styles` once:
 
-```scss
-@use 'ngx-mud-ui/styles/main';
+```json
+"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
 ```
 
 ## Creating a tree
@@ -111,15 +111,15 @@ chevron after the trailing content.
   @if (node.icon) { <mud-icon icon [name]="node.icon" [scale]="20" /> }
   @if (node.icon) { <mud-icon selectedIcon [name]="node.icon" variant="filled" [scale]="20" /> }
   {{ node.label }}
-  @if (node.count) { <span trailing class="badge badge--xl badge--solid-neutral">{{ node.count }}</span> }
+  @if (node.count) { <mud-badge trailing [count]="node.count" variant="neutral" size="xl" /> }
 </a>
 ```
 
 Give each slotted element its own `@if`. Angular can only place an `@if` block in a slot when the
 block contains a single element.
 
-Counts use the library's [Badge](?path=/docs/components-badge--docs#inline-and-nested) in its
-inline form, the `.badge` classes. The `mudBadge` directive is for corner badges only.
+Counts use the library's [`<mud-badge>`](?path=/docs/components-badge--docs#inside-other-components).
+The `mudBadge` directive is for corner badges only.
 
 <Canvas of={TreeStories.BadgeAndChevron} />
 

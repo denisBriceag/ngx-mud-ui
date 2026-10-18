@@ -1,0 +1,13 @@
+@use 'sass:meta';
+
+// The library's base CSS — what an app lists in angular.json `styles`. Tokens (--mud-*, light;
+// the dark theme is opt-in: prebuilt/mud-dark.scss), the Onest font and shared keyframes, all in
+// mud.base so any app CSS wins. It styles no elements: each component sets its own host typography.
+@layer mud.base {
+  @include meta.load-css('../base/colors');
+  @include meta.load-css('../base/tokens');
+  @include meta.load-css('../base/root-variables');
+  @include meta.load-css('../base/component-tokens');
+  @include meta.load-css('../fonts/onest');
+  @include meta.load-css('../base/keyframes');
+}

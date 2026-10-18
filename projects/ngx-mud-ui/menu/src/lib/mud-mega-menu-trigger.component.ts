@@ -20,6 +20,8 @@ import type { Subscription } from 'rxjs';
 import type { MudMegaMenu } from './mud-mega-menu.component';
 import { MudMegaMenuOrigin } from './mud-mega-menu-origin.directive';
 import type { MudMegaMenuTriggerHandle } from './mud-mega-menu.types';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudMegaMenuStyles } from './mud-mega-menu-styles.component';
 
 let nextTriggerId = 0;
 
@@ -86,6 +88,8 @@ export class MudMegaMenuTrigger implements MudMegaMenuTriggerHandle {
   private _destroyed = false;
 
   constructor() {
+    inject(MudStyleLoader).load(_MudMegaMenuStyles);
+
     inject(DestroyRef).onDestroy(() => {
       this._destroyed = true;
       this.close(false);

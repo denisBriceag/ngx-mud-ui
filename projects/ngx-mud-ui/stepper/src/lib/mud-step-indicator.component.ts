@@ -7,6 +7,8 @@ import {
   inject,
   input,
 } from '@angular/core';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudStepperStyles } from './mud-stepper-styles.component';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -54,6 +56,10 @@ export class MudIndicatorStep {
 
     return index + 1;
   });
+
+  constructor() {
+    inject(MudStyleLoader).load(_MudStepperStyles);
+  }
 }
 
 /**

@@ -1,16 +1,17 @@
 import { Component, PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MudTreeItem } from './mud-tree-item.component';
+import { MudBadge } from 'ngx-mud-ui/badge';
 
 @Component({
-  imports: [MudTreeItem],
+  imports: [MudTreeItem, MudBadge],
   template: `
     <a mud-tree-item href="/users" selected [level]="2">
       <svg icon></svg>
       <svg selectedIcon></svg>
       Users
       <span secondaryLabel>12 new</span>
-      <span trailing class="badge">3</span>
+      <mud-badge trailing [count]="3" />
     </a>
     <button mud-tree-item type="button" selected>Settings</button>
     <button mud-tree-item type="button" disabled>Archive</button>

@@ -1,4 +1,5 @@
-@use './colors';
+@use '../../../../breakpoints' as bp;
+
 
 $color-palettes: (
   'gray': (
@@ -176,47 +177,14 @@ $border-styles: (
   none: none,
 );
 
-$breakpoints: (
-  xs: 320px,
-  sm: 576px,
-  md: 768px,
-  lg: 992px,
-  xl: 1248px,
-  xxl: 1440px,
-);
+// Single source: the published ngx-mud-ui/breakpoints module.
+$breakpoints: bp.$breakpoints;
 
 // Largest tier container cap (xxl); also used for header shell max-width.
-$layout-container-max-width: 1440px;
 
-$container-max-widths: (
-  xs: 288px,
-  sm: 544px,
-  md: 720px,
-  lg: 944px,
-  xl: 1200px,
-  xxl: $layout-container-max-width,
-);
 
-$grid-columns: 12 !default;
 
-// Layout column counts per tier (design grid); column utilities still use $grid-columns.
-$layout-columns: (
-  xs: 4,
-  sm: 4,
-  md: 8,
-  lg: 12,
-  xl: 12,
-  xxl: 12,
-);
 
-$gutters: (
-  xs: 16px,
-  sm: 16px,
-  md: 24px,
-  lg: 24px,
-  xl: 24px,
-  xxl: 24px,
-);
 
 $spacings: (
   0: 0px,
@@ -272,151 +240,6 @@ $drop-shadows: (
     0 6px 12px rgba(0, 0, 0, 0.1),
   ),
 );
-
-:root {
-  --layout-container-max-width: #{$layout-container-max-width};
-
-  @each $key, $val in $breakpoints {
-    --breakpoint-#{$key}: #{$val};
-  }
-
-  @each $key, $max in $container-max-widths {
-    --container-max-width-#{$key}: #{$max};
-  }
-
-  --grid-columns: #{$grid-columns};
-
-  @each $key, $g in $gutters {
-    --grid-gutter-#{$key}: #{$g};
-  }
-
-  @each $key, $cols in $layout-columns {
-    --layout-columns-#{$key}: #{$cols};
-  }
-
-  --font-family-base: 'Onest', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --font-family-descriptor: var(--font-family-mono);
-  --font-weight-regular: 400;
-  --font-weight-semibold: 500;
-  --font-weight-bold: 600;
-}
-
-:root {
-  --text-display-lg-font-family: var(--font-family-base);
-  --text-display-md-font-family: var(--font-family-base);
-
-  --text-heading-h1-lg-font-family: var(--font-family-base);
-  --text-heading-h2-md-font-family: var(--font-family-base);
-  --text-heading-h3-sm-font-family: var(--font-family-base);
-  --text-heading-h4-xs-font-family: var(--font-family-base);
-  --text-heading-h5-2xs-font-family: var(--font-family-base);
-
-  --text-body-lg-font-family: var(--font-family-base);
-  --text-body-lg-500-font-family: var(--font-family-base);
-  --text-body-md-font-family: var(--font-family-base);
-  --text-body-md-500-font-family: var(--font-family-base);
-  --text-body-sm-font-family: var(--font-family-base);
-  --text-body-sm-500-font-family: var(--font-family-base);
-
-  --text-caption-md-font-family: var(--font-family-base);
-  --text-caption-md-500-font-family: var(--font-family-base);
-  --text-caption-sm-font-family: var(--font-family-base);
-}
-
-:root {
-  --text-display-lg-font-weight: var(--font-weight-bold);
-  --text-display-md-font-weight: var(--font-weight-bold);
-
-  --text-heading-h1-lg-font-weight: var(--font-weight-bold);
-  --text-heading-h2-md-font-weight: var(--font-weight-bold);
-  --text-heading-h3-sm-font-weight: var(--font-weight-bold);
-  --text-heading-h4-xs-font-weight: var(--font-weight-semibold);
-  --text-heading-h5-2xs-font-weight: var(--font-weight-semibold);
-
-  --text-body-lg-font-weight: var(--font-weight-regular);
-  --text-body-lg-500-font-weight: var(--font-weight-semibold);
-  --text-body-md-font-weight: var(--font-weight-regular);
-  --text-body-md-500-font-weight: var(--font-weight-semibold);
-  --text-body-sm-font-weight: var(--font-weight-regular);
-  --text-body-sm-500-font-weight: var(--font-weight-semibold);
-
-  --text-caption-md-font-weight: var(--font-weight-regular);
-  --text-caption-md-500-font-weight: var(--font-weight-semibold);
-  --text-caption-sm-font-weight: var(--font-weight-regular);
-}
-
-:root {
-  --text-display-lg-font-size: 56px;
-  --text-display-lg-line-height: 140%;
-  --text-display-lg-letter-spacing: -0.02em;
-
-  --text-display-md-font-size: 48px;
-  --text-display-md-line-height: 140%;
-  --text-display-md-letter-spacing: -0.02em;
-
-  --text-heading-h1-lg-font-size: 40px;
-  --text-heading-h2-md-font-size: 32px;
-  --text-heading-h3-sm-font-size: 28px;
-  --text-heading-h4-xs-font-size: 24px;
-  --text-heading-h5-2xs-font-size: 20px;
-
-  --text-heading-h1-lg-line-height: 150%;
-  --text-heading-h2-md-line-height: 150%;
-  --text-heading-h3-sm-line-height: 150%;
-  --text-heading-h4-xs-line-height: 150%;
-  --text-heading-h5-2xs-line-height: 150%;
-
-  --text-body-lg-font-size: 18px;
-  --text-body-lg-500-font-size: 18px;
-  --text-body-md-font-size: 16px;
-  --text-body-md-500-font-size: 16px;
-  --text-body-sm-font-size: 14px;
-  --text-body-sm-500-font-size: 14px;
-
-  --text-body-lg-line-height: 150%;
-  --text-body-md-line-height: 140%;
-  --text-body-sm-line-height: 140%;
-
-  --text-caption-md-font-size: 12px;
-  --text-caption-md-500-font-size: 12px;
-  --text-caption-sm-font-size: 10px;
-
-  --text-caption-md-line-height: 140%;
-  --text-caption-sm-line-height: 140%;
-}
-
-:root {
-  --text-font-size-14: 14px;
-  --text-font-size-16: 16px;
-
-  --text-line-height-20: 20px;
-  --text-line-height-24: 24px;
-}
-
-@media (max-width: 768px) {
-  :root {
-    --text-display-lg-font-size: 48px;
-    --text-display-md-font-size: 40px;
-
-    --text-heading-h1-lg-font-size: 32px;
-    --text-heading-h2-md-font-size: 28px;
-    --text-heading-h3-sm-font-size: 22px;
-    --text-heading-h4-xs-font-size: 18px;
-    --text-heading-h5-2xs-font-size: 16px;
-
-    --text-body-lg-font-size: 16px;
-    --text-body-lg-500-font-size: 16px;
-    --text-body-md-font-size: 14px;
-    --text-body-md-500-font-size: 14px;
-    --text-body-sm-font-size: 12px;
-    --text-body-sm-500-font-size: 12px;
-
-    --text-caption-md-font-size: 10px;
-    --text-caption-md-500-font-size: 10px;
-    --text-caption-sm-font-size: 8px;
-  }
-}
 
 $font-sizes: (
   8: 8px,

@@ -13,6 +13,7 @@ import type { ElementRef } from '@angular/core';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { MudRadioGroup } from './mud-radio-group.component';
+import { _MudSelectionControlStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 let nextUniqueId = 0;
 
@@ -49,6 +50,10 @@ export class MudRadio<T = unknown> {
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
   private readonly _native = viewChild.required<ElementRef<HTMLInputElement>>('native');
+
+  constructor() {
+    inject(MudStyleLoader).load(_MudSelectionControlStyles);
+  }
 
   /** @docs-private Focuses this option's native input (used by the group). */
   _focus(options?: FocusOptions): void {

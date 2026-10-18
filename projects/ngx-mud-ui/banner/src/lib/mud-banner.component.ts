@@ -1,4 +1,4 @@
-import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, output, ViewEncapsulation } from '@angular/core';
 
 export type MudBannerVariant = 'info' | 'warning' | 'error';
 export type MudBannerType = 'subtle' | 'strong';
@@ -67,6 +67,8 @@ const DEFAULT_CLOSE_LABEL = 'Close';
       </button>
     }
   `,
+  styleUrl: './mud-banner.component.scss',
+  encapsulation: ViewEncapsulation.None,
   host: {
     '[class]': '_hostClasses()',
     '[attr.role]': '_role()',

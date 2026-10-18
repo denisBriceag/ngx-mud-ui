@@ -7,12 +7,14 @@
     "url": "git+https://github.com/denisBriceag/ngx-mud-ui.git"
   },
   "exports": {
-    "./styles/*": {
-      "sass": "./styles/*",
-      "default": "./styles/*"
+    "./prebuilt/*": {
+      "default": "./prebuilt/*"
     },
-    "./assets/*": {
-      "default": "./assets/*"
+    "./fonts/*": {
+      "default": "./fonts/*"
+    },
+    "./breakpoints": {
+      "sass": "./breakpoints/_index.scss"
     }
   },
   "peerDependencies": {

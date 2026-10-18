@@ -46,7 +46,7 @@ const meta: Meta<MudIconComponent> = {
   render: ({ ariaLabel, ...args }) => ({
     props: { ...args, ariaLabelText: ariaLabel },
     template: `
-      <div style="display:inline-flex;align-items:center;gap:1rem;padding:1.5rem;color:var(--color-icon-base-default, #121212);font-family:monospace">
+      <div style="display:inline-flex;align-items:center;gap:1rem;padding:1.5rem;color:var(--mud-color-icon-base-default, #121212);font-family:monospace">
         <mud-icon [name]="name" [variant]="variant" [scale]="scale" [aria-label]="ariaLabelText" />
         <span>&lt;mud-icon name="{{ name }}" variant="{{ variant }}" scale="{{ scale }}" /&gt;</span>
       </div>

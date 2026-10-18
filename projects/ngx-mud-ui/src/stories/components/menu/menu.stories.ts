@@ -199,19 +199,19 @@ export const Nested: Story = {
 // story's template, which is fine: the trigger and bar live in the story, and
 // the panel is styled by the library partial, not by this block.
 const HEADER_STYLES = `
-  .demo-page { min-height: 560px; font-family: var(--font-family-primary, inherit); }
+  .demo-page { min-height: 560px; font-family: inherit; }
   .demo-pre { display:flex; justify-content:space-between; align-items:center; height:32px; padding:0 24px;
-    background: var(--color-background-base-secondary); color: var(--color-text-base-default); font-size:12px; font-weight:500; }
+    background: var(--mud-color-background-base-secondary); color: var(--mud-color-text-base-default); font-size:12px; font-weight:500; }
   .demo-pre span + span { font-weight: 400; letter-spacing: 0.4em; }
   .demo-bar { display:flex; align-items:stretch; height:72px; padding:0 24px; gap:16px;
-    background: var(--color-background-base-default); border-bottom: 1px solid var(--color-border-base-default); }
-  .demo-logo { display:flex; align-items:center; gap:12px; font-weight:600; color: var(--color-text-base-default); }
-  .demo-logo i { display:block; width:40px; height:40px; border-radius:8px; background: var(--color-background-brand-default); }
-  .demo-logo small { display:block; font-size:11px; font-weight:400; color: var(--color-text-base-secondary); }
+    background: var(--mud-color-background-base-default); border-bottom: 1px solid var(--mud-color-border-base-default); }
+  .demo-logo { display:flex; align-items:center; gap:12px; font-weight:600; color: var(--mud-color-text-base-default); }
+  .demo-logo i { display:block; width:40px; height:40px; border-radius:8px; background: var(--mud-color-background-brand-default); }
+  .demo-logo small { display:block; font-size:11px; font-weight:400; color: var(--mud-color-text-base-secondary); }
   .demo-nav { display:flex; align-items:stretch; gap:6px; }
   .demo-plain { display:inline-flex; align-items:center; padding:0 16px; border:0; background:transparent;
-    color: var(--color-text-base-default); font-size: 16px; line-height: 24px; font-weight: 500; font-family: inherit; cursor:pointer; }
-  .demo-plain:hover { background: var(--color-background-base-default-hover); }
+    color: var(--mud-color-text-base-default); font-size: 16px; line-height: 24px; font-weight: 500; font-family: inherit; cursor:pointer; }
+  .demo-plain:hover { background: var(--mud-color-background-base-default-hover); }
   .demo-actions { display:flex; align-items:center; gap:12px; margin-left:auto; }
 `;
 

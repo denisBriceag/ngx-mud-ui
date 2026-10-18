@@ -21,6 +21,7 @@ import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl } from '@angular/forms/signals';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+import { _MudSelectionControlStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudRadioGroupSize = 'medium' | 'small';
 
@@ -152,6 +153,10 @@ export class MudRadioGroup<T = unknown> implements ControlValueAccessor, FormVal
   });
 
   // ----- ControlValueAccessor (reactive/template-driven forms) -----
+
+  constructor() {
+    inject(MudStyleLoader).load(_MudSelectionControlStyles);
+  }
 
   writeValue(value: T | undefined): void {
     this.value.set(value);

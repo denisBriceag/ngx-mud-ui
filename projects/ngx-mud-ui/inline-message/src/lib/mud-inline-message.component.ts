@@ -1,4 +1,4 @@
-import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, ViewEncapsulation } from '@angular/core';
 
 export type MudInlineMessageVariant = 'info' | 'warning' | 'success' | 'error';
 export type MudInlineMessageSize = 'small' | 'medium';
@@ -59,6 +59,8 @@ export type MudInlineMessageSize = 'small' | 'medium';
     }
     <span class="inline-message__text"><ng-content /></span>
   `,
+  styleUrl: './mud-inline-message.component.scss',
+  encapsulation: ViewEncapsulation.None,
   host: {
     '[class]': '_hostClasses()',
   },

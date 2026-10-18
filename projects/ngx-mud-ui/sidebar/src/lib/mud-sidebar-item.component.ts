@@ -8,13 +8,16 @@ import {
   input,
   ViewEncapsulation,
 } from '@angular/core';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudSidebarStyles } from './mud-sidebar-styles.component';
+import { _MudTreeItemStyles } from 'ngx-mud-ui/tree-item';
 
 /**
  * ```html
  * <a mud-sidebar-item routerLink="drafts" routerLinkActive #rla="routerLinkActive" [selected]="rla.isActive">
  *   <mud-icon icon name="edit" [scale]="20" />
  *   Schițe
- *   <span class="badge badge--xl badge--solid-neutral" trailing>1</span>
+ *   <mud-badge trailing [count]="1" variant="neutral" size="xl" />
  * </a>
  * ```
  */
@@ -44,4 +47,11 @@ export class MudSidebarItem {
   readonly selected = input(false, { transform: booleanAttribute });
 
   protected readonly _ariaCurrent = computed(() => (this.selected() ? (this._isAnchor ? 'page' : 'true') : null));
+
+  constructor() {
+    const styles = inject(MudStyleLoader);
+
+    styles.load(_MudSidebarStyles);
+    styles.load(_MudTreeItemStyles);
+  }
 }

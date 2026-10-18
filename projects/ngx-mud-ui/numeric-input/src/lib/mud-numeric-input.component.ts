@@ -24,6 +24,7 @@ import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl } from '@angular/forms/signals';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudNumericInputVariant = 'default' | 'warning' | 'destructive' | 'success';
 export type MudNumericInputSize = 'medium' | 'large';
@@ -254,6 +255,8 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
   });
 
   constructor() {
+    inject(MudStyleLoader).load(_MudInputFieldStyles);
+
     // External value changes (writeValue, [(value)], signal forms) reformat
     // the display. While focused, a change that merely echoes the user's own
     // typing (model === parse(display)) must NOT reformat mid-entry; a

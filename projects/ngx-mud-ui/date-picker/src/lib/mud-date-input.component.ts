@@ -18,6 +18,7 @@ import {
   signal,
   viewChild,
   ViewContainerRef,
+  ViewEncapsulation,
 } from '@angular/core';
 import type { ElementRef, TemplateRef, WritableSignal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
@@ -43,6 +44,7 @@ import {
 import type { MudDateFormat, MudDateFormatSpec } from './date-mask';
 import { MudDatePicker } from './mud-date-picker.component';
 import type { MudDateInputMode, MudDateRange, MudDateValue } from './date-value';
+import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -74,6 +76,8 @@ function placeholderShape(spec: MudDateFormatSpec): RegExp {
 @Component({
   selector: 'mud-date-input',
   templateUrl: './mud-date-input.component.html',
+  styleUrl: './mud-date-input.component.scss',
+  encapsulation: ViewEncapsulation.None,
   imports: [MudDatePicker, CdkTrapFocus],
   host: {
     '[class]': '_hostClasses()',
@@ -312,6 +316,8 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   });
 
   constructor() {
+    inject(MudStyleLoader).load(_MudInputFieldStyles);
+
     effect(() => {
       if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
 

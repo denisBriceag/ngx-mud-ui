@@ -20,10 +20,10 @@ The drawer is only a surface. You supply everything inside it, including the clo
 import { MudDrawer, MudDrawerRef, MUD_DRAWER_DATA, MudDrawerTitle, MudDrawerClose } from 'ngx-mud-ui/drawer';
 ```
 
-Load the design-system stylesheet once in your app:
+Add the base stylesheet to your app's `angular.json` `styles` once:
 
-```scss
-@use 'ngx-mud-ui/styles/main';
+```json
+"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
 ```
 
 ## Opening a drawer
@@ -111,7 +111,7 @@ visible focus style:
 
 ```css
 .body:focus-visible {
-  outline: 3px solid var(--focus-ring-outer-color);
+  outline: 3px solid var(--mud-focus-ring-outer-color);
   outline-offset: -3px;
 }
 ```

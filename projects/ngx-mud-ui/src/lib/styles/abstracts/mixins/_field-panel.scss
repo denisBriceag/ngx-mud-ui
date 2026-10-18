@@ -1,0 +1,16 @@
+// Floating panel of the date/time fields. The `field-panel-in` keyframes live in base/_keyframes.scss
+// (shipped once by mud.css) so every includer animates with the same definition.
+@mixin field-panel {
+  background: var(--mud-color-background-base-default);
+  border-radius: var(--mud-border-radius-12, 12px);
+  box-shadow:
+    var(
+      --mud-drop-shadow-300,
+      0 8px 12px 4px rgba(40, 46, 55, 0.06),
+      0 2px 4px 0 rgba(40, 46, 55, 0.06)
+    );
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: field-panel-in 120ms ease-out;
+  }
+}

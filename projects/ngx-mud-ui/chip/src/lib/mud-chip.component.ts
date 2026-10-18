@@ -3,11 +3,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   input,
   model,
   output,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudChipStyles } from './mud-chip-styles.component';
 
 export type MudChipType = 'filter' | 'input';
 export type MudChipSize = 'small' | 'medium';
@@ -114,6 +117,10 @@ export class MudChip {
 
     return classes.join(' ');
   });
+
+  constructor() {
+    inject(MudStyleLoader).load(_MudChipStyles);
+  }
 
   protected _toggle(): void {
     if (this.disabled() || !this._isFilter()) return;

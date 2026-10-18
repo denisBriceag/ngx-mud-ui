@@ -6,14 +6,9 @@
   },
   "assets": [
     {
-      "glob": "**/*",
-      "input": "./src/lib/styles",
-      "output": "./styles"
-    },
-    {
-      "glob": "**/*",
-      "input": "./src/lib/assets",
-      "output": "./assets"
+      "glob": "_index.scss",
+      "input": "./breakpoints",
+      "output": "./breakpoints"
     }
   ]
 }

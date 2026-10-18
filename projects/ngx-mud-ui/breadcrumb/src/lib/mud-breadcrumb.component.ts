@@ -14,6 +14,8 @@ import {
 import { forwardCrumbClick } from './forward-crumb-click';
 import { MudBreadcrumbItem } from './mud-breadcrumb-item.directive';
 import { MudBreadcrumbOverflow } from './mud-breadcrumb-overflow.component';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudBreadcrumbStyles } from './mud-breadcrumb-styles.component';
 
 /** Below two crumbs there is no "first plus last two" to collapse into. */
 const MIN_VISIBLE = 2;
@@ -135,6 +137,8 @@ export class MudBreadcrumb {
   private _overflowRef: ComponentRef<MudBreadcrumbOverflow> | null = null;
 
   constructor() {
+    inject(MudStyleLoader).load(_MudBreadcrumbStyles);
+
     effect(() => {
       const items = this._items();
       const collapsedItems = this._collapsedItems();

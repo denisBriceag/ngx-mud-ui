@@ -16,6 +16,7 @@ import {
   model,
   output,
   signal,
+  ViewEncapsulation,
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
@@ -45,6 +46,7 @@ import type {
   MudDateRange,
   MudDateValue,
 } from './date-value';
+import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -64,6 +66,8 @@ const WEEKDAY_ANCHOR_DAY = 7;
 @Component({
   selector: 'mud-date-picker',
   templateUrl: './mud-date-picker.component.html',
+  styleUrl: './mud-date-picker.component.scss',
+  encapsulation: ViewEncapsulation.None,
   host: {
     '[class]': '_hostClasses()',
     '[attr.role]': 'ariaLabel() ? "group" : null',
@@ -412,6 +416,8 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   });
 
   constructor() {
+    inject(MudStyleLoader).load(_MudInputFieldStyles);
+
     effect(() => {
       if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
 

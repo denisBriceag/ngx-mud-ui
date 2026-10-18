@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CdkDialogContainer } from '@angular/cdk/dialog';
 import type { DialogConfig } from '@angular/cdk/dialog';
 import { CdkPortalOutlet, PortalModule } from '@angular/cdk/portal';
@@ -8,6 +8,8 @@ export type MudResolvedDrawerConfig = DialogConfig & { position: MudDrawerPositi
 
 @Component({
   selector: 'mud-drawer-container',
+  styleUrl: './mud-drawer-container.component.scss',
+  encapsulation: ViewEncapsulation.None,
   imports: [PortalModule],
   template: `<ng-template cdkPortalOutlet />`,
   host: {

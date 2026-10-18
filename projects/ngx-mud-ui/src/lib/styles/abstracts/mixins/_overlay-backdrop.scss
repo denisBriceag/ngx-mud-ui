@@ -1,0 +1,18 @@
+// Dimmed backdrop behind a CDK overlay (dialog, drawer). Each overlay includes it under its OWN
+// backdrop class: one definition of the dim colour and timing, no selector shared between two
+// sheets (a shared selector would be a load-order tie).
+// Include under `.cdk-overlay-backdrop.<class>` — the two classes out-rank CDK's own
+// `.cdk-overlay-backdrop { transition: … 400ms }`.
+@mixin backdrop {
+  background: rgba(18, 18, 18, 0.4);
+  opacity: 0;
+  transition: opacity 150ms cubic-bezier(0, 0, 0.2, 1);
+
+  &.cdk-overlay-backdrop-showing {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}

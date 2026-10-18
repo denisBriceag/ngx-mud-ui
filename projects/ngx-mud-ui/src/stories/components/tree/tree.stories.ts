@@ -3,6 +3,7 @@ import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { provideRouter, RouterLink, RouterLinkActive, withHashLocation } from '@angular/router';
 import { expect, userEvent, within } from 'storybook/test';
+import { MudBadge } from 'ngx-mud-ui/badge';
 import { MudButton } from 'ngx-mud-ui/button';
 import type { MudIconName } from 'ngx-mud-ui/icons';
 import { calendar, group, MudIconComponent, provideMudIcons, receiptCheck } from 'ngx-mud-ui/icons';
@@ -66,9 +67,14 @@ const componentSource = (o: SnippetOptions): string => {
 
   if (o.tag) imports.push('MudTag');
 
+  const badge = o.template.includes('<mud-badge');
+
+  if (badge) imports.push('MudBadge');
+
   return [
     `import { ${['ChangeDetectionStrategy', 'Component', ...(o.core ?? [])].join(', ')} } from '@angular/core';`,
     ...(o.router ? ["import { RouterLink, RouterLinkActive } from '@angular/router';"] : []),
+    ...(badge ? ["import { MudBadge } from 'ngx-mud-ui/badge';"] : []),
     ...(o.button ? ["import { MudButton } from 'ngx-mud-ui/button';"] : []),
     ...(o.tag ? ["import { MudTag } from 'ngx-mud-ui/tag';"] : []),
     ...(o.icons ? ["import { MudIconComponent, type MudIconName } from 'ngx-mud-ui/icons';"] : []),
@@ -126,18 +132,17 @@ const NAV_TEMPLATE = `
     @if (node.icon) { <mud-icon icon [name]="node.icon" [scale]="20" /> }
     @if (node.icon) { <mud-icon selectedIcon [name]="node.icon" variant="filled" [scale]="20" /> }
     {{ node.label }}
-    <!-- ngx-mud-ui Badge, inline form (.badge classes from ngx-mud-ui/styles; see Components/Badge). -->
-    @if (node.count) { <span trailing class="badge badge--xl badge--solid-neutral">{{ node.count }}</span> }
+    @if (node.count) { <mud-badge trailing [count]="node.count" variant="neutral" size="xl" /> }
   </a>
   <!-- A section: no url, a click opens and closes it. -->
   <button mud-tree-node type="button" *mudTreeNodeDef="let node of nav; when: isSection" [isExpandable]="true">
     @if (node.icon) { <mud-icon icon [name]="node.icon" [scale]="20" /> }
     {{ node.label }}
-    @if (node.count) { <span trailing class="badge badge--xl badge--solid-neutral">{{ node.count }}</span> }
+    @if (node.count) { <mud-badge trailing [count]="node.count" variant="neutral" size="xl" /> }
   </button>
 </mud-tree>`;
 
-const NAV_IMPORTS = [MudTree, MudTreeNode, MudTreeNodeDef, MudIconComponent, RouterLink, RouterLinkActive];
+const NAV_IMPORTS = [MudTree, MudTreeNode, MudTreeNodeDef, MudIconComponent, RouterLink, RouterLinkActive, MudBadge];
 
 const NAVIGATION_DATA: NavNode[] = [
   { label: 'Persoane', url: '/navigare/persoane', icon: 'group' },
@@ -500,7 +505,7 @@ const MULTIPLE_TEMPLATE = `
   <!-- A section opens and closes; its badge counts the chosen children. -->
   <button mud-tree-node type="button" *mudTreeNodeDef="let node of filters; when: isSection" [isExpandable]="true">
     {{ node.label }}
-    @if (chosenIn(node); as count) { <span trailing class="badge badge--xl badge--solid-brand">{{ count }}</span> }
+    @if (chosenIn(node); as count) { <mud-badge trailing [count]="count" variant="brand" size="xl" /> }
   </button>
   <!-- A choice: click, Enter or Space toggles it. -->
   <button
@@ -559,7 +564,7 @@ toggle(id: string): void {
 /** Story-only host for the MultipleChoice story. */
 @Component({
   selector: 'mud-tree-story-multiple',
-  imports: [MudTree, MudTreeNode, MudTreeNodeDef],
+  imports: [MudTree, MudTreeNode, MudTreeNodeDef, MudBadge],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: MULTIPLE_TEMPLATE,
 })
@@ -728,7 +733,7 @@ open(page: PageInfo | undefined): void {
 });
 
 // A fixed-width column, like the sidebar the tree will live in.
-const frame = (body: string) => `<div style="width: 320px; border: 1px solid var(--color-border-base-default)">${body}</div>`;
+const frame = (body: string) => `<div style="width: 320px; border: 1px solid var(--mud-color-border-base-default)">${body}</div>`;
 
 const meta: Meta<MudTree<NavNode>> = {
   title: 'Components/Tree',

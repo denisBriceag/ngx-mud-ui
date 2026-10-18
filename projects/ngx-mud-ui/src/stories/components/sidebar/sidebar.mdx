@@ -26,10 +26,10 @@ import {
 } from 'ngx-mud-ui/sidebar';
 ```
 
-Load the design-system stylesheet once in your app:
+Add the base stylesheet to your app's `angular.json` `styles` once:
 
-```scss
-@use 'ngx-mud-ui/styles/main';
+```json
+"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
 ```
 
 ## Building a sidebar
@@ -90,8 +90,8 @@ A row is a link for a page, or a button for an action. It has the same look and 
 Bind `selected` to `routerLinkActive` to highlight the current page. Only a `<button>` row can be
 `disabled`; a link can't, so leave the link out instead.
 
-For count badges use the inline [Badge](?path=/docs/components-badge--docs) classes:
-`badge badge--xl badge--solid-neutral` for a count, `badge--solid-danger` for a notification.
+For count badges use [`<mud-badge>`](?path=/docs/components-badge--docs) with `size="xl"`:
+`variant="neutral"` for a count, `variant="danger"` for a notification.
 
 <Canvas of={SidebarStories.States} />
 

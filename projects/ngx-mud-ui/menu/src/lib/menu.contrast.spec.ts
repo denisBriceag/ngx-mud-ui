@@ -1,7 +1,7 @@
 // WCAG contrast for the menu colour pairs, both themes, computed not eyeballed.
 // The repo's a11y.test is 'todo' and does not gate; these numbers are the gate.
 // Hexes are the RESOLVED values of the semantic tokens used by _menu.scss —
-// verify against abstracts/_colors.scss + _tokens.scss if a pair fails.
+// verify against base/_colors.scss + base/_tokens.scss if a pair fails.
 
 function luminance(hex: string): number {
   const c = hex.replace('#', '');

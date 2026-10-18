@@ -5,10 +5,10 @@ import { MudSpinner } from 'ngx-mud-ui/spinner';
 const ROW = 'display:flex;gap:32px;align-items:center;flex-wrap:wrap;padding:24px';
 const DARK_TILE =
   'display:inline-flex;align-items:center;justify-content:center;padding:16px;' +
-  'border-radius:8px;background:var(--color-background-base-inverse-default)';
+  'border-radius:8px;background:var(--mud-color-background-base-inverse-default)';
 const BRAND_TILE =
   'display:inline-flex;align-items:center;justify-content:center;padding:16px;' +
-  'border-radius:8px;background:var(--color-background-brand-default)';
+  'border-radius:8px;background:var(--mud-color-background-brand-default)';
 
 const meta: Meta<MudSpinner> = {
   title: 'Components/Spinner',

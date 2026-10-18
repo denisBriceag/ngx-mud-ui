@@ -47,5 +47,8 @@ Thumbs.db
 *storybook.log
 storybook-static
 
+# Compodoc run marker written by the Storybook Angular preset next to documentation.json
+projects/ngx-mud-ui/.compodoc.run
+
 # Icon generator test scratch output
 /tools/__out__

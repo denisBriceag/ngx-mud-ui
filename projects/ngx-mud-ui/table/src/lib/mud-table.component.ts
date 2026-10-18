@@ -1,4 +1,4 @@
-import { booleanAttribute, ChangeDetectionStrategy, Component, input, ViewEncapsulation } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, inject, input, ViewEncapsulation } from '@angular/core';
 import {
   CDK_TABLE,
   CdkTable,
@@ -8,6 +8,8 @@ import {
   NoDataRowOutlet,
   STICKY_POSITIONING_LISTENER,
 } from '@angular/cdk/table';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudTableStyles } from './mud-table-styles.component';
 
 export type MudTableHeaderStyle = 'subtle' | 'strong' | 'white';
 export type MudTableRowStyle = 'default' | 'zebra';
@@ -81,4 +83,9 @@ export class MudTable<T> extends CdkTable<T> {
   readonly rowStyle = input<MudTableRowStyle>('default');
   /** @description Adds a hover background and pointer cursor to body rows; use it when rows are clickable (bind your own (click) on the row). */
   readonly hoverable = input(false, { transform: booleanAttribute });
+
+  constructor() {
+    super();
+    inject(MudStyleLoader).load(_MudTableStyles);
+  }
 }

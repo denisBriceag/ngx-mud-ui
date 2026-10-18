@@ -3,6 +3,8 @@ import type { OnDestroy, OnInit } from '@angular/core';
 import { CdkColumnDef } from '@angular/cdk/table';
 import { MudSort } from './mud-sort.directive';
 import type { MudSortable } from './mud-sort.directive';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudTableStyles } from './mud-table-styles.component';
 
 let nextUniqueId = 0;
 
@@ -101,6 +103,10 @@ export class MudSortHeader implements MudSortable, OnInit, OnDestroy {
 
     return this._sort.direction() === 'asc' ? 'ascending' : 'descending';
   });
+
+  constructor() {
+    inject(MudStyleLoader).load(_MudTableStyles);
+  }
 
   ngOnInit(): void {
     this._sortId.set(this.id() || this._columnDef?.name || '');

@@ -1,5 +1,7 @@
 import { booleanAttribute, computed, Directive, ElementRef, inject, input, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudLinkStyles } from './mud-link-styles.component';
 
 export type MudLinkStyle = 'primary' | 'strict';
 export type MudLinkSize = 'large' | 'medium' | 'small' | 'extra-small';
@@ -81,6 +83,8 @@ export class MudLink {
   });
 
   constructor() {
+    inject(MudStyleLoader).load(_MudLinkStyles);
+
     // New-tab anchors get the official safety rel unless the consumer set one.
     const anchor = this._element as HTMLAnchorElement;
 

@@ -1,0 +1,8 @@
+@use 'sass:meta';
+
+// Opt-in dark theme — add it to angular.json `styles` next to mud.css and set data-theme="dark" on
+// <html>. `:root[data-theme='dark']` out-ranks the light `:root` values whatever the file order.
+// Only re-points the --mud-* tokens; every component follows automatically.
+@layer mud.base {
+  @include meta.load-css('../themes/dark');
+}

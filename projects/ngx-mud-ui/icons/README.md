@@ -130,8 +130,8 @@ Icon fills are `currentColor`, so an icon is exactly as adaptive as the CSS
   which remap automatically under `[data-theme='dark']`:
 
   ```css
-  .toolbar-icon { color: var(--color-icon-base-default); }   /* black ⇄ white */
-  .danger-icon  { color: var(--color-icon-danger-default); } /* red-600 ⇄ red-500 */
+  .toolbar-icon { color: var(--mud-color-icon-base-default); }   /* black ⇄ white */
+  .danger-icon  { color: var(--mud-color-icon-danger-default); } /* red-600 ⇄ red-500 */
   ```
 
 - **Never hardcode a hex** (`color: #121212`) on an icon or its wrapper — that

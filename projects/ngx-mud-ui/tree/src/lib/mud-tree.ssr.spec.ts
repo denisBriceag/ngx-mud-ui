@@ -4,6 +4,7 @@ import { provideRouter, RouterLink } from '@angular/router';
 import { MudTree } from './mud-tree.component';
 import { MudTreeNode } from './mud-tree-node.component';
 import { MudTreeNodeDef } from './mud-tree-node-def.directive';
+import { MudBadge } from 'ngx-mud-ui/badge';
 
 interface NavNode {
   id: string;
@@ -29,7 +30,7 @@ const DATA: NavNode[] = [
 class Blank {}
 
 @Component({
-  imports: [MudTree, MudTreeNode, MudTreeNodeDef, RouterLink],
+  imports: [MudTree, MudTreeNode, MudTreeNodeDef, RouterLink, MudBadge],
   template: `
     <mud-tree #tree="mudTree" [dataSource]="data" [childrenAccessor]="childrenOf" [multiple]="multiple()" aria-label="Main">
       <a mud-tree-node *mudTreeNodeDef="let node of data" [routerLink]="node.url" [selected]="node.id === 'home'">
@@ -42,7 +43,7 @@ class Blank {}
         [isExpandable]="!!node.children?.length"
         [isDisabled]="node.id === 'archive'"
       >
-        {{ node.label }}<span trailing class="badge">2</span>
+        {{ node.label }}<mud-badge trailing [count]="2" />
       </button>
     </mud-tree>
   `,

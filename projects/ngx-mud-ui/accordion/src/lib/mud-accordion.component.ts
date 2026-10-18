@@ -18,6 +18,8 @@ import {
 } from '@angular/core';
 import { CdkAccordionItem } from '@angular/cdk/accordion';
 import { MudAccordionGroup } from './mud-accordion-group.component';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudAccordionStyles } from './mud-accordion-styles.component';
 
 /**
  * ```html
@@ -118,6 +120,8 @@ export class MudAccordion extends CdkAccordionItem {
 
   constructor() {
     super();
+
+    inject(MudStyleLoader).load(_MudAccordionStyles);
     inject(DestroyRef).onDestroy(() => this._clearFallbackTimer());
     afterNextRender(() => {
       this._viewReady = true;

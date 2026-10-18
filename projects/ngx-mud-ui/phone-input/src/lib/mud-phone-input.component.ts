@@ -16,6 +16,7 @@ import {
   signal,
   untracked,
   viewChild,
+  ViewEncapsulation,
 } from '@angular/core';
 import type { ElementRef, TemplateRef } from '@angular/core';
 import { ViewContainerRef } from '@angular/core';
@@ -41,6 +42,7 @@ import type { MudPhoneCountry } from './phone-countries';
 import { MUD_PHONE_FLAGS } from './phone-flags';
 import { MUD_PHONE_COUNTRIES_CONFIG } from './provide-mud-phone-countries';
 import { applyMask, caretForDigitIndex, digitsBefore, digitsOf, isComplete, nationalOf, toE164 } from './phone-mask';
+import { _MudInputFieldStyles, _MudMenuPanelStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -77,6 +79,8 @@ let nextUniqueId = 0;
 @Component({
   selector: 'mud-phone-input',
   templateUrl: './mud-phone-input.component.html',
+  styleUrl: './mud-phone-input.component.scss',
+  encapsulation: ViewEncapsulation.None,
   host: {
     '[class]': '_hostClasses()',
   },
@@ -447,6 +451,11 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   });
 
   constructor() {
+    const styles = inject(MudStyleLoader);
+
+    styles.load(_MudInputFieldStyles);
+    styles.load(_MudMenuPanelStyles);
+
     effect(() => {
       const display = this._display();
 

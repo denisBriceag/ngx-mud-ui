@@ -24,6 +24,7 @@ import type {
   MudMenuType,
 } from './mud-menu.types';
 import type { MudMenuItem } from './mud-menu-item.component';
+import { _MudMenuStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 let nextUniqueId = 0;
 
@@ -104,6 +105,8 @@ export class MudMenu implements MudMenuPanel {
   private readonly _focusable = computed(() => this._ordered().filter((item) => !item.heading()));
 
   constructor() {
+    inject(MudStyleLoader).load(_MudMenuStyles);
+
     afterRenderEffect(() => {
       const focusable = this._focusable();
       const active = this._active();

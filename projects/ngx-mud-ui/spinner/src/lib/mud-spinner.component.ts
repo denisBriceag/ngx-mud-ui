@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, ViewEncapsulation } from '@angular/core';
 
 export type MudSpinnerSize = 'extra-small' | 'small' | 'medium' | 'large';
 export type MudSpinnerVariant = 'brand' | 'dark' | 'light' | 'light-on-color';
@@ -12,6 +12,8 @@ export type MudSpinnerVariant = 'brand' | 'dark' | 'light' | 'light-on-color';
 @Component({
   selector: 'mud-spinner',
   template: '<span class="mud-spinner-label">{{ ariaLabel() }}</span>',
+  styleUrl: './mud-spinner.component.scss',
+  encapsulation: ViewEncapsulation.None,
   host: {
     role: 'status',
     '[class]': '_hostClasses()',

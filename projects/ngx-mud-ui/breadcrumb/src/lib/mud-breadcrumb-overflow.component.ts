@@ -14,6 +14,8 @@ import {
 } from '@angular/core';
 import { forwardCrumbClick } from './forward-crumb-click';
 import type { MudBreadcrumbItem } from './mud-breadcrumb-item.directive';
+import { _MudMenuStyles, MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudBreadcrumbStyles } from './mud-breadcrumb-styles.component';
 
 let nextUniqueId = 0;
 
@@ -78,6 +80,13 @@ export class MudBreadcrumbOverflow implements OnDestroy {
   readonly panelId = `mud-breadcrumb-panel-${String(nextUniqueId++)}`;
 
   protected readonly _open = signal(false);
+
+  constructor() {
+    const styles = inject(MudStyleLoader);
+
+    styles.load(_MudBreadcrumbStyles);
+    styles.load(_MudMenuStyles);
+  }
 
   ngOnDestroy(): void {
     this._dispose();

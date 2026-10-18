@@ -1,0 +1,52 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Breakpoints" />
+
+# Breakpoints
+
+The official MUD breakpoints ship from one entry point, `ngx-mud-ui/breakpoints`, as Sass mixins
+for stylesheets and as constants for TypeScript. Both come from the same source, so they never
+disagree.
+
+| Name  | Min width | Sass              | TypeScript            |
+| ----- | --------- | ----------------- | --------------------- |
+| `xs`  | 320px     | `bp.up(xs)`       | `MudBreakpoints.Xs`   |
+| `sm`  | 576px     | `bp.up(sm)`       | `MudBreakpoints.Sm`   |
+| `md`  | 768px     | `bp.up(md)`       | `MudBreakpoints.Md`   |
+| `lg`  | 992px     | `bp.up(lg)`       | `MudBreakpoints.Lg`   |
+| `xl`  | 1248px    | `bp.up(xl)`       | `MudBreakpoints.Xl`   |
+| `xxl` | 1440px    | `bp.up(xxl)`      | `MudBreakpoints.Xxl`  |
+
+## In stylesheets
+
+```scss
+@use 'ngx-mud-ui/breakpoints' as bp;
+
+.page {
+  padding: 16px;
+
+  @include bp.up(md) { padding: 32px; }            // (min-width: 768px)
+  @include bp.down(md) { font-size: 14px; }        // (max-width: 767.98px)
+  @include bp.between(sm, lg) { gap: 12px; }       // (min-width: 576px) and (max-width: 991.98px)
+}
+```
+
+The raw map is available as `bp.$breakpoints`.
+
+## In TypeScript
+
+```ts
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
+import { MudBreakpoints, MudBreakpointValues } from 'ngx-mud-ui/breakpoints';
+
+readonly isDesktop = toSignal(
+  inject(BreakpointObserver).observe(MudBreakpoints.Lg).pipe(map((state) => state.matches)),
+);
+
+MudBreakpointValues.Md; // 768
+```
+
+`MudBreakpoints` holds min-width media queries (`'(min-width: 768px)'`); `MudBreakpointValues`
+holds the pixel numbers.

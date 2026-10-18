@@ -1,6 +1,6 @@
 @use '../mud-prefix' as mud;
 
-// The focus ring is a single shared rule in base/_buttons.scss (official
+// The focus ring is a single shared rule in button/src/lib/mud-button.scss (official
 // dual halo), so variants only define surface/label/border/spinner colors.
 @mixin button-variant($name, $bg, $color, $border, $hover-bg, $hover-color, $active-bg, $spinner-color: $color) {
   .#{mud.mud-class('btn-' + $name)} {
@@ -22,7 +22,7 @@
     }
 
     // Spinner geometry and animation come from the shared .mud-btn-loading
-    // rules (base/_buttons.scss); the variant only supplies the color, since
+    // rules (mud-button.scss); the variant only supplies the color, since
     // the transparent text trick below makes currentColor unusable.
     &.#{mud.mud-class('btn-loading')} {
       color: transparent !important;

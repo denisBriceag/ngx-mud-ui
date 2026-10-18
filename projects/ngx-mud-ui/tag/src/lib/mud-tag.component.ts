@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, ViewEncapsulation } from '@angular/core';
 
 export type MudTagColor = 'muted' | 'neutral' | 'accent' | 'success' | 'brand' | 'danger' | 'info';
 export type MudTagType = 'subtle' | 'strong' | 'outlined';
@@ -17,6 +17,8 @@ declare const ngDevMode: boolean | undefined;
 @Component({
   selector: 'mud-tag',
   template: '<ng-content />',
+  styleUrl: './mud-tag.component.scss',
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class]': '_hostClasses()',

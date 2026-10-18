@@ -1,30 +1,40 @@
 import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
+import { MudCornerBadge } from 'ngx-mud-ui/badge';
 import * as BadgeStories from './badge.stories';
 
 <Meta of={BadgeStories} />
 
 # Badge
 
-An attribute directive that overlays a count or a dot on the element it sits on
-— typically a button or an icon. The badge is rendered by the directive, so the
-host keeps its own content and semantics.
+A small count or dot that flags new or pending items. It comes in two forms:
+
+- **`<mud-badge>`** — an inline element you place in content: a button label, a
+  tab label, a tree or sidebar item.
+- **`[mudBadge]`** — a directive that pins the same badge to a corner of its host,
+  typically a button or an icon.
+
+Both share one vocabulary: `size` `xs`–`xl`, `variant` for the colour, `type`
+`numbered` or `dot`.
 
 ## Import
 
 ```ts
-import { MudBadge } from 'ngx-mud-ui/badge';
+import { MudBadge, MudCornerBadge } from 'ngx-mud-ui/badge';
 
 @Component({
-  imports: [MudBadge],
-  template: `<button mudButton mudBadge="5" badgeColor="danger">Inbox</button>`,
+  imports: [MudBadge, MudCornerBadge],
+  template: `
+    <a mud-tree-item routerLink="/inbox">Inbox <mud-badge trailing [count]="3" variant="neutral" size="xl" /></a>
+    <button mudButton mudBadge="5" badgeVariant="danger">Inbox</button>
+  `,
 })
 export class Demo {}
 ```
 
-The design-system stylesheet must be loaded once in your app:
+The base stylesheet must be in your app's `angular.json` `styles` once:
 
-```scss
-@use 'ngx-mud-ui/styles/main';
+```json
+"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
 ```
 
 ## Playground
@@ -36,46 +46,68 @@ The design-system stylesheet must be loaded once in your app:
 
 <Canvas of={BadgeStories.Sizes} />
 
-## Colors
+## Variants
 
-<Canvas of={BadgeStories.Colors} />
-
-## Positions
-
-<Canvas of={BadgeStories.Positions} />
-
-## Truncation
-
-<Canvas of={BadgeStories.Truncation} />
+<Canvas of={BadgeStories.Variants} />
 
 ## Dot
 
 <Canvas of={BadgeStories.Dot} />
 
-## Inline and nested
+## Truncation
+
+<Canvas of={BadgeStories.Truncation} />
+
+## Disabled
+
+<Canvas of={BadgeStories.Disabled} />
+
+## Inside other components
 
 <Canvas of={BadgeStories.InlineNested} />
 
-## Accessibility
+## Corner badge
 
-<Canvas of={BadgeStories.Accessibility} />
+`[mudBadge]` renders the badge itself and positions it over the host's corner;
+the host keeps its own content and semantics.
+
+<Canvas of={BadgeStories.CornerSizes} />
+<Canvas of={BadgeStories.CornerVariants} />
+<Canvas of={BadgeStories.CornerPositions} />
+<Canvas of={BadgeStories.CornerTruncation} />
+<Canvas of={BadgeStories.CornerDot} />
+<Canvas of={BadgeStories.CornerAccessibility} />
 
 ## API
 
-Selector: `[mudBadge]` · `exportAs: 'mudBadge'`
+### MudBadge
+
+Selector: `mud-badge`
 
 <ArgTypes of={BadgeStories} />
 
+### MudCornerBadge
+
+Selector: `[mudBadge]` · `exportAs: 'mudBadge'`
+
+<ArgTypes of={MudCornerBadge} />
+
 ## Usage tips
 
-- **`mudBadge` carries the content** and accepts a string, a number, or `null`.
-  Passing `null` removes the badge entirely rather than rendering an empty one.
-- **`badgeMax` truncates large counts** — with `badgeMax="99"` a value of 150
-  renders as `99+`. Leave it `null` to always show the exact number.
-- **Set `badgeDescription` whenever the number alone is ambiguous.** The badge
-  renders next to the host's own label, so a bare `5` on an Inbox button reads
-  as "Inbox 5" — a description like "5 unread messages" states what it counts.
-- **`badgeVariant="dot"` ignores the content**, so use it for "something
-  changed" signals where the exact count doesn't matter.
-- **The host needs its own accessible name.** The badge decorates an element; it
-  does not name it.
+- **`<mud-badge>` is a named image by default.** It is named by its visible count, or by
+  `notificationLabel` when it shows a dot. Set `aria-label` when the number alone
+  is ambiguous ("3 unread"). Add `live` on the one badge whose changes should be
+  announced (`role="status"`); a sidebar full of counts stays quiet otherwise.
+- **Nudge a corner badge with `--mud-badge-offset-top/right/bottom/left`** on the
+  host — positive values pull it inward from its anchored edge (the avatar uses
+  them to sit the badge on its circumference).
+- **`mudBadge` carries the corner badge's content** and accepts a string, a
+  number, or `null`. `null` removes the badge rather than rendering an empty one.
+- **`max` / `badgeMax` truncate large counts** — at 99, a value of 150 renders as
+  `99+`.
+- **Set `badgeDescription` on a corner badge whenever the number alone is
+  ambiguous.** A bare `5` on an Inbox button reads as "Inbox 5"; a description
+  like "5 unread messages" states what it counts.
+- **`xs` is dot-only.** A numbered badge at that size renders as a dot.
+- **The host needs its own accessible name.** A corner badge decorates an
+  element; it does not name it.

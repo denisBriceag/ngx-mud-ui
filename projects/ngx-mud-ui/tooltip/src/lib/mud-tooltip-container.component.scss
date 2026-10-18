@@ -1,10 +1,13 @@
 @use 'sass:math';
+@use '../../../src/lib/styles/abstracts/mixins/host';
+
+@include host.typography;
 
 :host {
   position: relative;
   display: block;
   // The padding creates the visual gap to the trigger and hosts the arrow.
-  padding: var(--spacing-8, 8px);
+  padding: var(--mud-spacing-8, 8px);
   opacity: 0;
   transform: scale(0.95);
   transition:
@@ -25,9 +28,9 @@
 }
 
 .tooltip-inner {
-  background: var(--color-background-base-inverse-default, #1e1e1e);
-  color: var(--color-text-base-inverse-default, #ffffff);
-  border-radius: var(--border-radius-4, 4px);
+  background: var(--mud-color-background-base-inverse-default, #1e1e1e);
+  color: var(--mud-color-text-base-inverse-default, #ffffff);
+  border-radius: var(--mud-border-radius-4, 4px);
   max-width: var(--mud-tooltip-max-width, 280px);
   font-size: 14px;
   line-height: 20px;
@@ -36,35 +39,35 @@
 }
 
 :host(.tooltip--small) .tooltip-inner {
-  padding: var(--spacing-8, 8px) var(--spacing-12, 12px);
+  padding: var(--mud-spacing-8, 8px) var(--mud-spacing-12, 12px);
 }
 
 :host(.tooltip--large) .tooltip-inner {
-  border-radius: var(--border-radius-6, 6px);
-  padding: var(--spacing-12, 12px) var(--spacing-16, 16px);
+  border-radius: var(--mud-border-radius-6, 6px);
+  padding: var(--mud-spacing-12, 12px) var(--mud-spacing-16, 16px);
 }
 
 .tooltip-title {
   font-weight: 500;
-  margin-bottom: var(--spacing-2, 2px);
+  margin-bottom: var(--mud-spacing-2, 2px);
 }
 
 // Coach hint line (official: 12/16 at 0.72 opacity, 6px above).
 .tooltip-hint {
-  margin-top: var(--spacing-6, 6px);
+  margin-top: var(--mud-spacing-6, 6px);
   font-size: 12px;
   line-height: 16px;
   opacity: 0.72;
 }
 
 :host(.tooltip--with-close) .tooltip-inner {
-  padding-right: var(--spacing-48, 48px);
+  padding-right: var(--mud-spacing-48, 48px);
 }
 
 .tooltip-close {
   position: absolute;
-  top: var(--spacing-12, 12px);
-  right: var(--spacing-8, 8px);
+  top: var(--mud-spacing-12, 12px);
+  right: var(--mud-spacing-8, 8px);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -73,9 +76,9 @@
   height: 32px;
   padding: 0;
   border: none;
-  border-radius: var(--border-radius-6, 6px);
+  border-radius: var(--mud-border-radius-6, 6px);
   background: transparent;
-  color: var(--color-text-base-inverse-default, #ffffff);
+  color: var(--mud-color-text-base-inverse-default, #ffffff);
   cursor: pointer;
   opacity: 0.7;
   transition:
@@ -84,12 +87,12 @@
 
   &:hover {
     opacity: 1;
-    background: var(--color-background-base-inverse-default-hover, #383838);
+    background: var(--mud-color-background-base-inverse-default-hover, #383838);
   }
 
   &:focus-visible {
     opacity: 1;
-    outline: 2px solid var(--color-text-base-inverse-default, #ffffff);
+    outline: 2px solid var(--mud-color-text-base-inverse-default, #ffffff);
     outline-offset: 1px;
   }
 
@@ -111,7 +114,7 @@ $arrow-inset: 2px + math.div($arrow-size * (math.sqrt(2) - 1), 2);
   position: absolute;
   width: $arrow-size;
   height: $arrow-size;
-  background: var(--color-background-base-inverse-default, #1e1e1e);
+  background: var(--mud-color-background-base-inverse-default, #1e1e1e);
   transform: rotate(45deg);
 }
 

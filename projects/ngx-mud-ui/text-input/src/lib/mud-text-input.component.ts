@@ -21,6 +21,7 @@ import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl } from '@angular/forms/signals';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudTextInputVariant = 'default' | 'warning' | 'destructive' | 'success';
 export type MudTextInputSize = 'medium' | 'large';
@@ -208,6 +209,10 @@ export class MudTextInput implements ControlValueAccessor, FormValueControl<stri
   });
 
   // ----- ControlValueAccessor (reactive/template-driven forms) -----
+
+  constructor() {
+    inject(MudStyleLoader).load(_MudInputFieldStyles);
+  }
 
   writeValue(value: string | null | undefined): void {
     this.value.set(value ?? '');

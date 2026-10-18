@@ -102,7 +102,7 @@ import { MudBreadcrumb, MudBreadcrumbItem } from 'ngx-mud-ui/breadcrumb';
     <!-- The collapse to a back link is a container query on this wrapper, not
          a viewport media query — it fires whenever the wrapper itself is
          narrow, even on a wide screen. -->
-    <div style="width:360px;border:1px dashed var(--color-border-base-default);padding:12px">
+    <div style="width:360px;border:1px dashed var(--mud-color-border-base-default);padding:12px">
       <nav mudBreadcrumb>
         <ol>
           <li mudBreadcrumbItem><a href="/">Acasă</a></li>
@@ -237,7 +237,7 @@ export const Narrow: Story = {
   },
   render: () => ({
     template: `
-      <div style="width:360px;border:1px dashed var(--color-border-base-default);padding:12px">
+      <div style="width:360px;border:1px dashed var(--mud-color-border-base-default);padding:12px">
         <nav mudBreadcrumb>
           <ol>
             <li mudBreadcrumbItem><a href="/">Acasă</a></li>

@@ -1,8 +1,0 @@
-@use './variables' as vars;
-@use './mixins/media' as media;
-
-@mixin down($breakpoint) {
-  @include media.media-breakpoint-down($breakpoint, vars.$breakpoints) {
-    @content;
-  }
-}

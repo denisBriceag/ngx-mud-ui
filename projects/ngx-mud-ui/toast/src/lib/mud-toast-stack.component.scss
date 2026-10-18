@@ -1,0 +1,333 @@
+@use '../../../src/lib/styles/abstracts/mixins/host';
+
+@include host.typography('mud-toast-stack');
+
+// The insets live here rather than on the CDK position strategy, because
+// GlobalPositionStrategy writes margin-* as INLINE styles on the pane, which no
+// media query can override. Padding is untouched by CDK.
+.mud-toast-stack {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding-block: var(--mud-toast-stack-inset-block);
+  padding-inline: var(--mud-toast-stack-inset-inline);
+  // The padded corner must not swallow clicks aimed at the page beneath it.
+  pointer-events: none;
+}
+
+.mud-toast-stack > * {
+  pointer-events: auto;
+}
+
+// FALLBACK ONLY. In browsers with the popover API, CDK 22 puts every overlay in
+// the top layer, where z-index is ignored and the last-shown overlay wins; there
+// MudToast keeps toasts on top by re-showing their hosts whenever another
+// overlay opens (see `_raiseStacks` in mud-toast.service.ts). Without popover
+// support CDK falls back to z-index: every `.cdk-overlay-*` ships at 1000 and
+// equal panes stack by DOM order, so a toast opened *before* a dialog would sit
+// under its backdrop. This class (the toast overlay's `panelClass`) lifts the
+// toast pane one step above that baseline for that case.
+.cdk-overlay-pane.mud-toast-stack-pane {
+  z-index: 1001; // two classes: out-ranks CDK's own `.cdk-overlay-pane { z-index: 1000 }`
+}
+
+.mud-toast-stack__item--gap-same {
+  margin-block-start: var(--mud-toast-stack-gap);
+}
+
+.mud-toast-stack__item--gap-mixed {
+  margin-block-start: var(--mud-toast-stack-gap-mixed);
+}
+
+// ---------------------------------------------------------------------------
+// Surface
+// ---------------------------------------------------------------------------
+
+.mud-toast {
+  --_bg: var(--mud-toast-info-background);
+  --_text: var(--mud-toast-info-text);
+  --_icon: var(--mud-toast-info-icon);
+  --_close-icon: var(--mud-toast-info-close-icon);
+
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mud-toast-container-gap);
+  inline-size: var(--mud-toast-container-width);
+  max-inline-size: 100%;
+  box-sizing: border-box;
+  padding-block-start: var(--mud-toast-container-padding-top);
+  padding-block-end: var(--mud-toast-container-padding-bottom);
+  padding-inline: var(--mud-toast-container-padding-inline);
+  border-radius: var(--mud-toast-container-border-radius);
+
+  background-color: var(--_bg);
+  color: var(--_text);
+
+  font-family: var(--mud-font-family-base);
+  font-size: var(--mud-toast-body-font-size);
+  line-height: var(--mud-toast-body-line-height);
+  font-weight: var(--mud-toast-body-font-weight);
+
+  animation: mud-toast-enter var(--mud-toast-container-appearance-duration)
+    var(--mud-toast-container-transition-timing-function) both;
+}
+
+.mud-toast--info {
+  --_bg: var(--mud-toast-info-background);
+  --_text: var(--mud-toast-info-text);
+  --_icon: var(--mud-toast-info-icon);
+  --_close-icon: var(--mud-toast-info-close-icon);
+}
+
+.mud-toast--warning {
+  --_bg: var(--mud-toast-warning-background);
+  --_text: var(--mud-toast-warning-text);
+  --_icon: var(--mud-toast-warning-icon);
+  --_close-icon: var(--mud-toast-warning-close-icon);
+}
+
+.mud-toast--success {
+  --_bg: var(--mud-toast-success-background);
+  --_text: var(--mud-toast-success-text);
+  --_icon: var(--mud-toast-success-icon);
+  --_close-icon: var(--mud-toast-success-close-icon);
+}
+
+.mud-toast--error {
+  --_bg: var(--mud-toast-error-background);
+  --_text: var(--mud-toast-error-text);
+  --_icon: var(--mud-toast-error-icon);
+  --_close-icon: var(--mud-toast-error-close-icon);
+}
+
+.mud-toast__main {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mud-toast-container-content-gap);
+}
+
+// Text-only: icon, message and close sit centred on the single line, per the
+// Figma `Content = Text-only` variant. With a heading they top-align instead.
+.mud-toast:not(.mud-toast--has-title),
+.mud-toast:not(.mud-toast--has-title) .mud-toast__main {
+  align-items: center;
+}
+
+.mud-toast__icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mud-toast-icon-padding);
+  color: var(--_icon);
+}
+
+.mud-toast__icon > svg,
+.mud-toast__icon > mud-icon {
+  display: block;
+  flex-shrink: 0;
+  inline-size: var(--mud-toast-icon-size);
+  block-size: var(--mud-toast-icon-size);
+}
+
+.mud-toast__content {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mud-toast-container-stack-gap);
+}
+
+.mud-toast__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mud-toast-container-heading-gap);
+}
+
+.mud-toast__title {
+  margin: 0;
+  font-size: var(--mud-toast-title-font-size);
+  line-height: var(--mud-toast-title-line-height);
+  font-weight: var(--mud-toast-title-font-weight);
+  letter-spacing: var(--mud-toast-title-letter-spacing);
+  color: inherit;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mud-toast__body {
+  margin: 0;
+  font-size: var(--mud-toast-body-font-size);
+  line-height: var(--mud-toast-body-line-height);
+  font-weight: var(--mud-toast-body-font-weight);
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+.mud-toast__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mud-toast-container-content-gap);
+  color: inherit;
+}
+
+// ---------------------------------------------------------------------------
+// Close button
+// ---------------------------------------------------------------------------
+
+.mud-toast__close {
+  --_close-bleed: calc((var(--mud-toast-close-size-pointer) - var(--mud-toast-close-icon-size)) / 2);
+
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-block-start: calc(-1 * var(--_close-bleed));
+  margin-inline: calc(-1 * var(--_close-bleed));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--mud-toast-close-size-pointer);
+  block-size: var(--mud-toast-close-size-pointer);
+  padding: 0;
+
+  border: 0;
+  border-radius: var(--mud-toast-close-border-radius);
+  background-color: transparent;
+  color: var(--_close-icon);
+
+  cursor: pointer;
+  appearance: none;
+}
+
+.mud-toast:not(.mud-toast--has-title) .mud-toast__close {
+  align-self: center;
+  margin-block: calc(-1 * var(--_close-bleed));
+}
+
+@media (pointer: coarse) {
+  .mud-toast__close {
+    --_close-bleed: calc((var(--mud-toast-close-size-touch) - var(--mud-toast-close-icon-size)) / 2);
+
+    inline-size: var(--mud-toast-close-size-touch);
+    block-size: var(--mud-toast-close-size-touch);
+  }
+}
+
+.mud-toast__close:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--mud-focus-ring-inner-width) var(--mud-focus-ring-inner-color),
+    0 0 0 calc(var(--mud-focus-ring-inner-width) + var(--mud-focus-ring-outer-width)) var(--mud-focus-ring-outer-color);
+  position: relative;
+  z-index: 1;
+}
+
+.mud-toast--warning .mud-toast__close:focus-visible {
+  --mud-focus-ring-inner-color: var(--mud-color-text-base-default-on-color);
+  --mud-focus-ring-outer-color: var(--mud-color-text-base-inverse-on-color);
+}
+
+.mud-toast__close-icon {
+  display: inline-flex;
+  inline-size: var(--mud-toast-close-icon-size);
+  block-size: var(--mud-toast-close-icon-size);
+}
+
+.mud-toast__close-icon svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  pointer-events: none;
+}
+
+// ---------------------------------------------------------------------------
+// Animation
+// ---------------------------------------------------------------------------
+
+@keyframes mud-toast-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mud-toast-exit {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes mud-toast-collapse {
+  to {
+    block-size: 0;
+    margin-block-start: 0;
+    padding-block: 0;
+  }
+}
+
+.mud-toast--leaving {
+  overflow: clip;
+  animation:
+    mud-toast-exit var(--mud-toast-exit-duration) var(--mud-toast-container-transition-timing-function) both,
+    mud-toast-collapse var(--mud-toast-collapse-duration) var(--mud-toast-container-transition-timing-function)
+      var(--mud-toast-exit-duration) both;
+}
+
+// ---------------------------------------------------------------------------
+// Responsive
+// ---------------------------------------------------------------------------
+
+@media (max-width: 480px) {
+  .mud-toast-stack {
+    --mud-toast-stack-inset-block: 14px;
+    --mud-toast-stack-inset-inline: 8px;
+  }
+
+  .mud-toast {
+    inline-size: min(var(--mud-toast-container-width), calc(100vw - 16px));
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Accessibility
+// ---------------------------------------------------------------------------
+
+@media (prefers-reduced-motion: reduce) {
+  .mud-toast,
+  .mud-toast--leaving {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .mud-toast {
+    border: 1px solid CanvasText;
+  }
+
+  .mud-toast__close {
+    forced-color-adjust: none;
+    color: ButtonText;
+  }
+}

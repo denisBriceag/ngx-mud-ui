@@ -42,10 +42,10 @@ export class Demo {}
 Everything but the icon and the close button is projected content — a
 `[heading]` slot, the default slot for the message, and an `[actions]` slot.
 
-The design-system stylesheet must be loaded once in your app:
+The base stylesheet must be in your app's `angular.json` `styles` once:
 
-```scss
-@use 'ngx-mud-ui/styles/main';
+```json
+"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
 ```
 
 <Canvas of={InfoBoxStories.Playground} />

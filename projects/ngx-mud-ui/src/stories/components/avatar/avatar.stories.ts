@@ -126,7 +126,7 @@ export const Sizes: Story = {
           <mud-avatar [size]="s.size"><img [src]="src" alt="Olga Popescu" /></mud-avatar>
           <mud-avatar [size]="s.size">OP</mud-avatar>
           <mud-avatar [size]="s.size"><mud-icon name="person" [scale]="s.icon" /></mud-avatar>
-          <span style="width:12ch;color:var(--color-text-base-secondary)">{{ s.size }}</span>
+          <span style="width:12ch;color:var(--mud-color-text-base-secondary)">{{ s.size }}</span>
         </div>
       }
     `,
