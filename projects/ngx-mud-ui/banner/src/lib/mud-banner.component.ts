@@ -10,7 +10,7 @@ const DEFAULT_CLOSE_LABEL = 'Close';
  * announcements. Persistent and non-contextual; it draws attention without
  * blocking interaction and stays until dismissed or resolved.
  * ```html
- * <mud-banner variant="warning" dismissible (dismissed)="hide()">
+ * <mud-banner variant="warning" closable (closed)="hide()">
  *   Scheduled maintenance tonight 22:00–00:00.
  *   <a mudLink routerLink="/status">Details</a>
  * </mud-banner>
@@ -55,7 +55,7 @@ const DEFAULT_CLOSE_LABEL = 'Close';
 
     <span class="banner__message"><ng-content /></span>
 
-    @if (dismissible()) {
+    @if (closable()) {
       <button type="button" class="banner__close" [attr.aria-label]="_closeLabel()" (click)="_dismiss()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false" aria-hidden="true">
           <path
@@ -84,8 +84,8 @@ export class MudBanner {
   /** @description Surface treatment: `subtle` (tinted) or `strong` (filled, on-colour text). */
   readonly type = input<MudBannerType>('subtle');
 
-  /** @description Renders a trailing close button. Activating it emits `dismissed`. */
-  readonly dismissible = input(false, { transform: booleanAttribute });
+  /** @description Renders a trailing close button. Activating it emits `closed`. */
+  readonly closable = input(false, { transform: booleanAttribute });
 
   /**
    * @description Announce the message when it CHANGES while this banner is
@@ -112,7 +112,7 @@ export class MudBanner {
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
   /** Emitted when the close button is activated. The CONSUMER removes the banner. */
-  readonly dismissed = output<void>();
+  readonly closed = output<void>();
 
   protected readonly _closeLabel = computed(() => this.closeLabel().trim() || DEFAULT_CLOSE_LABEL);
 
@@ -135,6 +135,6 @@ export class MudBanner {
   });
 
   protected _dismiss(): void {
-    this.dismissed.emit();
+    this.closed.emit();
   }
 }

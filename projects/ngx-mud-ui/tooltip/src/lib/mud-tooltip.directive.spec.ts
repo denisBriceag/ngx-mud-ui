@@ -16,10 +16,10 @@ import type { MudTooltipPlacement, MudTooltipSize } from './tooltip-positions';
       [tooltipInteractive]="interactive()"
       [tooltipPlacement]="placement()"
       [tooltipSize]="size()"
-      [tooltipCloseable]="closeable()"
+      [tooltipClosable]="closable()"
       [tooltipDisabled]="disabled()"
       [tooltipMaxWidth]="maxWidth()"
-      (tooltipDismissed)="dismissals = dismissals + 1"
+      (tooltipClosed)="dismissals = dismissals + 1"
     >
       Trigger
     </button>
@@ -32,7 +32,7 @@ class Host {
   readonly interactive = signal(true);
   readonly placement = signal<MudTooltipPlacement>('top-center');
   readonly size = signal<MudTooltipSize>('small');
-  readonly closeable = signal(false);
+  readonly closable = signal(false);
   readonly disabled = signal(false);
   readonly maxWidth = signal('240px');
   dismissals = 0;
@@ -127,10 +127,10 @@ describe('MudTooltip', () => {
     expect(trigger.getAttribute('aria-describedby')).toBeNull();
   });
 
-  it('keeps the close button out of the accessible description when closeable', async () => {
+  it('keeps the close button out of the accessible description when closable', async () => {
     const { fixture, host, trigger } = await render();
 
-    host.closeable.set(true);
+    host.closable.set(true);
     await fixture.whenStable();
 
     await dispatch(fixture, trigger, mouseenter());
@@ -309,11 +309,11 @@ describe('MudTooltip', () => {
     document.removeEventListener('keydown', outer);
   });
 
-  describe('closeable / persistent', () => {
+  describe('closable / persistent', () => {
     it('renders a close button and stays open on mouseleave and blur', async () => {
       const { fixture, host, trigger, tooltip } = await render();
 
-      host.closeable.set(true);
+      host.closable.set(true);
       await fixture.whenStable();
 
       await dispatch(fixture, trigger, mouseenter());
@@ -323,10 +323,10 @@ describe('MudTooltip', () => {
       expect(tooltip()!.querySelector('button[aria-label="Close"]')).not.toBeNull();
     });
 
-    it('dismisses via the close button and emits tooltipDismissed', async () => {
+    it('closes via the close button and emits tooltipClosed', async () => {
       const { fixture, host, trigger, tooltip } = await render();
 
-      host.closeable.set(true);
+      host.closable.set(true);
       await fixture.whenStable();
 
       await dispatch(fixture, trigger, mouseenter());
@@ -408,13 +408,13 @@ describe('MudTooltip', () => {
       expect(tooltip()!.textContent).toContain('Copied!');
     });
 
-    it('updates maxWidth and closeable of an open tooltip', async () => {
+    it('updates maxWidth and closable of an open tooltip', async () => {
       const { fixture, host, trigger, tooltip } = await render();
 
       await dispatch(fixture, trigger, mouseenter());
 
       host.maxWidth.set('320px');
-      host.closeable.set(true);
+      host.closable.set(true);
       await fixture.whenStable();
 
       expect(tooltip()!.style.getPropertyValue('--mud-tooltip-max-width')).toBe('320px');
@@ -479,7 +479,7 @@ describe('MudTooltip', () => {
       expect(tooltip()).not.toBeNull();
     });
 
-    it('hide() closes the tooltip without emitting tooltipDismissed', async () => {
+    it('hide() closes the tooltip without emitting tooltipClosed', async () => {
       const { fixture, host, tooltip, directive } = await renderWithDirective();
 
       directive.show();
@@ -574,7 +574,7 @@ describe('MudTooltip official features', () => {
     expect(tooltip()).toBeNull();
   });
 
-  it('emits the close reason on tooltipDismissed', async () => {
+  it('emits the close reason on tooltipClosed', async () => {
     const fixture = TestBed.createComponent(ReasonHost);
 
     await fixture.whenStable();
@@ -634,7 +634,7 @@ describe('MudTooltip official features', () => {
       mudTooltip="Reason message"
       [tooltipShowDelay]="0"
       [tooltipHideDelay]="0"
-      (tooltipDismissed)="reasons.push($event)"
+      (tooltipClosed)="reasons.push($event)"
     >
       Trigger
     </button>
@@ -653,7 +653,7 @@ class ReasonHost {
       tooltipTitle="New!"
       [tooltipShowDelay]="0"
       [tooltipHideDelay]="0"
-      (tooltipDismissed)="reasons.push($event)"
+      (tooltipClosed)="reasons.push($event)"
     >
       Filters
     </button>

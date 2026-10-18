@@ -25,11 +25,11 @@ import type { MudTooltipPlacement, MudTooltipSize } from './tooltip-positions';
         <div class="tooltip-hint">{{ coachHint() }}</div>
       }
     </div>
-    @if (closeable()) {
+    @if (closable()) {
       <button
         type="button"
         class="tooltip-close"
-        [attr.aria-label]="closeAriaLabel()"
+        [attr.aria-label]="closeLabel()"
         (click)="closed.emit()"
       >
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -60,8 +60,8 @@ export class MudTooltipContainer {
   readonly message = input.required<string>();
   readonly placement = input.required<MudTooltipPlacement>();
   readonly size = input.required<MudTooltipSize>();
-  readonly closeable = input(false);
-  readonly closeAriaLabel = input('Close');
+  readonly closable = input(false);
+  readonly closeLabel = input('Close');
   readonly maxWidth = input('280px');
   readonly title = input<string | undefined>(undefined);
   readonly variant = input<'default' | 'coach'>('default');
@@ -73,7 +73,7 @@ export class MudTooltipContainer {
   protected readonly hostClasses = computed(() => {
     const classes = ['tooltip', `tooltip--${this.placement()}`, `tooltip--${this.size()}`];
 
-    if (this.closeable()) classes.push('tooltip--with-close');
+    if (this.closable()) classes.push('tooltip--with-close');
 
     if (this.variant() === 'coach') classes.push('tooltip--coach');
 

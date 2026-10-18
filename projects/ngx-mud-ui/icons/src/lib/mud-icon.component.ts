@@ -93,11 +93,11 @@ export class MudIconComponent {
   });
 
   constructor() {
-    effect(() => {
-      if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
-
-      for (const warning of this._resolution().warnings) console.warn(warning);
-    });
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      effect(() => {
+        for (const warning of this._resolution().warnings) console.warn(warning);
+      });
+    }
   }
 
   private _pickVariant(

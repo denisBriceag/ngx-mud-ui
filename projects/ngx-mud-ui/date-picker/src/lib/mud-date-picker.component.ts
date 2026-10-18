@@ -10,7 +10,6 @@ import {
   inject,
   Injector,
   input,
-  isSignal,
   LOCALE_ID,
   linkedSignal,
   model,
@@ -46,7 +45,7 @@ import type {
   MudDateRange,
   MudDateValue,
 } from './date-value';
-import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudInputFieldStyles, _injectMudLabels, MudStyleLoader } from 'ngx-mud-ui/core';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -149,12 +148,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   /** Signal-forms touch contract. */
   readonly touch = output<void>();
 
-  private readonly _labelsSource = inject(MUD_DATE_LABELS);
-
-  /** Normalized token view: a plain object and a live signal both read here. */
-  protected readonly _labels = computed(() =>
-    isSignal(this._labelsSource) ? this._labelsSource() : this._labelsSource,
-  );
+  protected readonly _labels = _injectMudLabels(MUD_DATE_LABELS);
   private readonly _appLocale = inject(LOCALE_ID);
 
   protected readonly _id = `mud-date-picker-${nextUniqueId++}`;
@@ -418,41 +412,41 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   constructor() {
     inject(MudStyleLoader).load(_MudInputFieldStyles);
 
-    effect(() => {
-      if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      effect(() => {
+        // In the effect, not the constructor: a signal-backed token can swap the
+        // arrays at runtime.
+        for (const key of ['monthNamesShort', 'monthNamesLong'] as const) {
+          const names = this._labels()[key];
 
-      // In the effect, not the constructor: a signal-backed token can swap the
-      // arrays at runtime.
-      for (const key of ['monthNamesShort', 'monthNamesLong'] as const) {
-        const names = this._labels()[key];
+          if (names && names.length !== 12) {
+            console.warn(
+              `[mud-date-picker] MUD_DATE_LABELS.${key} has ${names.length} entries; ` +
+                `expected 12 (January first). Falling back to Intl names.`,
+            );
+          }
+        }
 
-        if (names && names.length !== 12) {
+        const value = this.value();
+
+        if (typeof value === 'string' && value !== '' && !isValidIso(value)) {
           console.warn(
-            `[mud-date-picker] MUD_DATE_LABELS.${key} has ${names.length} entries; ` +
-              `expected 12 (January first). Falling back to Intl names.`,
+            `[mud-date-picker] expected an ISO date 'YYYY-MM-DD', received ${JSON.stringify(value)}. ` +
+              `Use mudDateFromDate(new Date(...)) to convert. Rendering as if nothing were selected.`,
           );
         }
-      }
 
-      const value = this.value();
+        const startAt = this.startAt();
 
-      if (typeof value === 'string' && value !== '' && !isValidIso(value)) {
-        console.warn(
-          `[mud-date-picker] expected an ISO date 'YYYY-MM-DD', received ${JSON.stringify(value)}. ` +
-            `Use mudDateFromDate(new Date(...)) to convert. Rendering as if nothing were selected.`,
-        );
-      }
-
-      const startAt = this.startAt();
-
-      if (typeof startAt === 'string' && startAt !== '' && !isValidIso(startAt)) {
-        console.warn(
-          `[mud-date-picker] expected an ISO date 'YYYY-MM-DD' for startAt, received ` +
-            `${JSON.stringify(startAt)}. Use mudDateFromDate(new Date(...)) to convert. ` +
-            `Ignoring it and opening on the current month.`,
-        );
-      }
-    });
+        if (typeof startAt === 'string' && startAt !== '' && !isValidIso(startAt)) {
+          console.warn(
+            `[mud-date-picker] expected an ISO date 'YYYY-MM-DD' for startAt, received ` +
+              `${JSON.stringify(startAt)}. Use mudDateFromDate(new Date(...)) to convert. ` +
+              `Ignoring it and opening on the current month.`,
+          );
+        }
+      });
+    }
   }
 
   // ----- ControlValueAccessor -----

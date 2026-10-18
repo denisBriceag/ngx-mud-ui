@@ -240,20 +240,20 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
   constructor() {
     inject(MudStyleLoader).load(_MudInputFieldStyles);
 
-    effect(() => {
-      if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      effect(() => {
+        const max = this.maxChips();
+        const count = this.value().length;
 
-      const max = this.maxChips();
-      const count = this.value().length;
-
-      if (max !== undefined && count > max) {
-        console.warn(
-          `[mud-input-chip] the bound value holds ${count} chips but maxChips is ${max}, ` +
-            `so the field is read-only until enough are removed. ` +
-            `Validation applies to typed input, not to the bound value.`,
-        );
-      }
-    });
+        if (max !== undefined && count > max) {
+          console.warn(
+            `[mud-input-chip] the bound value holds ${count} chips but maxChips is ${max}, ` +
+              `so the field is read-only until enough are removed. ` +
+              `Validation applies to typed input, not to the bound value.`,
+          );
+        }
+      });
+    }
   }
 
   writeValue(value: readonly string[] | null | undefined): void {

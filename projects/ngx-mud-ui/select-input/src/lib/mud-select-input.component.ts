@@ -207,22 +207,22 @@ export class MudSelectInput<T = unknown> implements ControlValueAccessor, FormVa
     styles.load(_MudInputFieldStyles);
     styles.load(_MudMenuPanelStyles);
 
-    effect(() => {
-      if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      effect(() => {
+        const value = this.value();
+        const options = this.options();
 
-      const value = this.value();
-      const options = this.options();
+        if (value === undefined || value === null || options.length === 0) return;
 
-      if (value === undefined || value === null || options.length === 0) return;
-
-      if (!options.some((option) => Object.is(option.value, value))) {
-        console.warn(
-          `[mud-select-input] value ${JSON.stringify(value)} matches none of the ${options.length} options, ` +
-            `so the trigger shows the placeholder as if nothing were selected. ` +
-            `Add a matching option, or clear the value.`,
-        );
-      }
-    });
+        if (!options.some((option) => Object.is(option.value, value))) {
+          console.warn(
+            `[mud-select-input] value ${JSON.stringify(value)} matches none of the ${options.length} options, ` +
+              `so the trigger shows the placeholder as if nothing were selected. ` +
+              `Add a matching option, or clear the value.`,
+          );
+        }
+      });
+    }
 
     // The overlay follows the open model (which is also settable from
     // outside), so attach/detach lives in one browser-only effect.

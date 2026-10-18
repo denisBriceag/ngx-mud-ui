@@ -12,7 +12,6 @@ import {
   inject,
   Injector,
   input,
-  isSignal,
   linkedSignal,
   model,
   output,
@@ -50,7 +49,7 @@ import {
   padHourOnSeparator,
 } from './time-mask';
 import { MudTimePicker } from './mud-time-picker.component';
-import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudInputFieldStyles, _injectMudLabels, MudStyleLoader } from 'ngx-mud-ui/core';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -129,12 +128,7 @@ export class MudTimeInput implements ControlValueAccessor, FormValueControl<MudT
   readonly cleared = output<void>();
   readonly touch = output<void>();
 
-  private readonly _labelsSource = inject(MUD_TIME_LABELS);
-
-  /** Normalized token view: a plain object and a live signal both read here. */
-  protected readonly _labels = computed(() =>
-    isSignal(this._labelsSource) ? this._labelsSource() : this._labelsSource,
-  );
+  protected readonly _labels = _injectMudLabels(MUD_TIME_LABELS);
 
   private readonly _overlay = inject(Overlay);
   private readonly _viewContainerRef = inject(ViewContainerRef);
@@ -249,30 +243,30 @@ export class MudTimeInput implements ControlValueAccessor, FormValueControl<MudT
   constructor() {
     inject(MudStyleLoader).load(_MudInputFieldStyles);
 
-    effect(() => {
-      if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      effect(() => {
+        const placeholder = this.placeholder()?.trim();
 
-      const placeholder = this.placeholder()?.trim();
+        if (!placeholder || PLACEHOLDER_SHAPE.test(placeholder)) return;
 
-      if (!placeholder || PLACEHOLDER_SHAPE.test(placeholder)) return;
+        console.warn(
+          `[mud-time-input] placeholder ${JSON.stringify(placeholder)} does not have the HH:MM shape ` +
+            `(two non-digits, ':', two non-digits); using 'HH:MM'.`,
+        );
+      });
+    }
 
-      console.warn(
-        `[mud-time-input] placeholder ${JSON.stringify(placeholder)} does not have the HH:MM shape ` +
-          `(two non-digits, ':', two non-digits); using 'HH:MM'.`,
-      );
-    });
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      effect(() => {
+        const value = this.value();
 
-    effect(() => {
-      if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
+        if (value === null || value === '' || isValidTime(value)) return;
 
-      const value = this.value();
-
-      if (value === null || value === '' || isValidTime(value)) return;
-
-      console.warn(
-        `[mud-time-input] expected a 24-hour 'HH:MM' time, received ${JSON.stringify(value)}. Rendering as empty.`,
-      );
-    });
+        console.warn(
+          `[mud-time-input] expected a 24-hour 'HH:MM' time, received ${JSON.stringify(value)}. Rendering as empty.`,
+        );
+      });
+    }
 
     effect(() => {
       const display = this._draft();

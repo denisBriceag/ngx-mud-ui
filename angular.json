@@ -3,6 +3,9 @@
   "version": 1,
   "cli": {
     "packageManager": "pnpm",
+    "cache": {
+      "environment": "all"
+    },
     "schematicCollections": [
       "angular-eslint"
     ]
@@ -101,7 +104,10 @@
               "projects/ngx-mud-ui/**/*.ts",
               "projects/ngx-mud-ui/**/*.html"
             ],
-            "eslintConfig": "projects/ngx-mud-ui/eslint.config.mjs"
+            "eslintConfig": "projects/ngx-mud-ui/eslint.config.mjs",
+            "cache": true,
+            "cacheLocation": ".angular/eslint-cache",
+            "cacheStrategy": "content"
           }
         }
       }

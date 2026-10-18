@@ -7,7 +7,6 @@ import {
   inject,
   Injector,
   input,
-  isSignal,
   linkedSignal,
   model,
   PLATFORM_ID,
@@ -18,6 +17,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { formatTime, isSelectable, minutesForStep, minuteStepTransform, parseTime, toValidTimeOrUndefined } from './time-core';
 import type { MudMinuteStep, MudTimeValue } from './time-core';
 import { MUD_TIME_LABELS } from './time-labels';
+import { _injectMudLabels } from 'ngx-mud-ui/core';
 
 export type MudTimePickerAppearance = 'elevated' | 'flat';
 export type MudTimePickerColumn = 'hours' | 'minutes';
@@ -63,12 +63,7 @@ export class MudTimePicker {
   /** @description Return `true` for a SELECTABLE time. Runs after min/max and minuteStep. */
   readonly timeFilter = input<((time: string) => boolean) | undefined>(undefined);
 
-  private readonly _labelsSource = inject(MUD_TIME_LABELS);
-
-  /** Normalized token view: a plain object and a live signal both read here. */
-  protected readonly _labels = computed(() =>
-    isSignal(this._labelsSource) ? this._labelsSource() : this._labelsSource,
-  );
+  protected readonly _labels = _injectMudLabels(MUD_TIME_LABELS);
 
   private readonly _host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly _injector = inject(Injector);

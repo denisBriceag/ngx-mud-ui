@@ -14,7 +14,7 @@ const meta: Meta<MudTooltip> = {
     mudTooltip: { control: 'text', description: 'Tooltip message' },
     tooltipPlacement: { control: 'select', options: [...MUD_TOOLTIP_PLACEMENTS] },
     tooltipSize: { control: 'inline-radio', options: ['small', 'large'] },
-    tooltipCloseable: { control: 'boolean' },
+    tooltipClosable: { control: 'boolean' },
     tooltipDisabled: { control: 'boolean' },
     tooltipShowDelay: { control: 'number' },
     tooltipMaxWidth: { control: 'text' },
@@ -23,7 +23,7 @@ const meta: Meta<MudTooltip> = {
     mudTooltip: 'Moldova’s digital evolution is at the heart of seamless public service delivery.',
     tooltipPlacement: 'top-center',
     tooltipSize: 'small',
-    tooltipCloseable: false,
+    tooltipClosable: false,
     tooltipDisabled: false,
     tooltipShowDelay: 200,
     tooltipMaxWidth: '280px',
@@ -46,7 +46,7 @@ export const Basic: Story = {
           [mudTooltip]="mudTooltip"
           [tooltipPlacement]="tooltipPlacement"
           [tooltipSize]="tooltipSize"
-          [tooltipCloseable]="tooltipCloseable"
+          [tooltipClosable]="tooltipClosable"
           [tooltipDisabled]="tooltipDisabled"
           [tooltipShowDelay]="tooltipShowDelay"
           [tooltipMaxWidth]="tooltipMaxWidth"
@@ -122,7 +122,7 @@ export const OnIconTrigger: Story = {
 };
 
 /**
- * Onboarding-style tooltip: `tooltipCloseable` keeps it visible until the user
+ * Onboarding-style tooltip: `tooltipClosable` keeps it visible until the user
  * closes it (✕ button, Escape, or clicking outside) — hovering away does not
  * dismiss it. `show()`/`hide()` (via `#ref="mudTooltip"`) drive it from code,
  * e.g. for product tours.
@@ -134,7 +134,7 @@ export const OnIconTrigger: Story = {
     <div style="display:flex;gap:12px;align-items:center;justify-content:center;padding:140px 24px">
       <button type="button" (click)="tooltip.show()">show()</button>
       <button type="button" (click)="tooltip.hide()">hide()</button>
-      <code>tooltipDismissed × {{ dismissals() }}</code>
+      <code>tooltipClosed × {{ dismissals() }}</code>
       <span style="width:48px"></span>
       <button
         #tooltip="mudTooltip"
@@ -143,9 +143,9 @@ export const OnIconTrigger: Story = {
         mudTooltip="New! You can now track your application status here."
         tooltipPlacement="top-center"
         tooltipSize="large"
-        tooltipCloseable
+        tooltipClosable
         [tooltipShowDelay]="0"
-        (tooltipDismissed)="dismissals.set(dismissals() + 1)"
+        (tooltipClosed)="dismissals.set(dismissals() + 1)"
       >
         Application status
       </button>
@@ -170,9 +170,9 @@ const ONBOARDING_SOURCE = `
       mudTooltip="New! You can now track your application status here."
       tooltipPlacement="top-center"
       tooltipSize="large"
-      tooltipCloseable
+      tooltipClosable
       [tooltipShowDelay]="0"
-      (tooltipDismissed)="onDismissed($event)"
+      (tooltipClosed)="onClosed($event)"
     >
       Application status
     </button>
@@ -183,15 +183,15 @@ const ONBOARDING_SOURCE = `
   \`,
 })
 export class OnboardingHint {
-  // \`tooltipDismissed\` reports WHY it closed — useful for tracking whether an
+  // \`tooltipClosed\` reports WHY it closed — useful for tracking whether an
   // onboarding hint was read or brushed aside.
-  onDismissed(reason: MudTooltipCloseReason): void {
+  onClosed(reason: MudTooltipCloseReason): void {
     // record the dismissal
   }
 }
 `;
 
-export const CloseableOnboarding: Story = {
+export const ClosableOnboarding: Story = {
   parameters: {
     controls: { disable: true },
     docs: { source: { code: ONBOARDING_SOURCE, language: 'ts' } },

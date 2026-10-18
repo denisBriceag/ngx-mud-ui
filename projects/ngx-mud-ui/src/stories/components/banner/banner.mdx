@@ -30,7 +30,7 @@ import { MudBanner } from 'ngx-mud-ui/banner';
 @Component({
   imports: [MudBanner],
   template: `
-    <mud-banner variant="warning" dismissible (dismissed)="hide()">
+    <mud-banner variant="warning" closable (closed)="hide()">
       Scheduled maintenance tonight 22:00–00:00.
     </mud-banner>
   `,
@@ -134,7 +134,7 @@ The banner owns exactly one string — the dismiss button's accessible name.
 Override it per instance:
 
 ```html
-<mud-banner dismissible closeLabel="Închide">…</mud-banner>
+<mud-banner closable closeLabel="Închide">…</mud-banner>
 ```
 
 It defaults to `Close`, and a blank or whitespace value falls back to that
@@ -150,10 +150,10 @@ The message is projected, so put whatever you need inside — including a
 
 ## Dismissing
 
-`dismissible` renders a close button that emits `dismissed`. **The banner does
+`closable` renders a close button that emits `closed`. **The banner does
 not remove itself** — you own that, so it composes with `@if` in your template.
 
-<Canvas of={BannerStories.Dismissible} />
+<Canvas of={BannerStories.Closable} />
 
 The close button's visible size is 24×24, with a hit area of 32×32 that grows to
 40×40 on coarse-pointer devices. Only the invisible hit area changes, so there is

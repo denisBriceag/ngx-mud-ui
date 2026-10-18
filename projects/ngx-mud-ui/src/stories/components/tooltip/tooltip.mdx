@@ -53,9 +53,9 @@ import '@angular/cdk/overlay-prebuilt.css';
 
 <Canvas of={TooltipStories.OnIconTrigger} />
 
-## Closeable onboarding
+## Closable onboarding
 
-<Canvas of={TooltipStories.CloseableOnboarding} />
+<Canvas of={TooltipStories.ClosableOnboarding} />
 
 ## Coach
 
@@ -86,7 +86,7 @@ Selector: `[mudTooltip]` · `exportAs: 'mudTooltip'`
   contains a link, so moving the pointer onto it doesn't dismiss it first.
 - **`manual` responds only to `show()` and `hide()`**, reachable through the
   `mudTooltip` template reference variable.
-- **Localize `tooltipCoachHint` and `tooltipCloseAriaLabel`** — they default to
+- **Localize `tooltipCoachHint` and `tooltipCloseLabel`** — they default to
   the English `'Press Esc to close'` and `'Close'`.
-- **`tooltipDismissed` reports why the tooltip closed**, which is what you record
+- **`tooltipClosed` reports why the tooltip closed**, which is what you record
   when tracking whether an onboarding hint was actually read or brushed aside.

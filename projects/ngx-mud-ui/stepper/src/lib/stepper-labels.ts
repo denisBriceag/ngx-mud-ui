@@ -1,5 +1,6 @@
-import { computed, InjectionToken, isSignal } from '@angular/core';
+import { InjectionToken } from '@angular/core';
 import type { Provider, Signal } from '@angular/core';
+import { _provideMudLabels } from 'ngx-mud-ui/core';
 
 /**
  * Screen-reader-only state suffixes a step header announces after its label.
@@ -31,19 +32,7 @@ export const MUD_STEPPER_LABELS = new InjectionToken<MudStepperLabels | Signal<M
  * ```
  */
 export function provideMudStepperLabels(
-  labels:
-    | Partial<MudStepperLabels>
-    | Signal<Partial<MudStepperLabels>>
-    | (() => Partial<MudStepperLabels> | Signal<Partial<MudStepperLabels>>),
+  labels: Partial<MudStepperLabels> | Signal<Partial<MudStepperLabels>> | (() => Partial<MudStepperLabels> | Signal<Partial<MudStepperLabels>>),
 ): Provider {
-  const merge = (partial: Partial<MudStepperLabels> | Signal<Partial<MudStepperLabels>>) =>
-    isSignal(partial)
-      ? computed(() => ({ ...MUD_STEPPER_LABELS_DEFAULT, ...partial() }))
-      : { ...MUD_STEPPER_LABELS_DEFAULT, ...partial };
-
-  if (typeof labels === 'function' && !isSignal(labels)) {
-    return { provide: MUD_STEPPER_LABELS, useFactory: () => merge(labels()) };
-  }
-
-  return { provide: MUD_STEPPER_LABELS, useValue: merge(labels) };
+  return _provideMudLabels(MUD_STEPPER_LABELS, MUD_STEPPER_LABELS_DEFAULT, labels);
 }

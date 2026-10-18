@@ -11,7 +11,6 @@ import {
   inject,
   Injector,
   input,
-  isSignal,
   model,
   numberAttribute,
   output,
@@ -28,6 +27,7 @@ import { MUD_PAGINATION_LABELS } from './mud-pagination-labels';
 import type { MudPageEvent, MudPaginationSize } from './mud-pagination.types';
 import { computeSlots } from './pagination-range';
 import type { MudPaginationSlot } from './pagination-range';
+import { _injectMudLabels } from 'ngx-mud-ui/core';
 
 type OverflowSlot = Extract<MudPaginationSlot, { kind: 'overflow' }>;
 
@@ -177,13 +177,7 @@ export class MudPagination implements OnInit, OnDestroy {
   private readonly _destroyRef = inject(DestroyRef);
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  private readonly _labelsSource = inject(MUD_PAGINATION_LABELS);
-
-  protected readonly _labels = computed(() => {
-    const source = this._labelsSource;
-
-    return isSignal(source) ? source() : source;
-  });
+  protected readonly _labels = _injectMudLabels(MUD_PAGINATION_LABELS);
 
   private readonly _length = computed(() => {
     const value = Math.floor(this.length());

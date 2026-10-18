@@ -1,5 +1,6 @@
-import { computed, InjectionToken, isSignal } from '@angular/core';
+import { InjectionToken } from '@angular/core';
 import type { Provider, Signal } from '@angular/core';
+import { _provideMudLabels } from 'ngx-mud-ui/core';
 
 /** Every string MudPagination renders; page numbers passed in are 1-based. */
 export interface MudPaginationLabels {
@@ -40,19 +41,7 @@ export const MUD_PAGINATION_LABELS = new InjectionToken<MudPaginationLabels | Si
  * ```
  */
 export function provideMudPaginationLabels(
-  labels:
-    | Partial<MudPaginationLabels>
-    | Signal<Partial<MudPaginationLabels>>
-    | (() => Partial<MudPaginationLabels> | Signal<Partial<MudPaginationLabels>>),
+  labels: Partial<MudPaginationLabels> | Signal<Partial<MudPaginationLabels>> | (() => Partial<MudPaginationLabels> | Signal<Partial<MudPaginationLabels>>),
 ): Provider {
-  const merge = (partial: Partial<MudPaginationLabels> | Signal<Partial<MudPaginationLabels>>) =>
-    isSignal(partial)
-      ? computed(() => ({ ...MUD_PAGINATION_LABELS_DEFAULT, ...partial() }))
-      : { ...MUD_PAGINATION_LABELS_DEFAULT, ...partial };
-
-  if (typeof labels === 'function' && !isSignal(labels)) {
-    return { provide: MUD_PAGINATION_LABELS, useFactory: () => merge(labels()) };
-  }
-
-  return { provide: MUD_PAGINATION_LABELS, useValue: merge(labels) };
+  return _provideMudLabels(MUD_PAGINATION_LABELS, MUD_PAGINATION_LABELS_DEFAULT, labels);
 }

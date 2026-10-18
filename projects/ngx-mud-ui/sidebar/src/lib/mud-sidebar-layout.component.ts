@@ -53,10 +53,12 @@ export class MudSidebarLayout {
   constructor() {
     inject(MudStyleLoader).load(_MudSidebarStyles);
 
-    effect(() => {
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) && this._sidebars().length > 1) {
-        console.warn('mud-sidebar-layout: only one mud-sidebar is laid out; the first one wins.');
-      }
-    });
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      effect(() => {
+        if (this._sidebars().length > 1) {
+          console.warn('mud-sidebar-layout: only one mud-sidebar is laid out; the first one wins.');
+        }
+      });
+    }
   }
 }

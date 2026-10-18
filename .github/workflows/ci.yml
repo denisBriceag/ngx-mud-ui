@@ -31,6 +31,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Angular's build cache (angular.json cli.cache.environment = all, else it is off under CI=true)
+      # and ESLint's cache (content strategy: checkout resets mtimes). Both validate their own entries,
+      # so restoring a previous run's cache via restore-keys is safe.
+      - name: Restore build + lint caches
+        uses: actions/cache@v4
+        with:
+          path: .angular
+          key: angular-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            angular-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+
       - name: Lint
         run: pnpm lint
 

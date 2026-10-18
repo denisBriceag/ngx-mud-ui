@@ -1,5 +1,6 @@
-import { computed, InjectionToken, isSignal } from '@angular/core';
+import { InjectionToken } from '@angular/core';
 import type { Provider, Signal } from '@angular/core';
+import { _provideMudLabels } from 'ngx-mud-ui/core';
 
 /**
  * Every user-facing string the time components render. Defaults are English;
@@ -50,19 +51,7 @@ export const MUD_TIME_LABELS = new InjectionToken<MudTimeLabels | Signal<MudTime
  * ```
  */
 export function provideMudTimeLabels(
-  labels:
-    | Partial<MudTimeLabels>
-    | Signal<Partial<MudTimeLabels>>
-    | (() => Partial<MudTimeLabels> | Signal<Partial<MudTimeLabels>>),
+  labels: Partial<MudTimeLabels> | Signal<Partial<MudTimeLabels>> | (() => Partial<MudTimeLabels> | Signal<Partial<MudTimeLabels>>),
 ): Provider {
-  const merge = (partial: Partial<MudTimeLabels> | Signal<Partial<MudTimeLabels>>) =>
-    isSignal(partial)
-      ? computed(() => ({ ...MUD_TIME_LABELS_DEFAULT, ...partial() }))
-      : { ...MUD_TIME_LABELS_DEFAULT, ...partial };
-
-  if (typeof labels === 'function' && !isSignal(labels)) {
-    return { provide: MUD_TIME_LABELS, useFactory: () => merge(labels()) };
-  }
-
-  return { provide: MUD_TIME_LABELS, useValue: merge(labels) };
+  return _provideMudLabels(MUD_TIME_LABELS, MUD_TIME_LABELS_DEFAULT, labels);
 }

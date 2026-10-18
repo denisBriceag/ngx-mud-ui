@@ -117,7 +117,9 @@ const config: StorybookConfig = {
         '-e',
         'json',
         '-d',
-        'projects/ngx-mud-ui',
+        // Absolute: the preset resolves `-d` against its workspace root, which is the repo root under
+        // `ng run` but projects/ngx-mud-ui under vitest, where a relative path nested the output.
+        resolve(configDir, '..'),
         '--disableProtected',
         '--disablePrivate',
         '--disableInternal',

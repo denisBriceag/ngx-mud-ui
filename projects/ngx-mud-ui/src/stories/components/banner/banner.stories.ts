@@ -18,7 +18,7 @@ const meta: Meta<BannerArgs> = {
   args: {
     variant: 'info',
     type: 'subtle',
-    dismissible: false,
+    closable: false,
     live: false,
     closeLabel: 'Close',
   },
@@ -39,7 +39,7 @@ export const Playground: Story = {
         <mud-banner
           [variant]="variant"
           [type]="type"
-          [dismissible]="dismissible"
+          [closable]="closable"
           [live]="live"
           [closeLabel]="closeLabel"
           [aria-label]="ariaLabelText"
@@ -83,13 +83,13 @@ export const WithLink: Story = {
   }),
 };
 
-export const Dismissible: Story = {
+export const Closable: Story = {
   parameters: { controls: { disable: true } },
   render: () => ({
-    props: { onDismissed: () => undefined },
+    props: { onClosed: () => undefined },
     template: `
       <div style="${COL}">
-        <mud-banner variant="info" dismissible (dismissed)="onDismissed()">
+        <mud-banner variant="info" closable (closed)="onClosed()">
           Dismissing emits an event — the consumer removes the banner.
         </mud-banner>
       </div>

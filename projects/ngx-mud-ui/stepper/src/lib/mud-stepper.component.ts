@@ -5,12 +5,10 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
-  computed,
   DestroyRef,
   ViewChildren,
   inject,
   input,
-  isSignal,
   output,
   signal,
   viewChild,
@@ -25,7 +23,7 @@ import type { MudStep } from './mud-step.component';
 import type { MudStepState } from './mud-step-header.component';
 import { MUD_STEP_STATES, MudStepHeader } from './mud-step-header.component';
 import { MUD_STEPPER_LABELS } from './stepper-labels';
-import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _injectMudLabels, MudStyleLoader } from 'ngx-mud-ui/core';
 import { _MudStepperStyles } from './mud-stepper-styles.component';
 
 /** Container width below which a horizontal stepper auto-switches to the compact dot rail. */
@@ -150,10 +148,7 @@ export class MudStepper extends CdkStepper {
 
   private readonly _track = viewChild.required<ElementRef<HTMLElement>>('track');
 
-  private readonly _labelsSource = inject(MUD_STEPPER_LABELS);
-  private readonly _labels = computed(() =>
-    isSignal(this._labelsSource) ? this._labelsSource() : this._labelsSource,
-  );
+  private readonly _labels = _injectMudLabels(MUD_STEPPER_LABELS);
 
   /** Bumped on reactive-forms statusChanges so _stateOf re-evaluates. */
   private readonly _controlStatus = signal(0);

@@ -9,11 +9,11 @@ import type { MudBannerType, MudBannerVariant } from './mud-banner.component';
     <mud-banner
       [variant]="variant()"
       [type]="type()"
-      [dismissible]="dismissible()"
+      [closable]="closable()"
       [live]="live()"
       [closeLabel]="closeLabel()"
       [aria-label]="ariaLabel()"
-      (dismissed)="dismissedCount = dismissedCount + 1"
+      (closed)="closedCount = closedCount + 1"
     >
       Scheduled maintenance tonight
     </mud-banner>
@@ -22,11 +22,11 @@ import type { MudBannerType, MudBannerVariant } from './mud-banner.component';
 class Host {
   readonly variant = signal<MudBannerVariant>('info');
   readonly type = signal<MudBannerType>('subtle');
-  readonly dismissible = signal(false);
+  readonly closable = signal(false);
   readonly live = signal(false);
   readonly closeLabel = signal('Close');
   readonly ariaLabel = signal<string | undefined>(undefined);
-  dismissedCount = 0;
+  closedCount = 0;
 }
 
 async function render() {
@@ -157,22 +157,22 @@ describe('MudBanner', () => {
     expect(el.getAttribute('aria-label')).toBe('System status');
   });
 
-  it('hides the close button unless dismissible', async () => {
+  it('hides the close button unless closable', async () => {
     const { close } = await render();
 
     expect(close()).toBeNull();
   });
 
-  it('emits dismissed once on close and does not remove itself', async () => {
+  it('emits closed once on close and does not remove itself', async () => {
     const { fixture, host, el, close } = await render();
 
-    host.dismissible.set(true);
+    host.closable.set(true);
     await fixture.whenStable();
 
     close()!.click();
     await fixture.whenStable();
 
-    expect(host.dismissedCount).toBe(1);
+    expect(host.closedCount).toBe(1);
     // The consumer owns removal; the banner must still be in the DOM.
     expect(fixture.nativeElement.querySelector('mud-banner')).toBe(el);
   });
@@ -180,7 +180,7 @@ describe('MudBanner', () => {
   it('labels the close button from the closeLabel input', async () => {
     const { fixture, host, close } = await render();
 
-    host.dismissible.set(true);
+    host.closable.set(true);
     host.closeLabel.set('Închide');
     await fixture.whenStable();
 
@@ -193,7 +193,7 @@ describe('MudBanner', () => {
   it('falls back to the default when closeLabel is blank or whitespace-only', async () => {
     const { fixture, host, close } = await render();
 
-    host.dismissible.set(true);
+    host.closable.set(true);
     host.closeLabel.set('   ');
     await fixture.whenStable();
 
@@ -205,7 +205,7 @@ describe('MudBanner localization', () => {
   it('ships an English default when nothing is provided', async () => {
     const { fixture, host, close } = await render();
 
-    host.dismissible.set(true);
+    host.closable.set(true);
     await fixture.whenStable();
 
     expect(close()!.getAttribute('aria-label')).toBe('Close');

@@ -466,29 +466,29 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
       if (native.value !== display) native.value = display;
     });
 
-    effect(() => {
-      if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
-
-      for (const problem of this._resolvedCountries().problems) {
-        console.warn(`[mud-phone-input] ${problem}`);
-      }
-    });
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      effect(() => {
+        for (const problem of this._resolvedCountries().problems) {
+          console.warn(`[mud-phone-input] ${problem}`);
+        }
+      });
+    }
 
     // An unknown ISO is a consumer bug worth surfacing, but must not break
     // rendering — `_country()` already falls back to Moldova.
-    effect(() => {
-      if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      effect(() => {
+        const requested = this.country();
+        const resolved = this._country().iso;
+        const known = requested?.toUpperCase() === resolved.toUpperCase();
 
-      const requested = this.country();
-      const resolved = this._country().iso;
-      const known = requested?.toUpperCase() === resolved.toUpperCase();
-
-      if (requested && !known) {
-        console.warn(
-          `[mud-phone-input] country="${requested}" is not among the offered countries. Using "${resolved}".`,
-        );
-      }
-    });
+        if (requested && !known) {
+          console.warn(
+            `[mud-phone-input] country="${requested}" is not among the offered countries. Using "${resolved}".`,
+          );
+        }
+      });
+    }
 
     effect(() => {
       const requested = this.country();

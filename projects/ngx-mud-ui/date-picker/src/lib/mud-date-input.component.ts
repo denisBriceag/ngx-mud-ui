@@ -10,7 +10,6 @@ import {
   forwardRef,
   inject,
   input,
-  isSignal,
   linkedSignal,
   model,
   output,
@@ -44,7 +43,7 @@ import {
 import type { MudDateFormat, MudDateFormatSpec } from './date-mask';
 import { MudDatePicker } from './mud-date-picker.component';
 import type { MudDateInputMode, MudDateRange, MudDateValue } from './date-value';
-import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudInputFieldStyles, _injectMudLabels, MudStyleLoader } from 'ngx-mud-ui/core';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -132,12 +131,7 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   readonly cleared = output<void>();
   readonly touch = output<void>();
 
-  private readonly _labelsSource = inject(MUD_DATE_LABELS);
-
-  /** Normalized token view: a plain object and a live signal both read here. */
-  protected readonly _labels = computed(() =>
-    isSignal(this._labelsSource) ? this._labelsSource() : this._labelsSource,
-  );
+  protected readonly _labels = _injectMudLabels(MUD_DATE_LABELS);
   private readonly _overlay = inject(Overlay);
   private readonly _viewContainerRef = inject(ViewContainerRef);
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -318,31 +312,31 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   constructor() {
     inject(MudStyleLoader).load(_MudInputFieldStyles);
 
-    effect(() => {
-      if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      effect(() => {
+        const placeholder = this.placeholder()?.trim();
 
-      const placeholder = this.placeholder()?.trim();
+        if (!placeholder || placeholderShape(this._spec()).test(placeholder)) return;
 
-      if (!placeholder || placeholderShape(this._spec()).test(placeholder)) return;
+        console.warn(
+          `[mud-date-input] placeholder ${JSON.stringify(placeholder)} does not have the ${this.format()} shape ` +
+            `(the format's separators in place, non-digits elsewhere); using the format.`,
+        );
+      });
+    }
 
-      console.warn(
-        `[mud-date-input] placeholder ${JSON.stringify(placeholder)} does not have the ${this.format()} shape ` +
-          `(the format's separators in place, non-digits elsewhere); using the format.`,
-      );
-    });
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      effect(() => {
+        const value = this.value();
 
-    effect(() => {
-      if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
+        if (typeof value !== 'string' || value === '' || isValidIso(value)) return;
 
-      const value = this.value();
-
-      if (typeof value !== 'string' || value === '' || isValidIso(value)) return;
-
-      console.warn(
-        `[mud-date-input] expected an ISO date 'YYYY-MM-DD', received ${JSON.stringify(value)}. ` +
-          `Use mudDateFromDate(new Date(...)) to convert. Rendering as empty.`,
-      );
-    });
+        console.warn(
+          `[mud-date-input] expected an ISO date 'YYYY-MM-DD', received ${JSON.stringify(value)}. ` +
+            `Use mudDateFromDate(new Date(...)) to convert. Rendering as empty.`,
+        );
+      });
+    }
 
     effect(() => {
       const entries: [ElementRef<HTMLInputElement> | undefined, string][] = [

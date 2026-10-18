@@ -40,8 +40,8 @@ describe('buildPrebuilt', () => {
   });
 
   it('ships the Onest font next to it, referenced relatively', () => {
-    expect(css).toContain("url(\"../fonts/Onest/OnestRegular1602-hint.woff\")");
-    expect(existsSync(join(OUT, 'fonts', 'Onest', 'OnestRegular1602-hint.woff'))).toBe(true);
+    expect(css).toContain("url(\"../fonts/Onest/onest-variable.woff2\")");
+    expect(existsSync(join(OUT, 'fonts', 'Onest', 'onest-variable.woff2'))).toBe(true);
   });
 
   it('emits no class selectors (no utilities, no component CSS)', () => {

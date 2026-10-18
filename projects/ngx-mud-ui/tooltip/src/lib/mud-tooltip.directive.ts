@@ -107,17 +107,17 @@ export class MudTooltip {
    * stay reachable). Off by default, matching the official tooltip.
    */
   readonly tooltipInteractive = input(false, { transform: booleanAttribute });
-  readonly tooltipCloseable = input(false, { transform: booleanAttribute });
+  readonly tooltipClosable = input(false, { transform: booleanAttribute });
   readonly tooltipDisabled = input(false, { transform: booleanAttribute });
   /** @description Off when the tooltip only repeats the trigger's accessible name (it would be read twice). */
   readonly tooltipDescribesTrigger = input(true, { transform: booleanAttribute });
   readonly tooltipMaxWidth = input('280px');
   readonly tooltipShowDelay = input(200, { transform: numberAttribute });
   readonly tooltipHideDelay = input(150, { transform: numberAttribute });
-  readonly tooltipCloseAriaLabel = input('Close');
+  readonly tooltipCloseLabel = input('Close');
 
   /** Emitted when the tooltip closes for a user-initiated reason. */
-  readonly tooltipDismissed = output<MudTooltipCloseReason>();
+  readonly tooltipClosed = output<MudTooltipCloseReason>();
 
   private readonly _id = `mud-tooltip-${nextUniqueId++}`;
 
@@ -162,8 +162,8 @@ export class MudTooltip {
 
       container.setInput('message', this.content());
       container.setInput('size', this.tooltipSize());
-      container.setInput('closeable', this.tooltipCloseable() || this._isCoach);
-      container.setInput('closeAriaLabel', this.tooltipCloseAriaLabel());
+      container.setInput('closable', this.tooltipClosable() || this._isCoach);
+      container.setInput('closeLabel', this.tooltipCloseLabel());
       container.setInput('maxWidth', this.tooltipMaxWidth());
       container.setInput('title', this.tooltipTitle());
       container.setInput('variant', this.tooltipVariant());
@@ -292,8 +292,8 @@ export class MudTooltip {
     containerRef.setInput('message', this.content());
     containerRef.setInput('placement', this.tooltipPlacement());
     containerRef.setInput('size', this.tooltipSize());
-    containerRef.setInput('closeable', this.tooltipCloseable() || this._isCoach);
-    containerRef.setInput('closeAriaLabel', this.tooltipCloseAriaLabel());
+    containerRef.setInput('closable', this.tooltipClosable() || this._isCoach);
+    containerRef.setInput('closeLabel', this.tooltipCloseLabel());
     containerRef.setInput('maxWidth', this.tooltipMaxWidth());
     containerRef.setInput('title', this.tooltipTitle());
     containerRef.setInput('variant', this.tooltipVariant());
@@ -332,7 +332,7 @@ export class MudTooltip {
       if (this._pinned && target && !this._host.contains(target)) this._dismiss('click-outside');
     });
 
-    this._pinned = this.tooltipCloseable() || this._isCoach;
+    this._pinned = this.tooltipClosable() || this._isCoach;
 
     /**
      * aria-describedby is a token list the trigger may already use (form hints etc.)
@@ -353,7 +353,7 @@ export class MudTooltip {
     if (!this._overlayRef?.hasAttached()) return;
 
     this._detach();
-    this.tooltipDismissed.emit(reason);
+    this.tooltipClosed.emit(reason);
   }
 
   private _detach(): void {

@@ -1,5 +1,6 @@
-import { computed, InjectionToken, isSignal } from '@angular/core';
+import { InjectionToken } from '@angular/core';
 import type { Provider, Signal } from '@angular/core';
+import { _provideMudLabels } from 'ngx-mud-ui/core';
 
 /**
  * Every user-facing string the date components render. Defaults are English;
@@ -99,19 +100,7 @@ export const MUD_DATE_LABELS = new InjectionToken<MudDateLabels | Signal<MudDate
  * ```
  */
 export function provideMudDateLabels(
-  labels:
-    | Partial<MudDateLabels>
-    | Signal<Partial<MudDateLabels>>
-    | (() => Partial<MudDateLabels> | Signal<Partial<MudDateLabels>>),
+  labels: Partial<MudDateLabels> | Signal<Partial<MudDateLabels>> | (() => Partial<MudDateLabels> | Signal<Partial<MudDateLabels>>),
 ): Provider {
-  const merge = (partial: Partial<MudDateLabels> | Signal<Partial<MudDateLabels>>) =>
-    isSignal(partial)
-      ? computed(() => ({ ...MUD_DATE_LABELS_DEFAULT, ...partial() }))
-      : { ...MUD_DATE_LABELS_DEFAULT, ...partial };
-
-  if (typeof labels === 'function' && !isSignal(labels)) {
-    return { provide: MUD_DATE_LABELS, useFactory: () => merge(labels()) };
-  }
-
-  return { provide: MUD_DATE_LABELS, useValue: merge(labels) };
+  return _provideMudLabels(MUD_DATE_LABELS, MUD_DATE_LABELS_DEFAULT, labels);
 }
