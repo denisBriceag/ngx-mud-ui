@@ -1,0 +1,194 @@
+// Component-level design tokens, declared on :root so consumers can theme a component by
+// overriding them at :root. They live in the foundation — component sheets never emit :root.
+
+// Badge — nudge a corner badge ([mudBadge]) inward from its anchored edge.
+:root {
+  --mud-badge-offset-top: 0;
+  --mud-badge-offset-right: 0;
+  --mud-badge-offset-bottom: 0;
+  --mud-badge-offset-left: 0;
+}
+
+// Toast
+:root {
+  --mud-toast-container-width: 350px;
+  --mud-toast-container-padding-top: 12px;
+  --mud-toast-container-padding-bottom: 16px;
+  --mud-toast-container-padding-inline: 12px;
+  --mud-toast-container-gap: 16px;
+  --mud-toast-container-content-gap: 8px;
+  --mud-toast-container-stack-gap: 8px;
+  --mud-toast-container-heading-gap: 6px;
+  --mud-toast-container-border-radius: 8px;
+  --mud-toast-container-appearance-duration: 250ms;
+  --mud-toast-container-transition-timing-function: ease-out;
+
+  --mud-toast-icon-size: 24px;
+  --mud-toast-icon-padding: 2px;
+
+  --mud-toast-title-font-size: 18px;
+  --mud-toast-title-line-height: 26px;
+  --mud-toast-title-font-weight: 600;
+  --mud-toast-title-letter-spacing: -0.18px;
+
+  --mud-toast-body-font-size: 14px;
+  --mud-toast-body-line-height: 20px;
+  --mud-toast-body-font-weight: 400;
+
+  --mud-toast-close-size-pointer: 32px;
+  --mud-toast-close-size-touch: 40px;
+  --mud-toast-close-icon-size: 16px;
+  --mud-toast-close-border-radius: 4px;
+
+  --mud-toast-stack-inset-block: 32px;
+  --mud-toast-stack-inset-inline: 32px;
+  --mud-toast-stack-gap: 8px;
+  --mud-toast-stack-gap-mixed: 18px;
+  --mud-toast-exit-duration: 200ms;
+  --mud-toast-collapse-duration: 150ms;
+
+  --mud-toast-info-background: var(--mud-color-background-brand-default);
+  --mud-toast-info-text: var(--mud-color-text-base-inverse-on-color);
+  --mud-toast-info-icon: var(--mud-color-icon-base-inverse-on-color);
+  --mud-toast-info-close-icon: var(--mud-color-icon-base-inverse-on-color);
+
+  --mud-toast-warning-background: var(--mud-color-background-warning-accent);
+  --mud-toast-warning-text: var(--mud-color-text-base-default-on-color);
+  --mud-toast-warning-icon: var(--mud-color-icon-warning-on-secondary);
+  --mud-toast-warning-close-icon: var(--mud-color-icon-base-secondary-on-color);
+
+  --mud-toast-success-background: var(--mud-color-background-positive-default-hover);
+  --mud-toast-success-text: var(--mud-color-text-base-inverse-on-color);
+  --mud-toast-success-icon: var(--mud-color-icon-base-inverse-on-color);
+  --mud-toast-success-close-icon: var(--mud-color-icon-base-inverse-on-color);
+
+  --mud-toast-error-background: var(--mud-color-background-danger-default);
+  --mud-toast-error-text: var(--mud-color-text-base-inverse-on-color);
+  --mud-toast-error-icon: var(--mud-color-icon-base-inverse-on-color);
+  --mud-toast-error-close-icon: var(--mud-color-icon-base-inverse-on-color);
+}
+
+// Breadcrumb
+:root {
+  --mud-breadcrumb-gap-item: var(--mud-spacing-4, 4px);
+  --mud-breadcrumb-font-family: var(--mud-font-family-base);
+  --mud-breadcrumb-font-size: 14px;
+  --mud-breadcrumb-line-height: 20px;
+  --mud-breadcrumb-font-weight-default: var(--mud-font-weight-regular, 400);
+  --mud-breadcrumb-font-weight-active: 500;
+
+  --mud-breadcrumb-item-text-default: var(--mud-color-text-base-tertiary);
+  --mud-breadcrumb-item-text-hover: var(--mud-color-text-base-secondary);
+  --mud-breadcrumb-item-text-active: var(--mud-color-text-base-default);
+  --mud-breadcrumb-item-text-visited: var(--mud-color-text-brand-visited);
+  --mud-breadcrumb-item-text-disabled: var(--mud-color-text-disabled-default);
+  --mud-breadcrumb-item-border-radius: var(--mud-border-radius-4, 4px);
+  --mud-breadcrumb-item-padding-inline: var(--mud-spacing-2, 2px);
+
+  --mud-breadcrumb-separator-color: var(--mud-color-icon-base-tertiary);
+  --mud-breadcrumb-separator-size: 16px;
+
+  --mud-breadcrumb-back-icon-size: 20px;
+  --mud-breadcrumb-back-gap: var(--mud-spacing-4, 4px);
+}
+
+// Table
+:root {
+  --mud-table-font-family: var(--mud-font-family-base);
+  --mud-table-background: var(--mud-color-background-base-default);
+
+  --mud-table-header-font-size: 12px;
+  --mud-table-header-line-height: 16px;
+  --mud-table-header-font-weight: 500;
+  --mud-table-cell-font-size: 14px;
+  --mud-table-cell-line-height: 20px;
+  --mud-table-cell-font-weight: var(--mud-font-weight-regular, 400);
+  --mud-table-footer-font-weight: 500;
+
+  --mud-table-header-min-height: 32px;
+  --mud-table-cell-min-height: 40px;
+  --mud-table-padding-block: var(--mud-spacing-8, 8px);
+  --mud-table-padding-inline: var(--mud-spacing-24, 24px);
+  --mud-table-header-gap: var(--mud-spacing-6, 6px);
+
+  --mud-table-header-subtle-background: var(--mud-color-background-base-tertiary);
+  --mud-table-header-subtle-color: var(--mud-color-text-base-default);
+  --mud-table-header-strong-background: var(--mud-color-background-base-inverse-default);
+  --mud-table-header-strong-color: var(--mud-color-text-base-inverse-default);
+  --mud-table-header-white-background: var(--mud-color-background-base-default);
+  --mud-table-header-white-color: var(--mud-color-text-base-default);
+  --mud-table-header-white-border: var(--mud-color-border-base-default);
+
+  --mud-table-divider-width: 0.5px;
+  --mud-table-cell-color: var(--mud-color-text-base-secondary);
+  --mud-table-cell-border: var(--mud-color-border-base-default);
+  --mud-table-footer-color: var(--mud-color-text-base-default);
+  --mud-table-row-background: var(--mud-color-background-base-default);
+  --mud-table-row-background-zebra: var(--mud-color-background-base-secondary);
+  --mud-table-row-background-hover: var(--mud-color-background-base-secondary-hover);
+  --mud-table-row-background-selected: var(--mud-color-background-brand-secondary);
+  --mud-table-row-background-selected-hover: var(--mud-color-background-brand-secondary-hover);
+  --mud-table-row-color-selected: var(--mud-color-text-base-default-on-color);
+  --mud-table-row-transition: background-color 120ms ease-out;
+
+  --mud-table-sort-icon-size: 16px;
+  --mud-table-empty-padding: var(--mud-spacing-48, 48px);
+  --mud-table-empty-color: var(--mud-color-text-base-tertiary);
+  --mud-table-selection-control-size: 20px;
+}
+
+// Pagination
+:root {
+  --mud-pagination-font-family: var(--mud-font-family-base);
+  --mud-pagination-font-size: 14px;
+  --mud-pagination-line-height: 20px;
+  --mud-pagination-font-weight: 500;
+  --mud-pagination-transition-duration: 150ms;
+
+  --mud-pagination-gap-medium: var(--mud-spacing-24, 24px);
+  --mud-pagination-gap-small: var(--mud-spacing-4, 4px);
+  --mud-pagination-inner-gap-medium: var(--mud-spacing-16, 16px);
+  --mud-pagination-inner-gap-small: var(--mud-spacing-8, 8px);
+  --mud-pagination-item-size-medium: 40px;
+  --mud-pagination-item-size-small: 32px;
+  --mud-pagination-item-radius: 4px;
+
+  --mud-pagination-item-color: var(--mud-color-text-base-default);
+  --mud-pagination-item-background-hover: var(--mud-color-background-base-tertiary);
+  --mud-pagination-item-background-active: var(--mud-color-background-base-tertiary-active);
+  --mud-pagination-current-color: var(--mud-color-text-base-inverse-on-color);
+  --mud-pagination-current-background: var(--mud-color-background-brand-default);
+  --mud-pagination-current-background-hover: var(--mud-color-background-brand-default-hover);
+  --mud-pagination-current-background-active: var(--mud-color-background-brand-default-active);
+  --mud-pagination-overflow-color: var(--mud-color-text-base-tertiary);
+  --mud-pagination-disabled-color: var(--mud-color-text-disabled-default);
+  --mud-pagination-current-disabled-color: var(--mud-color-text-disabled-on-disabled);
+  --mud-pagination-current-disabled-background: var(--mud-color-background-disabled-default);
+
+  --mud-pagination-nav-height-medium: 40px;
+  --mud-pagination-nav-height-small: 32px;
+  --mud-pagination-nav-min-width-medium: 56px;
+  --mud-pagination-nav-min-width-small: 32px;
+  --mud-pagination-nav-padding-start-medium: var(--mud-spacing-12, 12px);
+  --mud-pagination-nav-padding-end-medium: var(--mud-spacing-16, 16px);
+  --mud-pagination-nav-gap: var(--mud-spacing-6, 6px);
+  --mud-pagination-nav-radius: 6px;
+  --mud-pagination-nav-color: var(--mud-color-text-base-default);
+  --mud-pagination-nav-icon-color: var(--mud-color-icon-base-default);
+  --mud-pagination-nav-icon-size-medium: 20px;
+  --mud-pagination-nav-icon-size-small: 16px;
+
+  --mud-pagination-menu-min-width: 56px;
+  --mud-pagination-menu-max-height: 264px;
+  --mud-pagination-menu-padding: var(--mud-spacing-4, 4px);
+  --mud-pagination-menu-gap: var(--mud-spacing-2, 2px);
+  --mud-pagination-menu-radius: 6px;
+  --mud-pagination-menu-item-height: 32px;
+  --mud-pagination-menu-item-padding-inline: var(--mud-spacing-12, 12px);
+  --mud-pagination-menu-item-radius: 4px;
+}
+
+// Drawer
+:root {
+  --mud-drawer-radius: 0;
+}

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { provideRouter, RouterLink, withHashLocation } from '@angular/router';
+import { MudBadge } from 'ngx-mud-ui/badge';
 import { group, MudIconComponent, provideMudIcons } from 'ngx-mud-ui/icons';
 import { MudTag } from 'ngx-mud-ui/tag';
 import { MudTreeItem } from 'ngx-mud-ui/tree-item';
@@ -33,11 +34,13 @@ interface SnippetOptions {
 }
 
 const componentSource = (o: SnippetOptions): string => {
-  const imports = ['MudTreeItem', 'MudIconComponent', 'RouterLink', ...(o.tag ? ['MudTag'] : [])];
+  const badge = o.template.includes('<mud-badge');
+  const imports = ['MudTreeItem', 'MudIconComponent', 'RouterLink', ...(badge ? ['MudBadge'] : []), ...(o.tag ? ['MudTag'] : [])];
 
   return [
     "import { ChangeDetectionStrategy, Component } from '@angular/core';",
     "import { RouterLink } from '@angular/router';",
+    ...(badge ? ["import { MudBadge } from 'ngx-mud-ui/badge';"] : []),
     "import { MudIconComponent } from 'ngx-mud-ui/icons';",
     ...(o.tag ? ["import { MudTag } from 'ngx-mud-ui/tag';"] : []),
     "import { MudTreeItem } from 'ngx-mud-ui/tree-item';",
@@ -58,7 +61,7 @@ const componentSource = (o: SnippetOptions): string => {
 const ICONS = `<mud-icon icon name="group" [scale]="20" />
   <mud-icon selectedIcon name="group" variant="filled" [scale]="20" />`;
 
-const BASE_IMPORTS = [MudTreeItem, MudIconComponent, RouterLink];
+const BASE_IMPORTS = [MudTreeItem, MudIconComponent, RouterLink, MudBadge];
 
 /* ------------------------------------------------------------------ */
 /* Playground                                                          */
@@ -162,7 +165,7 @@ const SECONDARY_TEMPLATE = `
   ${ICONS}
   Cereri
   <span secondaryLabel>azi</span>
-  <span trailing class="badge badge--xl badge--solid-danger">3</span>
+  <mud-badge trailing [count]="3" variant="danger" size="xl" />
 </a>`;
 
 /** Story-only host for the SecondaryLabel story. */
@@ -175,19 +178,16 @@ const SECONDARY_TEMPLATE = `
 class TreeItemStorySecondary {}
 
 const BADGE_TEMPLATE = `
-<!-- ngx-mud-ui Badge, inline form: the .badge classes ship in ngx-mud-ui/styles
-     (see Components/Badge → Inline and nested). badge--xl is the 24px size;
-     badge--solid-<color> takes any badge colour (danger, neutral, brand, positive…).
-     Inside a tree item the badge is pinned to exactly 24×24. -->
+<!-- size="xl" is the 24px badge; inside a tree item it is pinned to exactly 24×24. -->
 <a mud-tree-item routerLink="/mesaje">
   ${ICONS}
   Mesaje
-  <span trailing class="badge badge--xl badge--solid-danger">3</span>
+  <mud-badge trailing [count]="3" variant="danger" size="xl" />
 </a>
 <a mud-tree-item routerLink="/notificari">
   ${ICONS}
   Notificări
-  <span trailing class="badge badge--xl badge--solid-neutral">9</span>
+  <mud-badge trailing [count]="9" variant="neutral" size="xl" />
 </a>`;
 
 /** Story-only host for the TrailingBadge story. */
@@ -250,7 +250,7 @@ const source = (selector: string, className: string, template: string, tag = fal
 });
 
 // A fixed-width column, like the sidebar the rows will live in.
-const frame = (rows: string) => `<div style="width: 320px; border: 1px solid var(--color-border-base-default)">${rows}</div>`;
+const frame = (rows: string) => `<div style="width: 320px; border: 1px solid var(--mud-color-border-base-default)">${rows}</div>`;
 
 const meta: Meta<MudTreeItem> = {
   title: 'Components/Tree Item',

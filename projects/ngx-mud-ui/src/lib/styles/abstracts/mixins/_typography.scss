@@ -1,9 +1,9 @@
 @use '../variables' as vars;
 
 @mixin apply-text-style($style) {
-  font-family: var(--text-#{$style}-font-family, 'Onest', sans-serif);
-  font-size: var(--text-#{$style}-font-size);
-  font-weight: var(--text-#{$style}-font-weight);
-  line-height: var(--text-#{$style}-line-height);
-  letter-spacing: var(--text-#{$style}-letter-spacing);
+  font-family: var(--mud-text-#{$style}-font-family, 'Onest', sans-serif);
+  font-size: var(--mud-text-#{$style}-font-size);
+  font-weight: var(--mud-text-#{$style}-font-weight);
+  line-height: var(--mud-text-#{$style}-line-height);
+  letter-spacing: var(--mud-text-#{$style}-letter-spacing);
 }

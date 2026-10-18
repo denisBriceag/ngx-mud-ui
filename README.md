@@ -63,16 +63,20 @@ for registration and usage.
 
 ## Naming conventions
 
-The library uses **two namespaces that deliberately share a prefix**, plus a third that stays unprefixed:
+Everything the library puts into an app is namespaced with `mud`:
 
 | Layer | Prefix | Example |
 |---|---|---|
-| Angular component/directive selectors | `mud-` | `<mud-icon>`, `[mudButton]` |
-| Design-system CSS utility/component classes | `mud-` | `.mud-btn`, `.mud-card` |
-| Design tokens (CSS custom properties) | *(none)* | `--color-background-brand-default`, `--gray-400` |
+| Angular component/directive selectors | `mud-` / `mud…` | `<mud-icon>`, `[mudButton]` |
+| Component CSS classes (internal, ship with each component) | BEM blocks, often `mud-` | `.mud-btn`, `.input-field__control` |
+| Design tokens (CSS custom properties, from `prebuilt/mud.css`) | `--mud-` | `--mud-color-background-brand-default`, `--mud-spacing-16` |
+| Component-private custom properties | `--_` | `--_btn-height` |
 
-- **`mud-`** is both this library's Angular API namespace (matches the package name, `ngx-mud-ui`) and the upstream **Moldova Unified Design** system's own CSS class namespace (see [mud.egov.md](https://mud.egov.md/)). Sharing the prefix is intentional, not a collision risk: Angular selectors and CSS classes are resolved in different contexts (the component compiler vs. the stylesheet), and having `<mud-avatar>`/`[mudButton]` line up with `.mud-btn`/`.mud-card` means markup matches the design-system docs with nothing to translate. The CSS-utility side stays configurable via `$mud-prefix` in `styles/abstracts/_mud-prefix.scss` if a consumer ever needs to rebrand it.
-- **Tokens** are plain, unprefixed CSS custom properties — they're consumed as CSS variables rather than classes or selectors, so they sit outside both namespaces above.
+- **`mud-`** matches the package name (`ngx-mud-ui`) and the upstream **Moldova Unified Design**
+  system ([mud.egov.md](https://mud.egov.md/)), so markup reads like the design-system docs.
+- **Tokens** are the styling API: colors (`--mud-color-*`) and the shared scales (spacing, radius,
+  border width, shadows, focus ring, font, type scale). There are no utility classes; component
+  classes are internal and not a public API.
 
 ## Additional Resources
 

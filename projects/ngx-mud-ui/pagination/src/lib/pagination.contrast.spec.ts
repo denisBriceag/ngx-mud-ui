@@ -24,7 +24,7 @@ interface Pair {
   min: number;
 }
 
-// Resolved from abstracts/_tokens.scss (light) and themes/_dark.scss (dark), 2026-09-24.
+// Resolved from base/_tokens.scss (light) and themes/_dark.scss (dark), 2026-09-24.
 // The `…` glyph is pinned at 3:1 (non-text indicator, WCAG 1.4.11): upstream's tertiary
 // label is 4.07:1 on the light hover surface, below 4.5 but above 3.
 const LIGHT: Pair[] = [

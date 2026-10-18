@@ -222,14 +222,17 @@ describe('MudDrawer', () => {
 
     expect([pane.style.maxWidth, pane.style.maxHeight]).toEqual(['100%', '100%']);
     expect([pane.style.minWidth, pane.style.minHeight]).toEqual(['', '']);
-    expect(document.querySelector('.cdk-overlay-backdrop.mud-dialog-backdrop')).toBeTruthy();
+    expect(document.querySelector('.cdk-overlay-backdrop.mud-drawer-backdrop')).toBeTruthy();
   });
 
-  it('uses the dialog backdrop class', async () => {
+  it('uses its own backdrop class (no rule shared with the dialog)', async () => {
     TestBed.inject(MudDrawer).open(GreetingDrawer, { data: { name: 'x' } });
     await stable();
 
-    expect(document.querySelector('.cdk-overlay-backdrop')?.classList.contains('mud-dialog-backdrop')).toBe(true);
+    const backdrop = document.querySelector('.cdk-overlay-backdrop');
+
+    expect(backdrop?.classList.contains('mud-drawer-backdrop')).toBe(true);
+    expect(backdrop?.classList.contains('mud-dialog-backdrop')).toBe(false);
   });
 
   it('merges panelClass after the drawer panel classes', async () => {

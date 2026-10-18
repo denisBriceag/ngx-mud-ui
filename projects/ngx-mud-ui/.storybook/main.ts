@@ -5,15 +5,15 @@ import { fileURLToPath } from 'node:url';
 const configDir = dirname(fileURLToPath(import.meta.url));
 
 const config: StorybookConfig = {
-  // The source package.json has an `exports` field (styles/assets), so Vite's
+  // The source package.json has an `exports` field (prebuilt CSS, fonts), so Vite's
   // Node-exports resolution rejects entry-point subpaths like `ngx-mud-ui/text-input`
   // that the Angular builders resolve via tsconfig paths. Alias them back to
-  // the entry sources here (styles/assets keep going through `exports`).
+  // the entry sources here (prebuilt/fonts keep going through `exports`).
   viteFinal: async (viteConfig) => {
     viteConfig.resolve ??= {};
 
     const entryAlias = {
-      find: /^ngx-mud-ui\/(?!styles\/|assets\/)([^/]+)$/,
+      find: /^ngx-mud-ui\/(?!prebuilt\/|fonts\/)([^/]+)$/,
       replacement: resolve(configDir, '../$1/src/public-api.ts'),
     };
     const alias = viteConfig.resolve.alias;
@@ -102,6 +102,10 @@ const config: StorybookConfig = {
     '@storybook/addon-a11y',
     '@storybook/addon-docs',
   ],
+  // Storybook 10.6 turned the docgen server on by default; its props table lists every non-private
+  // member (protected template bindings like `_hostClasses` included) and bypasses the
+  // inputs/outputs filter in compodoc-argtypes.ts. Off = the Compodoc path that filter wraps.
+  features: { experimentalDocgenServer: false },
   framework: {
     name: '@storybook/angular-vite',
     options: {

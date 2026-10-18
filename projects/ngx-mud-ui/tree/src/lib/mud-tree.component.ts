@@ -1,5 +1,7 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, ElementRef, inject, input, ViewEncapsulation } from '@angular/core';
 import { CdkTree, CdkTreeNodeOutlet } from '@angular/cdk/tree';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudTreeItemStyles } from 'ngx-mud-ui/tree-item';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -27,6 +29,11 @@ export class MudTree<T, K = T> extends CdkTree<T, K> {
 
   /** @description Several nodes can be chosen at once (filters): `selected` then maps to aria-selected instead of aria-current. */
   readonly multiple = input(false, { transform: booleanAttribute });
+
+  constructor() {
+    super();
+    inject(MudStyleLoader).load(_MudTreeItemStyles);
+  }
 
   override ngAfterViewInit(): void {
     super.ngAfterViewInit();

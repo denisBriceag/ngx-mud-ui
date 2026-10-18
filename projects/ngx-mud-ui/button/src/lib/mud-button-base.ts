@@ -1,5 +1,7 @@
 import { booleanAttribute, computed, Directive, ElementRef, inject, input } from '@angular/core';
 import type { Signal } from '@angular/core';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudButtonStyles } from './mud-button-styles.component';
 
 /**
  * Shared behavior for mudButton/mudIconButton: disabled semantics for
@@ -33,6 +35,10 @@ export abstract class MudButtonBase {
   protected readonly _tabIndex = computed(() => (this._isAnchor && this.disabled() ? '-1' : null));
 
   constructor() {
+    const styles = inject(MudStyleLoader);
+
+    styles.load(_MudButtonStyles);
+
     // Capture phase so the block runs before any consumer (click) listener.
     this._element.addEventListener(
       'click',

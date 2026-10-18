@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, inject, input } from '@angular/core';
 import { CDK_ACCORDION, CdkAccordion } from '@angular/cdk/accordion';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudAccordionStyles } from './mud-accordion-styles.component';
 
 export type MudAccordionAppearance = 'default' | 'trail-sites';
 export type MudAccordionSize = 'medium' | 'small';
@@ -41,6 +43,8 @@ export class MudAccordionGroup extends CdkAccordion {
 
   constructor() {
     super();
+
+    inject(MudStyleLoader).load(_MudAccordionStyles);
     this.multi = true;
   }
 

@@ -1,0 +1,165 @@
+@use 'sass:map';
+@use '../../../src/lib/styles/abstracts/mixins/host';
+
+@include host.typography('mud-tag');
+
+.status-tag {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  gap: var(--mud-spacing-4, 4px);
+  height: 24px;
+  min-width: 32px;
+  padding: 0 var(--mud-spacing-8, 8px);
+  border: 1px solid transparent;
+  border-radius: var(--mud-border-radius-4, 4px);
+  font-family: var(--mud-font-family-base);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-user-select: none;
+  user-select: none;
+
+  &:has(> :is(mud-icon, svg):first-child) {
+    padding-left: var(--mud-spacing-6, 6px);
+  }
+
+  &:has(> :is(mud-icon, svg):last-child) {
+    padding-right: var(--mud-spacing-6, 6px);
+  }
+
+  mud-icon svg,
+  > svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &--small {
+    height: 20px;
+    min-width: 32px;
+    padding: 0 var(--mud-spacing-6, 6px);
+    font-size: 12px;
+    line-height: 16px;
+
+    &:has(> :is(mud-icon, svg):first-child) {
+      padding-left: var(--mud-spacing-4, 4px);
+    }
+
+    &:has(> :is(mud-icon, svg):last-child) {
+      padding-right: var(--mud-spacing-4, 4px);
+    }
+
+    mud-icon svg,
+    > svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  // Info is regular-weight with the tighter inline padding at every size.
+  &--info {
+    padding-left: var(--mud-spacing-6, 6px);
+    padding-right: var(--mud-spacing-6, 6px);
+    font-weight: 400;
+  }
+}
+
+$tag-colors: (
+  muted: (
+    subtle-bg: var(--mud-color-background-base-default),
+    subtle-color: var(--mud-color-text-base-tertiary),
+    // Official binding (resolves to gray-600; white on it passes AA at 9.7:1).
+    strong-bg: var(--mud-color-background-base-inverse-default-active),
+    strong-color: var(--mud-color-text-base-inverse-on-color),
+    outlined-border: var(--mud-color-border-base-default),
+    outlined-color: var(--mud-color-text-base-tertiary),
+  ),
+  neutral: (
+    subtle-bg: var(--mud-color-background-base-tertiary),
+    subtle-color: var(--mud-color-text-base-default),
+    strong-bg: var(--mud-color-background-base-inverse-default),
+    strong-color: var(--mud-color-text-base-inverse-default),
+    outlined-border: var(--mud-color-border-base-default),
+    outlined-color: var(--mud-color-text-base-default),
+  ),
+  accent: (
+    subtle-bg: var(--mud-color-background-warning-secondary),
+    subtle-color: var(--mud-color-text-warning-on-secondary),
+    strong-bg: var(--mud-color-background-warning-accent),
+    strong-color: var(--mud-color-text-base-default-on-color),
+    outlined-border: var(--mud-color-border-warning-default),
+    outlined-color: var(--mud-color-text-warning-default),
+  ),
+  success: (
+    subtle-bg: var(--mud-color-background-positive-secondary),
+    subtle-color: var(--mud-color-text-positive-on-secondary),
+    // Figma shows green-600, but white on green-600 fails AA (3.73:1). The
+    // official design system also deviates here: its token resolves to
+    // green-700 (5.48:1), which is exactly this semantic binding.
+    strong-bg: var(--mud-color-background-positive-default-hover),
+    strong-color: var(--mud-color-text-base-inverse-on-color),
+    outlined-border: var(--mud-color-border-positive-default),
+    outlined-color: var(--mud-color-tag-outlined-success),
+  ),
+  brand: (
+    subtle-bg: var(--mud-color-background-brand-secondary),
+    subtle-color: var(--mud-color-text-brand-on-secondary),
+    strong-bg: var(--mud-color-background-brand-default),
+    strong-color: var(--mud-color-text-base-inverse-on-color),
+    outlined-border: var(--mud-color-border-brand-default),
+    outlined-color: var(--mud-color-text-brand-default),
+  ),
+  danger: (
+    subtle-bg: var(--mud-color-background-danger-secondary),
+    subtle-color: var(--mud-color-text-danger-on-secondary),
+    strong-bg: var(--mud-color-background-danger-default),
+    strong-color: var(--mud-color-text-base-inverse-on-color),
+    outlined-border: var(--mud-color-border-danger-default),
+    outlined-color: var(--mud-color-tag-outlined-danger),
+  ),
+  // info supports only subtle and strong (mud-tag falls back from outlined).
+  // Per Figma: subtle is text-only (no fill, no border); strong sits on the
+  // brand secondary surface, which stays light blue in BOTH themes, so its
+  // text uses the -on-color token that stays dark.
+  info: (
+    subtle-bg: transparent,
+    subtle-color: var(--mud-color-text-base-tertiary),
+    strong-bg: var(--mud-color-background-brand-secondary),
+    strong-color: var(--mud-color-text-base-secondary-on-color),
+  ),
+);
+
+// Windows High Contrast removes backgrounds; a forced border keeps the tag
+// shape visible.
+@media (forced-colors: active) {
+  .status-tag {
+    border-color: CanvasText;
+  }
+}
+
+@each $name, $colors in $tag-colors {
+  .status-tag--#{$name} {
+    &.is-subtle {
+      background-color: map.get($colors, subtle-bg);
+      color: map.get($colors, subtle-color);
+    }
+
+    &.is-strong {
+      background-color: map.get($colors, strong-bg);
+      color: map.get($colors, strong-color);
+    }
+
+    @if map.has-key($colors, outlined-border) {
+      &.is-outlined {
+        background-color: transparent;
+        color: map.get($colors, outlined-color);
+        border-color: map.get($colors, outlined-border);
+      }
+    }
+  }
+}

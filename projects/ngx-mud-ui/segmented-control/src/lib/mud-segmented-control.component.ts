@@ -13,6 +13,7 @@ import {
   output,
   PLATFORM_ID,
   signal,
+  ViewEncapsulation,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -122,6 +123,8 @@ export class MudSegment<T = unknown> {
  */
 @Component({
   selector: 'mud-segmented-control',
+  styleUrl: './mud-segmented-control.component.scss',
+  encapsulation: ViewEncapsulation.None,
   template: '<ng-content />',
   host: {
     class: 'segmented-control',

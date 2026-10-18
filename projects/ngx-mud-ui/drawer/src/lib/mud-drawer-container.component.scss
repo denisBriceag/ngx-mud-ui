@@ -1,0 +1,65 @@
+@use '../../../src/lib/styles/abstracts/mixins/host';
+@use '../../../src/lib/styles/abstracts/mixins/overlay-backdrop';
+
+@include host.typography('mud-drawer-container');
+
+@keyframes mud-drawer-enter-right { from { transform: translateX(100%); } }
+@keyframes mud-drawer-enter-left { from { transform: translateX(-100%); } }
+@keyframes mud-drawer-enter-top { from { transform: translateY(-100%); } }
+@keyframes mud-drawer-enter-bottom { from { transform: translateY(100%); } }
+
+.drawer {
+  --_drawer-radius: var(--mud-drawer-radius, 0);
+
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--mud-color-background-base-default, #fff);
+  box-shadow:
+    0 2px 8px 0 rgba(0, 0, 0, 0.08),
+    0 10px 24px 0 rgba(0, 0, 0, 0.08),
+    0 0 0 0.5px rgba(0, 0, 0, 0.12);
+  outline: none;
+  animation-duration: 225ms;
+  animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+.drawer {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.drawer--top,
+.drawer--bottom {
+  max-block-size: 100dvh;
+}
+
+.drawer--right { border-radius: var(--_drawer-radius) 0 0 var(--_drawer-radius); animation-name: mud-drawer-enter-right; }
+.drawer--left { border-radius: 0 var(--_drawer-radius) var(--_drawer-radius) 0; animation-name: mud-drawer-enter-left; }
+.drawer--top { border-radius: 0 0 var(--_drawer-radius) var(--_drawer-radius); animation-name: mud-drawer-enter-top; }
+.drawer--bottom { border-radius: var(--_drawer-radius) var(--_drawer-radius) 0 0; animation-name: mud-drawer-enter-bottom; }
+
+@media (max-width: 480px) {
+  .mud-drawer-panel--left,
+  .mud-drawer-panel--right {
+    width: 100% !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer { animation: none; }
+}
+
+@media (forced-colors: active) {
+  .drawer--right { border-left: 1px solid CanvasText; }
+  .drawer--left { border-right: 1px solid CanvasText; }
+  .drawer--top { border-bottom: 1px solid CanvasText; }
+  .drawer--bottom { border-top: 1px solid CanvasText; }
+}
+
+// Own backdrop class (no selector shared with /dialog), same look via the shared mixin.
+.cdk-overlay-backdrop.mud-drawer-backdrop {
+  @include overlay-backdrop.backdrop;
+}

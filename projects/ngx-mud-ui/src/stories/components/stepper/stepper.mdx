@@ -21,10 +21,10 @@ The stepper is built on the Angular CDK stepper, so `linear`, `selectedIndex`, `
 import { MudStepper, MudStep } from 'ngx-mud-ui/stepper';
 ```
 
-Load the design-system stylesheet once in your app:
+Add the base stylesheet to your app's `angular.json` `styles` once:
 
-```scss
-@use 'ngx-mud-ui/styles/main';
+```json
+"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
 ```
 
 ## Creating a stepper

@@ -1,0 +1,241 @@
+@use '../../../src/lib/styles/abstracts/mixins/host';
+@use '../../../breakpoints' as bp;
+
+@include host.typography('mud-accordion, mud-accordion-group');
+
+/**
+ * Accordion (official design-system parity). Mobile-first: <768px uses the
+ * compact ramp (22/30 heading, 24px block padding); >=768px the desktop ramp
+ * (24/32, 32px). The --sm modifier pins the compact ramp at any viewport.
+ */
+.accordion__item {
+  --_padding-block: 24px;
+  --_padding-inline: 0px;
+  --_gap: var(--mud-spacing-12, 12px);
+  --_heading-font-size: 22px;
+  --_heading-line-height: 30px;
+  --_bg: var(--mud-color-background-base-default);
+  --_heading-color: var(--mud-color-text-base-default);
+  --_supporting-color: var(--mud-color-text-base-tertiary);
+  --_icon-color: var(--mud-color-icon-base-default);
+  --_panel-color: var(--mud-color-text-base-secondary);
+
+  display: block;
+  position: relative;
+  border-top: 1px solid var(--mud-color-border-base-default);
+  background-color: var(--_bg);
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out;
+}
+
+@include bp.up(md) {
+  .accordion__item {
+    --_padding-block: 32px;
+    --_heading-font-size: 24px;
+    --_heading-line-height: 32px;
+  }
+}
+
+// Declarative compact rung, independent of viewport (dense surfaces).
+.accordion__item--sm {
+  --_padding-block: 24px;
+  --_gap: var(--mud-spacing-8, 8px);
+  --_heading-font-size: 22px;
+  --_heading-line-height: 30px;
+}
+
+.accordion__item--open {
+  --_heading-color: var(--mud-color-text-brand-default);
+  --_icon-color: var(--mud-color-icon-brand-default);
+}
+
+// trail-sites tints OPEN items with the brand-secondary surface.
+.accordion__item--trail-sites.accordion__item--open {
+  --_bg: var(--mud-color-background-brand-secondary);
+  --_padding-inline: var(--mud-spacing-20, 20px);
+  --_heading-color: var(--mud-color-text-brand-on-secondary);
+  --_supporting-color: var(--mud-color-text-base-secondary-on-color);
+  --_icon-color: var(--mud-color-icon-brand-on-secondary);
+  --_panel-color: var(--mud-color-text-base-default-on-color);
+}
+
+.accordion__header {
+  margin: 0;
+}
+
+// The clickable row: [text-group] [trigger], or trigger-first with --icon-left.
+.accordion__trigger {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--_gap);
+  width: 100%;
+  padding: var(--_padding-block) var(--_padding-inline);
+  background: none;
+  border: 0;
+  color: inherit;
+  font-family: var(--mud-font-family-base);
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    background-color 150ms ease-out,
+    padding 150ms ease-out;
+
+  &:focus-visible {
+    outline: none;
+    border-radius: var(--mud-border-radius-4, 4px);
+    box-shadow:
+      inset 0 0 0 var(--mud-focus-ring-inner-width, 2px) var(--mud-focus-ring-inner-color, #fff),
+      inset 0 0 0 calc(var(--mud-focus-ring-inner-width, 2px) + var(--mud-focus-ring-outer-width, 3px))
+        var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500));
+  }
+
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+}
+
+// Hover tint only while closed and enabled; both inline edges pad to 20px so
+// the tint reaches the row edges without crowding the text.
+.accordion__item:not(.accordion__item--open)
+  .accordion__trigger:hover:not([aria-disabled='true']) {
+  background-color: var(--mud-color-background-base-secondary);
+  padding-left: var(--mud-spacing-20, 20px);
+  padding-right: var(--mud-spacing-20, 20px);
+}
+
+.accordion__text {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: var(--mud-spacing-8, 8px);
+}
+
+.accordion__heading {
+  display: block;
+  width: 100%;
+  font-size: var(--_heading-font-size);
+  line-height: var(--_heading-line-height);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+  color: var(--_heading-color);
+  transition: color 150ms ease-out;
+}
+
+.accordion__supporting {
+  display: block;
+  width: 100%;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: var(--_supporting-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 48px circular trigger affordance with a 20px glyph.
+.accordion__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--mud-border-radius-full, 9999px);
+  color: var(--_icon-color);
+  transition: color 150ms ease-out;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.accordion__item--icon-left .accordion__icon {
+  order: -1;
+}
+
+// Plus -> minus morph: the vertical bar collapses around the glyph center.
+.accordion__icon-vertical {
+  transform-origin: 10px 10px;
+  transition: transform 150ms ease-out;
+}
+
+.accordion__trigger[aria-expanded='true'] .accordion__icon-vertical {
+  transform: scaleY(0);
+}
+
+.accordion__trigger[aria-disabled='true'] {
+  .accordion__heading,
+  .accordion__supporting {
+    color: var(--mud-color-text-disabled-default);
+  }
+
+  .accordion__icon {
+    color: var(--mud-color-icon-disabled-default);
+  }
+}
+
+.accordion__body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 225ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &--expanded {
+    grid-template-rows: 1fr;
+  }
+}
+
+.accordion__body-inner {
+  overflow: hidden;
+  min-height: 0;
+  visibility: hidden;
+  transition: visibility 225ms;
+
+  .accordion__body--expanded & {
+    visibility: visible;
+  }
+}
+
+// Panel body is inset from the heading per the official design; trail-sites
+// realigns it with the tinted header instead.
+.accordion__panel {
+  padding: 0 var(--mud-spacing-48, 48px) var(--mud-spacing-32, 32px) var(--mud-spacing-24, 24px);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: var(--_panel-color);
+}
+
+.accordion__item--trail-sites.accordion__item--open .accordion__panel {
+  padding-left: var(--_padding-inline);
+  padding-right: var(--_padding-inline);
+}
+
+@media (forced-colors: active) {
+  .accordion__trigger[aria-disabled='true'] {
+    .accordion__heading,
+    .accordion__supporting,
+    .accordion__icon {
+      color: GrayText;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accordion__item,
+  .accordion__trigger,
+  .accordion__heading,
+  .accordion__icon,
+  .accordion__icon-vertical,
+  .accordion__body,
+  .accordion__body-inner {
+    transition: none;
+  }
+}

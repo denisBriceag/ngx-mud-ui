@@ -37,11 +37,14 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
-      - name: Generator tests
+      - name: Tool tests (icons, prebuilt CSS, style guard)
         run: pnpm test:tools
 
       - name: Build library
         run: pnpm build
+
+      - name: Style guard (layering + tokens; reads the built mud.css)
+        run: pnpm styles:check
 
       - name: Build Storybook
         run: pnpm build-storybook

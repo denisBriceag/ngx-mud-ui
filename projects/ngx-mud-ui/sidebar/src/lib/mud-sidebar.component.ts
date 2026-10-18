@@ -21,6 +21,8 @@ import { map } from 'rxjs';
 import { MudTooltip } from 'ngx-mud-ui/tooltip';
 import { MUD_SIDEBAR, MUD_SIDEBAR_GROUP_HOST, type MudSidebarGroupHost } from './mud-sidebar-context';
 import { MudSidebarGroup } from './mud-sidebar-group.component';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudSidebarStyles } from './mud-sidebar-styles.component';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -112,6 +114,8 @@ export class MudSidebar implements MudSidebarGroupHost {
   private _tooltipRow: HTMLElement | null = null;
 
   constructor() {
+    inject(MudStyleLoader).load(_MudSidebarStyles);
+
     const destroyRef = inject(DestroyRef);
 
     afterNextRender(() => {

@@ -1,6 +1,6 @@
 // WCAG contrast for the mega-menu colour pairs, both themes, computed not eyeballed.
 // Hexes are the RESOLVED values of the semantic tokens used by _mega-menu.scss —
-// verify against abstracts/_tokens.scss, abstracts/_colors.scss and themes/_dark.scss if a pair fails.
+// verify against base/_tokens.scss, base/_colors.scss and themes/_dark.scss if a pair fails.
 // Top-level names are mega-prefixed: the sibling menu.contrast.spec.ts is a script file, so they share one scope.
 
 function megaLuminance(hex: string): number {
@@ -35,7 +35,7 @@ const MEGA_LIGHT: MegaPair[] = [
   { name: 'heading on panel', fg: '#121212', bg: '#FFFFFF', min: 4.5 },
   { name: 'link on panel', fg: '#383838', bg: '#FFFFFF', min: 4.5 },
   { name: 'link hover on panel', fg: '#121212', bg: '#FFFFFF', min: 4.5 },
-  // Trigger ring is --focus-ring-outer-color; the link ring is --color-border-brand-default (a different value in light).
+  // Trigger ring is --mud-focus-ring-outer-color; the link ring is --mud-color-border-brand-default (a different value in light).
   { name: 'trigger focus ring on bar', fg: '#3379DB', bg: '#FFFFFF', min: 3 },
   { name: 'link focus ring on panel', fg: '#0058D2', bg: '#FFFFFF', min: 3 },
 ];

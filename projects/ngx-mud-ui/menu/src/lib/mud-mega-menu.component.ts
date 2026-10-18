@@ -14,6 +14,8 @@ import type { TemplateRef } from '@angular/core';
 
 import { MUD_MEGA_MENU } from './mud-mega-menu.types';
 import type { MudMegaMenuPanel, MudMegaMenuTriggerHandle } from './mud-mega-menu.types';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudMegaMenuStyles } from './mud-mega-menu-styles.component';
 
 let nextUniqueId = 0;
 
@@ -75,6 +77,8 @@ export class MudMegaMenu implements MudMegaMenuPanel {
   private _linkCloseTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor() {
+    inject(MudStyleLoader).load(_MudMegaMenuStyles);
+
     // Menu torn down while open: close so the trigger doesn't keep a stale aria-expanded.
     inject(DestroyRef).onDestroy(() => {
       clearTimeout(this._linkCloseTimer);

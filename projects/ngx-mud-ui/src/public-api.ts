@@ -1,9 +1,8 @@
 /*
  * Public API Surface of ngx-mud-ui
  *
- * The library's runtime API is published from secondary entry points:
- *   - `ngx-mud-ui/icons`  — the <mud-icon> component + icon set
- * Styles and fonts ship as assets (`ngx-mud-ui/styles`, `ngx-mud-ui/assets`)
- * via ng-package. This root entry intentionally exports nothing.
+ * Every component is a secondary entry point (`ngx-mud-ui/button`, …). The base CSS ships as
+ * `ngx-mud-ui/prebuilt/mud.css` (tokens, dark theme, Onest font) and breakpoints as
+ * `ngx-mud-ui/breakpoints`. This root entry intentionally exports nothing.
  */
 export {};

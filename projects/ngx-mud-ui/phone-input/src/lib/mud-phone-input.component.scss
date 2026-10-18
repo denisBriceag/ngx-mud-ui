@@ -1,0 +1,214 @@
+@use '../../../src/lib/styles/abstracts/mixins/host';
+
+@include host.typography('mud-phone-input');
+
+// `.input-field.phone-field`: re-sets the shared field's private props by specificity, not load order.
+.input-field.phone-field {
+  --_pf-flag-width: 20px;
+  --_pf-flag-height: 16px;
+  --_pf-prefix-gap: var(--mud-spacing-6, 6px);
+
+  --_if-padding-inline: var(--mud-spacing-4, 4px);
+
+  --_pf-padding-right: var(--mud-spacing-12, 12px);
+}
+
+.input-field.phone-field.input-field--lg {
+  --_pf-flag-width: 24px;
+  --_if-padding-inline: var(--mud-spacing-6, 6px);
+  --_pf-padding-right: var(--mud-spacing-16, 16px);
+}
+
+.input-field__control.phone-field__control {
+  gap: var(--mud-spacing-8, 8px);
+  padding-right: var(--_pf-padding-right);
+}
+
+// ----- country prefix (static in local mode) -----
+
+.phone-field__prefix {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--_pf-prefix-gap);
+  box-sizing: border-box;
+  padding: var(--mud-spacing-4, 4px) var(--mud-spacing-8, 8px);
+  background-color: var(--mud-color-background-base-secondary);
+  border-radius: var(--mud-border-radius-6, 6px);
+  color: var(--mud-color-text-base-default);
+  font-size: var(--_if-font-size);
+  line-height: var(--_if-line-height);
+  font-weight: 500;
+  user-select: none;
+}
+
+.phone-field__flag {
+  display: block;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: var(--_pf-flag-width, 20px);
+  height: var(--_pf-flag-height, 16px);
+  object-fit: cover;
+  border: 1px solid var(--mud-color-border-base-default);
+  border-radius: var(--mud-border-radius-4, 4px);
+}
+
+.phone-field__dial-code {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.phone-field.is-disabled .phone-field__prefix,
+.phone-field.is-disabled .phone-field__trigger:disabled {
+  background-color: var(--mud-color-background-disabled-default);
+  color: var(--mud-color-text-disabled-default);
+}
+
+.phone-field.is-disabled .phone-field__flag {
+  opacity: 0.45;
+}
+
+.phone-field.is-readonly .phone-field__prefix {
+  background-color: var(--mud-color-input-readonly-background, var(--mud-color-background-base-secondary));
+  color: var(--mud-color-input-readonly-text, var(--mud-color-text-base-secondary));
+}
+
+// ----- national segment -----
+
+.phone-field__native {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (forced-colors: active) {
+  .phone-field__prefix {
+    border: 1px solid CanvasText;
+  }
+}
+
+// ----- country combobox (international mode) -----
+
+.phone-field__trigger {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--_pf-prefix-gap);
+  box-sizing: border-box;
+  padding: var(--mud-spacing-4, 4px) var(--mud-spacing-8, 8px);
+  margin: 0;
+  border: 0;
+  background-color: var(--mud-color-background-base-secondary);
+  border-radius: var(--mud-border-radius-6, 6px);
+  color: var(--mud-color-text-base-default);
+  font-family: var(--mud-font-family-base);
+  font-size: var(--_if-font-size);
+  line-height: var(--_if-line-height);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+
+  &:hover:not(:disabled) {
+    background-color: var(--mud-color-background-base-tertiary);
+  }
+
+  &:focus-visible {
+    outline: var(--mud-border-width-2, 2px) solid var(--mud-color-border-brand-default);
+    outline-offset: 1px;
+  }
+
+  &:disabled {
+    background-color: var(--mud-color-background-disabled-default);
+    color: var(--mud-color-text-disabled-default);
+    cursor: not-allowed;
+  }
+}
+
+.phone-field__chevron {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--mud-color-icon-base-secondary);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.phone-field__trigger[aria-expanded='true'] .phone-field__chevron {
+  transform: rotate(180deg);
+}
+
+.phone-field__trigger:disabled .phone-field__chevron {
+  color: var(--mud-color-icon-disabled-default);
+}
+
+// ----- country panel -----
+
+// Doubled class: the shared `.menu-panel` (ngx-mud-ui/core) sits on the same element at (0,1,0) and
+// loads in arbitrary order, so the phone panel's own values must win by specificity.
+.menu-panel.phone-field__panel {
+  --_pf-flag-width: 20px;
+  --_pf-flag-height: 16px;
+  --_pf-prefix-gap: var(--mud-spacing-6, 6px);
+
+  display: flex;
+  flex-direction: column;
+  max-height: 320px;
+  overflow-y: auto; // same as .menu-panel, stated here so the panel does not depend on which sheet loaded last
+  overflow-x: hidden;
+  padding: var(--mud-spacing-8, 8px);
+}
+
+.phone-field__search-row {
+  flex-shrink: 0;
+  padding-bottom: var(--mud-spacing-8, 8px);
+}
+
+.phone-field__search {
+  box-sizing: border-box;
+  width: 100%;
+  height: 36px;
+  padding: 0 var(--mud-spacing-12, 12px);
+  background-color: var(--mud-color-input-background, var(--mud-color-background-base-default));
+  border: 1px solid var(--mud-color-input-border, var(--mud-color-border-base-default));
+  border-radius: var(--mud-border-radius-6, 6px);
+  color: var(--mud-color-text-base-default);
+  font-family: var(--mud-font-family-base);
+  font-size: 14px;
+  line-height: 20px;
+
+  &::placeholder {
+    color: var(--mud-color-input-placeholder, var(--mud-color-text-base-tertiary));
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--mud-color-border-brand-default);
+    box-shadow: 0 0 0 2px var(--mud-color-input-focus-ring, var(--mud-blue-sky-200));
+  }
+}
+
+.phone-field__listbox {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.phone-field__option-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.phone-field__option-code {
+  flex-shrink: 0;
+  color: var(--mud-color-text-base-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phone-field__trigger {
+    transition: none;
+  }
+}

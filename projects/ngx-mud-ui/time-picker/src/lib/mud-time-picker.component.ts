@@ -12,6 +12,7 @@ import {
   model,
   PLATFORM_ID,
   signal,
+  ViewEncapsulation,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { formatTime, isSelectable, minutesForStep, minuteStepTransform, parseTime, toValidTimeOrUndefined } from './time-core';
@@ -34,6 +35,8 @@ const VISIBLE_ROWS = 7;
 @Component({
   selector: 'mud-time-picker',
   templateUrl: './mud-time-picker.component.html',
+  styleUrl: './mud-time-picker.component.scss',
+  encapsulation: ViewEncapsulation.None,
   host: {
     '[class]': '_hostClasses()',
     '[attr.role]': 'appearance() === "flat" ? null : "group"',

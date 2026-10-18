@@ -26,10 +26,10 @@ import { MudLabel } from 'ngx-mud-ui/label';
 export class Demo {}
 ```
 
-The design-system stylesheet must be loaded once in your app:
+The base stylesheet must be in your app's `angular.json` `styles` once:
 
-```scss
-@use 'ngx-mud-ui/styles/main';
+```json
+"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
 ```
 
 ## Playground

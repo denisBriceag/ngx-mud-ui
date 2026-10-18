@@ -20,6 +20,7 @@ import {
   signal,
   viewChild,
   ViewContainerRef,
+  ViewEncapsulation,
 } from '@angular/core';
 import type { ElementRef, TemplateRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
@@ -49,6 +50,7 @@ import {
   padHourOnSeparator,
 } from './time-mask';
 import { MudTimePicker } from './mud-time-picker.component';
+import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -73,6 +75,8 @@ const PLACEHOLDER_SHAPE = /^[^\d:]{2}:[^\d:]{2}$/;
 @Component({
   selector: 'mud-time-input',
   templateUrl: './mud-time-input.component.html',
+  styleUrl: './mud-time-input.component.scss',
+  encapsulation: ViewEncapsulation.None,
   imports: [MudTimePicker, CdkTrapFocus],
   host: {
     '[class]': '_hostClasses()',
@@ -243,6 +247,8 @@ export class MudTimeInput implements ControlValueAccessor, FormValueControl<MudT
   });
 
   constructor() {
+    inject(MudStyleLoader).load(_MudInputFieldStyles);
+
     effect(() => {
       if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
 

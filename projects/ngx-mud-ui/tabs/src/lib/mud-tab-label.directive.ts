@@ -5,7 +5,7 @@ import { CdkPortal } from '@angular/cdk/portal';
  * ```html
  * <mud-tab>
  *   <ng-template mudTabLabel>
- *     <mud-icon name="alarm" /> Alerts <span class="badge">3</span>
+ *     <mud-icon name="alarm" /> Alerts <mud-badge [count]="3" variant="neutral" size="xl" />
  *   </ng-template>
  *   …content…
  * </mud-tab>

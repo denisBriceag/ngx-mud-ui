@@ -1,0 +1,107 @@
+@use '../../../src/lib/styles/abstracts/mixins/host';
+
+@include host.typography('mud-time-picker');
+
+.time-picker {
+  background: var(--mud-color-background-base-default);
+  border-radius: var(--mud-border-radius-12, 12px);
+  box-sizing: border-box;
+  color: var(--mud-color-text-base-default);
+  display: inline-flex;
+  font-family: var(--mud-font-family-base);
+  padding: var(--mud-spacing-12, 12px);
+  width: 202px;
+}
+
+.time-picker--elevated {
+  box-shadow:
+    var(
+      --mud-drop-shadow-300,
+      0 8px 12px 4px rgba(40, 46, 55, 0.06),
+      0 2px 4px 0 rgba(40, 46, 55, 0.06)
+    );
+}
+
+.time-picker--flat {
+  box-shadow: none;
+}
+
+.time-picker__columns {
+  display: flex;
+  gap: var(--mud-spacing-8, 8px);
+  height: calc(40px * 7 + var(--mud-spacing-8, 8px) * 6);
+  width: 100%;
+}
+
+.time-picker__column {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: var(--mud-spacing-8, 8px);
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  position: relative;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.time-picker__option,
+.time-picker__separator-cell {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 14px;
+  font-weight: 500;
+  height: 40px;
+  justify-content: center;
+  line-height: 20px;
+  padding: var(--mud-spacing-6, 6px) var(--mud-spacing-8, 8px);
+}
+
+.time-picker__option {
+  border-radius: var(--mud-border-radius-6, 6px);
+  cursor: pointer;
+  user-select: none;
+
+  &:hover:not(.is-disabled):not(.is-selected) {
+    background: var(--mud-color-background-base-default-hover);
+  }
+
+  &:focus-visible {
+    outline: var(--mud-focus-ring-outer-width, 3px) solid
+      var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500));
+    outline-offset: -2px;
+  }
+
+  &.is-selected {
+    background: var(--mud-color-background-brand-secondary);
+    color: var(--mud-color-text-brand-on-secondary);
+  }
+
+  &.is-selected.is-active {
+    background: var(--mud-color-background-brand-default);
+    color: var(--mud-color-text-base-inverse-on-color);
+  }
+
+  &.is-disabled {
+    color: var(--mud-color-text-disabled-default);
+    cursor: default;
+  }
+}
+
+.time-picker__separator {
+  display: flex;
+  flex: 0 0 var(--mud-spacing-12, 12px);
+  flex-direction: column;
+  gap: var(--mud-spacing-8, 8px);
+  overflow: hidden;
+}
+
+.time-picker__separator-cell {
+  padding-inline: 0;
+}

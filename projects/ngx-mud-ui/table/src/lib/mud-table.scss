@@ -1,0 +1,232 @@
+@use '../../../src/lib/styles/abstracts/mixins/host';
+
+@include host.typography('mud-table, table[mud-table], [mud-sort-header]');
+
+.mud-data-table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.mud-data-table-container:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--mud-focus-ring-inner-width, 2px) var(--mud-focus-ring-inner-color, #fff),
+    0 0 0 calc(var(--mud-focus-ring-inner-width, 2px) + var(--mud-focus-ring-outer-width, 3px))
+      var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500));
+}
+
+.mud-sort-header__button:focus-visible {
+  position: relative;
+  z-index: 2;
+  outline: none;
+  box-shadow:
+    0 0 0 var(--mud-focus-ring-inner-width, 2px) var(--mud-focus-ring-inner-color, #fff),
+    0 0 0 calc(var(--mud-focus-ring-inner-width, 2px) + var(--mud-focus-ring-outer-width, 3px))
+      var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500));
+}
+
+.mud-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  background: var(--mud-table-background);
+  font-family: var(--mud-table-font-family);
+  color: var(--mud-table-cell-color);
+}
+
+// CdkTable's own stylesheet never loads for a subclass, so its fixedLayout class needs a rule here.
+.mud-data-table.cdk-table-fixed-layout {
+  table-layout: fixed;
+}
+
+mud-table {
+  display: block;
+}
+
+mud-header-row,
+mud-row,
+mud-footer-row {
+  display: flex;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+mud-header-cell,
+mud-cell,
+mud-footer-cell {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.mud-data-table__header-cell {
+  box-sizing: border-box;
+  min-height: var(--mud-table-header-min-height);
+  padding: var(--mud-table-padding-block) var(--mud-table-padding-inline);
+  background: var(--mud-table-header-subtle-background);
+  color: var(--mud-table-header-subtle-color);
+  font-size: var(--mud-table-header-font-size);
+  font-weight: var(--mud-table-header-font-weight);
+  line-height: var(--mud-table-header-line-height);
+  text-align: start;
+  vertical-align: middle;
+  white-space: nowrap;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+th.mud-data-table__header-cell {
+  height: var(--mud-table-header-min-height);
+}
+
+.mud-data-table--header-strong .mud-data-table__header-cell {
+  background: var(--mud-table-header-strong-background);
+  color: var(--mud-table-header-strong-color);
+}
+
+.mud-data-table--header-white .mud-data-table__header-cell {
+  background: var(--mud-table-header-white-background);
+  color: var(--mud-table-header-white-color);
+  box-shadow: inset 0 calc(-1 * var(--mud-table-divider-width)) 0 0 var(--mud-table-header-white-border);
+}
+
+.mud-data-table__header-cell.cdk-table-sticky {
+  z-index: 1;
+}
+
+.mud-sort-header__button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mud-table-header-gap);
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+.mud-sort-header__button:disabled {
+  cursor: default;
+}
+
+.mud-sort-header__label {
+  min-width: 0;
+}
+
+.mud-sort-header__icon {
+  flex: none;
+  inline-size: var(--mud-table-sort-icon-size);
+  block-size: var(--mud-table-sort-icon-size);
+}
+
+.mud-sort-header__description {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.mud-data-table__row {
+  background: var(--mud-table-row-background);
+  transition: var(--mud-table-row-transition);
+}
+
+.mud-data-table--rows-zebra .mud-data-table__row:nth-of-type(even) {
+  background: var(--mud-table-row-background-zebra);
+}
+
+.mud-data-table--hoverable .mud-data-table__row {
+  cursor: pointer;
+}
+
+.mud-data-table--hoverable .mud-data-table__row:hover {
+  background: var(--mud-table-row-background-hover);
+}
+
+// Cascade order: zebra (0,3,0) < selected (0,3,0, later) < hover/selected-hover (0,3,0/0,4,0, later).
+.mud-data-table .mud-data-table__row.mud-data-table__row--selected {
+  background: var(--mud-table-row-background-selected);
+  color: var(--mud-table-row-color-selected);
+}
+
+.mud-data-table .mud-data-table__row.mud-data-table__row--selected > .mud-data-table__cell {
+  color: inherit;
+}
+
+.mud-data-table--hoverable .mud-data-table__row.mud-data-table__row--selected:hover {
+  background: var(--mud-table-row-background-selected-hover);
+}
+
+.mud-data-table__cell,
+.mud-data-table__footer-cell {
+  box-sizing: border-box;
+  min-height: var(--mud-table-cell-min-height);
+  padding: var(--mud-table-padding-block) var(--mud-table-padding-inline);
+  color: var(--mud-table-cell-color);
+  font-size: var(--mud-table-cell-font-size);
+  font-weight: var(--mud-table-cell-font-weight);
+  line-height: var(--mud-table-cell-line-height);
+  text-align: start;
+  vertical-align: middle;
+  box-shadow: inset 0 calc(-1 * var(--mud-table-divider-width)) 0 0 var(--mud-table-cell-border);
+}
+
+td.mud-data-table__cell,
+td.mud-data-table__footer-cell {
+  height: var(--mud-table-cell-min-height);
+}
+
+.mud-data-table__footer-cell {
+  color: var(--mud-table-footer-color);
+  font-weight: var(--mud-table-footer-font-weight);
+}
+
+.mud-data-table__cell.cdk-table-sticky,
+.mud-data-table__footer-cell.cdk-table-sticky {
+  background: inherit;
+}
+
+.mud-data-table__no-data-row {
+  background: var(--mud-table-background);
+}
+
+mud-table .mud-data-table__no-data-row {
+  display: flex;
+}
+
+.mud-data-table__cell.mud-data-table__no-data-cell {
+  flex: 1 1 0;
+  height: auto;
+  padding: var(--mud-table-empty-padding);
+  color: var(--mud-table-empty-color);
+  text-align: center;
+  box-shadow: none;
+}
+
+.mud-data-table__actions-cell {
+  padding-block: var(--mud-spacing-4, 4px);
+}
+
+.mud-data-table__selection-cell {
+  flex: 0 0 auto;
+  width: calc(2 * var(--mud-table-padding-inline) + var(--mud-table-selection-control-size));
+  padding-inline: var(--mud-table-padding-inline);
+}
+
+@media (max-width: 640px) {
+  .mud-data-table {
+    --mud-table-padding-inline: var(--mud-spacing-16, 16px);
+  }
+}

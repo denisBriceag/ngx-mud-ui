@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CdkDialogContainer } from '@angular/cdk/dialog';
 import type { DialogConfig } from '@angular/cdk/dialog';
 import { CdkPortalOutlet, PortalModule } from '@angular/cdk/portal';
@@ -15,6 +15,8 @@ export type MudResolvedDialogConfig = DialogConfig & {
 /** @docs-private The card: chrome owner; consumers never use it directly. */
 @Component({
   selector: 'mud-dialog-container',
+  styleUrl: './mud-dialog-container.component.scss',
+  encapsulation: ViewEncapsulation.None,
   imports: [PortalModule],
   template: `
     @if (_mudConfig.showCloseButton) {

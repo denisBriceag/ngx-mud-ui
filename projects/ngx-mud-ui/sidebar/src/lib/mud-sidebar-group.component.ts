@@ -8,6 +8,8 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { MUD_SIDEBAR_GROUP_HOST } from './mud-sidebar-context';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudSidebarStyles } from './mud-sidebar-styles.component';
 
 let nextId = 0;
 
@@ -52,4 +54,7 @@ export class MudSidebarGroup {
   protected readonly _divided = computed(
     () => this.divider() ?? (this._sidebar ? !this._sidebar.isFirstGroup(this) : false),
   );
+  constructor() {
+    inject(MudStyleLoader).load(_MudSidebarStyles);
+  }
 }

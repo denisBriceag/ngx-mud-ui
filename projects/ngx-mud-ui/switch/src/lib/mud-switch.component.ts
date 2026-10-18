@@ -19,6 +19,7 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
 import type { FormCheckboxControl } from '@angular/forms/signals';
 import { MudLabel } from 'ngx-mud-ui/label';
+import { _MudSelectionControlStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 let nextUniqueId = 0;
 
@@ -117,6 +118,10 @@ export class MudSwitch implements ControlValueAccessor, FormCheckboxControl {
   });
 
   // ----- ControlValueAccessor (reactive/template-driven forms) -----
+
+  constructor() {
+    inject(MudStyleLoader).load(_MudSelectionControlStyles);
+  }
 
   writeValue(value: boolean | null | undefined): void {
     this.checked.set(!!value);

@@ -1,0 +1,224 @@
+:root {
+  --mud-color-background-base-default: var(--mud-white-1000);
+  --mud-color-background-base-default-hover: var(--mud-gray-100);
+  --mud-color-background-base-default-active: var(--mud-gray-250);
+
+  --mud-color-background-base-secondary: var(--mud-gray-100);
+  --mud-color-background-base-secondary-hover: var(--mud-gray-200);
+  --mud-color-background-base-secondary-active: var(--mud-gray-250);
+
+  --mud-color-background-base-tertiary: var(--mud-gray-200);
+  --mud-color-background-base-tertiary-hover: var(--mud-gray-250);
+  --mud-color-background-base-tertiary-active: var(--mud-gray-300);
+
+  --mud-color-background-base-inverse-default: var(--mud-gray-900);
+  --mud-color-background-base-inverse-default-hover: var(--mud-gray-700);
+  --mud-color-background-base-inverse-default-active: var(--mud-gray-600);
+
+  --mud-color-background-brand-default: var(--mud-blue-sky-600);
+  --mud-color-background-brand-default-hover: var(--mud-blue-sky-700);
+  --mud-color-background-brand-default-active: var(--mud-blue-sky-800);
+
+  --mud-color-background-brand-secondary: var(--mud-blue-sky-100);
+  --mud-color-background-brand-secondary-hover: var(--mud-blue-sky-200);
+  --mud-color-background-brand-secondary-active: var(--mud-blue-sky-300);
+
+  --mud-color-background-brand-tertiary: var(--mud-blue-sky-900);
+
+  --mud-color-background-disabled-default: var(--mud-gray-200);
+  --mud-color-background-disabled-secondary: var(--mud-gray-250);
+
+  --mud-color-background-alpha-overlay-dark: var(--mud-black-400-alpha);
+  --mud-color-background-alpha-overlay-light: var(--mud-white-400-alpha);
+  --mud-color-background-alpha-large-surface: var(--mud-gray-100-alpha);
+
+  --mud-color-background-positive-default: var(--mud-green-600);
+  --mud-color-background-positive-default-hover: var(--mud-green-700);
+  --mud-color-background-positive-default-active: var(--mud-green-800);
+
+  --mud-color-background-positive-secondary: var(--mud-green-100);
+  --mud-color-background-positive-secondary-active: var(--mud-green-200);
+
+  --mud-color-background-warning-default: var(--mud-apricot-400);
+  --mud-color-background-warning-default-hover: var(--mud-apricot-500);
+  --mud-color-background-warning-default-active: var(--mud-apricot-600);
+
+  --mud-color-background-warning-secondary: var(--mud-apricot-100);
+  --mud-color-background-warning-secondary-active: var(--mud-apricot-200);
+  --mud-color-background-warning-accent: var(--mud-apricot-300);
+
+  --mud-color-background-danger-default: var(--mud-red-600);
+  --mud-color-background-danger-default-hover: var(--mud-red-700);
+  --mud-color-background-danger-default-active: var(--mud-red-800);
+
+  --mud-color-background-danger-secondary: var(--mud-red-100);
+  --mud-color-background-danger-secondary-hover: var(--mud-red-200);
+  --mud-color-background-danger-secondary-active: var(--mud-red-300);
+}
+
+:root {
+  --mud-color-border-base-default: var(--mud-gray-250);
+  --mud-color-border-base-secondary: var(--mud-gray-300);
+  --mud-color-border-base-tertiary: var(--mud-gray-600);
+  --mud-color-border-base-strong: var(--mud-black-1000);
+  --mud-color-border-base-subtle: var(--mud-white-1000);
+  --mud-color-border-overlay: transparent;
+
+  --mud-color-border-brand-default: var(--mud-blue-sky-600);
+
+  --mud-color-border-disabled-default: var(--mud-gray-250);
+
+  --mud-color-border-positive-default: var(--mud-green-700);
+
+  --mud-color-border-warning-default: var(--mud-apricot-600);
+
+  --mud-color-border-danger-default: var(--mud-red-600);
+}
+
+:root {
+  --mud-color-text-base-default: var(--mud-black-1000);
+  --mud-color-text-base-secondary: var(--mud-gray-700);
+  --mud-color-text-base-tertiary: var(--mud-gray-400);
+
+  --mud-color-text-base-default-on-color: var(--mud-black-1000);
+  --mud-color-text-base-secondary-on-color: var(--mud-gray-600);
+
+  --mud-color-text-base-inverse-default: var(--mud-white-1000);
+  --mud-color-text-base-inverse-on-color: var(--mud-white-1000);
+
+  --mud-color-text-brand-default: var(--mud-blue-sky-600);
+  // 700, not 600: upstream's generated tokens duplicate the default here (so
+  // hover is a no-op), but their backlog doc
+  // (2026-05-27-text-brand-hover-active-semantic-gap.md) proposes 700/800 —
+  // we ship their intended fix.
+  --mud-color-text-brand-default-hover: var(--mud-blue-sky-700);
+  --mud-color-text-brand-default-active: var(--mud-blue-sky-800);
+  --mud-color-text-brand-on-secondary: var(--mud-blue-sky-600);
+  --mud-color-text-brand-visited: var(--mud-magenta-600);
+  --mud-color-text-brand-visited-on-secondary: var(--mud-magenta-700);
+
+  --mud-color-text-disabled-default: var(--mud-gray-500);
+  --mud-color-text-disabled-on-disabled: var(--mud-gray-500);
+
+  --mud-color-text-positive-default: var(--mud-green-600);
+  --mud-color-text-positive-on-secondary: var(--mud-green-700);
+
+  --mud-color-text-warning-default: var(--mud-apricot-700);
+  --mud-color-text-warning-on-secondary: var(--mud-apricot-700);
+
+  --mud-color-text-danger-default: var(--mud-red-600);
+  --mud-color-text-danger-on-secondary: var(--mud-red-700);
+
+  // Legacy aliases (predate the Figma token names); --mud-color-text-base-disabled
+  // is still consumed by components/forms/_input-date.scss.
+  --mud-color-text-base-disabled: var(--mud-gray-300);
+  --mud-color-text-success-default: var(--mud-green-700);
+}
+
+:root {
+  --mud-color-icon-base-default: var(--mud-black-1000);
+  --mud-color-icon-base-secondary: var(--mud-gray-600);
+  --mud-color-icon-base-tertiary: var(--mud-gray-400);
+
+  --mud-color-icon-base-default-on-color: var(--mud-black-1000);
+  --mud-color-icon-base-secondary-on-color: var(--mud-gray-600);
+
+  --mud-color-icon-base-inverse-default: var(--mud-white-1000);
+  --mud-color-icon-base-inverse-on-color: var(--mud-white-1000);
+
+  --mud-color-icon-brand-default: var(--mud-blue-sky-600);
+  --mud-color-icon-brand-on-secondary: var(--mud-blue-sky-600);
+  --mud-color-icon-brand-visited: var(--mud-magenta-600);
+
+  --mud-color-icon-disabled-default: var(--mud-gray-300);
+  --mud-color-icon-disabled-on-disabled: var(--mud-gray-300);
+
+  --mud-color-icon-positive-default: var(--mud-green-600);
+  --mud-color-icon-positive-on-secondary: var(--mud-green-700);
+
+  --mud-color-icon-warning-default: var(--mud-apricot-600);
+  --mud-color-icon-warning-on-secondary: var(--mud-apricot-700);
+
+  --mud-color-icon-danger-default: var(--mud-red-600);
+  --mud-color-icon-danger-on-secondary: var(--mud-red-700);
+}
+
+:root {
+  --mud-spacing-minus-2: -2px;
+  --mud-spacing-0: 0px;
+  --mud-spacing-2: 2px;
+  --mud-spacing-4: 4px;
+  --mud-spacing-6: 6px;
+  --mud-spacing-8: 8px;
+  --mud-spacing-12: 12px;
+  --mud-spacing-14: 14px;
+  --mud-spacing-16: 16px;
+  --mud-spacing-20: 20px;
+  --mud-spacing-24: 24px;
+  --mud-spacing-32: 32px;
+  --mud-spacing-40: 40px;
+  --mud-spacing-48: 48px;
+  --mud-spacing-56: 56px;
+  --mud-spacing-64: 64px;
+  --mud-spacing-72: 72px;
+  --mud-spacing-80: 80px;
+  --mud-spacing-120: 120px;
+}
+
+:root {
+  --mud-color-input-background: var(--mud-white);
+  --mud-color-input-text: var(--mud-gray-900);
+  --mud-color-input-placeholder: var(--mud-gray-500);
+  --mud-color-input-border: var(--mud-gray-250);
+  --mud-color-input-border-hover: var(--mud-gray-600);
+  --mud-color-input-focus-ring: var(--mud-blue-sky-200);
+
+  // Official focusRing tokens: a white inner ring + brand outer ring drawn as
+  // stacked box-shadows (same values in both themes upstream).
+  --mud-focus-ring-inner-color: var(--mud-color-text-base-inverse-on-color);
+  --mud-focus-ring-outer-color: var(--mud-blue-sky-500);
+  --mud-focus-ring-inner-width: 2px;
+  --mud-focus-ring-outer-width: 3px;
+  --mud-color-input-focus-border: var(--mud-blue-sky-600);
+  --mud-color-input-disabled-background: var(--mud-gray-100);
+  --mud-color-input-disabled-border: var(--mud-gray-250);
+  --mud-color-input-disabled-text: var(--mud-gray-500);
+  --mud-color-input-readonly-background: var(--mud-gray-100);
+  --mud-color-input-readonly-border: var(--mud-gray-200);
+  --mud-color-input-readonly-text: var(--mud-gray-700);
+}
+
+// Status accents (warning/destructive/success borders, focus rings and
+// readonly tints) intentionally stay on palette primitives until dark values
+// are specified in Figma; they remain legible on dark surfaces.
+:root {
+  --mud-modal-width-sm: 350px;
+  --mud-modal-width-md: 590px;
+  --mud-modal-width-lg: 720px;
+  --mud-modal-width-full: 100vw;
+  --mud-z-modal: 1000;
+
+  --mud-motion-duration-md: 0.3s;
+  --mud-motion-duration-lg: 0.5s;
+  --mud-motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --mud-motion-easing-decelerate: cubic-bezier(0.0, 0, 0.2, 1);
+  --mud-motion-scale-sm: 0.9;
+}
+
+:root {
+  --mud-color-link-primary-default: var(--mud-color-text-brand-default);
+  --mud-color-link-primary-hover: var(--mud-color-text-brand-default-hover);
+  --mud-color-link-primary-active: var(--mud-color-text-brand-default-active);
+  --mud-color-link-primary-visited: var(--mud-color-text-brand-visited);
+
+  --mud-color-link-strict-default: var(--mud-color-text-base-default);
+  --mud-color-link-strict-hover: var(--mud-color-text-base-secondary);
+  --mud-color-link-strict-active: var(--mud-color-text-base-default);
+  --mud-color-link-strict-visited: var(--mud-color-text-brand-visited);
+
+  // Tag (status-tag) outlined text: the on-secondary shades are right on the
+  // light theme but too dark against dark surfaces, so the dark theme
+  // overrides these with lighter shades.
+  --mud-color-tag-outlined-success: var(--mud-color-text-positive-on-secondary);
+  --mud-color-tag-outlined-danger: var(--mud-color-text-danger-on-secondary);
+}

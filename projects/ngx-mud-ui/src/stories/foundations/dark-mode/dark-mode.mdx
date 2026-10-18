@@ -16,11 +16,11 @@ either mode.
 
 The stylesheet defines colour in three layers:
 
-1. **Palette** — raw values such as `--blue-sky-600: #0058D2`. These never change.
-2. **Semantic tokens** — meanings such as `--color-text-base-default`, declared
+1. **Palette** — raw values such as `--mud-blue-sky-600: #0058D2`. These never change.
+2. **Semantic tokens** — meanings such as `--mud-color-text-base-default`, declared
    on `:root` and pointing into the palette.
-3. **Dark overrides** — `themes/_dark.scss` re-points the semantic tokens under
-   `[data-theme='dark']`, so text turns white, surfaces turn near-black, and
+3. **Dark overrides** — the opt-in dark stylesheet (`mud-dark.css`) re-points the semantic tokens under
+   `:root[data-theme='dark']`, so text turns white, surfaces turn near-black, and
    brand colours lighten enough to hold contrast.
 
 The rule that follows: style with a **semantic token** and you get dark mode for
@@ -28,8 +28,20 @@ free; hard-code a palette value (or a hex) and you are frozen to one appearance.
 
 ## Enabling it
 
-**1. Load the styles.** The dark overrides ship inside `ngx-mud-ui/styles` — if
-you already `@use 'ngx-mud-ui/styles/main'`, the theme is present and dormant.
+**1. Add the dark stylesheet.** The dark theme is opt-in and ships separately, so apps that stay
+light don't load it. Add it to `angular.json` `styles` next to the base stylesheet — its `:root[data-theme='dark']`
+rules out-rank the light `:root` values, so the order of the two files does not matter. (A planned `ng add ngx-mud-ui` schematic will offer
+this as an option; until it ships, add the entry by hand.)
+
+```json
+"styles": [
+  "node_modules/ngx-mud-ui/prebuilt/mud.css",
+  "node_modules/ngx-mud-ui/prebuilt/mud-dark.css",
+  "src/styles.scss"
+]
+```
+
+Without it, `data-theme="dark"` simply does nothing — the page stays light.
 
 **2. Set `data-theme` on the root element** — `document.documentElement`:
 
@@ -73,8 +85,8 @@ markup, so your app shell needs to read them too:
 
 ```css
 body {
-  background: var(--color-background-base-default);
-  color: var(--color-text-base-default);
+  background: var(--mud-color-background-base-default);
+  color: var(--mud-color-text-base-default);
 }
 ```
 
@@ -101,8 +113,8 @@ work:
 Two reasons:
 
 - **Token chains resolve where they are declared.**
-  `--color-link-strict-default` is declared on `:root` as
-  `var(--color-text-base-default)`. CSS substitutes that `var()` on `:root`, and
+  `--mud-color-link-strict-default` is declared on `:root` as
+  `var(--mud-color-text-base-default)`. CSS substitutes that `var()` on `:root`, and
   descendants inherit the already-resolved colour — so remapping the base token
   further down the tree changes nothing the link reads.
 - **Overlays escape the wrapper.** Tooltips and selects render into a CDK

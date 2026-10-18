@@ -17,6 +17,8 @@ import type { ElementRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FILE_GLYPH_SRC } from './file-glyph';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudFileInputStyles } from './mud-file-input-styles.component';
 
 export type MudFileItemState = 'uploaded' | 'uploading' | 'success' | 'error';
 
@@ -144,6 +146,8 @@ export class MudFileItem {
   });
 
   constructor() {
+    inject(MudStyleLoader).load(_MudFileInputStyles);
+
     if (!this._isBrowser || typeof ResizeObserver === 'undefined') return;
 
     const observer = new ResizeObserver(() => this._measureTruncation());

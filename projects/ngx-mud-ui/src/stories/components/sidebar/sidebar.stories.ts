@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component, input, linkedSignal, signal } from 
 import { provideRouter, RouterLink, RouterLinkActive, withHashLocation } from '@angular/router';
 import { expect, userEvent, within } from 'storybook/test';
 import { MudAvatar } from 'ngx-mud-ui/avatar';
+import { MudBadge } from 'ngx-mud-ui/badge';
 import { MudButton, MudIconButton } from 'ngx-mud-ui/button';
 import { MudChip } from 'ngx-mud-ui/chip';
 import type { MudIconName } from 'ngx-mud-ui/icons';
@@ -61,6 +62,7 @@ const MODULE_OF: Record<string, string> = {
   RouterLink: '@angular/router',
   RouterLinkActive: '@angular/router',
   MudAvatar: 'ngx-mud-ui/avatar',
+  MudBadge: 'ngx-mud-ui/badge',
   MudButton: 'ngx-mud-ui/button',
   MudIconButton: 'ngx-mud-ui/button',
   MudChip: 'ngx-mud-ui/chip',
@@ -325,7 +327,7 @@ const MPOWER_TEMPLATE = `
         <a mud-sidebar-item [routerLink]="f.path" routerLinkActive #rla="routerLinkActive" [selected]="rla.isActive">
           <mud-icon icon [name]="f.icon" [scale]="20" />
           {{ f.label }}
-          <span class="badge badge--xl badge--solid-neutral" trailing>{{ f.count }}</span>
+          <mud-badge trailing [count]="f.count" variant="neutral" size="xl" />
         </a>
       }
     </mud-sidebar-group>
@@ -371,18 +373,18 @@ const MPOWER_STYLES = `
 :host { display: block; padding-block: 40px; }
 .mpower-profile { display: flex; align-items: center; gap: 12px; }
 .mud-sidebar--compact .mpower-profile { justify-content: center; }
-.mpower-profile__text { display: flex; flex: 1; flex-direction: column; min-width: 0; color: var(--color-text-base-tertiary); font-size: 14px; line-height: 20px; }
-.mpower-profile__text strong { color: var(--color-text-base-default); font-size: 16px; font-weight: 500; line-height: 24px; }
+.mpower-profile__text { display: flex; flex: 1; flex-direction: column; min-width: 0; color: var(--mud-color-text-base-tertiary); font-size: 14px; line-height: 20px; }
+.mpower-profile__text strong { color: var(--mud-color-text-base-default); font-size: 16px; font-weight: 500; line-height: 24px; }
 .mud-btn.mpower-new { width: 40px; min-width: 40px; padding: 0; }
 .mpower-chips { display: flex; align-items: center; gap: 8px; padding: 0 24px 12px; }
-.mpower-contact { display: flex; align-items: center; gap: 12px; padding: 8px 24px; color: var(--color-text-base-default); font-size: 14px; line-height: 20px; }
+.mpower-contact { display: flex; align-items: center; gap: 12px; padding: 8px 24px; color: var(--mud-color-text-base-default); font-size: 14px; line-height: 20px; }
 .mpower-contact__name { flex: 1; font-weight: 500; }
 .mpower-contacts-rail { display: flex; flex-direction: column; align-items: center; gap: 16px; padding-top: 16px; }
 .mpower-contacts-rail .avatar-stack { flex-direction: column; }
 .mpower-contacts-rail .avatar-stack .avatar { margin: -10px 0 0; }
 .mpower-contacts-rail .avatar-stack .avatar:first-child { margin-top: 0; }
 .mpower-cards { display: flex; flex-direction: column; gap: 16px; padding-top: 24px; }
-.mpower-card { height: 280px; border-radius: 16px; background: var(--color-background-base-secondary); }`;
+.mpower-card { height: 280px; border-radius: 16px; background: var(--mud-color-background-base-secondary); }`;
 
 const MPOWER_TABS = ['Detalii', 'Acțiuni', 'Cosemnatari', 'Evenimente', 'Info utilă'];
 const MPOWER_CONTACTS = ['Vladimir Odobescu', 'Andrei Codreanu'];
@@ -396,6 +398,7 @@ const MPOWER_IMPORTS = [
   MudSidebarToggle,
   MudSidebarContent,
   MudAvatar,
+  MudBadge,
   MudButton,
   MudIconButton,
   MudChip,
@@ -437,6 +440,7 @@ const MPOWER_SOURCE: SnippetOptions = {
     'MudSidebarToggle',
     'MudSidebarContent',
     'MudAvatar',
+    'MudBadge',
     'MudButton',
     'MudIconButton',
     'MudChip',
@@ -595,16 +599,15 @@ const STATES_TEMPLATE = `
       Secondary label
       <span secondaryLabel>12 new</span>
     </a>
-    <!-- ngx-mud-ui Badge, inline form: badge--xl is the 24px size (see Components/Badge). -->
     <a mud-sidebar-item routerLink="/states/count">
       <mud-icon icon name="chart" [scale]="20" />
       Neutral badge
-      <span trailing class="badge badge--xl badge--solid-neutral">9</span>
+      <mud-badge trailing [count]="9" variant="neutral" size="xl" />
     </a>
     <a mud-sidebar-item routerLink="/states/notifications">
       <mud-icon icon name="filter" [scale]="20" />
       Notification badge
-      <span trailing class="badge badge--xl badge--solid-danger">3</span>
+      <mud-badge trailing [count]="3" variant="danger" size="xl" />
     </a>
   </mud-sidebar-group>
 </mud-sidebar>`;
@@ -612,7 +615,7 @@ const STATES_TEMPLATE = `
 /** Story-only host for the States story. */
 @Component({
   selector: 'mud-sidebar-story-states',
-  imports: SIDEBAR_IMPORTS,
+  imports: [...SIDEBAR_IMPORTS, MudBadge],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: STATES_TEMPLATE,
 })
@@ -777,7 +780,7 @@ export const States: Story = {
       selector: 'app-side-nav-states',
       className: 'SideNavStatesComponent',
       template: STATES_TEMPLATE,
-      imports: SIDEBAR_SYMBOLS,
+      imports: [...SIDEBAR_SYMBOLS, 'MudBadge'],
     }),
   },
   render: () => ({ template: frame('<mud-sidebar-story-states />') }),

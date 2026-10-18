@@ -215,16 +215,17 @@ const BADGE_PLATFORMS = [
 ] as const;
 
 const badgeButton = (platform: (typeof BADGE_PLATFORMS)[number], style: 'primary' | 'neutral', extra = ''): string => `
-  <button class="mud-btn btn-badge btn-badge--${style} btn-badge--${platform.code}" type="button" ${extra}>
+  <button mudButton class="btn-badge btn-badge--${style} btn-badge--${platform.code}" type="button" ${extra}>
     <span class="btn-badge__logo" aria-hidden="true"><img src="/logos/m-platforms/${platform.logo}.svg" alt="" /></span>
     <span class="btn-badge__label">${platform.label}</span>
   </button>`;
 
 /**
  * Badge Buttons are entry points to the trusted government platforms
- * (mpay, mpass, msign, mpower, mdelivery). They are plain design-system
- * markup for now — not yet covered by a directive — shown here for reference,
- * in `primary` and `neutral` styles plus the loading and disabled states.
+ * (mpay, mpass, msign, mpower, mdelivery). There is no dedicated directive yet:
+ * put `mudButton` on the button (it loads the styles) and add the
+ * `btn-badge btn-badge--{style} btn-badge--{platform}` classes, shown here in
+ * `primary` and `neutral` styles plus the loading and disabled states.
  */
 export const BadgeButtons: Story = {
   parameters: { controls: { disable: true } },
@@ -237,7 +238,7 @@ export const BadgeButtons: Story = {
         ${BADGE_PLATFORMS.map((platform) => badgeButton(platform, 'neutral')).join('')}
       </div>
       <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding:24px">
-        <button class="mud-btn btn-badge btn-badge--primary btn-badge--mdelivery mud-btn-loading" type="button" aria-busy="true" aria-label="Loading"></button>
+        <button mudButton loading class="btn-badge btn-badge--primary btn-badge--mdelivery" type="button" aria-label="Loading"></button>
         ${badgeButton(BADGE_PLATFORMS[0], 'primary', 'disabled')}
         ${badgeButton(BADGE_PLATFORMS[0], 'neutral', 'disabled')}
       </div>

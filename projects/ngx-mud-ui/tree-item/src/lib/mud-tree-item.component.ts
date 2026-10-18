@@ -9,6 +9,8 @@ import {
   numberAttribute,
   ViewEncapsulation,
 } from '@angular/core';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudTreeItemStyles } from './mud-tree-item-styles.component';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -19,7 +21,7 @@ declare const ngDevMode: boolean | undefined;
  *   <mud-icon selectedIcon name="group" variant="filled" [scale]="20" />
  *   Users
  *   <span secondaryLabel>12 new</span>
- *   <span class="badge badge--xl badge--solid-neutral" trailing>3</span>
+ *   <mud-badge trailing [count]="3" variant="neutral" size="xl" />
  * </a>
  * ```
  */
@@ -64,4 +66,10 @@ export class MudTreeItem {
 
     return 0;
   });
+
+  constructor() {
+    const styles = inject(MudStyleLoader);
+
+    styles.load(_MudTreeItemStyles);
+  }
 }

@@ -1,0 +1,469 @@
+@use '../../../src/lib/styles/abstracts/mixins/host';
+
+@include host.typography('mud-file-input, mud-file-item');
+
+.file-field {
+  --_ff-dropzone-min-height: 120px;
+  --_ff-dropzone-padding-block: var(--mud-spacing-24, 24px);
+  --_ff-dropzone-padding-inline: var(--mud-spacing-20, 20px);
+  --_ff-dropzone-gap: var(--mud-spacing-16, 16px);
+  --_ff-icon-circle-size: 40px;
+  --_ff-icon-glyph-size: 20px;
+  --_ff-cta-font-size: 14px;
+  --_ff-cta-line-height: 20px;
+
+  --_ff-border: var(--mud-color-border-base-default);
+  --_ff-border-hover: var(--mud-color-border-brand-default);
+  --_ff-focus-ring: var(--mud-color-input-focus-ring, var(--mud-blue-sky-200));
+  --_ff-bg: var(--mud-color-input-background, var(--mud-color-background-base-default));
+  --_ff-bg-active: var(--mud-color-background-brand-secondary);
+}
+
+.file-field--lg {
+  --_ff-dropzone-padding-block: var(--mud-spacing-32, 32px);
+  --_ff-dropzone-padding-inline: var(--mud-spacing-24, 24px);
+  --_ff-dropzone-gap: var(--mud-spacing-20, 20px);
+  --_ff-icon-circle-size: 48px;
+  --_ff-icon-glyph-size: 24px;
+  --_ff-cta-font-size: 16px;
+  --_ff-cta-line-height: 24px;
+}
+
+.file-field.is-invalid {
+  --_ff-border: var(--mud-color-border-danger-default);
+  --_ff-border-hover: var(--mud-color-border-danger-default);
+  --_ff-focus-ring: var(--mud-red-200);
+}
+
+.file-field__native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.file-field__dropzone {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--_ff-dropzone-gap);
+  min-height: var(--_ff-dropzone-min-height);
+  padding: var(--_ff-dropzone-padding-block) var(--_ff-dropzone-padding-inline);
+  background-color: var(--_ff-bg);
+  border: 1px dashed var(--_ff-border);
+  border-radius: var(--mud-border-radius-8, 8px);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color 150ms ease-out,
+    background-color 150ms ease-out,
+    box-shadow 150ms ease-out;
+}
+
+.file-field__dropzone:hover {
+  border-color: var(--_ff-border-hover);
+}
+
+// The inner browse button owns the focus ring; painting it on the zone as well
+// makes the whole target read as focused, which is what the design shows.
+.file-field__dropzone:has(.file-field__browse:focus-visible) {
+  border-style: solid;
+  border-color: var(--_ff-border-hover);
+  box-shadow: 0 0 0 2px var(--_ff-focus-ring);
+}
+
+.file-field.is-dragover .file-field__dropzone {
+  border-width: 2px;
+  border-style: solid;
+  border-color: var(--mud-color-border-brand-default);
+  background-color: var(--_ff-bg-active);
+}
+
+.file-field.is-disabled .file-field__dropzone {
+  background-color: var(--mud-color-background-disabled-default);
+  border-color: var(--mud-color-border-disabled-default);
+  cursor: not-allowed;
+}
+
+.file-field__dropzone-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: var(--_ff-icon-circle-size);
+  height: var(--_ff-icon-circle-size);
+  background-color: var(--mud-color-background-base-tertiary);
+  border-radius: var(--mud-border-radius-full, 50%);
+  color: var(--mud-color-icon-base-default);
+
+  svg {
+    width: var(--_ff-icon-glyph-size);
+    height: var(--_ff-icon-glyph-size);
+  }
+}
+
+.file-field.is-disabled .file-field__dropzone-icon {
+  color: var(--mud-color-icon-disabled-default);
+}
+
+.file-field__dropzone-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mud-spacing-4, 4px);
+  min-width: 0;
+}
+
+.file-field__dropzone-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--mud-spacing-6, 6px);
+  font-size: var(--_ff-cta-font-size);
+  line-height: var(--_ff-cta-line-height);
+  font-weight: 500;
+  color: var(--mud-color-text-base-default);
+}
+
+.file-field__dropzone-text {
+  font-size: var(--_ff-cta-font-size);
+  line-height: var(--_ff-cta-line-height);
+  font-weight: 500;
+  color: var(--mud-color-text-base-default);
+}
+
+.file-field.is-disabled {
+  .file-field__dropzone-cta,
+  .file-field__dropzone-text {
+    color: var(--mud-color-text-disabled-default);
+  }
+}
+
+.file-field__browse-link {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--mud-color-text-brand-default);
+  text-decoration: underline;
+  cursor: pointer;
+  border-radius: var(--mud-border-radius-4, 4px);
+
+  &:hover:not(:disabled) {
+    color: var(--mud-color-text-brand-default-hover);
+  }
+
+  &:focus-visible {
+    outline: var(--mud-focus-ring-outer-width, 2px) solid var(--mud-color-border-brand-default);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    color: var(--mud-color-text-disabled-default);
+    cursor: not-allowed;
+  }
+}
+
+// The button-variant upload control is a plain mudButton; it only needs to
+// stop stretching to the field width.
+.file-field__upload-button {
+  align-self: flex-start;
+}
+
+.file-field__captions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mud-spacing-24, 24px);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--mud-color-text-base-tertiary);
+}
+
+.file-field__caption-max-size {
+  margin-left: auto;
+}
+
+.file-field.is-disabled .file-field__captions {
+  color: var(--mud-color-text-disabled-default);
+}
+
+.file-field__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mud-spacing-8, 8px);
+  margin: var(--mud-spacing-4, 4px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file-field__list-item {
+  display: flex;
+}
+
+// ----- file item -----
+
+.file-item {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--mud-spacing-8, 8px);
+  width: 100%;
+  min-height: 48px;
+  padding: var(--mud-spacing-8, 8px) var(--mud-spacing-12, 12px);
+  background-color: var(--mud-color-background-base-tertiary);
+  // Resting rows are borderless pills; only the error state draws a rule.
+  border: 1px solid transparent;
+  border-radius: var(--mud-border-radius-6, 6px);
+  color: var(--mud-color-text-base-default);
+  font-family: var(--mud-font-family-base);
+  transition:
+    border-color 150ms ease-out,
+    background-color 150ms ease-out;
+}
+
+.file-item--error {
+  background-color: var(--mud-color-input-background, var(--mud-color-background-base-default));
+  border-color: var(--mud-color-border-danger-default);
+}
+
+.file-item.is-disabled {
+  background-color: var(--mud-color-background-disabled-default);
+  border-color: transparent;
+  color: var(--mud-color-text-disabled-default);
+  cursor: not-allowed;
+}
+
+.file-item__row {
+  display: flex;
+  align-items: center;
+  gap: var(--mud-spacing-12, 12px);
+  width: 100%;
+}
+
+.file-item__leading-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--mud-color-icon-base-secondary);
+}
+
+.file-item.is-disabled .file-item__glyph {
+  opacity: 0.45;
+}
+
+// A projected `[icon]` sizes to the same box as the built-in glyph and inherits
+// the row's icon colour (so `fill="currentColor"` just works). Scoped to svg /
+// mud-icon so it cannot catch the glyph or thumbnail, both of which are <img>.
+.file-item__leading-icon > svg,
+.file-item__leading-icon > mud-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.file-item__glyph {
+  display: block;
+}
+
+.file-item__thumbnail {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  border-radius: var(--mud-border-radius-6, 6px);
+}
+
+.file-item__body {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: baseline;
+  gap: var(--mud-spacing-4, 4px);
+  min-width: 0;
+}
+
+.file-item__filename-wrap {
+  position: relative;
+  display: flex;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.file-item__filename {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: inherit;
+}
+
+.file-item__filename-tooltip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 1;
+  width: max-content;
+  max-width: 320px;
+  padding: var(--mud-spacing-4, 4px) var(--mud-spacing-8, 8px);
+  background-color: var(--mud-color-background-base-inverse-default);
+  color: var(--mud-color-text-base-inverse-on-color);
+  border-radius: var(--mud-border-radius-4, 4px);
+  box-shadow: var(--mud-drop-shadow-200);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 150ms ease-out;
+}
+
+.file-item__filename-wrap:hover .file-item__filename-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.file-item__meta {
+  flex-shrink: 0;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  // Upstream tints this tertiary (#757575), which only reaches 4.07:1 on the
+  // row's gray surface - below the 4.5:1 minimum for 12px text. Secondary
+  // keeps the hierarchy against the 500-weight filename and passes.
+  color: var(--mud-color-text-base-secondary);
+  white-space: nowrap;
+
+  // Middot separator between the name and the size.
+  &::before {
+    content: '·';
+    margin-right: var(--mud-spacing-4, 4px);
+  }
+}
+
+.file-item.is-disabled .file-item__meta {
+  color: var(--mud-color-text-disabled-default);
+}
+
+.file-item__trailing {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--mud-spacing-8, 8px);
+}
+
+.file-item__status {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.file-item__status--success {
+  color: var(--mud-color-icon-positive-default);
+}
+
+.file-item__status--error {
+  color: var(--mud-color-icon-danger-default);
+}
+
+// Borrows the shared rotation keyframes the spinner and button loading use.
+.file-item__spinner {
+  display: inline-block;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--mud-color-border-base-default);
+  border-top-color: var(--mud-color-border-brand-default);
+  border-radius: var(--mud-border-radius-full, 50%);
+  animation: spinner-rotate 700ms linear infinite;
+}
+
+.file-item__error-message {
+  margin: 0;
+  padding-top: var(--mud-spacing-8, 8px);
+  border-top: 1px solid var(--mud-color-border-base-default);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  color: var(--mud-color-text-danger-default);
+}
+
+.file-item__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  border-radius: var(--mud-border-radius-6, 6px);
+  color: var(--mud-color-icon-base-secondary);
+  cursor: pointer;
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--mud-color-background-danger-secondary);
+    color: var(--mud-color-icon-danger-default);
+  }
+
+  &:focus-visible {
+    outline: var(--mud-border-width-2, 2px) solid var(--mud-color-border-brand-default);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    color: var(--mud-color-icon-disabled-default);
+    cursor: not-allowed;
+  }
+}
+
+@media (forced-colors: active) {
+  .file-field__dropzone,
+  .file-item {
+    border-color: CanvasText;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .file-field__dropzone,
+  .file-item,
+  .file-item__remove,
+  .file-item__filename-tooltip {
+    transition: none;
+  }
+
+  .file-item__spinner {
+    animation: none;
+  }
+}

@@ -1,0 +1,16 @@
+// Storybook's own page styles — the "host app" around the stories. Not library CSS.
+// A deliberately plain host app: browser default font, line-height and text colour. Any library
+// component that changes when these change was inheriting from the app — it must set its own.
+body {
+  margin: 0;
+  background: var(--mud-color-background-base-default, #fff);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+[data-theme='dark'] .docs-story,
+[data-theme='dark'] .sbdocs-preview {
+  background: var(--mud-color-background-base-default, #1e1e1e);
+}

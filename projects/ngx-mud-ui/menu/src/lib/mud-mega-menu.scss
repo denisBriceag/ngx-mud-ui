@@ -1,0 +1,187 @@
+@use '../../../src/lib/styles/abstracts/mixins/host';
+
+@include host.typography('mud-mega-menu, button[mudMegaMenuTriggerFor], mud-mega-menu-column');
+
+mud-mega-menu {
+  display: none;
+}
+
+.mega-menu-trigger {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mud-spacing-6, 6px);
+  block-size: 100%;
+  min-block-size: 44px;
+  padding-block: 0;
+  padding-inline: var(--mud-spacing-16, 16px) var(--mud-spacing-8, 8px);
+  border: 0;
+  background-color: transparent;
+  color: var(--mud-color-text-base-default);
+  font-family: var(--mud-font-family-base);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out;
+
+  &:hover:not(:disabled) {
+    background-color: var(--mud-color-background-base-default-hover);
+  }
+
+  &:disabled {
+    color: var(--mud-color-text-disabled-default);
+    cursor: not-allowed;
+  }
+
+  &:disabled .mega-menu-trigger__chevron {
+    color: var(--mud-color-icon-disabled-default);
+  }
+
+  &.is-open,
+  &.is-open:hover {
+    background-color: transparent;
+    color: var(--mud-color-text-brand-default);
+    box-shadow: inset 0 -2px 0 var(--mud-color-border-brand-default);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--mud-focus-ring-outer-color, #3379db);
+  }
+
+  &.is-open:focus-visible {
+    box-shadow:
+      inset 0 0 0 2px var(--mud-focus-ring-outer-color, #3379db),
+      inset 0 -2px 0 var(--mud-color-border-brand-default);
+  }
+}
+
+.mega-menu-trigger__label {
+  min-inline-size: 0;
+}
+
+.mega-menu-trigger__chevron {
+  flex: none;
+  inline-size: 16px;
+  block-size: 16px;
+  color: var(--mud-color-icon-base-default);
+  transition: transform 150ms ease-out;
+}
+
+.mega-menu-trigger.is-open .mega-menu-trigger__chevron {
+  color: var(--mud-color-icon-brand-default);
+  transform: rotate(180deg);
+}
+
+// ---- Panel ---------------------------------------------------------------------
+
+.mega-menu {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  inline-size: 100%;
+  max-block-size: 100%;
+  overflow-y: auto;
+  padding: var(--mud-spacing-40, 40px);
+  background-color: var(--mud-color-background-base-default);
+  border-block-start: 1px solid var(--mud-color-border-base-default);
+  box-shadow: var(--mud-drop-shadow-200);
+  font-family: var(--mud-font-family-base);
+  outline: none;
+}
+
+.mega-menu__columns {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--mud-spacing-24, 24px);
+  inline-size: 100%;
+  max-inline-size: 1168px;
+}
+
+.mega-menu__column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mud-spacing-16, 16px);
+  flex: 1 1 240px;
+  min-inline-size: 0;
+}
+
+.mega-menu__heading {
+  margin: 0;
+  color: var(--mud-color-text-base-default);
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+  letter-spacing: -0.18px;
+}
+
+.mega-menu__separator {
+  block-size: 1px;
+  background-color: var(--mud-color-border-base-default);
+}
+
+.mega-menu__links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mud-spacing-16, 16px);
+}
+
+.mega-menu__link {
+  display: block;
+  padding: var(--mud-spacing-4, 4px);
+  border-radius: 4px;
+  color: var(--mud-color-text-base-secondary);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  text-decoration: none;
+  outline: none;
+
+  &:hover {
+    color: var(--mud-color-text-base-default);
+    text-decoration: underline;
+  }
+
+  &:focus {
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mud-color-border-brand-default);
+    outline-offset: -2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mega-menu-trigger,
+  .mega-menu-trigger__chevron {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .mega-menu-trigger.is-open {
+    box-shadow: none;
+    border-block-end: 2px solid Highlight;
+    padding-block-start: 2px;
+  }
+
+  .mega-menu-trigger:focus-visible {
+    box-shadow: none;
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+
+  .mega-menu {
+    border-block-start: 1px solid CanvasText;
+  }
+
+  .mega-menu__link:focus-visible {
+    outline: 2px solid Highlight;
+  }
+}

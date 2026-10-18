@@ -1,0 +1,169 @@
+@use '../abstracts/variables' as *;
+@use '../../../../breakpoints' as bp;
+@use '../abstracts/tokens' as tokens;
+
+:root {
+  --mud-font-family-base: 'Onest', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --mud-font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --mud-font-family-descriptor: var(--mud-font-family-mono);
+  --mud-font-weight-regular: 400;
+  --mud-font-weight-semibold: 500;
+  --mud-font-weight-bold: 600;
+}
+
+:root {
+  --mud-text-display-lg-font-family: var(--mud-font-family-base);
+  --mud-text-display-md-font-family: var(--mud-font-family-base);
+
+  --mud-text-heading-h1-lg-font-family: var(--mud-font-family-base);
+  --mud-text-heading-h2-md-font-family: var(--mud-font-family-base);
+  --mud-text-heading-h3-sm-font-family: var(--mud-font-family-base);
+  --mud-text-heading-h4-xs-font-family: var(--mud-font-family-base);
+  --mud-text-heading-h5-2xs-font-family: var(--mud-font-family-base);
+
+  --mud-text-body-lg-font-family: var(--mud-font-family-base);
+  --mud-text-body-lg-500-font-family: var(--mud-font-family-base);
+  --mud-text-body-md-font-family: var(--mud-font-family-base);
+  --mud-text-body-md-500-font-family: var(--mud-font-family-base);
+  --mud-text-body-sm-font-family: var(--mud-font-family-base);
+  --mud-text-body-sm-500-font-family: var(--mud-font-family-base);
+
+  --mud-text-caption-md-font-family: var(--mud-font-family-base);
+  --mud-text-caption-md-500-font-family: var(--mud-font-family-base);
+  --mud-text-caption-sm-font-family: var(--mud-font-family-base);
+}
+
+:root {
+  --mud-text-display-lg-font-weight: var(--mud-font-weight-bold);
+  --mud-text-display-md-font-weight: var(--mud-font-weight-bold);
+
+  --mud-text-heading-h1-lg-font-weight: var(--mud-font-weight-bold);
+  --mud-text-heading-h2-md-font-weight: var(--mud-font-weight-bold);
+  --mud-text-heading-h3-sm-font-weight: var(--mud-font-weight-bold);
+  --mud-text-heading-h4-xs-font-weight: var(--mud-font-weight-semibold);
+  --mud-text-heading-h5-2xs-font-weight: var(--mud-font-weight-semibold);
+
+  --mud-text-body-lg-font-weight: var(--mud-font-weight-regular);
+  --mud-text-body-lg-500-font-weight: var(--mud-font-weight-semibold);
+  --mud-text-body-md-font-weight: var(--mud-font-weight-regular);
+  --mud-text-body-md-500-font-weight: var(--mud-font-weight-semibold);
+  --mud-text-body-sm-font-weight: var(--mud-font-weight-regular);
+  --mud-text-body-sm-500-font-weight: var(--mud-font-weight-semibold);
+
+  --mud-text-caption-md-font-weight: var(--mud-font-weight-regular);
+  --mud-text-caption-md-500-font-weight: var(--mud-font-weight-semibold);
+  --mud-text-caption-sm-font-weight: var(--mud-font-weight-regular);
+}
+
+:root {
+  --mud-text-display-lg-font-size: 56px;
+  --mud-text-display-lg-line-height: 140%;
+  --mud-text-display-lg-letter-spacing: -0.02em;
+
+  --mud-text-display-md-font-size: 48px;
+  --mud-text-display-md-line-height: 140%;
+  --mud-text-display-md-letter-spacing: -0.02em;
+  --mud-text-heading-h1-lg-letter-spacing: normal;
+  --mud-text-heading-h2-md-letter-spacing: normal;
+  --mud-text-heading-h3-sm-letter-spacing: normal;
+  --mud-text-heading-h4-xs-letter-spacing: normal;
+  --mud-text-heading-h5-2xs-letter-spacing: normal;
+  --mud-text-body-lg-letter-spacing: normal;
+  --mud-text-body-lg-500-letter-spacing: normal;
+  --mud-text-body-md-letter-spacing: normal;
+  --mud-text-body-md-500-letter-spacing: normal;
+  --mud-text-body-sm-letter-spacing: normal;
+  --mud-text-body-sm-500-letter-spacing: normal;
+  --mud-text-caption-md-letter-spacing: normal;
+  --mud-text-caption-md-500-letter-spacing: normal;
+  --mud-text-caption-sm-letter-spacing: normal;
+
+  --mud-text-heading-h1-lg-font-size: 40px;
+  --mud-text-heading-h2-md-font-size: 32px;
+  --mud-text-heading-h3-sm-font-size: 28px;
+  --mud-text-heading-h4-xs-font-size: 24px;
+  --mud-text-heading-h5-2xs-font-size: 20px;
+
+  --mud-text-heading-h1-lg-line-height: 150%;
+  --mud-text-heading-h2-md-line-height: 150%;
+  --mud-text-heading-h3-sm-line-height: 150%;
+  --mud-text-heading-h4-xs-line-height: 150%;
+  --mud-text-heading-h5-2xs-line-height: 150%;
+
+  --mud-text-body-lg-font-size: 18px;
+  --mud-text-body-lg-500-font-size: 18px;
+  --mud-text-body-md-font-size: 16px;
+  --mud-text-body-md-500-font-size: 16px;
+  --mud-text-body-sm-font-size: 14px;
+  --mud-text-body-sm-500-font-size: 14px;
+
+  --mud-text-body-lg-line-height: 150%;
+  --mud-text-body-md-line-height: 140%;
+  --mud-text-body-sm-line-height: 140%;
+
+  --mud-text-caption-md-font-size: 12px;
+  --mud-text-caption-md-500-font-size: 12px;
+  --mud-text-caption-sm-font-size: 10px;
+
+  --mud-text-caption-md-line-height: 140%;
+  --mud-text-caption-sm-line-height: 140%;
+}
+
+:root {
+  --mud-text-font-size-14: 14px;
+  --mud-text-font-size-16: 16px;
+
+  --mud-text-line-height-20: 20px;
+  --mud-text-line-height-24: 24px;
+}
+
+// Mobile type scale — the same `md` edge every component query uses (bp.down = 767.98px).
+@include bp.down(md) {
+  :root {
+    --mud-text-display-lg-font-size: 48px;
+    --mud-text-display-md-font-size: 40px;
+
+    --mud-text-heading-h1-lg-font-size: 32px;
+    --mud-text-heading-h2-md-font-size: 28px;
+    --mud-text-heading-h3-sm-font-size: 22px;
+    --mud-text-heading-h4-xs-font-size: 18px;
+    --mud-text-heading-h5-2xs-font-size: 16px;
+
+    --mud-text-body-lg-font-size: 16px;
+    --mud-text-body-lg-500-font-size: 16px;
+    --mud-text-body-md-font-size: 14px;
+    --mud-text-body-md-500-font-size: 14px;
+    --mud-text-body-sm-font-size: 12px;
+    --mud-text-body-sm-500-font-size: 12px;
+
+    --mud-text-caption-md-font-size: 10px;
+    --mud-text-caption-md-500-font-size: 10px;
+    --mud-text-caption-sm-font-size: 8px;
+  }
+}
+
+:root {
+  @each $key, $value in $border-widths {
+    --mud-border-width-#{$key}: #{$value};
+  }
+
+  @each $key, $value in $radius {
+    --mud-border-radius-#{$key}: #{$value};
+  }
+
+  @each $key, $value in $border-styles {
+    --mud-border-style-#{$key}: #{$value};
+  }
+
+  --mud-border-width: var(--mud-border-width-1);
+  --mud-border-style: var(--mud-border-style-solid);
+  --mud-border-radius: var(--mud-border-radius-0);
+  --mud-border-color: currentColor;
+}
+
+
+:root {
+  @each $key, $shadows in tokens.$drop-shadows {
+    --mud-drop-shadow-#{$key}: #{$shadows};
+  }
+}

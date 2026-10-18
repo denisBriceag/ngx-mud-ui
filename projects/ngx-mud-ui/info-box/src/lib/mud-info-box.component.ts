@@ -1,4 +1,4 @@
-import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, output, ViewEncapsulation } from '@angular/core';
 
 export type MudInfoBoxVariant = 'neutral' | 'moderate' | 'prominent' | 'warning' | 'error';
 
@@ -70,6 +70,8 @@ const DEFAULT_CLOSE_LABEL = 'Close';
       </button>
     }
   `,
+  styleUrl: './mud-info-box.component.scss',
+  encapsulation: ViewEncapsulation.None,
   host: {
     '[class]': '_hostClasses()',
     '[attr.role]': '_role()',

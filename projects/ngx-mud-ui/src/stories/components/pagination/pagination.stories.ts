@@ -154,7 +154,7 @@ export const NarrowContainer: Story = {
   parameters: { controls: { disable: true } },
   render: () => ({
     template: `
-      <div style="resize:horizontal;overflow:auto;inline-size:520px;max-inline-size:100%;padding:12px;border:1px dashed var(--color-border-base-default)">
+      <div style="resize:horizontal;overflow:auto;inline-size:520px;max-inline-size:100%;padding:12px;border:1px dashed var(--mud-color-border-base-default)">
         <mud-pagination [length]="200" [pageIndex]="9" />
       </div>
     `,

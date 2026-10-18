@@ -1,0 +1,231 @@
+@use '../../../src/lib/styles/abstracts/mixins/host';
+
+@include host.typography('mud-info-box');
+
+.info-box {
+  --_ib-surface: var(--mud-color-background-base-secondary);
+  --_ib-icon: var(--mud-color-icon-base-tertiary);
+  --_ib-text: var(--mud-color-text-base-secondary);
+  --_ib-close-size: 32px;
+  // Distance from the box's top-right corner to the close button's hit area.
+  --_ib-close-inset: 10px;
+
+  box-sizing: border-box;
+  // Anchors the absolutely-positioned close button to the box, not the page.
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mud-spacing-12, 12px);
+  inline-size: 100%;
+  padding: var(--mud-spacing-16, 16px);
+  border-radius: var(--mud-border-radius-8, 8px);
+  background: var(--_ib-surface);
+  color: var(--_ib-text);
+  font-family: var(--mud-font-family-base);
+}
+
+// The close button is out of flow, so the inline padding no longer reserves
+// room for it and the body would run underneath. Reserve it explicitly — and
+// only when there is a button to reserve for, so a non-closable box keeps its
+// symmetric 16px padding.
+.info-box--closable {
+  padding-inline-end: calc(var(--_ib-close-inset) + var(--_ib-close-size));
+}
+
+.info-box--moderate {
+  --_ib-icon: var(--mud-color-icon-brand-default);
+}
+
+// The only variant with its own surface. `brand-secondary` stays a LIGHT panel
+// in dark mode, so the text token must be dark in both themes — hence
+// `base-default-on-color` rather than `base-secondary`, which inverts to
+// near-white. Measured: 16.31:1 light, 13.69:1 dark.
+.info-box--prominent {
+  --_ib-surface: var(--mud-color-background-brand-secondary);
+  --_ib-icon: var(--mud-color-icon-brand-on-secondary);
+  --_ib-text: var(--mud-color-text-base-default-on-color);
+
+  // Same trap, one level out: because this panel stays LIGHT in dark mode,
+  // every BRAND-coloured foreground token — which inverts to a pale blue for
+  // dark surfaces — is wrong on it. The box's own text and icon dodge that
+  // above, but PROJECTED content does not: an outlined button, a text button
+  // and a link all land at 2.08:1 here (visited magenta at 2.14:1). Re-point
+  // the tokens rather than enumerating every control class, so anything
+  // projected in is covered. Scoped to this surface — nothing outside a
+  // prominent box changes.
+  //
+  // BOTH lists are required, and neither substitutes for the other. A `var()`
+  // inside a custom-property DECLARATION resolves where it is declared, not
+  // where it is consumed: `--mud-color-link-primary-default: var(--mud-color-text-brand-default)`
+  // lives on `:root`, so it was already computed there and re-pointing the
+  // brand token here cannot reach it. Buttons name `--mud-color-text-brand-default`
+  // directly in their own rule, so for them the override does land.
+  --mud-color-text-brand-default: var(--mud-color-text-brand-on-secondary);
+  --mud-color-border-brand-default: var(--mud-color-text-brand-on-secondary);
+
+  --mud-color-link-primary-default: var(--mud-color-text-brand-on-secondary);
+  --mud-color-link-primary-visited: var(--mud-color-text-brand-visited-on-secondary);
+  --mud-color-link-primary-hover: var(--mud-blue-sky-700);
+  --mud-color-link-primary-active: var(--mud-blue-sky-800);
+}
+
+.info-box--warning {
+  --_ib-icon: var(--mud-color-icon-warning-default);
+}
+
+.info-box--error {
+  --_ib-icon: var(--mud-color-icon-danger-default);
+}
+
+.info-box__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--_ib-icon);
+}
+
+.info-box__icon svg {
+  inline-size: 24px;
+  block-size: 24px;
+}
+
+// No flex `gap` — the three rows are spaced in pairs, not uniformly: the
+// heading sits tight against the message (6px) while the actions stand off it
+// (12px).
+.info-box__body {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+// Each wrapper always renders; collapse it when nothing was projected so it
+// contributes no space. Same CSS-only content detection the avatar uses.
+.info-box__heading:empty,
+.info-box__message:empty,
+.info-box__actions:empty {
+  display: none;
+}
+
+// Sibling-guarded rather than a plain `margin-block-start`: `display: none`
+// does NOT remove an element from `:first-child` matching, so a collapsed
+// heading would still hand the message a 6px margin it must not have.
+.info-box__heading:not(:empty) + .info-box__message {
+  margin-block-start: 6px;
+}
+
+.info-box__heading:not(:empty) ~ .info-box__actions,
+.info-box__message:not(:empty) ~ .info-box__actions {
+  margin-block-start: 12px;
+}
+
+.info-box__heading {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+// The heading is a slot, so the consumer owns the element — that is the point,
+// it lets them clamp or truncate it. Neutralise the UA margin and inherit the
+// typography above so a `<p>`, a `<span>` and an `<h3>` all render identically
+// without the consumer having to restate it.
+.info-box__heading > * {
+  margin: 0;
+  font: inherit;
+  color: inherit;
+}
+
+.info-box__message {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+// The row itself, so `actions` belongs on each control rather than on a
+// wrapper around them — a wrapper would be the only flex item here and its own
+// children would butt together with no gap.
+.info-box__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mud-spacing-12, 12px);
+}
+
+// Actions are projected, so the consumer picks the element — but the spec pins
+// the metrics: a button is always `small` and a link always `medium`. Re-assert
+// them here (doubled class, so this beats `.mud-btn.mud-btn-lg` regardless of
+// stylesheet order) rather than trusting every call site to pass the right
+// `size`. Values mirror `$button-sizes.sm` in button/src/lib/mud-button.scss.
+.info-box__actions .mud-btn.mud-btn {
+  --_btn-height: 32px;
+  --_btn-touch-target: 40px;
+  --_btn-padding-inline: var(--mud-spacing-12, 0.75rem);
+  --_btn-padding-inline-icon: var(--mud-spacing-8, 0.5rem);
+  --_btn-icon-size: 16px;
+  --_btn-spinner-size: 16px;
+
+  min-width: 52px;
+  font-size: 14px;
+  line-height: 20px;
+  border-radius: var(--mud-border-radius-6, 6px);
+}
+
+// Mirrors `.link-md` in `components/_link.scss`.
+.info-box__actions .link.link {
+  --_link-gap: var(--mud-spacing-4, 4px);
+  --_link-icon-size: 20px;
+
+  font-size: var(--mud-text-body-md-font-size, 16px);
+  line-height: 24px;
+}
+
+.info-box__close {
+  position: absolute;
+  inset-block-start: var(--_ib-close-inset);
+  inset-inline-end: var(--_ib-close-inset);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--_ib-close-size);
+  block-size: var(--_ib-close-size);
+  padding: 0;
+  border: 0;
+  border-radius: var(--mud-border-radius-4, 4px);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.info-box__close svg {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+.info-box__close:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--mud-focus-ring-inner-width, 2px) var(--mud-focus-ring-inner-color, #fff),
+    0 0 0 calc(var(--mud-focus-ring-inner-width, 2px) + var(--mud-focus-ring-outer-width, 3px))
+      var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500));
+}
+
+// Touch devices get a larger target. The glyph stays 16px; only the button
+// grows. 32px already clears WCAG 2.2 SC 2.5.8's 24px minimum, so unlike
+// `banner` there is no invisible `::before` — the visible control IS the
+// target. Overridden on the box rather than the button so the reserved
+// `padding-inline-end` above grows with it.
+@media (pointer: coarse) {
+  .info-box {
+    --_ib-close-size: 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .info-box__heading {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .info-box__message {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}

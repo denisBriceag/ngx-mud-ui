@@ -30,6 +30,7 @@ import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl } from '@angular/forms/signals';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+import { _MudInputFieldStyles, _MudMenuPanelStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudSelectInputVariant = 'default' | 'destructive';
 export type MudSelectInputSize = 'medium' | 'large';
@@ -201,6 +202,11 @@ export class MudSelectInput<T = unknown> implements ControlValueAccessor, FormVa
   });
 
   constructor() {
+    const styles = inject(MudStyleLoader);
+
+    styles.load(_MudInputFieldStyles);
+    styles.load(_MudMenuPanelStyles);
+
     effect(() => {
       if (typeof ngDevMode !== 'undefined' && !ngDevMode) return;
 

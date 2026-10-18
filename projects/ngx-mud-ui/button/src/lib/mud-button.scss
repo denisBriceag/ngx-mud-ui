@@ -1,0 +1,527 @@
+@use '../../../src/lib/styles/abstracts/mixins/buttons' as buttons;
+@use '../../../src/lib/styles/abstracts/mud-prefix' as mud;
+@use 'sass:map' as map;
+
+// All variants consume semantic tokens (base/_tokens.scss for light,
+// themes/_dark.scss for dark) so buttons adapt to the active theme.
+// Fallback hexes mirror the light-theme values.
+
+@include buttons.button-variant(
+  "primary",
+  var(--mud-color-background-brand-default, #0058D2),
+  var(--mud-color-text-base-inverse-on-color, #ffffff),
+  transparent,
+  var(--mud-color-background-brand-default-hover, #0046A8),
+  var(--mud-color-text-base-inverse-on-color, #ffffff),
+  var(--mud-color-background-brand-default-active, #003380)
+);
+
+@include buttons.button-variant(
+  "secondary",
+  var(--mud-color-background-brand-secondary, #E8F0FB),
+  var(--mud-color-text-brand-on-secondary, #0058D2),
+  var(--mud-color-background-brand-secondary, #E8F0FB),
+  var(--mud-color-background-brand-secondary-hover, #C4DBF4),
+  var(--mud-color-text-brand-on-secondary, #0058D2),
+  var(--mud-color-background-brand-secondary-active, #99BCED),
+  var(--mud-color-background-base-inverse-default, #1E1E1E)
+);
+
+// Strict is an inverse surface: dark-on-light in light mode, light-on-dark in dark mode.
+@include buttons.button-variant(
+  "strict",
+  var(--mud-color-background-base-inverse-default, #1E1E1E),
+  var(--mud-color-text-base-inverse-default, #ffffff),
+  var(--mud-color-background-base-inverse-default, #1E1E1E),
+  var(--mud-color-background-base-inverse-default-hover, #383838),
+  var(--mud-color-text-base-inverse-default, #ffffff),
+  var(--mud-color-background-base-inverse-default-active, #757575)
+);
+
+@include buttons.button-variant(
+  "neutral",
+  var(--mud-color-background-base-tertiary, #F1F1F1),
+  var(--mud-color-text-base-default, #121212),
+  var(--mud-color-background-base-tertiary, #F1F1F1),
+  var(--mud-color-background-base-tertiary-hover, #E5E5E5),
+  var(--mud-color-text-base-default, #121212),
+  var(--mud-color-background-base-tertiary-active, #D9D9D9),
+  var(--mud-color-background-base-inverse-default, #1E1E1E)
+);
+
+@include buttons.button-variant(
+  "destructive",
+  var(--mud-color-background-danger-default, #D32F2F),
+  var(--mud-color-text-base-inverse-on-color, #ffffff),
+  var(--mud-color-background-danger-default, #D32F2F),
+  var(--mud-color-background-danger-default-hover, #B71C1C),
+  var(--mud-color-text-base-inverse-on-color, #ffffff),
+  var(--mud-color-background-danger-default-active, #9C0000),
+  var(--mud-color-text-base-inverse-on-color, #ffffff)
+);
+
+@include buttons.button-variant(
+  "outline-primary",
+  transparent,
+  var(--mud-color-text-brand-default, #0058D2),
+  var(--mud-color-border-brand-default, #0058D2),
+  var(--mud-color-background-brand-default-hover, #0046A8),
+  var(--mud-color-text-base-inverse-on-color, #ffffff),
+  var(--mud-color-background-brand-default-active, #003380)
+);
+
+@include buttons.button-variant(
+  "outline-strict",
+  transparent,
+  var(--mud-color-text-base-default, #121212),
+  var(--mud-color-border-base-strong, #121212),
+  var(--mud-color-background-base-inverse-default-hover, #383838),
+  var(--mud-color-text-base-inverse-default, #ffffff),
+  var(--mud-color-background-base-inverse-default-active, #757575),
+  var(--mud-color-background-base-inverse-default, #1E1E1E)
+);
+
+@include buttons.button-variant(
+  "outline-destructive",
+  transparent,
+  var(--mud-color-text-danger-default, #D32F2F),
+  var(--mud-color-border-danger-default, #D32F2F),
+  var(--mud-color-background-danger-default-hover, #B71C1C),
+  var(--mud-color-text-base-inverse-on-color, #ffffff),
+  var(--mud-color-background-danger-default-active, #9C0000),
+  var(--mud-color-background-base-inverse-default, #1E1E1E)
+);
+
+@include buttons.button-variant(
+  "text-primary",
+  transparent,
+  var(--mud-color-text-brand-default, #0058D2),
+  transparent,
+  var(--mud-color-background-brand-secondary-hover, #C4DBF4),
+  var(--mud-color-text-brand-on-secondary, #0046A8),
+  var(--mud-color-background-brand-secondary-active, #99BCED)
+);
+
+@include buttons.button-variant(
+  "text-strict",
+  transparent,
+  var(--mud-color-text-base-default, #121212),
+  transparent,
+  var(--mud-color-background-base-tertiary-hover, #E5E5E5),
+  var(--mud-color-text-base-default, #121212),
+  var(--mud-color-background-base-tertiary-active, #D9D9D9),
+  var(--mud-color-background-base-inverse-default, #1E1E1E)
+);
+
+@include buttons.button-variant(
+  "text-destructive",
+  transparent,
+  var(--mud-color-text-danger-default, #D32F2F),
+  transparent,
+  var(--mud-color-background-danger-secondary-hover, #FECDCA),
+  var(--mud-color-text-danger-default, #D32F2F),
+  var(--mud-color-background-danger-secondary-active, #FDA19B),
+  var(--mud-color-background-base-inverse-default, #1E1E1E)
+);
+
+// "large" is the .mud-btn base look itself (MudButton adds no size class
+// for it), so only the smaller sizes need modifiers. Official axis:
+// lg 48px h / 16-24 font / radius 8; md 40 / 14-20 / 6; sm 32 / 14-20 / 6.
+$button-sizes: (
+  sm: (
+    height: 32px,
+    touch-target: 40px,
+    min-width: 52px,
+    padding-inline: var(--mud-spacing-12, 0.75rem),
+    padding-inline-icon: var(--mud-spacing-8, 0.5rem),
+    icon-size: 16px,
+    font-size: 14px,
+    line-height: 20px,
+    radius: var(--mud-border-radius-6, 6px),
+    spinner-size: 16px,
+  ),
+  md: (
+    height: 40px,
+    touch-target: 48px,
+    min-width: 56px,
+    padding-inline: var(--mud-spacing-16, 1rem),
+    padding-inline-icon: var(--mud-spacing-12, 0.75rem),
+    icon-size: 20px,
+    font-size: 14px,
+    line-height: 20px,
+    radius: var(--mud-border-radius-6, 6px),
+    spinner-size: 20px,
+  )
+);
+
+@each $size, $values in $button-sizes {
+  .#{mud.mud-class('btn')}.#{mud.mud-class('btn-' + $size)} {
+    --_btn-height: #{map.get($values, height)};
+    --_btn-touch-target: #{map.get($values, touch-target)};
+    --_btn-padding-inline: #{map.get($values, padding-inline)};
+    --_btn-padding-inline-icon: #{map.get($values, padding-inline-icon)};
+    --_btn-icon-size: #{map.get($values, icon-size)};
+    --_btn-spinner-size: #{map.get($values, spinner-size)};
+
+    min-width: map.get($values, min-width);
+    font-size: map.get($values, font-size);
+    line-height: map.get($values, line-height);
+    border-radius: map.get($values, radius);
+  }
+}
+
+// Doubled class so the circular shape always beats the per-size rectangular
+// radius above (.mud-btn.mud-btn-md/-sm), regardless of import order.
+.#{mud.mud-class('btn')}.#{mud.mud-class('btn-pill')} { border-radius: 9999px; }
+.#{mud.mud-class('btn')}.#{mud.mud-class('btn-rounded')} { border-radius: var(--mud-border-radius-full, 9999px); }
+
+// Stretches to the container (official full-width): the intrinsic min/max
+// width constraints no longer apply.
+.#{mud.mud-class('btn-full')} {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+// The button keeps its own footprint while loading - no explicit sizing here,
+// otherwise toggling `loading` shifts the surrounding layout.
+.#{mud.mud-class('btn-loading')} {
+  position: relative;
+  pointer-events: none;
+}
+
+// Projected content (icons, wrapped labels) keeps its space but is hidden
+// while loading; bare text nodes are hidden by the variant mixin's
+// transparent color instead.
+.#{mud.mud-class('btn-loading')} > * {
+  visibility: hidden;
+}
+
+.#{mud.mud-class('btn-loading')}::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+
+  width: var(--_btn-spinner-size, 20px);
+  height: var(--_btn-spinner-size, 20px);
+
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  rotate: 45deg;
+
+  // spinner-rotate is the shared keyframes from the foundation (base/_keyframes.scss) —
+  // a namespaced name a consumer app's own "spin" keyframes can't retime.
+  animation: spinner-rotate 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .#{mud.mud-class('btn-loading')}::after {
+    // Static arc, matching the standalone spinner's reduced-motion behavior.
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}
+
+// Official disabled treatment for outlined/text appearances: the fill stays
+// transparent with a muted border/label instead of the solid disabled fill.
+.#{mud.mud-class('btn')}[class*='#{mud.mud-class('btn-outline-')}'],
+.#{mud.mud-class('btn')}[class*='#{mud.mud-class('btn-text-')}'] {
+  &:disabled,
+  &[aria-disabled='true']:not(.#{mud.mud-class('btn-loading')}) {
+    background-color: transparent;
+    color: var(--mud-color-text-disabled-default, #B2B2B2);
+    border-color: transparent;
+  }
+}
+
+.#{mud.mud-class('btn')}[class*='#{mud.mud-class('btn-outline-')}'] {
+  &:disabled,
+  &[aria-disabled='true']:not(.#{mud.mud-class('btn-loading')}) {
+    border-color: var(--mud-color-border-disabled-default, #D9D9D9);
+  }
+}
+
+// Official dual-halo focus ring (white inner + brand outer), shared tokens
+// with avatar/link.
+.#{mud.mud-class('btn')}:focus-visible:not(:disabled):not([aria-disabled='true']) {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--mud-focus-ring-inner-width, 2px) var(--mud-focus-ring-inner-color, #fff),
+    0 0 0 calc(var(--mud-focus-ring-inner-width, 2px) + var(--mud-focus-ring-outer-width, 3px))
+      var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500, #3379DB));
+}
+
+// Base = large (48px). The size modifiers in this file override the
+// height/padding/font/radius axis; official touch targets: sm 40, md/lg 48.
+.#{mud.mud-class('btn')} {
+  --_btn-height: 48px;
+  --_btn-touch-target: 48px;
+  --_btn-padding-inline: var(--mud-spacing-20, 1.25rem);
+  --_btn-padding-inline-icon: var(--mud-spacing-16, 1rem);
+  --_btn-icon-size: 20px;
+
+  position: relative;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  height: var(--_btn-height);
+  min-width: 72px;
+  max-width: 400px;
+  font-size: 16px;
+  font-family: var(--mud-font-family-base);
+  font-weight: 500;
+  line-height: 24px;
+  border-radius: var(--mud-border-radius-8);
+  padding: 0 var(--_btn-padding-inline);
+  gap: var(--mud-spacing-6, 0.375rem);
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  -webkit-user-select: none;
+  user-select: none;
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out,
+    border-color 150ms ease-out,
+    box-shadow 150ms ease-out;
+
+  // Icons pull their edge's padding in one step (official paddingInlineIcon).
+  &:has(> :is(mud-icon, svg):first-child) {
+    padding-left: var(--_btn-padding-inline-icon);
+  }
+
+  &:has(> :is(mud-icon, svg):last-child) {
+    padding-right: var(--_btn-padding-inline-icon);
+  }
+
+  mud-icon svg,
+  > svg {
+    width: var(--_btn-icon-size);
+    height: var(--_btn-icon-size);
+    flex-shrink: 0;
+  }
+
+  &:disabled,
+  &[aria-disabled='true']:not(.#{mud.mud-class('btn-loading')}) {
+    background-color: var(--mud-color-background-disabled-default, #F1F1F1);
+    color: var(--mud-color-text-disabled-on-disabled, #B2B2B2);
+    border-color: var(--mud-color-background-disabled-default, #F1F1F1);
+    cursor: not-allowed;
+  }
+
+  // Invisible hit-area extension on touch devices (sm -> 40px, md/lg -> 48px)
+  // without changing the visual size.
+  @media (pointer: coarse) {
+    &::before {
+      content: '';
+      position: absolute;
+      inset: calc((var(--_btn-height) - var(--_btn-touch-target)) / 2);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// Doubled class so the perfect-circle geometry beats the .mud-btn base
+// min/max-width and per-size radius regardless of specificity ties.
+.#{mud.mud-class('btn')}.#{mud.mud-class('btn-icon')} {
+  background-color: transparent;
+  border: none;
+  padding: var(--mud-spacing-8, 0.5rem);
+  border-radius: 50%;
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  height: 40px;
+  justify-content: center;
+
+  &:hover:not(:disabled) {
+    background-color: var(--mud-color-background-base-secondary, #f5f5f5);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--mud-color-background-base-secondary-active, #D9D9D9);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+}
+
+.#{mud.mud-class('btn')}.#{mud.mud-class('btn-icon')}.#{mud.mud-class('btn-sm')} {
+  padding: var(--mud-spacing-8, 0.5rem);
+  border-radius: 50%;
+  width: 32px;
+  min-width: 32px;
+  max-width: 32px;
+  height: 32px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.#{mud.mud-class('btn-group')} {
+  display: inline-flex;
+  gap: var(--mud-spacing-12, 0.75rem);
+
+  &--inline {
+    flex-direction: row;
+  }
+
+  &--vertical {
+    flex-direction: column;
+  }
+
+  .#{mud.mud-class('btn')} {
+    margin: 0;
+  }
+}
+
+// M-platform badge buttons: `<button mudButton class="mud-btn btn-badge btn-badge--…">`. The
+// `mudButton` directive is what loads this sheet, and it also adds its own variant classes
+// (`.mud-btn-primary`, `.mud-btn-md`…), so every property that competes with them sits on the
+// two-class `.mud-btn.btn-badge` selector and wins by specificity, not by order in this file.
+.btn-badge {
+  --_badge-button-width: auto;
+  --_badge-button-bg: var(--mud-color-background-brand-default, #0058D2);
+  --_badge-button-color: var(--mud-color-text-base-inverse-on-color, #ffffff);
+  --_badge-button-hover-bg: var(--mud-color-background-brand-default-hover, #0046A8);
+  --_badge-button-hover-color: var(--mud-color-text-base-inverse-on-color, #ffffff);
+  --_badge-button-active-bg: var(--mud-color-background-brand-default-active, #003380);
+  --_badge-button-active-color: var(--mud-color-text-base-inverse-on-color, #ffffff);
+  --_badge-button-spinner-color: var(--mud-color-text-base-inverse-on-color, #ffffff);
+
+  &__logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+  }
+
+  &__logo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  &__label {
+    font-size: var(--mud-text-body-md-500-font-size, 16px);
+    font-weight: var(--mud-text-body-md-500-font-weight, 500);
+    line-height: 24px;
+  }
+}
+
+.#{mud.mud-class('btn')}.btn-badge {
+  min-height: var(--mud-spacing-48, 48px);
+  min-width: 72px;
+  width: min(100%, var(--_badge-button-width));
+  padding: 0 var(--mud-spacing-20, 20px) 0 var(--mud-spacing-16, 16px);
+  gap: 6px;
+  border: 1px solid transparent;
+  border-radius: var(--mud-border-radius-8, 8px);
+  background-color: var(--_badge-button-bg);
+  color: var(--_badge-button-color);
+  white-space: nowrap;
+
+  &:hover:not(:disabled),
+  &.is-hover:not(:disabled) {
+    background-color: var(--_badge-button-hover-bg);
+    color: var(--_badge-button-hover-color);
+  }
+
+  &:active:not(:disabled),
+  &.is-active:not(:disabled) {
+    background-color: var(--_badge-button-active-bg);
+    color: var(--_badge-button-active-color);
+  }
+
+  &:focus:not(:disabled),
+  &:focus-visible:not(:disabled),
+  &.is-focus:not(:disabled) {
+    outline: 2px solid var(--mud-color-background-base-default, #ffffff);
+    box-shadow: 0 0 0 4px var(--mud-blue-sky-500, #3379DB);
+  }
+
+  // Same (0,2,0) weight as the shared `.mud-btn:disabled` rule above, so the grey surface has to be
+  // re-asserted here or the badge colours win the tie by order.
+  &:disabled,
+  &[aria-disabled='true']:not(.#{mud.mud-class('btn-loading')}) {
+    background-color: var(--mud-color-background-disabled-default, #F1F1F1);
+    color: var(--mud-color-text-disabled-on-disabled, #B2B2B2);
+  }
+
+  // The directive emits `.mud-btn-loading`; out-ranks the variant's `.mud-btn-primary.mud-btn-loading::after`.
+  &.#{mud.mud-class('btn-loading')} {
+    width: min(100%, var(--_badge-button-width));
+    color: transparent;
+  }
+
+  &.#{mud.mud-class('btn-loading')}::after {
+    inset: 0;
+    margin: auto;
+    border-color: var(--_badge-button-spinner-color);
+    border-top-color: transparent;
+    transform: none;
+    animation: spinner-rotate 0.8s linear infinite;
+  }
+
+  &:disabled .btn-badge__logo {
+    opacity: 0.7;
+  }
+}
+
+.btn-badge--mpay {
+  --_badge-button-width: 197px;
+}
+
+.btn-badge--mpass {
+  --_badge-button-width: 258px;
+}
+
+.btn-badge--msign {
+  --_badge-button-width: 227px;
+}
+
+.btn-badge--mpower {
+  --_badge-button-width: 268px;
+}
+
+.btn-badge--mdelivery {
+  --_badge-button-width: 240px;
+}
+
+.btn-badge--primary {
+  --_badge-button-bg: var(--mud-color-background-brand-default, #0058D2);
+  --_badge-button-color: var(--mud-color-text-base-inverse-on-color, #ffffff);
+  --_badge-button-hover-bg: var(--mud-color-background-brand-default-hover, #0046A8);
+  --_badge-button-hover-color: var(--mud-color-text-base-inverse-on-color, #ffffff);
+  --_badge-button-active-bg: var(--mud-color-background-brand-default-active, #003380);
+  --_badge-button-active-color: var(--mud-color-text-base-inverse-on-color, #ffffff);
+  --_badge-button-spinner-color: var(--mud-color-text-base-inverse-on-color, #ffffff);
+}
+
+.btn-badge--neutral {
+  --_badge-button-bg: var(--mud-color-background-base-secondary, #F5F5F5);
+  --_badge-button-color: var(--mud-color-text-base-default, #121212);
+  --_badge-button-hover-bg: var(--mud-color-background-base-secondary-hover, #F1F1F1);
+  --_badge-button-hover-color: var(--mud-color-text-base-default, #121212);
+  --_badge-button-active-bg: var(--mud-color-background-base-secondary-active, #D9D9D9);
+  --_badge-button-active-color: var(--mud-color-text-base-default, #121212);
+  --_badge-button-spinner-color: var(--mud-color-text-base-default, #121212);
+}

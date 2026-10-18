@@ -27,11 +27,11 @@ import { MudButton, MudIconButton } from 'ngx-mud-ui/button';
 export class Demo {}
 ```
 
-The directives only apply classes — the design-system stylesheet must be loaded
-once in your app:
+The directive brings the button CSS itself; the base stylesheet (tokens, font) must be in
+your app's `angular.json` `styles` once:
 
-```scss
-@use 'ngx-mud-ui/styles/main';
+```json
+"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
 ```
 
 ## Playground
@@ -91,6 +91,18 @@ Leading and trailing icons are plain projected content — there is no icon inpu
 <Canvas of={ButtonStories.AnchorButtons} />
 
 ## Badge buttons
+
+Entry points to the trusted government platforms (mpay, mpass, msign, mpower, mdelivery). There is
+no dedicated directive yet: keep `mudButton` on the button — it loads the styles — and add the
+`btn-badge btn-badge--{primary|neutral} btn-badge--{platform}` classes. The `loading` input works as
+on any other button.
+
+```html
+<button mudButton class="btn-badge btn-badge--primary btn-badge--mpay" type="button">
+  <span class="btn-badge__logo" aria-hidden="true"><img src="logos/m-pay.svg" alt="" /></span>
+  <span class="btn-badge__label">Plătește cu mpay</span>
+</button>
+```
 
 <Canvas of={ButtonStories.BadgeButtons} />
 

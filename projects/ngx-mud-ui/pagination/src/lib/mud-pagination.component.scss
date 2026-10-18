@@ -1,0 +1,215 @@
+@use '../../../src/lib/styles/abstracts/mixins/host';
+
+@include host.typography('mud-pagination');
+
+.mud-pagination {
+  --_gap: var(--mud-pagination-gap-medium);
+  --_inner-gap: var(--mud-pagination-inner-gap-medium);
+  --_item-size: var(--mud-pagination-item-size-medium);
+  --_nav-height: var(--mud-pagination-nav-height-medium);
+  --_nav-min-width: var(--mud-pagination-nav-min-width-medium);
+  --_nav-padding-start: var(--mud-pagination-nav-padding-start-medium);
+  --_nav-padding-end: var(--mud-pagination-nav-padding-end-medium);
+  --_icon-size: var(--mud-pagination-nav-icon-size-medium);
+
+  // Block-level on purpose: the host must fill its container to be measured. Align the nav
+  // with justify-content on the host.
+  display: flex;
+  position: relative;
+  min-inline-size: 0;
+  font-family: var(--mud-pagination-font-family);
+  font-size: var(--mud-pagination-font-size);
+  line-height: var(--mud-pagination-line-height);
+  font-weight: var(--mud-pagination-font-weight);
+}
+
+.mud-pagination--small {
+  --_gap: var(--mud-pagination-gap-small);
+  --_inner-gap: var(--mud-pagination-inner-gap-small);
+  --_item-size: var(--mud-pagination-item-size-small);
+  --_nav-height: var(--mud-pagination-nav-height-small);
+  --_nav-min-width: var(--mud-pagination-nav-min-width-small);
+  --_nav-padding-start: 0px;
+  --_nav-padding-end: 0px;
+  --_icon-size: var(--mud-pagination-nav-icon-size-small);
+}
+
+.mud-pagination__nav {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--_gap);
+}
+
+.mud-pagination__pages {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--_inner-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mud-pagination__item {
+  display: inline-flex;
+}
+
+.mud-pagination__page,
+.mud-pagination__overflow,
+.mud-pagination__nav-button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  border: 0;
+  background-color: transparent;
+  font: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    background-color var(--mud-pagination-transition-duration) ease-out,
+    color var(--mud-pagination-transition-duration) ease-out;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 var(--mud-focus-ring-inner-width, 2px) var(--mud-focus-ring-inner-color, #fff),
+      0 0 0 calc(var(--mud-focus-ring-inner-width, 2px) + var(--mud-focus-ring-outer-width, 3px))
+        var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500));
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    color: var(--mud-pagination-disabled-color);
+  }
+}
+
+.mud-pagination__page,
+.mud-pagination__overflow {
+  inline-size: var(--_item-size);
+  block-size: var(--_item-size);
+  padding: 0;
+  border-radius: var(--mud-pagination-item-radius);
+}
+
+.mud-pagination__page {
+  color: var(--mud-pagination-item-color);
+
+  &:hover:not(:disabled) {
+    background-color: var(--mud-pagination-item-background-hover);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--mud-pagination-item-background-active);
+  }
+}
+
+.mud-pagination__page--current {
+  color: var(--mud-pagination-current-color);
+  background-color: var(--mud-pagination-current-background);
+
+  &:hover:not(:disabled) {
+    background-color: var(--mud-pagination-current-background-hover);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--mud-pagination-current-background-active);
+  }
+
+  &:disabled {
+    color: var(--mud-pagination-current-disabled-color);
+    background-color: var(--mud-pagination-current-disabled-background);
+  }
+}
+
+.mud-pagination__overflow {
+  color: var(--mud-pagination-overflow-color);
+  user-select: none;
+
+  &:hover:not(:disabled),
+  &[aria-expanded='true'] {
+    background-color: var(--mud-pagination-item-background-hover);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--mud-pagination-item-background-active);
+  }
+}
+
+.mud-pagination__nav-button {
+  gap: var(--mud-pagination-nav-gap);
+  block-size: var(--_nav-height);
+  min-inline-size: var(--_nav-min-width);
+  padding-block: 0;
+  padding-inline: var(--_nav-padding-start) var(--_nav-padding-end);
+  border-radius: var(--mud-pagination-nav-radius);
+  color: var(--mud-pagination-nav-color);
+  white-space: nowrap;
+
+  &--next {
+    padding-inline: var(--_nav-padding-end) var(--_nav-padding-start);
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--mud-pagination-item-background-hover);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--mud-pagination-item-background-active);
+  }
+}
+
+.mud-pagination__icon {
+  flex: none;
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
+  color: var(--mud-pagination-nav-icon-color);
+
+  .mud-pagination__nav-button:disabled & {
+    color: var(--mud-pagination-disabled-color);
+  }
+}
+
+.mud-pagination--small .mud-pagination__nav-label {
+  display: none;
+}
+
+.mud-pagination__probe {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  display: flex;
+  visibility: hidden;
+  pointer-events: none;
+  block-size: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+// The jump list reuses the shared .menu panel (menu/src/lib/mud-menu.scss) and only narrows it to
+// upstream's overflow-menu metrics. (0,2,0) beats .menu / .menu__item at (0,1,0).
+.menu.mud-pagination__menu {
+  min-inline-size: var(--mud-pagination-menu-min-width);
+  max-block-size: var(--mud-pagination-menu-max-height);
+  padding: var(--mud-pagination-menu-padding);
+  gap: var(--mud-pagination-menu-gap);
+  border-radius: var(--mud-pagination-menu-radius);
+  overscroll-behavior: contain;
+}
+
+.mud-pagination__menu .menu__item {
+  justify-content: center;
+  min-height: var(--mud-pagination-menu-item-height);
+  padding: 0 var(--mud-pagination-menu-item-padding-inline);
+  border-radius: var(--mud-pagination-menu-item-radius);
+  color: var(--mud-pagination-item-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mud-pagination__page,
+  .mud-pagination__overflow,
+  .mud-pagination__nav-button {
+    transition: none;
+  }
+}

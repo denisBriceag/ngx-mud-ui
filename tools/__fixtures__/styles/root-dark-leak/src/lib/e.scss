@@ -1,0 +1,4 @@
+// A component sheet pasting the dark theme's own selector form — still a token block.
+:root[data-theme='dark'] {
+  --mud-color-text-base-default: #fff;
+}

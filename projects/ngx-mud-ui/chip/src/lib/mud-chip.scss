@@ -1,0 +1,273 @@
+@use '../../../src/lib/styles/abstracts/mixins/host';
+
+@include host.typography('mud-chip');
+
+.chip {
+  --_chip-height: 36px;
+  --_chip-touch-target: 40px;
+  --_chip-padding-inline: var(--mud-spacing-16, 16px);
+  --_chip-padding-inline-icon: var(--mud-spacing-12, 12px);
+  --_chip-gap: var(--mud-spacing-4, 4px);
+  --_chip-font-size: 14px;
+  --_chip-line-height: 20px;
+  --_chip-icon-size: 20px;
+  --_chip-avatar-size: 28px;
+  --_chip-remove-size: 20px;
+  --_chip-count-size: 20px;
+  --_chip-count-font-size: 12px;
+  --_chip-count-padding-inline: 6px;
+
+  --_chip-bg: var(--mud-color-background-base-secondary);
+  --_chip-bg-hover: var(--mud-color-background-base-tertiary-hover, var(--mud-gray-250));
+  --_chip-label-color: var(--mud-color-text-base-default);
+  --_chip-icon-color: var(--mud-color-icon-base-default);
+  --_chip-remove-color: var(--mud-color-icon-base-secondary);
+
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+  max-width: 100%;
+  border-radius: var(--mud-border-radius-full, 9999px);
+  font-family: var(--mud-font-family-base);
+}
+
+.chip--sm {
+  --_chip-height: 28px;
+  --_chip-padding-inline: var(--mud-spacing-12, 12px);
+  --_chip-padding-inline-icon: var(--mud-spacing-8, 8px);
+  --_chip-font-size: 12px;
+  --_chip-line-height: 16px;
+  --_chip-icon-size: 16px;
+  --_chip-avatar-size: 20px;
+  --_chip-remove-size: 16px;
+  --_chip-count-size: 16px;
+  --_chip-count-font-size: 10px;
+  --_chip-count-padding-inline: 4px;
+}
+
+.chip.is-selected {
+  --_chip-bg: var(--mud-color-background-base-inverse-default, var(--mud-gray-900));
+  --_chip-bg-hover: var(--mud-color-background-base-inverse-default-hover, var(--mud-gray-700));
+  --_chip-label-color: var(--mud-color-text-base-inverse-default, var(--mud-white-1000));
+  --_chip-icon-color: var(--mud-color-icon-base-inverse-default, var(--mud-white-1000));
+}
+
+.chip.is-disabled {
+  --_chip-bg: var(--mud-color-background-disabled-default);
+  --_chip-bg-hover: var(--mud-color-background-disabled-default);
+  --_chip-label-color: var(--mud-color-text-disabled-on-disabled, var(--mud-color-text-disabled-default));
+  --_chip-icon-color: var(--mud-color-icon-disabled-on-disabled, var(--mud-color-icon-disabled-default));
+  --_chip-remove-color: var(--mud-color-icon-disabled-on-disabled, var(--mud-color-icon-disabled-default));
+}
+
+.chip__control {
+  position: relative;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--_chip-gap);
+  width: 100%;
+  height: var(--_chip-height);
+  padding: 0 var(--_chip-padding-inline);
+  border: 0;
+  border-radius: inherit;
+  background-color: var(--_chip-bg);
+  color: var(--_chip-label-color);
+  font-family: var(--mud-font-family-base);
+  font-size: var(--_chip-font-size);
+  line-height: var(--_chip-line-height);
+  font-weight: 400;
+  text-align: center;
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out,
+    box-shadow 150ms ease-out;
+}
+
+button.chip__control {
+  cursor: pointer;
+  user-select: none;
+  appearance: none;
+}
+
+.chip.is-disabled .chip__control,
+.chip.is-disabled .chip__remove {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.chip:not(.is-disabled):hover .chip__control,
+.chip:not(.is-disabled):hover .chip__remove {
+  background-color: var(--_chip-bg-hover);
+}
+
+// Asymmetric leading padding when a leading visual is present.
+.chip:has(.chip__icon:not(:empty)) .chip__control,
+.chip.shows-check .chip__control {
+  padding-inline-start: var(--_chip-padding-inline-icon);
+}
+
+// The avatar hugs the leading edge, inset so the circle centers in the
+// pill's rounded corner.
+.chip:has(.chip__avatar:not(:empty)) .chip__control {
+  padding-inline-start: calc((var(--_chip-height) - var(--_chip-avatar-size)) / 2);
+}
+
+.chip__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.chip__check {
+  flex-shrink: 0;
+  width: var(--_chip-icon-size);
+  height: var(--_chip-icon-size);
+  color: var(--_chip-icon-color);
+}
+
+.chip__icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--_chip-icon-color);
+
+  &:empty {
+    display: none;
+  }
+
+  svg,
+  mud-icon {
+    width: var(--_chip-icon-size);
+    height: var(--_chip-icon-size);
+  }
+}
+
+.chip__avatar {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:empty {
+    display: none;
+  }
+
+  > * {
+    width: var(--_chip-avatar-size);
+    height: var(--_chip-avatar-size);
+    border-radius: var(--mud-border-radius-full, 9999px);
+    object-fit: cover;
+    overflow: hidden;
+  }
+}
+
+.chip__count {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--_chip-count-size);
+  height: var(--_chip-count-size);
+  padding-inline: var(--_chip-count-padding-inline);
+  border-radius: var(--mud-border-radius-full, 9999px);
+  background-color: var(--_chip-label-color);
+  color: var(--_chip-bg);
+  font-size: var(--_chip-count-font-size);
+  font-weight: 500;
+  line-height: 1;
+}
+
+// ----- remove button (removable input chips) ------------------------------
+
+// The control and the remove button read as one fused pill: the control
+// gives up its trailing radius/padding, the remove button its leading ones.
+.chip.is-removable .chip__control {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+  padding-inline-end: var(--_chip-gap);
+}
+
+.chip__remove {
+  position: relative;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--_chip-height);
+  padding: 0 calc((var(--_chip-height) - var(--_chip-remove-size)) / 2) 0 0;
+  border: 0;
+  border-radius: inherit;
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+  background-color: var(--_chip-bg);
+  color: var(--_chip-remove-color);
+  cursor: pointer;
+  user-select: none;
+  appearance: none;
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out,
+    box-shadow 150ms ease-out;
+}
+
+.chip__remove-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--_chip-remove-size);
+  height: var(--_chip-remove-size);
+  border-radius: var(--mud-border-radius-full, 9999px);
+  background-color: transparent;
+  transition: background-color 150ms ease-out;
+
+  svg {
+    display: block;
+    width: calc(var(--_chip-remove-size) * 0.5);
+    height: calc(var(--_chip-remove-size) * 0.5);
+    pointer-events: none;
+  }
+}
+
+.chip:not(.is-disabled) .chip__remove:hover .chip__remove-icon {
+  background-color: var(--mud-color-background-base-tertiary-active, var(--mud-gray-300));
+}
+
+// ----- focus / interaction chrome -----------------------------------------
+
+.chip__control:focus-visible,
+.chip__remove:focus-visible {
+  outline: none;
+  z-index: 1;
+  box-shadow:
+    0 0 0 var(--mud-focus-ring-inner-width, 2px) var(--mud-focus-ring-inner-color, #fff),
+    0 0 0 calc(var(--mud-focus-ring-inner-width, 2px) + var(--mud-focus-ring-outer-width, 3px))
+      var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500));
+}
+
+// Coarse pointers get an expanded hit area without growing the pill.
+@media (pointer: coarse) {
+  button.chip__control::before,
+  .chip__remove::before {
+    content: '';
+    position: absolute;
+    inset: calc((var(--_chip-height) - var(--_chip-touch-target)) / 2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip__control,
+  .chip__remove,
+  .chip__remove-icon {
+    transition: none;
+  }
+}

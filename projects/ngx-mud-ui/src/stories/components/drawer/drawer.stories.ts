@@ -197,8 +197,8 @@ const TERMS = [
     /* The scroll region: min-height 0 lets the flex child shrink below its content. */
     .terms__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 24px; }
     .terms__body:focus-visible {
-      outline: var(--focus-ring-outer-width, 3px) solid var(--focus-ring-outer-color, #1a73e8);
-      outline-offset: calc(-1 * var(--focus-ring-outer-width, 3px));
+      outline: var(--mud-focus-ring-outer-width, 3px) solid var(--mud-focus-ring-outer-color, #1a73e8);
+      outline-offset: calc(-1 * var(--mud-focus-ring-outer-width, 3px));
     }
     .terms__actions { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px 24px; }
   `,
@@ -345,7 +345,7 @@ import { MudButton, MudIconButton } from 'ngx-mud-ui/button';
 
     /* Only the body scrolls. min-height: 0 lets it shrink below its content. */
     .terms__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
-    .terms__body:focus-visible { outline: 3px solid var(--focus-ring-outer-color); outline-offset: -3px; }
+    .terms__body:focus-visible { outline: 3px solid var(--mud-focus-ring-outer-color); outline-offset: -3px; }
   \`,
 })
 export class TermsDrawer {}

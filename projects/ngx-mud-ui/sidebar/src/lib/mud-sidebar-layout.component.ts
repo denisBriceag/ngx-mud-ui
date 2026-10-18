@@ -5,9 +5,12 @@ import {
   contentChildren,
   Directive,
   effect,
+  inject,
   ViewEncapsulation,
 } from '@angular/core';
 import { MudSidebar } from './mud-sidebar.component';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudSidebarStyles } from './mud-sidebar-styles.component';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -48,6 +51,8 @@ export class MudSidebarLayout {
   protected readonly _sidebar = computed(() => this._sidebars()[0] ?? null);
 
   constructor() {
+    inject(MudStyleLoader).load(_MudSidebarStyles);
+
     effect(() => {
       if ((typeof ngDevMode === 'undefined' || ngDevMode) && this._sidebars().length > 1) {
         console.warn('mud-sidebar-layout: only one mud-sidebar is laid out; the first one wins.');

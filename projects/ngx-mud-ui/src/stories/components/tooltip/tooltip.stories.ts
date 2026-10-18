@@ -4,7 +4,7 @@ import { Component, signal } from '@angular/core';
 import { MudTooltip, MUD_TOOLTIP_PLACEMENTS } from 'ngx-mud-ui/tooltip';
 
 const BTN_STYLE =
-  'padding:10px 16px;border:none;border-radius:6px;background:var(--blue-500,#20686f);color:var(--white,#fff);font-size:14px;cursor:pointer';
+  'padding:10px 16px;border:none;border-radius:6px;background:#20686f;color:var(--mud-white,#fff);font-size:14px;cursor:pointer';
 
 const meta: Meta<MudTooltip> = {
   title: 'Components/Tooltip',

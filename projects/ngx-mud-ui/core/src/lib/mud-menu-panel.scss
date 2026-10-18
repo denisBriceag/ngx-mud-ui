@@ -1,0 +1,93 @@
+.menu-panel {
+  box-sizing: border-box;
+  // The CDK overlay pane is a flex container, so the panel must claim the
+  // pane's configured width (= the trigger field's width) explicitly.
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mud-spacing-4, 4px);
+  padding: var(--mud-spacing-8, 8px);
+  max-height: 320px;
+  overflow-y: auto;
+  background-color: var(--mud-color-background-base-default);
+  border: 1px solid var(--mud-color-border-overlay, transparent);
+  border-radius: var(--mud-border-radius-16, 16px);
+  box-shadow:
+    0 12px 16px -4px rgba(16, 24, 40, 0.08),
+    0 4px 6px -2px rgba(16, 24, 40, 0.03);
+  font-family: var(--mud-font-family-base);
+}
+
+.menu-panel__option {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mud-spacing-12, 12px);
+  min-height: 40px;
+  padding: var(--mud-spacing-12, 12px) var(--mud-spacing-16, 16px);
+  border-radius: var(--mud-border-radius-8, 8px);
+  background-color: var(--mud-color-background-base-default);
+  color: var(--mud-color-text-base-default);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+
+  &.is-highlighted,
+  &:hover:not(.is-disabled) {
+    background-color: var(--mud-color-background-base-secondary);
+  }
+
+  &.is-highlighted {
+    outline: var(--mud-border-width-2, 2px) solid var(--mud-color-border-brand-default);
+    outline-offset: calc(var(--mud-border-width-2, 2px) * -1);
+  }
+
+  &.is-selected {
+    background-color: var(--mud-color-background-base-secondary);
+  }
+
+  &.is-disabled {
+    color: var(--mud-color-text-disabled-default);
+    cursor: not-allowed;
+  }
+}
+
+.menu-panel__option-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-panel__option-check {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--mud-color-icon-brand-default);
+}
+
+.menu-panel__empty {
+  padding: var(--mud-spacing-12, 12px) var(--mud-spacing-16, 16px);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--mud-color-text-base-tertiary);
+}
+
+@media (forced-colors: active) {
+  .menu-panel {
+    border: 1px solid CanvasText;
+  }
+
+  .menu-panel__option.is-highlighted {
+    outline-color: Highlight;
+  }
+
+  .menu-panel__option.is-selected .menu-panel__option-check {
+    forced-color-adjust: none;
+    color: Highlight;
+  }
+}

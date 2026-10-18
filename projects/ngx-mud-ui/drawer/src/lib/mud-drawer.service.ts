@@ -51,7 +51,7 @@ export class MudDrawer {
         `mud-drawer-panel--${position}`,
         ...(Array.isArray(config.panelClass) ? config.panelClass : config.panelClass ? [config.panelClass] : []),
       ],
-      backdropClass: 'mud-dialog-backdrop',
+      backdropClass: 'mud-drawer-backdrop',
       disableClose: true,
       providers: (dialogRef: DialogRef<R>) => {
         mudRef = new MudDrawerRef<R>(dialogRef);

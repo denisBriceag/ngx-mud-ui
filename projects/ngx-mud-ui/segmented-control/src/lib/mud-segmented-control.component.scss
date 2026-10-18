@@ -1,0 +1,156 @@
+@use '../../../src/lib/styles/abstracts/mixins/host';
+
+@include host.typography('mud-segmented-control, button[mud-segment]');
+
+.segmented-control {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  align-items: center;
+  background-color: var(--mud-color-background-base-tertiary);
+  border-radius: var(--mud-border-radius-full, 9999px);
+  padding: var(--mud-spacing-6, 6px);
+  gap: var(--mud-spacing-6, 6px);
+}
+
+.segmented-control--full-width {
+  display: grid;
+  width: 100%;
+}
+
+.segment-item {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mud-spacing-6, 6px);
+  min-width: 68px;
+  height: 40px;
+  cursor: pointer;
+  padding: 0 var(--mud-spacing-16, 16px);
+  border-radius: var(--mud-border-radius-full, 9999px);
+  font-family: var(--mud-font-family-base);
+  font-size: 14px;
+  font-weight: var(--mud-font-weight-regular, 400);
+  line-height: 20px;
+  white-space: nowrap;
+  transition: background-color 150ms ease-out, color 150ms ease-out, box-shadow 150ms ease-out;
+  color: var(--mud-color-text-base-secondary);
+  position: relative;
+  background-color: transparent;
+
+  > mud-icon,
+  > svg {
+    flex-shrink: 0;
+  }
+
+  mud-icon svg,
+  > svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:not(:last-child)::after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: var(--mud-spacing-16, 16px);
+    background-color: var(--mud-color-border-base-default);
+    position: absolute;
+    right: -3px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: opacity 150ms ease-out;
+    opacity: 1;
+  }
+
+  &:hover:not(.is-selected, :disabled) {
+    background-color: var(--mud-color-background-base-tertiary-hover);
+    color: var(--mud-color-text-base-default);
+  }
+
+  &:active:not(.is-selected, :disabled) {
+    background-color: var(--mud-color-background-base-tertiary-active);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 var(--mud-focus-ring-inner-width, 2px) var(--mud-focus-ring-inner-color, #fff),
+      0 0 0 calc(var(--mud-focus-ring-inner-width, 2px) + var(--mud-focus-ring-outer-width, 3px))
+        var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500));
+  }
+
+  &.is-selected {
+    background-color: var(--mud-color-background-base-inverse-default);
+    color: var(--mud-color-text-base-inverse-default);
+    font-weight: 500;
+    box-shadow:
+      0 0 0.25px rgba(0, 0, 0, 0.3),
+      0 1px 1.5px rgba(0, 0, 0, 0.16);
+
+    &:hover:not(:disabled) {
+      background-color: var(--mud-color-background-base-inverse-default-hover);
+    }
+
+    &::after {
+      opacity: 0;
+    }
+  }
+
+  &:has(+ .segment-item.is-selected)::after {
+    opacity: 0;
+  }
+
+  &:disabled {
+    color: var(--mud-color-text-disabled-default);
+    cursor: not-allowed;
+  }
+}
+
+.segmented-control--sm .segment-item {
+  height: 32px;
+  padding: 0 var(--mud-spacing-12, 12px);
+}
+
+.segmented-control--disabled {
+  background-color: var(--mud-color-background-disabled-default);
+
+  .segment-item,
+  .segment-item.is-selected {
+    color: var(--mud-color-text-disabled-default);
+    cursor: not-allowed;
+  }
+
+  .segment-item.is-selected {
+    background-color: var(--mud-color-background-base-default);
+    box-shadow: none;
+  }
+}
+
+.segment-label {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (forced-colors: active) {
+  .segmented-control {
+    border: 1px solid CanvasText;
+  }
+
+  .segment-item.is-selected {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .segment-item,
+  .segment-item::after {
+    transition: none;
+  }
+}

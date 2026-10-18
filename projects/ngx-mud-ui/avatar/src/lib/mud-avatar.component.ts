@@ -6,6 +6,7 @@ import {
   ElementRef,
   inject,
   input,
+  ViewEncapsulation,
 } from '@angular/core';
 
 export type MudAvatarSize = 'extra-small' | 'small' | 'medium' | 'large' | 'extra-large';
@@ -56,6 +57,8 @@ export function deriveInitials(name: string | undefined): string {
 @Component({
   selector: 'mud-avatar',
   template: '<ng-content /><span class="avatar-initials">{{ _resolvedInitials() }}</span>',
+  styleUrl: './mud-avatar.component.scss',
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class]': '_hostClasses()',

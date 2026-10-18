@@ -35,8 +35,8 @@ import {
 Import only the pieces you use — every directive is standalone. The design-system
 stylesheet must be loaded once in your app:
 
-```scss
-@use 'ngx-mud-ui/styles/main';
+```json
+"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
 ```
 
 ## Playground
@@ -53,8 +53,8 @@ Three header treatments, all with 12px/16px medium text:
     <tr><th>headerStyle</th><th>Background</th><th>When</th></tr>
   </thead>
   <tbody>
-    <tr><td><code>subtle</code> (default)</td><td>light grey (<code>--color-background-base-tertiary</code>)</td><td>most tables</td></tr>
-    <tr><td><code>strong</code></td><td>dark (<code>--color-background-base-inverse-default</code>), white text</td><td>emphasis, dashboards</td></tr>
+    <tr><td><code>subtle</code> (default)</td><td>light grey (<code>--mud-color-background-base-tertiary</code>)</td><td>most tables</td></tr>
+    <tr><td><code>strong</code></td><td>dark (<code>--mud-color-background-base-inverse-default</code>), white text</td><td>emphasis, dashboards</td></tr>
     <tr><td><code>white</code></td><td>same as the body, 0.5px bottom line</td><td>tables inside cards</td></tr>
   </tbody>
 </table>

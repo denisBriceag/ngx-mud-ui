@@ -22,6 +22,7 @@ import type { ControlValueAccessor } from '@angular/forms';
 import type { FormCheckboxControl } from '@angular/forms/signals';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+import { _MudSelectionControlStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudCheckboxSize = 'medium' | 'small';
 
@@ -155,6 +156,8 @@ export class MudCheckbox implements ControlValueAccessor, FormCheckboxControl {
   });
 
   constructor() {
+    inject(MudStyleLoader).load(_MudSelectionControlStyles);
+
     // The mixed state only exists as a DOM property; mirror the input onto
     // the native control so assistive tech announces "mixed".
     afterRenderEffect(() => {

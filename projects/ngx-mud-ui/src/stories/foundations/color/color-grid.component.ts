@@ -1,5 +1,6 @@
 import { afterNextRender, Component, DOCUMENT, inject, input, signal } from '@angular/core';
 import { MudSegment, MudSegmentedControl } from 'ngx-mud-ui/segmented-control';
+import { unlayeredRules } from '../css-rules';
 
 type ColorMode = 'primitives' | 'semantic';
 
@@ -67,7 +68,7 @@ const COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\(/i;
       display: block;
       padding: 1.5rem 2rem;
       font-family: system-ui, sans-serif;
-      color: var(--color-text-base-default);
+      color: var(--mud-color-text-base-default);
     }
     .toolbar {
       display: inline-flex;
@@ -81,7 +82,7 @@ const COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\(/i;
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: var(--color-text-base-secondary);
+      color: var(--mud-color-text-base-secondary);
     }
     .grid {
       display: grid;
@@ -94,22 +95,22 @@ const COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\(/i;
       gap: 0.75rem;
       position: relative;
       text-align: left;
-      border: 1px solid var(--color-border-base-default);
+      border: 1px solid var(--mud-color-border-base-default);
       border-radius: 10px;
-      background: var(--color-background-base-default);
+      background: var(--mud-color-background-base-default);
       padding: 0.6rem;
       font: inherit;
       cursor: pointer;
     }
     .swatch:hover {
-      border-color: var(--color-border-base-secondary);
+      border-color: var(--mud-color-border-base-secondary);
     }
     .swatch__chip {
       flex: 0 0 auto;
       width: 40px;
       height: 40px;
       border-radius: 8px;
-      box-shadow: inset 0 0 0 1px var(--color-border-base-default);
+      box-shadow: inset 0 0 0 1px var(--mud-color-border-base-default);
     }
     .swatch__meta {
       display: flex;
@@ -125,14 +126,14 @@ const COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\(/i;
     }
     .swatch__value {
       font-size: 0.72rem;
-      color: var(--color-text-base-secondary);
+      color: var(--mud-color-text-base-secondary);
     }
     .swatch__copied {
       position: absolute;
       right: 0.6rem;
       top: 0.5rem;
       font-size: 0.7rem;
-      color: var(--color-text-positive-default);
+      color: var(--mud-color-text-positive-default);
       opacity: 0;
       transition: opacity 0.15s;
     }
@@ -140,7 +141,7 @@ const COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\(/i;
       opacity: 1;
     }
     .empty {
-      color: var(--color-text-base-secondary);
+      color: var(--mud-color-text-base-secondary);
     }
   `,
 })
@@ -173,13 +174,13 @@ export class ColorGridComponent {
 
   private _load(): void {
     const light = this._declared(':root');
-    const dark = this._declared("[data-theme='dark']");
+    const dark = this._declared(":root[data-theme='dark']");
     const wantSemantic = this.mode() === 'semantic';
     const scale = wantSemantic && this.theme() === 'dark' ? dark : new Map<string, string>();
     const swatches: Swatch[] = [];
 
     for (const [name, lightValue] of light) {
-      if (name.startsWith('--color-') !== wantSemantic) continue;
+      if (name.startsWith('--mud-color-') !== wantSemantic) continue;
 
       // Dark only overrides part of the palette; the rest keeps its light value.
       const value = this._resolve(scale.get(name) ?? lightValue, light, scale, 0);
@@ -198,10 +199,10 @@ export class ColorGridComponent {
     const wanted = normalizeSelector(selector);
 
     for (const sheet of Array.from(this._document.styleSheets)) {
-      let rules: CSSRuleList;
+      let rules: CSSRule[];
 
       try {
-        rules = sheet.cssRules;
+        rules = unlayeredRules(sheet.cssRules);
       } catch {
         continue;
       }
@@ -263,7 +264,7 @@ export class ColorGridComponent {
   }
 
   private _familyOf(name: string): string {
-    const parts = name.replace(/^--/, '').split('-');
+    const parts = name.replace(/^--mud-/, '').split('-');
 
     while (
       parts.length > 1 &&
@@ -276,6 +277,6 @@ export class ColorGridComponent {
   }
 
   private _categoryOf(name: string): string {
-    return name.replace(/^--color-/, '').split('-')[0];
+    return name.replace(/^--mud-color-/, '').split('-')[0];
   }
 }

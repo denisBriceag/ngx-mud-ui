@@ -18,7 +18,7 @@ than re-deriving the design system.
 - **178 icons** rendered by a single `<mud-icon>` component, individually
   tree-shakeable: only the icons you register reach your bundle.
 - **Design tokens** — the full colour, spacing, elevation, border and typography
-  scales as CSS custom properties, with a **dark theme** built in.
+  scales as CSS custom properties, plus an opt-in **dark theme**.
 - **The Onest typeface**, bundled with the styles.
 - **Both Angular forms systems** — every form control implements
   `ControlValueAccessor` (reactive and template-driven) *and* the signal-forms
@@ -71,28 +71,51 @@ cd dist/ngx-mud-ui && npm pack     # -> ngx-mud-ui-0.0.1.tgz
 
 ## Global setup
 
-**1. Load the stylesheet once.** The components apply design-system classes;
-without the stylesheet they render unstyled. This also brings in the Onest
-font-face declarations, whose files resolve out of the package's `assets/`
-folder.
+**1. Add the base stylesheet** to your app's `angular.json`, in both the `build` and `test`
+targets' `styles`. It defines the design tokens (`--mud-*`), the Onest font and the shared
+animations; each component brings its own CSS. (An `ng add ngx-mud-ui` schematic is planned
+to automate this step; until it ships, add the entry by hand.)
 
-```scss
-// styles.scss
-@use 'ngx-mud-ui/styles/main';
+```json
+"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
 ```
 
-The styles are exported under `ngx-mud-ui/styles/*`, so you can cherry-pick
-instead of taking the barrel:
+**Using the tokens.** Every token is a global CSS variable, so your own styles can match the
+library: the colors (`--mud-color-*`, which switch with dark mode) and the shared scales —
+spacing and gaps (`--mud-spacing-*`), radius (`--mud-border-radius-*`), border widths, shadows
+(`--mud-drop-shadow-*`), focus ring, font family and the type scale. See
+[Design tokens](?path=/story/foundations-design-tokens--reference).
 
 ```scss
-@use 'ngx-mud-ui/styles/abstracts/tokens';
-@use 'ngx-mud-ui/styles/themes/dark';
-@use 'ngx-mud-ui/styles/components/forms/chip';
+.my-card {
+  gap: var(--mud-spacing-16);
+  border-radius: var(--mud-border-radius-8);
+  box-shadow: var(--mud-drop-shadow-300);
+  color: var(--mud-color-text-base-default);
+}
 ```
 
-**2. Add the CDK overlay stylesheet** if you use `ngx-mud-ui/tooltip` or
-`ngx-mud-ui/select-input` — both render through a CDK overlay and need its
-structural styles:
+Component-specific tokens (`--mud-toast-*`, `--mud-table-*`, …) can be overridden too, but that
+is **not recommended** — the library follows the official MUD design. Dark mode: set
+`data-theme="dark"` on `<html>` (see [Dark Mode](?path=/docs/foundations-dark-mode--docs)).
+
+**Breakpoints.** `@use 'ngx-mud-ui/breakpoints' as bp;` in stylesheets and `MudBreakpoints` in
+TypeScript — see [Breakpoints](?path=/docs/foundations-breakpoints--docs).
+
+**Your page is yours.** The base stylesheet styles no `body`, headings, links or paragraphs and
+ships no utility classes — the app owns its page typography and layout (the `mud-sidebar-layout`
+shell included). Each component starts from the official body text style, so content you project
+*into* a component — a tab panel, dialog or drawer body, accordion panel, table cell — inherits it;
+style that content yourself where you want something else.
+
+**Customizing components.** The components follow the official MUD design, so customization goes
+through the design tokens only — the colors and the shared scales above. Component class names,
+element structure and internal styles are private implementation details: they are not a supported
+API and may change in any release, so styling them from your app is not supported.
+
+**2. Add the CDK overlay stylesheet** if you use any component that renders in an
+overlay — tooltip, menu and mega-menu, select, phone, date and time pickers, dialog,
+drawer, toast, breadcrumb overflow, pagination's page menu:
 
 ```ts
 import '@angular/cdk/overlay-prebuilt.css';
@@ -170,7 +193,7 @@ the surrounding CSS `color`, and are decorative unless you give them an
     <tr><td><code>ngx-mud-ui/accordion</code></td><td>Accordion, accordion group, header, title, description</td></tr>
     <tr><td><code>ngx-mud-ui/avatar</code></td><td>Avatar</td></tr>
     <tr><td><code>ngx-mud-ui/banner</code></td><td>Full-width system message banner</td></tr>
-    <tr><td><code>ngx-mud-ui/badge</code></td><td>Badge directive</td></tr>
+    <tr><td><code>ngx-mud-ui/badge</code></td><td>Inline badge and corner-badge directive</td></tr>
     <tr><td><code>ngx-mud-ui/button</code></td><td>Button and icon-button directives</td></tr>
     <tr><td><code>ngx-mud-ui/checkbox</code></td><td>Checkbox</td></tr>
     <tr><td><code>ngx-mud-ui/chip</code></td><td>Filter and input chips</td></tr>
@@ -197,15 +220,25 @@ the surrounding CSS `color`, and are decorative unless you give them an
     <tr><td><code>ngx-mud-ui/text-input</code></td><td>Single-line text field</td></tr>
     <tr><td><code>ngx-mud-ui/textarea</code></td><td>Multi-line field</td></tr>
     <tr><td><code>ngx-mud-ui/tooltip</code></td><td>Tooltip directive <em>(CDK overlay)</em></td></tr>
-    <tr><td><code>{'ngx-mud-ui/styles/*'}</code></td><td>The design-system SCSS</td></tr>
-    <tr><td><code>{'ngx-mud-ui/assets/*'}</code></td><td>Bundled fonts</td></tr>
+    <tr><td><code>ngx-mud-ui/breakpoints</code></td><td>Breakpoints: Sass mixins + <code>MudBreakpoints</code></td></tr>
+    <tr><td><code>{'ngx-mud-ui/prebuilt/mud.css'}</code></td><td>Base stylesheet: tokens, Onest font</td></tr>
+    <tr><td><code>{'ngx-mud-ui/prebuilt/mud-dark.css'}</code></td><td>Opt-in dark theme (any order next to <code>mud.css</code>)</td></tr>
   </tbody>
 </table>
 
 ## Theming
 
-Colours resolve through CSS custom properties, so light and dark are a single
-attribute on the root element:
+The dark theme is **opt-in**: add `node_modules/ngx-mud-ui/prebuilt/mud-dark.css` to `styles`,
+next to `mud.css` (it re-points the color tokens; `:root[data-theme='dark']` out-ranks the light
+`:root` values, so the order of the two files does not matter). The planned `ng add` schematic will offer this as an option. Then light and dark are a single attribute on the root element:
+
+```json
+"styles": [
+  "node_modules/ngx-mud-ui/prebuilt/mud.css",
+  "node_modules/ngx-mud-ui/prebuilt/mud-dark.css",
+  "src/styles.scss"
+]
+```
 
 ```ts
 document.documentElement.setAttribute('data-theme', 'dark'); // remove it for light
@@ -215,8 +248,8 @@ The attribute must sit on the **root** element. Scoped theming — putting
 `data-theme` on a wrapper to darken one section — is not supported, for two
 reasons:
 
-- Many semantic tokens are **chains**: `--color-link-strict-default` is declared
-  on `:root` as `var(--color-text-base-default)`. CSS substitutes a custom
+- Many semantic tokens are **chains**: `--mud-color-link-strict-default` is declared
+  on `:root` as `var(--mud-color-text-base-default)`. CSS substitutes a custom
   property's `var()` where that property is *declared*, so the chained token has
   already baked in its light value by the time a nested wrapper remaps the base
   one. The section's links stay black on your dark band.

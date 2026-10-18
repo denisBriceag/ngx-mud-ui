@@ -17,6 +17,7 @@ import {
   output,
   PLATFORM_ID,
   signal,
+  ViewEncapsulation,
 } from '@angular/core';
 import { isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -42,6 +43,8 @@ const FALLBACK_METRICS: Record<MudPaginationSize, { item: number; gap: number; i
  */
 @Component({
   selector: 'mud-pagination',
+  styleUrl: './mud-pagination.component.scss',
+  encapsulation: ViewEncapsulation.None,
   imports: [MudMenu, MudMenuItem, MudMenuTrigger, NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

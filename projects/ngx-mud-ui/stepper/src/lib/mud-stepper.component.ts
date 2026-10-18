@@ -25,6 +25,8 @@ import type { MudStep } from './mud-step.component';
 import type { MudStepState } from './mud-step-header.component';
 import { MUD_STEP_STATES, MudStepHeader } from './mud-step-header.component';
 import { MUD_STEPPER_LABELS } from './stepper-labels';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudStepperStyles } from './mud-stepper-styles.component';
 
 /** Container width below which a horizontal stepper auto-switches to the compact dot rail. */
 const AUTO_COMPACT_MAX_WIDTH = 600;
@@ -161,6 +163,8 @@ export class MudStepper extends CdkStepper {
 
   constructor() {
     super();
+
+    inject(MudStyleLoader).load(_MudStepperStyles);
 
     afterNextRender(() => {
       if (typeof ResizeObserver === 'undefined') return;

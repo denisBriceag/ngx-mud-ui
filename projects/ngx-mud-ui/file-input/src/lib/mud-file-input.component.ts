@@ -25,6 +25,8 @@ import { MudButton } from 'ngx-mud-ui/button';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { MudFileItem } from './mud-file-item.component';
+import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudFileInputStyles } from './mud-file-input-styles.component';
 
 export type MudFileInputVariant = 'dropzone' | 'button';
 export type MudFileInputSize = 'medium' | 'large';
@@ -285,6 +287,11 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
   });
 
   constructor() {
+    const styles = inject(MudStyleLoader);
+
+    styles.load(_MudInputFieldStyles);
+    styles.load(_MudFileInputStyles);
+
     inject(DestroyRef).onDestroy(() => {
       for (const url of this._previewUrls.values()) this._revokeUrl(url);
 

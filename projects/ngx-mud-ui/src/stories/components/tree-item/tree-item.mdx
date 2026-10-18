@@ -20,10 +20,10 @@ wherever you need a list of links without a hierarchy, like a settings menu.
 import { MudTreeItem } from 'ngx-mud-ui/tree-item';
 ```
 
-Load the design-system stylesheet once in your app:
+Add the base stylesheet to your app's `angular.json` `styles` once:
 
-```scss
-@use 'ngx-mud-ui/styles/main';
+```json
+"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
 ```
 
 ## Using a tree item
@@ -83,16 +83,15 @@ font. When the row is too narrow, the main label shortens first.
 
 Put a badge or a tag at the end of the row with `trailing`. It comes after the secondary label.
 
-A badge is the library's [Badge](?path=/docs/components-badge--docs#inline-and-nested) in its
-inline form: a `<span>` with the `.badge` classes. Use `badge--xl` for the size and
-`badge--solid-<color>` for the colour, for example `badge--solid-danger`. Inside a row, a badge is
-always exactly 24×24. (The `mudBadge` directive is for badges on the corner of an element, not
-inline ones.)
+A badge is the library's [`<mud-badge>`](?path=/docs/components-badge--docs#inside-other-components).
+Use `size="xl"` and pick the colour with `variant`, for example `variant="danger"`. Inside a row, a
+badge is always exactly 24×24. (The `mudBadge` directive is for badges on the corner of an element,
+not inline ones.)
 
 ```html
 <a mud-tree-item routerLink="/messages">
   Messages
-  <span trailing class="badge badge--xl badge--solid-danger">3</span>
+  <mud-badge trailing [count]="3" variant="danger" size="xl" />
 </a>
 ```
 
@@ -134,4 +133,5 @@ button), so screen readers announce which page is open. Without `selected`, ther
 **Icons** are decorative and hidden from screen readers. Make sure the label says what the row is.
 
 **Badges** are read as part of the row's name, for example "Messages 3". If the number needs
-context, add it to the label, for example `<span class="sr-only">unread</span>`.
+context, add it to the label with your app's visually-hidden class, for example
+`<span class="visually-hidden">unread</span>` (the library ships no utility classes).
