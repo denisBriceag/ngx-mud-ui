@@ -118,15 +118,19 @@ describe('MudAccordion', () => {
     expect(region.getAttribute('aria-labelledby')).toBe(trigger.id);
   });
 
-  it('exposes a heading role with a configurable level, default 3', async () => {
-    const { fixture, host, header } = await render();
+  it('exposes a heading role with a configurable level, default 3, wrapping only the trigger', async () => {
+    const { fixture, host, header, trigger } = await render();
+    // The heading wraps the button alone, so trailing content beside it never joins the heading's name.
+    const heading = header.querySelector('[role="heading"]') as HTMLElement;
 
-    expect(header.getAttribute('role')).toBe('heading');
-    expect(header.getAttribute('aria-level')).toBe('3');
+    expect(header.getAttribute('role')).toBeNull();
+    expect(heading.children).toHaveLength(1);
+    expect(heading.firstElementChild).toBe(trigger);
+    expect(heading.getAttribute('aria-level')).toBe('3');
 
     host.headingLevel.set(2);
     await fixture.whenStable();
-    expect(header.getAttribute('aria-level')).toBe('2');
+    expect(heading.getAttribute('aria-level')).toBe('2');
   });
 
   it('expands on click, emitting opened and afterExpand', async () => {
@@ -495,3 +499,118 @@ class StyledGroupHost {}
   `,
 })
 class SoloItemHost {}
+
+@Component({
+  imports: [MudAccordion, MudAccordionHeader, MudAccordionTitle],
+  template: `
+    <mud-accordion [disabled]="disabled()">
+      <mud-accordion-header>
+        <svg icon-start class="probe-icon" viewBox="0 0 24 24"></svg>
+        <mud-accordion-title>Date personale</mud-accordion-title>
+        <a trailing class="probe-edit" href="/pas-1">Editează</a>
+      </mud-accordion-header>
+      Panel body
+    </mud-accordion>
+  `,
+})
+class SlotsHost {
+  readonly item = viewChild.required(MudAccordion);
+  readonly disabled = signal(false);
+}
+
+describe('MudAccordion header slots', () => {
+  async function renderSlots() {
+    const fixture = TestBed.createComponent(SlotsHost);
+
+    await fixture.whenStable();
+    const root = fixture.nativeElement as HTMLElement;
+
+    return {
+      fixture,
+      host: fixture.componentInstance,
+      header: root.querySelector('mud-accordion-header') as HTMLElement,
+      trigger: root.querySelector('button.accordion__trigger') as HTMLButtonElement,
+      trailing: root.querySelector('.accordion__trailing') as HTMLElement,
+      edit: root.querySelector('.probe-edit') as HTMLAnchorElement,
+    };
+  }
+
+  it('puts [icon-start] inside the trigger, before the heading text', async () => {
+    const { trigger } = await renderSlots();
+    const icon = trigger.querySelector('.probe-icon')!;
+    const lead = trigger.querySelector('.accordion__lead')!;
+
+    expect(lead.firstElementChild).toBe(icon);
+    expect(icon.compareDocumentPosition(trigger.querySelector('.accordion__heading')!)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+  });
+
+  it('puts [trailing] beside the trigger and outside the heading', async () => {
+    const { header, trigger, trailing, edit } = await renderSlots();
+
+    expect(trailing.contains(edit)).toBe(true);
+    expect(trigger.contains(edit)).toBe(false);
+    expect(header.querySelector('[role="heading"]')!.contains(edit)).toBe(false);
+    // Not part of the trigger's accessible name.
+    expect(trigger.textContent).not.toContain('Editează');
+  });
+
+  it('a click in the trailing area does not toggle the item', async () => {
+    const { fixture, host, edit } = await renderSlots();
+
+    edit.addEventListener('click', (event) => event.preventDefault());
+    edit.click();
+    await fixture.whenStable();
+
+    expect(host.item().expanded).toBe(false);
+  });
+
+  it('makes the trailing area inert while the item is disabled', async () => {
+    const { fixture, host, trailing } = await renderSlots();
+
+    expect(trailing.hasAttribute('inert')).toBe(false);
+
+    host.disabled.set(true);
+    await fixture.whenStable();
+
+    expect(trailing.hasAttribute('inert')).toBe(true);
+  });
+});
+
+describe('MudAccordion narrow layout', () => {
+  // jsdom has no ResizeObserver (and lays nothing out), so a stub reports the item's width.
+  let report: (width: number) => void;
+
+  beforeEach(() => {
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback: ResizeObserverCallback) {
+          report = (width) =>
+            callback([{ contentRect: { width } } as ResizeObserverEntry], this as unknown as ResizeObserver);
+        }
+
+        observe = (): void => undefined;
+        disconnect = (): void => undefined;
+      },
+    );
+  });
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('marks the item narrow below 600px of its own width, so trailing content stacks', async () => {
+    const fixture = TestBed.createComponent(SlotsHost);
+
+    await fixture.whenStable();
+    const item = fixture.nativeElement.querySelector('mud-accordion') as HTMLElement;
+
+    report(599);
+    await fixture.whenStable();
+    expect(item.classList).toContain('accordion__item--narrow');
+
+    report(600);
+    await fixture.whenStable();
+    expect(item.classList).not.toContain('accordion__item--narrow');
+  });
+});

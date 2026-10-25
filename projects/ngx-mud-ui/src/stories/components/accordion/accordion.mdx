@@ -67,6 +67,77 @@ The base stylesheet must be in your app's `angular.json` `styles` once:
 
 <Canvas of={AccordionStories.SmallIconLeft} />
 
+## Leading icon
+
+To show an icon before a section's heading, put it in the header with the
+`icon-start` attribute. It renders at 20×20, the same size as the toggle's
+glyph, 12px before the text (8px in the small size). With `mud-icon`, set
+`[scale]="20"`. It takes the toggle's colour: brand while the section is open,
+grey while it is disabled. The icon sits inside the header button, so a click
+on it opens the section like the rest of the header.
+
+```html
+<mud-accordion-header>
+  <mud-icon icon-start name="document" [scale]="20" />
+  <mud-accordion-title>Acte necesare</mud-accordion-title>
+</mud-accordion-header>
+```
+
+<Canvas of={AccordionStories.LeadingIcon} />
+
+## Trailing content
+
+To put a tag, a count or an edit link on the right of a header, add it with
+the `trailing` attribute. It sits between the heading and the toggle, which
+suits the "check your answers" page at the end of a form: each section shows
+its status and links back to its step. You can add several elements; they sit
+8px apart.
+
+```html
+<mud-accordion-header>
+  <mud-accordion-title>Date personale</mud-accordion-title>
+  <mud-tag trailing color="success">Completat</mud-tag>
+  <a trailing mudLink routerLink="/cerere/pas-1">Editează</a>
+</mud-accordion-header>
+```
+
+Trailing content stays outside the header button and outside the heading:
+
+- A link or button there is its own tab stop, after the header, and a click on
+  it does not open or close the section.
+- A click on plain content, such as a tag, still toggles the section.
+- Screen readers don't read it as part of the section's name.
+- While the section is disabled, its trailing content is disabled too: links
+  and buttons there can't be focused or clicked, and plain text and links turn
+  grey. Tags and buttons keep their own look, so bind `disabled` on a button
+  yourself.
+
+On a wide accordion, trailing content sits on the heading's row, and the
+heading always keeps at least half the row (or 280px). With the toggle on the
+left, or with `hideToggle`, the trailing content moves to the end of the row.
+
+Below 768px of screen width, or when the accordion itself is under 600px wide
+(in a sidebar, for example), trailing content moves to its own line under the
+heading and description. The heading then keeps the full width, and a click on
+that line's empty space still toggles the section.
+
+<Canvas of={AccordionStories.Trailing} />
+
+## Long content
+
+- **A long heading** wraps onto as many lines as it needs. A long unbroken
+  word, such as a link or an IDNP, breaks anywhere rather than running past
+  the edge.
+- **A long description** stays on one line and ends in "…". Screen readers
+  still read the whole text. Keep the essentials in the heading or the panel.
+- **Long trailing content** wraps onto more lines. A tag too long for the
+  space ends in "…".
+
+The example shows a desktop version and a narrow version, a 320px column the
+width of the narrowest phone.
+
+<Canvas of={AccordionStories.LongContent} />
+
 ## API
 
 ### `MudAccordion`

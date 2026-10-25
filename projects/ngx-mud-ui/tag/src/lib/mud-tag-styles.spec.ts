@@ -15,6 +15,10 @@ describe('form component styles ship with the components', () => {
 
     TestBed.createComponent(Host).detectChanges();
     expect(css()).toMatch(styled('status-tag'));
+    // A long label ends in an ellipsis: only a non-flex box can show one.
+    expect(css()).toMatch(
+      /\.status-tag:not\(:has\(> :is\(mud-icon, svg\)\)\)\s*\{[^}]*display:\s*inline-block/,
+    );
   });
 
   it('segmented control', () => {

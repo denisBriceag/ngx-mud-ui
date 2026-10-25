@@ -60,16 +60,65 @@
   --_panel-color: var(--mud-color-text-base-default-on-color);
 }
 
-.accordion__header {
-  margin: 0;
+:where(.accordion__item) {
+  --_cols: minmax(0, 1fr) auto;
+  --_wide-cols: minmax(min(50%, 280px), 1fr) minmax(0, max-content) auto;
+  --_lead-col: 1;
+  --_wide-trailing-col: 2;
 }
 
-// The clickable row: [text-group] [trigger], or trigger-first with --icon-left.
+.accordion__item--icon-left {
+  --_cols: auto minmax(0, 1fr);
+  --_wide-cols: auto minmax(min(50%, 280px), 1fr) minmax(0, max-content);
+  --_lead-col: 2;
+  --_wide-trailing-col: 3;
+}
+
+.accordion__item.accordion__item--no-toggle {
+  --_cols: minmax(0, 1fr);
+  --_wide-cols: minmax(min(50%, 280px), 1fr) minmax(0, max-content);
+  --_lead-col: 1;
+  --_wide-trailing-col: 2;
+}
+
+.accordion__header {
+  display: grid;
+  grid-template-columns: var(--_cols);
+  grid-template-rows: auto;
+  align-items: center;
+  column-gap: var(--_gap);
+  row-gap: var(--mud-spacing-8, 8px);
+  margin: 0;
+
+  &:has(> .accordion__trailing > *) {
+    grid-template-rows: auto auto;
+  }
+}
+
+@include bp.up(md) {
+  .accordion__item:not(.accordion__item--narrow) .accordion__header:has(> .accordion__trailing > *) {
+    grid-template-columns: var(--_wide-cols);
+    grid-template-rows: auto;
+  }
+}
+
+.accordion__heading-row {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  align-self: stretch;
+}
+
 .accordion__trigger {
   box-sizing: border-box;
-  display: flex;
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
   align-items: center;
-  gap: var(--_gap);
   width: 100%;
   padding: var(--_padding-block) var(--_padding-inline);
   background: none;
@@ -98,13 +147,72 @@
   }
 }
 
-// Hover tint only while closed and enabled; both inline edges pad to 20px so
-// the tint reaches the row edges without crowding the text.
 .accordion__item:not(.accordion__item--open)
-  .accordion__trigger:hover:not([aria-disabled='true']) {
-  background-color: var(--mud-color-background-base-secondary);
-  padding-left: var(--mud-spacing-20, 20px);
-  padding-right: var(--mud-spacing-20, 20px);
+  .accordion__header:hover:not(:has(.accordion__trigger[aria-disabled='true'])) {
+  --_padding-inline: var(--mud-spacing-20, 20px);
+
+  .accordion__trigger {
+    background-color: var(--mud-color-background-base-secondary);
+  }
+}
+
+.accordion__lead {
+  display: flex;
+  grid-column: var(--_lead-col);
+  grid-row: 1;
+  align-items: center;
+  gap: var(--_gap);
+  min-width: 0;
+}
+
+.accordion__lead > [icon-start] {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  color: var(--_icon-color);
+  transition: color 150ms ease-out;
+}
+
+.accordion__trailing {
+  position: relative;
+  display: inline-flex;
+  flex-wrap: wrap;
+  grid-column: var(--_lead-col);
+  grid-row: 2;
+  align-items: center;
+  gap: var(--mud-spacing-8, 8px);
+  min-width: 0;
+  pointer-events: none;
+
+  &:empty {
+    display: none;
+  }
+
+  :is(a, button, input, select, textarea, [tabindex]) {
+    pointer-events: auto;
+  }
+}
+
+.accordion__item--icon-left .accordion__trailing,
+.accordion__item--no-toggle .accordion__trailing {
+  margin-inline-end: var(--_padding-inline);
+  transition: margin 150ms ease-out;
+}
+
+@include bp.up(md) {
+  .accordion__item:not(.accordion__item--narrow) .accordion__trailing {
+    grid-column: var(--_wide-trailing-col);
+    grid-row: 1;
+    justify-content: flex-end;
+  }
+}
+
+.accordion__header:has(.accordion__trigger[aria-disabled='true']) .accordion__trailing {
+  color: var(--mud-color-text-disabled-default);
+
+  a {
+    color: var(--mud-color-text-disabled-default);
+  }
 }
 
 .accordion__text {
@@ -139,9 +247,10 @@
   white-space: nowrap;
 }
 
-// 48px circular trigger affordance with a 20px glyph.
 .accordion__icon {
   display: inline-flex;
+  grid-column: -2;
+  grid-row: 1 / -1;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
@@ -158,10 +267,9 @@
 }
 
 .accordion__item--icon-left .accordion__icon {
-  order: -1;
+  grid-column: 1;
 }
 
-// Plus -> minus morph: the vertical bar collapses around the glyph center.
 .accordion__icon-vertical {
   transform-origin: 10px 10px;
   transition: transform 150ms ease-out;
@@ -177,7 +285,8 @@
     color: var(--mud-color-text-disabled-default);
   }
 
-  .accordion__icon {
+  .accordion__icon,
+  [icon-start] {
     color: var(--mud-color-icon-disabled-default);
   }
 }
@@ -203,8 +312,6 @@
   }
 }
 
-// Panel body is inset from the heading per the official design; trail-sites
-// realigns it with the tinted header instead.
 .accordion__panel {
   padding: 0 var(--mud-spacing-48, 48px) var(--mud-spacing-32, 32px) var(--mud-spacing-24, 24px);
   font-size: 16px;
@@ -222,7 +329,8 @@
   .accordion__trigger[aria-disabled='true'] {
     .accordion__heading,
     .accordion__supporting,
-    .accordion__icon {
+    .accordion__icon,
+    [icon-start] {
       color: GrayText;
     }
   }
@@ -234,6 +342,8 @@
   .accordion__heading,
   .accordion__icon,
   .accordion__icon-vertical,
+  .accordion__lead > [icon-start],
+  .accordion__trailing,
   .accordion__body,
   .accordion__body-inner {
     transition: none;

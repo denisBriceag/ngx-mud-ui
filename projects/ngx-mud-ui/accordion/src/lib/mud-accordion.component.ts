@@ -1,6 +1,4 @@
 import { isPlatformBrowser } from '@angular/common';
-import type {
-  ElementRef} from '@angular/core';
 import {
   afterNextRender,
   booleanAttribute,
@@ -8,6 +6,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  ElementRef,
   inject,
   Injector,
   input,
@@ -21,12 +20,17 @@ import { MudAccordionGroup } from './mud-accordion-group.component';
 import { MudStyleLoader } from 'ngx-mud-ui/core';
 import { _MudAccordionStyles } from './mud-accordion-styles.component';
 
+/** Below this item width, trailing header content moves under the text. */
+const NARROW_BELOW = 600;
+
 /**
  * ```html
  * <mud-accordion [expanded]="true" (afterExpand)="onShown()">
  *   <mud-accordion-header>
+ *     <mud-icon icon-start name="document" [scale]="20" />
  *     <mud-accordion-title>Heading</mud-accordion-title>
  *     <mud-accordion-description>Supporting text</mud-accordion-description>
+ *     <a trailing routerLink="/pas-1">Editează</a>
  *   </mud-accordion-header>
  *   Expandable content
  * </mud-accordion>
@@ -39,6 +43,8 @@ import { _MudAccordionStyles } from './mud-accordion-styles.component';
     '[class.accordion__item--open]': '_expandedState()',
     '[class.accordion__item--sm]': "_size() === 'small'",
     '[class.accordion__item--icon-left]': "_iconPosition() === 'left'",
+    '[class.accordion__item--no-toggle]': 'hideToggle()',
+    '[class.accordion__item--narrow]': '_narrow()',
     '[class.accordion__item--trail-sites]': "_appearance() === 'trail-sites'",
   },
   template: `
@@ -92,6 +98,9 @@ export class MudAccordion extends CdkAccordionItem {
   /** @docs-private */
   readonly _iconPosition = computed(() => this._group?.iconPosition() ?? 'right');
 
+  /** @docs-private Set below NARROW_BELOW px of the item's own width: trailing content stacks under the text. */
+  readonly _narrow = signal(false);
+
   private _viewReady = false;
   private _pendingAfterEvent: 'expand' | 'collapse' | null = null;
   private _fallbackTimer: ReturnType<typeof setTimeout> | null = null;
@@ -123,6 +132,17 @@ export class MudAccordion extends CdkAccordionItem {
 
     inject(MudStyleLoader).load(_MudAccordionStyles);
     inject(DestroyRef).onDestroy(() => this._clearFallbackTimer());
+
+    if (this._isBrowser && typeof ResizeObserver !== 'undefined') {
+      const host: HTMLElement = inject(ElementRef).nativeElement;
+      const observer = new ResizeObserver(([entry]) =>
+        this._narrow.set(entry.contentRect.width < NARROW_BELOW),
+      );
+
+      observer.observe(host);
+      inject(DestroyRef).onDestroy(() => observer.disconnect());
+    }
+
     afterNextRender(() => {
       this._viewReady = true;
     });
