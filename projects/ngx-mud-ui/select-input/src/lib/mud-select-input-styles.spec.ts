@@ -13,4 +13,20 @@ describe('select styles', () => {
 
     expect(css()).toMatch(/\.menu-panel\s*\{/);
   });
+
+  it('ships group heading and rule styles shared with the menu', () => {
+    @Component({ imports: [MudSelectInput], template: `<mud-select-input [options]="[]" />` })
+    class Host {}
+
+    TestBed.createComponent(Host).detectChanges();
+
+    expect(css()).toMatch(
+      /\.menu-panel__group-heading\s*\{[^}]*color:\s*var\(--mud-color-text-base-tertiary\)/,
+    );
+    expect(css()).toMatch(/\.menu-panel__group:first-child::before\s*\{[^}]*display:\s*none/);
+    // A border, not a background: forced-colors mode erases backgrounds but keeps borders.
+    expect(css()).toMatch(
+      /\.menu-panel__group::before\s*\{[^}]*border-block-start:\s*1px solid var\(--mud-color-border-base-default\)/,
+    );
+  });
 });

@@ -14,6 +14,7 @@ import type { MudFileItemRemove, MudFileItemState } from './mud-file-item.compon
       [previewSrc]="previewSrc()"
       [disabled]="disabled()"
       [removable]="removable()"
+      [progress]="progress()"
       (removed)="removals.push($event)"
     />
   `,
@@ -26,6 +27,7 @@ class Host {
   readonly previewSrc = signal<string | undefined>(undefined);
   readonly disabled = signal(false);
   readonly removable = signal(true);
+  readonly progress = signal<number | undefined>(undefined);
   readonly removals: MudFileItemRemove[] = [];
 }
 
@@ -47,6 +49,7 @@ async function render() {
     statusIcon: (kind: string) => el.querySelector(`.file-item__status--${kind}`) as HTMLElement | null,
     removeBtn: () => el.querySelector('.file-item__remove') as HTMLButtonElement | null,
     errorMessage: () => el.querySelector('.file-item__error-message') as HTMLElement | null,
+    progress: () => el.querySelector('.file-item__progress') as HTMLElement | null,
   };
 }
 
@@ -164,14 +167,76 @@ describe('MudFileItem', () => {
     expect(statusIcon('error')).toBeNull();
   });
 
-  it('while uploading shows a spinner and hides the remove button', async () => {
+  it('while uploading shows a spinner and a cancel button that emits removed', async () => {
     const { fixture, host, spinner, removeBtn } = await render();
 
     host.state.set('uploading');
     await fixture.whenStable();
 
     expect(spinner()).not.toBeNull();
+    expect(removeBtn()!.getAttribute('aria-label')).toBe('Cancel upload raport.pdf');
+
+    removeBtn()!.click();
+    expect(host.removals).toEqual([{ filename: 'raport.pdf' }]);
+  });
+
+  it('a removable=false uploading row has no cancel button', async () => {
+    const { fixture, host, removeBtn } = await render();
+
+    host.state.set('uploading');
+    host.removable.set(false);
+    await fixture.whenStable();
+
     expect(removeBtn()).toBeNull();
+  });
+
+  it('a progress number while uploading renders a determinate progress bar', async () => {
+    const { fixture, host, progress, el } = await render();
+
+    host.state.set('uploading');
+    host.progress.set(33.4);
+    await fixture.whenStable();
+
+    const bar = progress()!;
+
+    expect(bar.getAttribute('role')).toBe('progressbar');
+    expect(bar.getAttribute('aria-valuemin')).toBe('0');
+    expect(bar.getAttribute('aria-valuemax')).toBe('100');
+    expect(bar.getAttribute('aria-valuenow')).toBe('33');
+    // Named by the file, so a list of uploads reads apart.
+    expect(bar.getAttribute('aria-label')).toBe('raport.pdf');
+    expect(el.querySelector<HTMLElement>('.file-item__progress-fill')!.style.inlineSize).toBe('33.4%');
+  });
+
+  it('clamps progress to 0-100', async () => {
+    const { fixture, host, progress } = await render();
+
+    host.state.set('uploading');
+    host.progress.set(140);
+    await fixture.whenStable();
+    expect(progress()!.getAttribute('aria-valuenow')).toBe('100');
+
+    host.progress.set(-5);
+    await fixture.whenStable();
+    expect(progress()!.getAttribute('aria-valuenow')).toBe('0');
+  });
+
+  it('shows no progress bar without a number, or outside the uploading state', async () => {
+    const { fixture, host, progress, spinner } = await render();
+
+    host.state.set('uploading');
+    await fixture.whenStable();
+    expect(progress()).toBeNull();
+    expect(spinner()).not.toBeNull();
+
+    host.progress.set(Number.NaN);
+    await fixture.whenStable();
+    expect(progress()).toBeNull();
+
+    host.progress.set(100);
+    host.state.set('success');
+    await fixture.whenStable();
+    expect(progress()).toBeNull();
   });
 
   it('on success shows the confirmation icon and hides the remove button', async () => {
@@ -309,5 +374,78 @@ describe('MudFileItem', () => {
 
     removeBtn()!.click();
     expect(host.removals).toEqual([]);
+  });
+});
+
+@Component({
+  imports: [MudFileItem],
+  template: `
+    <mud-file-item filename="certificat.pdf" [variant]="variant()" [size]="size()">
+      <span info class="probe-info">Emis <strong>12.03.2026</strong> · EVO</span>
+    </mud-file-item>
+  `,
+})
+class SystemHost {
+  readonly variant = signal<'default' | 'system'>('system');
+  readonly size = signal<number | undefined>(undefined);
+}
+
+// Separate host: an `@if` around the [icon] counts as projected content even when false, which would hide
+// the fallback glyph in every other test.
+@Component({
+  imports: [MudFileItem],
+  template: `
+    <mud-file-item filename="certificat.pdf" variant="system">
+      <svg icon class="custom-icon" viewBox="0 0 20 20"></svg>
+    </mud-file-item>
+  `,
+})
+class SystemIconHost {}
+
+describe('MudFileItem system variant', () => {
+  async function renderSystem(setup: (host: SystemHost) => void = () => undefined) {
+    const fixture = TestBed.createComponent(SystemHost);
+
+    setup(fixture.componentInstance);
+    await fixture.whenStable();
+
+    const el = fixture.nativeElement.querySelector('mud-file-item') as HTMLElement;
+
+    return { fixture, host: fixture.componentInstance, el };
+  }
+
+  it('renders the issued-document card with the system glyph and the projected info line', async () => {
+    const { el } = await renderSystem();
+
+    expect(el.classList).toContain('file-item--system');
+    expect(el.querySelector('.file-item__system-glyph')).not.toBeNull();
+    expect(el.querySelector('.file-item__glyph')).toBeNull();
+    expect(el.querySelector('.file-item__info .probe-info')?.textContent?.trim()).toBe(
+      'Emis 12.03.2026 · EVO',
+    );
+  });
+
+  it('puts the size on the info line', async () => {
+    const { el } = await renderSystem((host) => host.size.set(2048));
+
+    expect(el.querySelector('.file-item__info .file-item__meta')?.textContent?.trim()).toBe('2.0 KB');
+  });
+
+  it('a projected icon still replaces the glyph', async () => {
+    const fixture = TestBed.createComponent(SystemIconHost);
+
+    await fixture.whenStable();
+    const el = fixture.nativeElement.querySelector('mud-file-item') as HTMLElement;
+
+    expect(el.querySelector('.custom-icon')).not.toBeNull();
+    expect(el.querySelector('.file-item__system-glyph')).toBeNull();
+  });
+
+  it('the default variant ignores info content', async () => {
+    const { el } = await renderSystem((host) => host.variant.set('default'));
+
+    expect(el.classList).not.toContain('file-item--system');
+    expect(el.querySelector('.probe-info')).toBeNull();
+    expect(el.querySelector('.file-item__glyph')).not.toBeNull();
   });
 });

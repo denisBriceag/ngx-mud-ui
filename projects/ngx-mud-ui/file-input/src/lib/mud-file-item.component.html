@@ -5,7 +5,29 @@
         <img class="file-item__thumbnail" [src]="previewSrc()" alt="" (error)="_onPreviewError()" />
       } @else {
         <ng-content select="[icon]">
-          <img class="file-item__glyph" [src]="_glyphSrc" alt="" />
+          @if (_isSystem()) {
+            <svg class="file-item__system-glyph" viewBox="0 0 24 24" fill="none" focusable="false">
+              <defs>
+                <linearGradient [id]="_glyphFillId" x1="2.7" y1="1.3" x2="20.9" y2="23" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#258AFB" />
+                  <stop offset="1" stop-color="#1E83F4" />
+                </linearGradient>
+              </defs>
+              <g transform="translate(2.7 1.3)">
+                <path
+                  [attr.fill]="'url(#' + _glyphFillId + ')'"
+                  d="M0 3.72C0 1.67 1.67 0 3.72 0h11.16c2.05 0 3.72 1.67 3.72 3.72v13.95c0 2.05-1.67 3.72-3.72 3.72H3.72C1.67 21.39 0 19.73 0 17.67V3.72Z"
+                />
+                <path
+                  opacity="0.96"
+                  fill="#fff"
+                  d="M10.46 13.81c.27 0 .49.22.49.49v.38c0 .27-.22.48-.49.48H4.12a.49.49 0 0 1-.49-.48v-.38c0-.27.22-.49.49-.49h6.34Zm4.02-3.79c.27 0 .49.22.49.49v.38c0 .27-.22.49-.49.49H4.12a.49.49 0 0 1-.49-.49v-.38c0-.27.22-.49.49-.49h10.36Zm0-3.79c.27 0 .49.22.49.49v.38c0 .27-.22.49-.49.49H4.12a.49.49 0 0 1-.49-.49v-.38c0-.27.22-.49.49-.49h10.36Z"
+                />
+              </g>
+            </svg>
+          } @else {
+            <img class="file-item__glyph" [src]="_glyphSrc" alt="" />
+          }
         </ng-content>
       }
     </span>
@@ -18,7 +40,14 @@
         <span class="file-item__filename-tooltip" aria-hidden="true">{{ filename() }}</span>
       }
     </span>
-    @if (_sizeText()) {
+    @if (_isSystem()) {
+      <span class="file-item__info">
+        <ng-content select="[info]" />
+        @if (_sizeText()) {
+          <span class="file-item__meta">{{ _sizeText() }}</span>
+        }
+      </span>
+    } @else if (_sizeText()) {
       <span class="file-item__meta">{{ _sizeText() }}</span>
     }
   </span>
@@ -67,7 +96,7 @@
         type="button"
         class="file-item__remove"
         [disabled]="disabled()"
-        [attr.aria-label]="removeLabel() + ' ' + filename()"
+        [attr.aria-label]="_removeAriaLabel()"
         (click)="_onRemove()"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false" aria-hidden="true">
@@ -81,6 +110,19 @@
     }
   </span>
 </div>
+
+@if (_progress() !== null) {
+  <span
+    class="file-item__progress"
+    role="progressbar"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    [attr.aria-valuenow]="_progressNow()"
+    [attr.aria-label]="filename()"
+  >
+    <span class="file-item__progress-fill" [style.inline-size.%]="_progress()"></span>
+  </span>
+}
 
 @if (_showErrorMessage()) {
   <p class="file-item__error-message">{{ errorText() }}</p>

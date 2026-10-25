@@ -14,6 +14,7 @@ const meta: Meta<MudRadioGroup> = {
   decorators: [moduleMetadata({ imports: [MudRadioGroup, MudRadio, MudLabel, MudInlineMessage] })],
   argTypes: {
     size: { control: 'inline-radio', options: ['medium', 'small'] },
+    orientation: { control: 'inline-radio', options: ['vertical', 'horizontal'] },
     disabled: { control: 'boolean' },
     required: { control: 'boolean' },
     readonly: { control: 'boolean' },
@@ -21,6 +22,7 @@ const meta: Meta<MudRadioGroup> = {
   },
   args: {
     size: 'medium',
+    orientation: 'vertical',
     disabled: false,
     required: false,
     readonly: false,
@@ -39,6 +41,7 @@ export const Playground: Story = {
       <div style="${COL}">
         <mud-radio-group
           [size]="size"
+          [orientation]="orientation"
           [disabled]="disabled"
           [required]="required"
           [readonly]="readonly"
@@ -100,6 +103,40 @@ export const States: Story = {
           </mud-radio>
           <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
         </mud-radio-group>
+      </div>
+    `,
+  }),
+};
+
+/** Options in a row, 24px apart; they wrap onto a new line 12px below when the row runs out. */
+export const Horizontal: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <div style="${COL};max-width:560px">
+        <mud-radio-group orientation="horizontal" value="yes">
+          <mud-label>Aveți copii minori?</mud-label>
+          <mud-radio value="yes"><mud-label>Da</mud-label></mud-radio>
+          <mud-radio value="no"><mud-label>Nu</mud-label></mud-radio>
+        </mud-radio-group>
+        <mud-radio-group orientation="horizontal" value="mpay">
+          <mud-label>Metoda de plată</mud-label>
+          <mud-radio value="card">
+            <mud-label>Card bancar</mud-label>
+            <mud-inline-message hideIcon>Visa, Mastercard.</mud-inline-message>
+          </mud-radio>
+          <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
+          <mud-radio value="cash"><mud-label>Numerar la ghișeu</mud-label></mud-radio>
+        </mud-radio-group>
+        <div style="max-width:230px">
+          <mud-radio-group orientation="horizontal" invalid required>
+            <mud-label>Limba în care doriți să primiți corespondența</mud-label>
+            <mud-radio value="ro"><mud-label>Română</mud-label></mud-radio>
+            <mud-radio value="ru"><mud-label>Rusă</mud-label></mud-radio>
+            <mud-radio value="en"><mud-label>Engleză</mud-label></mud-radio>
+            <mud-inline-message variant="error">Alegeți o limbă.</mud-inline-message>
+          </mud-radio-group>
+        </div>
       </div>
     `,
   }),

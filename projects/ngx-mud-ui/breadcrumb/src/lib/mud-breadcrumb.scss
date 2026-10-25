@@ -63,6 +63,21 @@
   mask-position: center;
 }
 
+.mud-breadcrumb__item [icon-start] {
+  display: inline-block;
+  flex: none;
+  vertical-align: top;
+  inline-size: 16px;
+  block-size: 16px;
+  margin-block-start: calc((var(--mud-breadcrumb-line-height) - 16px) / 2);
+  margin-inline-end: var(--mud-breadcrumb-gap-item);
+  color: inherit;
+}
+
+.mud-breadcrumb__item :is(a, button)[aria-label] > [icon-start]:only-child {
+  margin-inline-end: 0;
+}
+
 .mud-breadcrumb__item--collapsed {
   display: none;
 }

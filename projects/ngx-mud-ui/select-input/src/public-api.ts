@@ -1,6 +1,10 @@
 export { MudSelectInput } from './lib/mud-select-input.component';
+export type { MudSelectInputSize, MudSelectInputVariant } from './lib/mud-select-input.component';
 export type {
-  MudSelectInputSize,
-  MudSelectInputVariant,
+  MudSelectCompare,
+  MudSelectFilter,
+  MudSelectItem,
   MudSelectOption,
-} from './lib/mud-select-input.component';
+  MudSelectOptionGroup,
+} from './lib/mud-select-options';
+export { isMudSelectGroup, mudSelectDefaultFilter } from './lib/mud-select-options';

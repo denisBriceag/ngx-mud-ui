@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { BlockScrollStrategy, Overlay } from '@angular/cdk/overlay';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { MudDateInput } from './mud-date-input.component';
@@ -749,3 +750,135 @@ class ExternalDescribedHost {
   readonly value = signal<string | null>(null);
   readonly showMessage = signal(false);
 }
+
+@Component({
+  imports: [MudDateInput],
+  template: `
+    <mud-date-input
+      aria-label="Data"
+      locale="en-GB"
+      [headerStyle]="headerStyle()"
+      [touchUi]="touchUi()"
+      [(value)]="value"
+      [(open)]="open"
+    />
+  `,
+})
+class TouchHost {
+  readonly headerStyle = signal<'title' | 'dropdown' | undefined>(undefined);
+  readonly touchUi = signal(false);
+  readonly value = signal<string | null>('2026-04-15');
+  readonly open = signal(false);
+}
+
+describe('MudDateInput header style and touchUi', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    document.querySelectorAll('.cdk-overlay-container').forEach((n) => n.remove());
+  });
+
+  async function renderTouch(setup: (host: TouchHost) => void = () => undefined) {
+    const fixture = TestBed.createComponent(TouchHost);
+
+    setup(fixture.componentInstance);
+    await fixture.whenStable();
+
+    const el = fixture.nativeElement.querySelector('mud-date-input') as HTMLElement;
+
+    return {
+      fixture,
+      host: fixture.componentInstance,
+      native: el.querySelector<HTMLInputElement>('input')!,
+      async openPanel() {
+        el.querySelector<HTMLButtonElement>('.date-field__toggle')!.click();
+        await fixture.whenStable();
+      },
+      monthDropdown: () => document.querySelector('.date-picker [data-header="month"]'),
+      title: () => document.querySelector('.date-picker .date-picker__title'),
+      backdrop: () => document.querySelector<HTMLElement>('.cdk-overlay-backdrop.mud-date-input-backdrop'),
+      dialog: () => document.querySelector<HTMLElement>('[role="dialog"]'),
+    };
+  }
+
+  it('shows the month/year title by default', async () => {
+    const view = await renderTouch();
+
+    await view.openPanel();
+
+    expect(view.title()).not.toBeNull();
+    expect(view.monthDropdown()).toBeNull();
+  });
+
+  it('headerStyle="dropdown" passes the month and year dropdowns through to the calendar', async () => {
+    const view = await renderTouch((host) => host.headerStyle.set('dropdown'));
+
+    await view.openPanel();
+
+    expect(view.monthDropdown()).not.toBeNull();
+    expect(view.title()).toBeNull();
+  });
+
+  it('without touchUi the calendar drops down under the field with no backdrop', async () => {
+    const view = await renderTouch();
+
+    await view.openPanel();
+
+    expect(view.backdrop()).toBeNull();
+    expect(view.dialog()!.closest('.cdk-global-overlay-wrapper')).toBeNull();
+    expect(view.dialog()!.classList).not.toContain('date-field__panel--touch');
+  });
+
+  it('touchUi opens the calendar centred over a backdrop and blocks page scroll', async () => {
+    const create = vi.spyOn(Overlay.prototype, 'create');
+    const view = await renderTouch((host) => host.touchUi.set(true));
+
+    await view.openPanel();
+
+    expect(view.backdrop()).not.toBeNull();
+    // Global (centred) positioning wraps the pane in CDK's global wrapper.
+    expect(view.dialog()!.closest('.cdk-global-overlay-wrapper')).not.toBeNull();
+    expect(view.dialog()!.classList).toContain('date-field__panel--touch');
+    expect(view.dialog()!.getAttribute('aria-modal')).toBe('true');
+    expect(create.mock.calls.at(-1)![0]!.scrollStrategy).toBeInstanceOf(BlockScrollStrategy);
+  });
+
+  it('touchUi defaults the header to the dropdowns; an explicit headerStyle wins', async () => {
+    const view = await renderTouch((host) => host.touchUi.set(true));
+
+    await view.openPanel();
+    expect(view.monthDropdown()).not.toBeNull();
+
+    view.host.open.set(false);
+    view.host.headerStyle.set('title');
+    await view.fixture.whenStable();
+    await view.openPanel();
+
+    expect(view.title()).not.toBeNull();
+    expect(view.monthDropdown()).toBeNull();
+  });
+
+  it('a backdrop click closes the touchUi dialog and returns focus to the field', async () => {
+    const view = await renderTouch((host) => host.touchUi.set(true));
+
+    await view.openPanel();
+    view.backdrop()!.click();
+    await view.fixture.whenStable();
+
+    expect(view.host.open()).toBe(false);
+    expect(view.dialog()).toBeNull();
+    expect(document.activeElement).toBe(view.native);
+    expect(view.host.value()).toBe('2026-04-15');
+  });
+
+  it('picking a day in the touchUi dialog sets the value and closes', async () => {
+    const view = await renderTouch((host) => host.touchUi.set(true));
+
+    await view.openPanel();
+    document.querySelector<HTMLButtonElement>('[data-iso="2026-04-20"] button')!.click();
+    await view.fixture.whenStable();
+
+    expect(view.host.value()).toBe('2026-04-20');
+    expect(view.dialog()).toBeNull();
+    expect(view.backdrop()).toBeNull();
+  });
+});

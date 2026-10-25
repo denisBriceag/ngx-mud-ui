@@ -21,6 +21,9 @@ import { MudStyleLoader } from 'ngx-mud-ui/core';
 import { _MudFileInputStyles } from './mud-file-input-styles.component';
 
 export type MudFileItemState = 'uploaded' | 'uploading' | 'success' | 'error';
+export type MudFileItemVariant = 'default' | 'system';
+
+let nextUniqueId = 0;
 
 export interface MudFileItemRemove {
   filename: string;
@@ -46,6 +49,14 @@ export interface MudFileItemRemove {
  *
  * A `previewSrc` thumbnail still wins over the projected icon, and the `error`
  * state drops the leading icon entirely so the status icon carries the row.
+ *
+ * An issued document (a certificate from a registry) uses the `system` card with an `[info]` line:
+ *
+ * ```html
+ * <mud-file-item variant="system" filename="certificat.pdf" [removable]="false">
+ *   <span info>Emis <strong>12.03.2026</strong> · EVO</span>
+ * </mud-file-item>
+ * ```
  */
 @Component({
   selector: 'mud-file-item',
@@ -56,6 +67,9 @@ export interface MudFileItemRemove {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MudFileItem {
+  /** @docs-private Per-instance gradient id, so a hidden row never breaks another row's glyph. */
+  protected readonly _glyphFillId = `mud-file-item-glyph-${nextUniqueId++}`;
+
   /** @description Visible filename. Also suffixes the remove button's accessible label. */
   readonly filename = input.required<string>();
 
@@ -63,10 +77,16 @@ export class MudFileItem {
   readonly size = input<number | undefined>(undefined);
 
   /**
-   * @description Lifecycle state. `uploaded` (resting) and `error` rows are removable;
-   * `uploading` shows a spinner and `success` a confirmation tick instead.
+   * @description Lifecycle state. `uploaded` and `error` rows are removable, `uploading` shows a spinner
+   * and a cancel button, `success` a confirmation tick.
    */
   readonly state = input<MudFileItemState>('uploaded');
+
+  /** @description `system` renders the issued-document card, with a projected `[info]` line under the name. */
+  readonly variant = input<MudFileItemVariant>('default');
+
+  /** @description Upload progress, 0–100. While `uploading`, a number shows a progress bar. */
+  readonly progress = input<number | undefined>(undefined);
 
   /** @description Per-item error message, shown below the row only when `state` is `error`. */
   readonly errorText = input<string | undefined>(undefined);
@@ -86,7 +106,11 @@ export class MudFileItem {
   /** @description Accessible-label prefix of the remove button; the filename is appended. Localize per app. */
   readonly removeLabel = input('Remove file');
 
-  /** Fired when the remove button is pressed. The owner splices the file out of its list. */
+  /** @description The remove button's label prefix while `uploading`, where it cancels. Localize per app. */
+  readonly cancelLabel = input('Cancel upload');
+
+  /** Fired when the remove button is pressed (also to cancel an upload). The owner splices the file out of its list. */
+
   readonly removed = output<MudFileItemRemove>();
 
   private readonly _filenameEl = viewChild<ElementRef<HTMLElement>>('filenameEl');
@@ -115,9 +139,30 @@ export class MudFileItem {
   /** @docs-private The error state drops the glyph so the red status icon carries the row alone. */
   protected readonly _showLeadingIcon = computed(() => this.state() !== 'error');
 
-  protected readonly _showRemove = computed(
-    () => this.removable() && (this.state() === 'uploaded' || this.state() === 'error'),
+  protected readonly _showRemove = computed(() => this.removable() && this.state() !== 'success');
+
+  protected readonly _removeAriaLabel = computed(
+    () => `${this.state() === 'uploading' ? this.cancelLabel() : this.removeLabel()} ${this.filename()}`,
   );
+
+  protected readonly _isSystem = computed(() => this.variant() === 'system');
+
+  /** @docs-private Clamped 0–100 while uploading with a finite progress, else null (no bar). */
+  protected readonly _progress = computed(() => {
+    const value = this.progress();
+
+    if (this.state() !== 'uploading' || typeof value !== 'number' || !Number.isFinite(value)) {
+      return null;
+    }
+
+    return Math.min(100, Math.max(0, value));
+  });
+
+  protected readonly _progressNow = computed(() => {
+    const value = this._progress();
+
+    return value === null ? null : Math.round(value);
+  });
 
   protected readonly _showErrorMessage = computed(
     () => this.state() === 'error' && !!this.errorText()?.trim(),
@@ -139,6 +184,8 @@ export class MudFileItem {
 
   protected readonly _hostClasses = computed(() => {
     const classes = ['file-item', `file-item--${this.state()}`];
+
+    if (this._isSystem()) classes.push('file-item--system');
 
     if (this.disabled()) classes.push('is-disabled');
 

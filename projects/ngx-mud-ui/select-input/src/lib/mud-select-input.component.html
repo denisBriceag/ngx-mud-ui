@@ -8,41 +8,101 @@
 }
 
 <div class="input-field__control select-field__control" #control>
-  <button
-    #trigger
-    type="button"
-    class="select-field__trigger"
-    role="combobox"
-    aria-haspopup="listbox"
-    [id]="_id"
-    [attr.aria-expanded]="open() ? 'true' : 'false'"
-    [attr.aria-controls]="open() ? _listBoxId : null"
-    [attr.aria-activedescendant]="_activeDescendant()"
-    [attr.aria-label]="_ariaLabel()"
-    [attr.aria-labelledby]="_hasLabel() ? _labelId : null"
-    [attr.aria-describedby]="_describedBy()"
-    [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
-    [attr.aria-required]="required() ? 'true' : null"
-    [attr.aria-readonly]="readonly() ? 'true' : null"
-    [attr.name]="name() || null"
-    [disabled]="_effectiveDisabled()"
-    (click)="_toggle()"
-    (keydown)="_onTriggerKeydown($event)"
-    (focus)="_onTriggerFocus()"
-    (blur)="_onTriggerBlur()"
+  <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+  <span
+    class="input-field__affix input-field__affix--start"
+    (mousedown)="$event.preventDefault()"
+    (click)="_onAffixClick()"
   >
-    <span class="select-field__text" [class.is-placeholder]="_isPlaceholder()">{{ _triggerText() }}</span>
-    <span class="input-field__affix select-field__chevron" aria-hidden="true">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false">
-        <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
-          d="M4.41 7.077a.833.833 0 0 1 1.18 0L10 11.488l4.41-4.411a.833.833 0 1 1 1.18 1.178l-5 5a.833.833 0 0 1-1.18 0l-5-5a.833.833 0 0 1 0-1.178"
-        />
-      </svg>
+    <ng-content select="[icon-start]" />
+  </span>
+
+  @if (searchable()) {
+    <input
+      #trigger
+      type="text"
+      class="select-field__trigger select-field__input"
+      role="combobox"
+      aria-haspopup="listbox"
+      aria-autocomplete="list"
+      autocomplete="off"
+      [id]="_id"
+      [value]="_inputText()"
+      [attr.placeholder]="_inputPlaceholder()"
+      [attr.aria-expanded]="open() ? 'true' : 'false'"
+      [attr.aria-controls]="open() ? _listBoxId : null"
+      [attr.aria-activedescendant]="_activeDescendant()"
+      [attr.aria-label]="_ariaLabel()"
+      [attr.aria-labelledby]="_hasLabel() ? _labelId : null"
+      [attr.aria-describedby]="_describedBy()"
+      [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
+      [attr.aria-required]="required() ? 'true' : null"
+      [attr.aria-readonly]="readonly() ? 'true' : null"
+      [attr.name]="name() || null"
+      [readonly]="readonly()"
+      [disabled]="_effectiveDisabled()"
+      (input)="_onSearchInput($event)"
+      (paste)="_onSearchPaste()"
+      (click)="_onSearchClick()"
+      (keydown)="_onTriggerKeydown($event)"
+      (focus)="_onTriggerFocus()"
+      (blur)="_onTriggerBlur()"
+    />
+    <!-- An input cannot hold the chevron, so it is a sibling; mousedown keeps focus in the input. -->
+    <span
+      class="input-field__affix select-field__chevron"
+      aria-hidden="true"
+      (mousedown)="$event.preventDefault()"
+      (click)="_onChevronClick()"
+    >
+      <ng-container [ngTemplateOutlet]="chevronIcon" />
     </span>
-  </button>
+  } @else {
+    <button
+      #trigger
+      type="button"
+      class="select-field__trigger"
+      role="combobox"
+      aria-haspopup="listbox"
+      [id]="_id"
+      [attr.aria-expanded]="open() ? 'true' : 'false'"
+      [attr.aria-controls]="open() ? _listBoxId : null"
+      [attr.aria-activedescendant]="_activeDescendant()"
+      [attr.aria-label]="_ariaLabel()"
+      [attr.aria-labelledby]="_hasLabel() ? _labelId : null"
+      [attr.aria-describedby]="_describedBy()"
+      [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
+      [attr.aria-required]="required() ? 'true' : null"
+      [attr.aria-readonly]="readonly() ? 'true' : null"
+      [attr.name]="name() || null"
+      [disabled]="_effectiveDisabled()"
+      (click)="_toggle()"
+      (keydown)="_onTriggerKeydown($event)"
+      (focus)="_onTriggerFocus()"
+      (blur)="_onTriggerBlur()"
+    >
+      <span class="select-field__text" [class.is-placeholder]="_isPlaceholder()">{{
+        _triggerText()
+      }}</span>
+      <span class="input-field__affix select-field__chevron" aria-hidden="true">
+        <ng-container [ngTemplateOutlet]="chevronIcon" />
+      </span>
+    </button>
+  }
 </div>
+
+<ng-template #chevronIcon>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false">
+    <path
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M4.41 7.077a.833.833 0 0 1 1.18 0L10 11.488l4.41-4.411a.833.833 0 1 1 1.18 1.178l-5 5a.833.833 0 0 1-1.18 0l-5-5a.833.833 0 0 1 0-1.178"
+    />
+  </svg>
+</ng-template>
+
+<!-- Lives on the host, not the overlay, so it exists before anything is announced. -->
+<span class="input-field__sr-only" aria-live="polite">{{ _status() }}</span>
 
 @if (_hasMessages()) {
   <!-- Field-owned wrapper: stable id + role=alert survive whatever the
@@ -61,49 +121,91 @@
     [attr.aria-label]="!_hasLabel() ? (ariaLabel() ?? 'Options') : null"
     (mousedown)="$event.preventDefault()"
   >
-    @if (options().length === 0) {
+    @if (loading()) {
+      <div
+        class="menu-panel__empty menu-panel__loading"
+        role="option"
+        aria-disabled="true"
+        aria-selected="false"
+      >
+        <span class="menu-panel__spinner" aria-hidden="true"></span>{{ loadingText() }}
+      </div>
+    } @else if (_noResults()) {
+      <div class="menu-panel__empty" role="option" aria-disabled="true" aria-selected="false">
+        {{ noResultsText() }}
+      </div>
+    } @else if (_view().flat.length === 0) {
       <!-- A listbox must contain options (axe aria-required-children); the
            empty state is a disabled option so it is also announced. -->
       <div class="menu-panel__empty" role="option" aria-disabled="true" aria-selected="false">
         {{ emptyText() }}
       </div>
     } @else {
-      @for (option of options(); track $index) {
-        <!-- APG combobox: options are intentionally non-focusable; ALL
-             keyboard interaction lives on the trigger via activedescendant. -->
-        <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
-        <div
-          class="menu-panel__option"
-          role="option"
-          [id]="_listBoxId + '-opt-' + $index"
-          [class.is-selected]="_selectedOption() === option"
-          [class.is-highlighted]="_highlighted() === $index && !option.disabled"
-          [class.is-disabled]="!!option.disabled"
-          [attr.aria-selected]="_selectedOption() === option ? 'true' : 'false'"
-          [attr.aria-disabled]="option.disabled ? 'true' : null"
-          [attr.data-option-index]="$index"
-          (click)="option.disabled ? null : _selectIndex($index)"
-          (mouseenter)="option.disabled ? null : _onOptionEnter($index)"
-        >
-          <span class="menu-panel__option-label">{{ option.label }}</span>
-          @if (_selectedOption() === option) {
-            <svg
-              class="menu-panel__option-check"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              focusable="false"
-              aria-hidden="true"
+      @for (row of _view().rows; track $index; let rowIndex = $index) {
+        @if (row.kind === 'group') {
+          <div
+            class="menu-panel__group"
+            role="group"
+            [attr.aria-labelledby]="_listBoxId + '-group-' + rowIndex"
+          >
+            <div
+              class="menu-panel__group-heading"
+              role="presentation"
+              [id]="_listBoxId + '-group-' + rowIndex"
             >
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M12.494 4.236a.75.75 0 0 1 .07 1.058l-5.6 6.4a.75.75 0 0 1-1.094.036l-2.4-2.4a.75.75 0 1 1 1.06-1.06l1.833 1.833 5.073-5.797a.75.75 0 0 1 1.058-.07"
+              {{ row.label }}
+            </div>
+            @for (entry of row.options; track $index) {
+              <ng-container
+                [ngTemplateOutlet]="optionTpl"
+                [ngTemplateOutletContext]="{ $implicit: entry }"
               />
-            </svg>
-          }
-        </div>
+            }
+          </div>
+        } @else {
+          <ng-container
+            [ngTemplateOutlet]="optionTpl"
+            [ngTemplateOutletContext]="{ $implicit: row }"
+          />
+        }
       }
+    }
+  </div>
+</ng-template>
+
+<ng-template #optionTpl [mudSelectOptionRow]="options()" let-entry>
+  <!-- APG combobox: options are intentionally non-focusable; ALL
+       keyboard interaction lives on the trigger via activedescendant. -->
+  <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+  <div
+    class="menu-panel__option"
+    role="option"
+    [id]="_listBoxId + '-opt-' + entry.index"
+    [class.is-selected]="_selectedOption() === entry.option"
+    [class.is-highlighted]="_highlighted() === entry.index && !entry.option.disabled"
+    [class.is-disabled]="!!entry.option.disabled"
+    [attr.aria-selected]="_selectedOption() === entry.option ? 'true' : 'false'"
+    [attr.aria-disabled]="entry.option.disabled ? 'true' : null"
+    [attr.data-option-index]="entry.index"
+    (click)="entry.option.disabled ? null : _selectIndex(entry.index)"
+    (mousemove)="entry.option.disabled ? null : _onOptionPointerMove(entry.index, $event)"
+  >
+    <span class="menu-panel__option-label">{{ entry.option.label }}</span>
+    @if (_selectedOption() === entry.option) {
+      <svg
+        class="menu-panel__option-check"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 16 16"
+        fill="currentColor"
+        focusable="false"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M12.494 4.236a.75.75 0 0 1 .07 1.058l-5.6 6.4a.75.75 0 0 1-1.094.036l-2.4-2.4a.75.75 0 1 1 1.06-1.06l1.833 1.833 5.073-5.797a.75.75 0 0 1 1.058-.07"
+        />
+      </svg>
     }
   </div>
 </ng-template>

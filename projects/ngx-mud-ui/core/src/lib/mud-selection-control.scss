@@ -247,10 +247,20 @@
   font-family: var(--mud-font-family-base);
 }
 
+.radio-group__options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--mud-spacing-12, 12px);
+}
+
+.radio-group--horizontal .radio-group__options {
+  flex-direction: row;
+  flex-wrap: wrap;
+  column-gap: var(--mud-spacing-24, 24px);
+}
+
 .radio-group__label {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--mud-spacing-4, 4px);
   font-size: 14px;
   line-height: 20px;
   font-weight: 500;
@@ -260,13 +270,10 @@
 .radio-group__required {
   color: var(--mud-color-text-danger-default);
   font-size: 12px;
+  line-height: 1;
+  margin-left: var(--mud-spacing-4, 4px);
 }
 
-// Consumer-projected group messages. Layout only — each projected
-// mud-inline-message owns its own variant color (error/hideIcon/etc.). Font
-// size/line-height already match the default 14/20 inline-message rung; only
-// the icon/gap are tightened to the compact rhythm the old plain-text error
-// line had.
 .radio-group__assistive {
   display: flex;
   flex-direction: column;

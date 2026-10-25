@@ -17,6 +17,7 @@ import { MudInlineMessage } from '../../../inline-message/src/public-api';
       [invalid]="invalid()"
       [required]="requiredGroup()"
       [size]="size()"
+      [orientation]="orientation()"
       (touch)="touches = touches + 1"
     >
       @if (withLabel()) {
@@ -55,6 +56,7 @@ class Host {
   readonly invalid = signal(false);
   readonly requiredGroup = signal(false);
   readonly size = signal<'medium' | 'small'>('medium');
+  readonly orientation = signal<'vertical' | 'horizontal'>('vertical');
   readonly cashDisabled = signal(false);
   readonly withLabel = signal(true);
   readonly withRadioLabel = signal(true);
@@ -213,6 +215,29 @@ describe('MudRadioGroup', () => {
     await fixture.whenStable();
     groupInstance.focus();
     expect(document.activeElement).toBe(natives()[1]);
+  });
+
+  it('wraps only the radios in the options container, label and messages outside it', async () => {
+    const { fixture, host, group, radios } = await render();
+
+    host.showGroupError.set(true);
+    await fixture.whenStable();
+
+    const options = group.querySelector('.radio-group__options')!;
+
+    expect(radios().every((radio) => options.contains(radio))).toBe(true);
+    expect(options.contains(group.querySelector('.radio-group__label'))).toBe(false);
+    expect(options.contains(group.querySelector('.radio-group__assistive'))).toBe(false);
+  });
+
+  it('lays the options in a row only when orientation is horizontal', async () => {
+    const { fixture, host, group } = await render();
+
+    expect(group.classList.contains('radio-group--horizontal')).toBe(false);
+
+    host.orientation.set('horizontal');
+    await fixture.whenStable();
+    expect(group.classList.contains('radio-group--horizontal')).toBe(true);
   });
 
   it('renders the projected mud-label inside the group label element', async () => {

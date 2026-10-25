@@ -719,3 +719,56 @@ describe('MudBreadcrumb back link', () => {
     expect(fixture.componentInstance.hits).toBe(1);
   });
 });
+
+describe('MudBreadcrumb leading icon', () => {
+  const css = () =>
+    [...document.querySelectorAll('style')].map((style) => style.textContent ?? '').join('\n');
+
+  @Component({
+    imports: [MudBreadcrumb, MudBreadcrumbItem],
+    template: `
+      <nav mudBreadcrumb>
+        <ol>
+          <li mudBreadcrumbItem>
+            <a href="/"><svg icon-start aria-hidden="true" viewBox="0 0 16 16"></svg>Acasă</a>
+          </li>
+          <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
+        </ol>
+      </nav>
+    `,
+  })
+  class IconTrail {}
+
+  it('sizes an [icon-start] anywhere in a crumb to 16px with the item gap, in the text colour', async () => {
+    const fixture = TestBed.createComponent(IconTrail);
+
+    await fixture.whenStable();
+
+    const icon = fixture.nativeElement.querySelector('[icon-start]') as SVGElement;
+
+    expect(icon.matches('.mud-breadcrumb__item [icon-start]')).toBe(true);
+    expect(css()).toMatch(
+      /\.mud-breadcrumb__item \[icon-start\]\s*\{[^}]*inline-size:\s*16px[^}]*block-size:\s*16px[^}]*margin-inline-end:\s*var\(--mud-breadcrumb-gap-item\)[^}]*color:\s*inherit/,
+    );
+  });
+
+  it('drops the gap on an icon-only crumb, keyed off the link aria-label', () => {
+    TestBed.createComponent(IconTrail).detectChanges();
+
+    expect(css()).toMatch(
+      /\.mud-breadcrumb__item :is\(a, button\)\[aria-label\] > \[icon-start\]:only-child\s*\{[^}]*margin-inline-end:\s*0/,
+    );
+  });
+
+  it('keeps the crumb text free of the icon for the overflow menu and back link', async () => {
+    const fixture = TestBed.createComponent(IconTrail);
+
+    await fixture.whenStable();
+
+    const first = fixture.debugElement
+      .queryAll(By.directive(MudBreadcrumbItem))[0]
+      .injector.get(MudBreadcrumbItem);
+
+    expect(first.text()).toBe('Acasă');
+  });
+});

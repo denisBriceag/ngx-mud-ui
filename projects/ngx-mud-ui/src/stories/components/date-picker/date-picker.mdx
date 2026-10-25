@@ -110,6 +110,59 @@ announces "Perioada, start date" — composed with `aria-labelledby`, not an
 
 <Canvas of={DateStories.Range} />
 
+## Jumping to a month or year
+
+For dates far from today, such as a birth date, set `headerStyle="dropdown"`.
+The calendar header then shows a month chip and a year chip. Each opens a grid,
+so the user picks a year and a month in two clicks instead of paging back month
+by month. The default, `title`, shows "Month Year" as one heading.
+
+```html
+<mud-date-input headerStyle="dropdown">
+  <mud-label>Data nașterii</mud-label>
+</mud-date-input>
+```
+
+<Canvas of={DateStories.MonthYearDropdowns} />
+
+## Touch screens
+
+On a phone, a calendar under the field may not fit: a field in the middle of a
+long form leaves too little room above and below it. Add `touchUi` to open the
+calendar as a dialog in the middle of the screen instead, like Angular
+Material's `touchUi`.
+
+The dialog sits over a dimmed backdrop and the page behind it does not scroll.
+Tapping the backdrop or pressing `Escape` closes it and returns focus to the
+field. Picking a date closes it, as in the normal calendar. With `touchUi`, the
+header shows the month and year chips unless you set `headerStyle` yourself.
+
+`touchUi` never switches on by itself. To use it on small screens only, bind it
+to a media query:
+
+```ts
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
+
+readonly touch = toSignal(
+  inject(BreakpointObserver)
+    .observe('(max-width: 640px)')
+    .pipe(map((state) => state.matches)),
+  { initialValue: false },
+);
+```
+
+```html
+<mud-date-input [touchUi]="touch()">
+  <mud-label>Data nașterii</mud-label>
+</mud-date-input>
+```
+
+A change to `touchUi` applies the next time the calendar opens.
+
+<Canvas of={DateStories.TouchUi} />
+
 ## Bounds and disabled dates
 
 `min` / `max` are inclusive ISO bounds. `disabledDates` takes an ISO array for

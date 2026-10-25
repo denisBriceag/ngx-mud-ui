@@ -123,6 +123,32 @@ become an atomic inline that `text-overflow` cannot clip.
 
 <Canvas of={BreadcrumbStories.Truncated} />
 
+## Leading icon
+
+To show an icon before a crumb's text, such as a house on "Acasă", put it
+inside the crumb's link with the `icon-start` attribute. It renders at 16×16,
+4px before the text, in the crumb's text colour, so hover, the current page and
+disabled tint it too. Hover underlines only the text. Use a `mud-icon` with
+`[scale]="16"`, or an inline `<svg>` drawn with `currentColor`.
+
+```html
+<li mudBreadcrumbItem>
+  <a routerLink="/"><mud-icon icon-start name="home-line" [scale]="16" />Acasă</a>
+</li>
+```
+
+For an icon with no text, name the link with `aria-label` and give the crumb a
+`label`. The label is what the `…` menu and the back link on narrow screens
+show, because the icon itself has no text.
+
+```html
+<li mudBreadcrumbItem label="Acasă">
+  <a routerLink="/" aria-label="Acasă"><mud-icon icon-start name="home-line" [scale]="16" /></a>
+</li>
+```
+
+<Canvas of={BreadcrumbStories.LeadingIcon} />
+
 ## States
 
 `active` and `disabled` on `mudBreadcrumbItem`.

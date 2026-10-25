@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
-import { moduleMetadata } from '@storybook/angular-vite';
+import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
 import { MudBreadcrumb, MudBreadcrumbItem } from 'ngx-mud-ui/breadcrumb';
+import { homeLine, MudIconComponent, provideMudIcons } from 'ngx-mud-ui/icons';
 
 interface PlaygroundArgs {
   maxVisible: number;
@@ -203,6 +204,39 @@ export const Truncated: Story = {
           <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
         </ol>
       </nav>
+    `,
+  }),
+};
+
+/** A house before "Acasă", and the same crumb as an icon only. */
+export const LeadingIcon: Story = {
+  parameters: { controls: { disable: true } },
+  decorators: [
+    applicationConfig({ providers: [provideMudIcons([homeLine])] }),
+    moduleMetadata({ imports: [MudIconComponent] }),
+  ],
+  render: () => ({
+    template: `
+      <div style="display:flex;flex-direction:column;gap:24px">
+        <nav mudBreadcrumb aria-label="Cu text">
+          <ol>
+            <li mudBreadcrumbItem>
+              <a href="/"><mud-icon icon-start name="home-line" [scale]="16" />Acasă</a>
+            </li>
+            <li mudBreadcrumbItem><a href="/servicii">Servicii</a></li>
+            <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
+          </ol>
+        </nav>
+        <nav mudBreadcrumb aria-label="Doar pictogramă">
+          <ol>
+            <li mudBreadcrumbItem label="Acasă">
+              <a href="/" aria-label="Acasă"><mud-icon icon-start name="home-line" [scale]="16" /></a>
+            </li>
+            <li mudBreadcrumbItem><a href="/servicii">Servicii</a></li>
+            <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
+          </ol>
+        </nav>
+      </div>
     `,
   }),
 };

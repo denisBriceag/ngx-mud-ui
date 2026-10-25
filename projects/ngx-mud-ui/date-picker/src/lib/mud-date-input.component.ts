@@ -42,7 +42,12 @@ import {
 } from './date-mask';
 import type { MudDateFormat, MudDateFormatSpec } from './date-mask';
 import { MudDatePicker } from './mud-date-picker.component';
-import type { MudDateInputMode, MudDateRange, MudDateValue } from './date-value';
+import type {
+  MudDateInputMode,
+  MudDatePickerHeaderStyle,
+  MudDateRange,
+  MudDateValue,
+} from './date-value';
 import { _MudInputFieldStyles, _injectMudLabels, MudStyleLoader } from 'ngx-mud-ui/core';
 
 declare const ngDevMode: boolean | undefined;
@@ -105,6 +110,12 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   /** @description Whether the calendar popover is open. Two-way bindable. */
   readonly open = model(false);
 
+  /** @description Calendar header: `title` or month/year `dropdown`s. Defaults to `dropdown` with `touchUi`, else `title`. */
+  readonly headerStyle = input<MudDatePickerHeaderStyle | undefined>(undefined);
+
+  /** @description Opens the calendar as a centred dialog over a backdrop, for touch screens. */
+  readonly touchUi = input(false, { transform: booleanAttribute });
+
   /** @description Trailing clear (×) button, shown only while the field holds a value. */
   readonly clearable = input(false, { transform: booleanAttribute });
 
@@ -164,6 +175,13 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
 
   protected readonly _focused = signal(false);
   private _overlayRef: OverlayRef | null = null;
+
+  /** @docs-private Whether the open panel was attached as a touchUi dialog. */
+  protected readonly _touchPanel = signal(false);
+
+  protected readonly _headerStyle = computed<MudDatePickerHeaderStyle>(
+    () => this.headerStyle() ?? (this._touchPanel() ? 'dropdown' : 'title'),
+  );
 
   private readonly _cvaDisabled = signal(false);
   private _onChange: (value: MudDateValue<M>) => void = () => undefined;
@@ -696,6 +714,12 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
     if (this._overlayRef?.hasAttached()) return;
 
     const control = this._control().nativeElement;
+    const touch = this.touchUi();
+
+    this._touchPanel.set(touch);
+
+    if (touch) return this._attachTouchPanel();
+
     const positionStrategy = this._overlay
       .position()
       .flexibleConnectedTo(control)
@@ -721,6 +745,19 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
 
       if (target && !control.contains(target)) this._close(false);
     });
+  }
+
+  private _attachTouchPanel(): void {
+    this._overlayRef = this._overlay.create({
+      positionStrategy: this._overlay.position().global().centerHorizontally().centerVertically(),
+      scrollStrategy: this._overlay.scrollStrategies.block(),
+      hasBackdrop: true,
+      backdropClass: 'mud-date-input-backdrop',
+    });
+
+    this._overlayRef.attach(new TemplatePortal(this._panelTemplate(), this._viewContainerRef));
+    this._picker()?.focus();
+    this._overlayRef.backdropClick().subscribe(() => this._close());
   }
 
   private _detachPanel(): void {

@@ -365,9 +365,18 @@ input[type='search'].input-field__native::-webkit-search-decoration {
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: left;
+}
 
-  &.is-placeholder {
-    color: var(--mud-color-input-placeholder, var(--mud-color-text-base-tertiary));
+.select-field__text.is-placeholder,
+.select-field__input::placeholder {
+  color: var(--mud-color-input-placeholder, var(--mud-color-text-base-tertiary));
+}
+
+.select-field__input {
+  text-overflow: ellipsis;
+
+  &:enabled {
+    cursor: text;
   }
 }
 

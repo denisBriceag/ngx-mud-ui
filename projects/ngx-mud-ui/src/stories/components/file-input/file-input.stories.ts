@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { HttpEventType, HttpResponse } from '@angular/common/http';
+import type { HttpEvent } from '@angular/common/http';
+import { interval, map, take } from 'rxjs';
+import type { Observable, Subscription } from 'rxjs';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField, form, minLength, required } from '@angular/forms/signals';
 import { MudFileInput, MudFileItem } from 'ngx-mud-ui/file-input';
@@ -117,11 +121,6 @@ export const States: Story = {
   }),
 };
 
-/**
- * `mud-file-item` is exported from the same entry point and renders standalone,
- * which is how you drive per-file upload state yourself. `uploaded` and `error`
- * rows are removable; `uploading` shows a spinner and `success` a tick.
- */
 export const FileItemStates: Story = {
   parameters: { controls: { disable: true } },
   decorators: [moduleMetadata({ imports: [MudFileItem] })],
@@ -130,6 +129,7 @@ export const FileItemStates: Story = {
       <div style="${COL}">
         <mud-file-item filename="buletin.pdf" [size]="245760" />
         <mud-file-item filename="dovada-plata.pdf" [size]="1048576" state="uploading" />
+        <mud-file-item filename="extras-bancar.pdf" [size]="3145728" state="uploading" [progress]="45" />
         <mud-file-item filename="cerere-semnata.pdf" [size]="524288" state="success" />
         <mud-file-item
           filename="scan-foarte-mare-cu-nume-lung-care-se-trunchiaza.tiff"
@@ -174,6 +174,29 @@ export const ProjectedIcon: Story = {
           <mud-icon icon name="attachment" />
         </mud-file-item>
         <mud-file-item filename="fara-icon-proiectat.pdf" [size]="12288" />
+      </div>
+    `,
+  }),
+};
+
+/**
+ * Documents the state issued (a certificate, an extract from a registry) use
+ * `variant="system"`. Put the issue date and issuer in an `[info]` line;
+ * `<strong>` marks the value.
+ */
+export const IssuedDocuments: Story = {
+  parameters: { controls: { disable: true } },
+  decorators: [moduleMetadata({ imports: [MudFileItem] })],
+  render: () => ({
+    template: `
+      <div style="${COL}">
+        <mud-file-item variant="system" filename="certificat-de-nastere.pdf" [removable]="false">
+          <span info>Emis <strong>12.03.2026</strong> · Agenția Servicii Publice</span>
+        </mud-file-item>
+        <mud-file-item variant="system" filename="extras-din-registrul-de-stat.pdf" [size]="184320">
+          <span info>Emis <strong>02.10.2026</strong> · EVO</span>
+        </mud-file-item>
+        <mud-file-item variant="system" filename="cazier-judiciar.pdf" [size]="96256" [removable]="false" />
       </div>
     `,
   }),
@@ -389,9 +412,32 @@ export const SignalForms: Story = {
   render: () => ({ template: `<mud-file-input-signal-demo />` }),
 };
 
+interface UploadRow {
+  file: File;
+  state: 'uploading' | 'success' | 'error';
+  progress?: number;
+  error?: string;
+}
+
+// Stands in for `http.post(url, body, { reportProgress: true, observe: 'events' })`: ten progress events,
+// then the response. Files over 5 MB fail at 40% so the error row shows too.
+function fakeUpload(file: File): Observable<HttpEvent<unknown>> {
+  return interval(250).pipe(
+    take(11),
+    map((step): HttpEvent<unknown> => {
+      if (file.size > 5 * 1024 * 1024 && step === 4) throw new Error('rejected');
+
+      return step < 10
+        ? { type: HttpEventType.UploadProgress, loaded: (file.size * (step + 1)) / 10, total: file.size }
+        : new HttpResponse({ status: 200 });
+    }),
+  );
+}
+
 /**
  * Upload is consumer-driven. Turn `showFileList` off, keep the files in your
- * own state and render `mud-file-item` rows whose `state` you control.
+ * own state and render `mud-file-item` rows whose `state` and `progress` you
+ * control. The remove button cancels a row that is still uploading.
  */
 @Component({
   selector: 'mud-file-input-upload-demo',
@@ -412,7 +458,10 @@ export const SignalForms: Story = {
           [filename]="row.file.name"
           [size]="row.file.size"
           [state]="row.state"
+          [progress]="row.progress"
           [errorText]="row.error"
+          cancelLabel="Anulați încărcarea"
+          removeLabel="Eliminați fișierul"
           (removed)="remove(row.file)"
         />
       }
@@ -421,22 +470,48 @@ export const SignalForms: Story = {
 })
 class FileInputUploadDemo {
   readonly files = signal<File[]>([]);
-  readonly rows = signal<{ file: File; state: 'uploading' | 'success' | 'error'; error?: string }[]>([]);
+  readonly rows = signal<UploadRow[]>([]);
+  private readonly _uploads = new Map<File, Subscription>();
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => this._uploads.forEach((upload) => upload.unsubscribe()));
+  }
 
   onPicked(files: File[]): void {
     this.files.set(files);
-    this.rows.set(
-      files.map((file, index) => ({
-        file,
-        state: index === 0 ? 'success' : index === 1 ? 'uploading' : 'error',
-        error: index >= 2 ? 'Încărcarea a eșuat. Reîncercați.' : undefined,
-      })),
-    );
+
+    for (const file of files) {
+      if (!this._uploads.has(file)) this._upload(file);
+    }
   }
 
   remove(file: File): void {
+    // Unsubscribing cancels the request, so this also stops an upload in progress.
+    this._uploads.get(file)?.unsubscribe();
+    this._uploads.delete(file);
     this.files.update((list) => list.filter((entry) => entry !== file));
     this.rows.update((list) => list.filter((row) => row.file !== file));
+  }
+
+  private _upload(file: File): void {
+    this.rows.update((list) => [...list, { file, state: 'uploading', progress: 0 }]);
+
+    const upload = fakeUpload(file).subscribe({
+      next: (event) => {
+        if (event.type === HttpEventType.UploadProgress && event.total) {
+          this._patch(file, { progress: (100 * event.loaded) / event.total });
+        } else if (event.type === HttpEventType.Response) {
+          this._patch(file, { state: 'success' });
+        }
+      },
+      error: () => this._patch(file, { state: 'error', error: 'Încărcarea a eșuat. Reîncercați.' }),
+    });
+
+    this._uploads.set(file, upload);
+  }
+
+  private _patch(file: File, change: Partial<UploadRow>): void {
+    this.rows.update((list) => list.map((row) => (row.file === file ? { ...row, ...change } : row)));
   }
 }
 
@@ -462,6 +537,7 @@ const UPLOAD_SOURCE = `
         [filename]="row.file.name"
         [size]="row.file.size"
         [state]="row.state"
+        [progress]="row.progress"
         [errorText]="row.error"
         (removed)="remove(row.file)"
       />
@@ -469,19 +545,52 @@ const UPLOAD_SOURCE = `
   \`,
 })
 export class DocumentUpload {
+  private readonly http = inject(HttpClient);
+  private readonly uploads = new Map<File, Subscription>();
   readonly files = signal<File[]>([]);
   readonly rows = signal<UploadRow[]>([]);
 
-  // The component owns selection + validation; progress is yours. Push each
-  // accepted file through your upload service and move its row's \`state\`.
+  // The component owns selection + validation; the upload is yours.
   onPicked(files: File[]): void {
     this.files.set(files);
-    this.rows.set(files.map((file) => ({ file, state: 'uploading' })));
+
+    for (const file of files) {
+      if (!this.uploads.has(file)) this.upload(file);
+    }
   }
 
   remove(file: File): void {
+    // Unsubscribing cancels the request, so this also stops an upload in progress.
+    this.uploads.get(file)?.unsubscribe();
+    this.uploads.delete(file);
     this.files.update((list) => list.filter((entry) => entry !== file));
     this.rows.update((list) => list.filter((row) => row.file !== file));
+  }
+
+  private upload(file: File): void {
+    const body = new FormData();
+
+    body.append('file', file);
+    this.rows.update((list) => [...list, { file, state: 'uploading', progress: 0 }]);
+
+    const upload = this.http
+      .post('/api/documents', body, { reportProgress: true, observe: 'events' })
+      .subscribe({
+        next: (event) => {
+          if (event.type === HttpEventType.UploadProgress && event.total) {
+            this.patch(file, { progress: (100 * event.loaded) / event.total });
+          } else if (event.type === HttpEventType.Response) {
+            this.patch(file, { state: 'success' });
+          }
+        },
+        error: () => this.patch(file, { state: 'error', error: 'Încărcarea a eșuat. Reîncercați.' }),
+      });
+
+    this.uploads.set(file, upload);
+  }
+
+  private patch(file: File, change: Partial<UploadRow>): void {
+    this.rows.update((list) => list.map((row) => (row.file === file ? { ...row, ...change } : row)));
   }
 }
 `;

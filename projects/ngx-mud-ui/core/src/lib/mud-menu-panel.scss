@@ -1,3 +1,5 @@
+@use '../../../src/lib/styles/abstracts/mixins/menu-section';
+
 .menu-panel {
   box-sizing: border-box;
   // The CDK overlay pane is a flex container, so the panel must claim the
@@ -70,11 +72,56 @@
   color: var(--mud-color-icon-brand-default);
 }
 
+.menu-panel__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mud-spacing-4, 4px);
+
+  &::before {
+    @include menu-section.rule;
+    content: '';
+  }
+
+  &:first-child::before {
+    display: none;
+  }
+}
+
+.menu-panel__group-heading {
+  @include menu-section.heading;
+}
+
 .menu-panel__empty {
   padding: var(--mud-spacing-12, 12px) var(--mud-spacing-16, 16px);
   font-size: 14px;
   line-height: 20px;
   color: var(--mud-color-text-base-tertiary);
+}
+
+.menu-panel__loading {
+  display: flex;
+  align-items: center;
+  gap: var(--mud-spacing-8, 8px);
+}
+
+.menu-panel__spinner {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--mud-color-background-brand-default, var(--mud-blue-sky-600));
+  border-top-color: transparent;
+  rotate: 45deg;
+  animation: spinner-rotate 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-panel__spinner {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
 }
 
 @media (forced-colors: active) {

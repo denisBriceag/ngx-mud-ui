@@ -53,6 +53,25 @@ The base stylesheet must be in your app's `angular.json` `styles` once:
 
 <Canvas of={RadioStories.States} />
 
+## Horizontal layout
+
+Use a row for two or three short options, such as a yes/no question. Set
+`orientation="horizontal"` on the group; the default is `vertical`.
+
+```html
+<mud-radio-group orientation="horizontal">
+  <mud-label>Aveți copii minori?</mud-label>
+  <mud-radio value="yes"><mud-label>Da</mud-label></mud-radio>
+  <mud-radio value="no"><mud-label>Nu</mud-label></mud-radio>
+</mud-radio-group>
+```
+
+Options sit 24px apart. When the row runs out of room, they wrap onto a new
+line 12px below. The group label stays above the options and its messages
+stay below. Arrow keys move between options the same way in either layout.
+
+<Canvas of={RadioStories.Horizontal} />
+
 ## Reactive forms
 
 <Canvas of={RadioStories.ReactiveForms} />
@@ -103,7 +122,7 @@ on where you nest them:
 - **Values are compared with `Object.is`**, so object and array values must be
   the same reference — rebuilding the options array each change detection cycle
   silently breaks selection. Primitives and enum values are safest.
-- **`size` is set on the group**, not per option, and applies to every child.
+- **`size` and `orientation` are set on the group**, not per option, and apply to every child.
 - **Per-option `disabled` stacks with the group's.** A radio is disabled if
   either it or its group says so; disabling the group does not clear child
   settings.

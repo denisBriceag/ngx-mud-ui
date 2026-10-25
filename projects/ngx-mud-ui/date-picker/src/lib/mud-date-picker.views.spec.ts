@@ -113,6 +113,9 @@ describe('MudDatePicker views', () => {
 
     expect(month.textContent!.trim()).toBe('August');
     expect(year.textContent!.trim()).toBe('2026');
+    // The visible text leads the accessible name (WCAG 2.5.3 label in name).
+    expect(month.getAttribute('aria-label')).toBe('August, Choose month');
+    expect(year.getAttribute('aria-label')).toBe('2026, Choose year');
 
     await view.click(year);
     expect(view.yearCells()).toHaveLength(12);

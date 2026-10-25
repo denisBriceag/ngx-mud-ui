@@ -59,6 +59,111 @@ The base stylesheet must be in your app's `angular.json` `styles` once:
 
 <Canvas of={SelectInputStories.NonStringValues} />
 
+## Searching
+
+Add `searchable` to let people type to narrow a long list. The field becomes a text input.
+Closed, it shows the selected label. Open, it shows what the user typed, and the selected label
+moves to the placeholder.
+
+```html
+<mud-select-input searchable [options]="cities" />
+```
+
+Matching ignores case and diacritics, so `balti` finds Bălți. It looks at the label only, never the
+value. Each keystroke moves the highlight to the first enabled match. Typing in a closed field opens
+it. Closing the list always clears the text, so the field shows the selected label again.
+
+Bind `[(query)]` to read or set the text. Pass `[filterWith]` to match differently; the function
+receives an option and the query. `mudSelectDefaultFilter` is exported if you want to wrap it.
+
+<Canvas of={SelectInputStories.Searchable} />
+
+When nothing matches, the list shows `noResultsText` (default `'No results'`). Localize it.
+
+<Canvas of={SelectInputStories.NoResults} />
+
+## Searching on the server
+
+For lists too big to ship to the browser, search on your server. Set `[filterWith]="null"` so the
+select shows `options` exactly as you give them. Watch `query`, fetch matches, and pass them back
+as `options`. Set `loading` while the request runs. The list then shows one loading row with
+`loadingText` (default `'Loading…'`).
+
+```html
+<mud-select-input
+  searchable
+  [filterWith]="null"
+  [loading]="loading()"
+  [options]="options()"
+  [(query)]="query"
+  [(value)]="city"
+/>
+```
+
+Debouncing, a minimum query length and cancelling stale requests are yours to do. Closing the list
+writes `''` to `query`, so ignore queries shorter than your minimum. The story uses a 300ms
+debounce, a two-character minimum and `switchMap`. Catch errors inside the `switchMap`, so one
+failed request ends the loading row instead of stopping the search.
+
+The select remembers the label of the option you picked, even when new results no longer contain it.
+It can only remember an option it has seen, so include the selected option in `options` at least
+once. For an edit form, put it in the initial options.
+
+<Canvas of={SelectInputStories.ServerSearch} />
+
+## Comparing object values
+
+Options may carry objects. Fresh results from the server are new objects, so `Object.is` would no
+longer find the current choice. Pass `[compareWith]` with a function that compares by identity, such
+as an `id`.
+
+```ts
+readonly sameCity = (a: City | undefined, b: City | undefined) => a?.id === b?.id;
+```
+
+It decides the selected check mark, the highlight when the list opens and the label in the field.
+The select never calls it with an empty value, so it may read properties of its arguments. An empty
+value (`null` or `undefined`) matches only an option whose value is that same empty value.
+
+## Groups
+
+Put `{ label, options }` objects in `options` to show a heading above a run of options. Groups and
+loose options can be mixed in any order, one level deep. Each group after the first has a rule above
+it. A group with no options renders nothing. In a searchable select, a group with no match
+disappears while the user types. To tell a group from an option in your own code, use
+`isMudSelectGroup(item)`.
+
+```ts
+readonly places: MudSelectItem<string>[] = [
+  { label: 'Municipii', options: [{ value: 'ch', label: 'Chișinău' }] },
+  { label: 'Raioane', options: [{ value: 'cl', label: 'Cahul' }] },
+];
+```
+
+<Canvas of={SelectInputStories.Groups} />
+
+## Start icon
+
+Put an element with the `icon-start` attribute inside the select to show it before the text. Use an
+inline `<svg>` or an icon of your own, and mark it `aria-hidden="true"`. A click on it focuses the
+field and acts like a click on the field itself. With nothing projected, no space is reserved.
+
+```html
+<mud-select-input [options]="cities">
+  <svg icon-start viewBox="0 0 20 20" aria-hidden="true">…</svg>
+</mud-select-input>
+```
+
+<Canvas of={SelectInputStories.WithIcon} />
+
+## Type-to-jump
+
+On a select that is not `searchable`, typing letters on the focused field jumps to the first enabled
+option whose label starts with them. Diacritics and case are ignored. The list opens if it was
+closed. Letters typed within about half a second form one prefix. Repeating one letter, as in
+`cc`, cycles through the options that start with it. A space counts only once you have typed a
+letter; otherwise it opens the list as before.
+
 ## API
 
 Selector: `mud-select-input`
@@ -81,7 +186,7 @@ assistive text — *you* decide when they render:
   `aria-invalid`; with signal forms it is bound automatically, with reactive
   forms bind `[invalid]="ctrl.invalid && ctrl.touched"`.
 
-## Usage tips
+## Good to know
 
 - **`options` is data, not projected content.** There is no `mud-option`
   element — build the array and let the component render it.
@@ -94,3 +199,36 @@ assistive text — *you* decide when they render:
   entirely so the user can see the control exists.
 - **`readonly` keeps the trigger focusable but the listbox shut**, which is the
   right state for a value the user may read and copy but not change.
+
+## Accessibility
+
+**Name it**: project a `<mud-label>` inside the select, or set `aria-label` when there is no visible
+label. The list is named the same way.
+
+**Keyboard, select that is not searchable**: focus stays on the field.
+
+- **ArrowDown** and **ArrowUp** open the list, then move the highlight over enabled options.
+- **Home** and **End** move the highlight to the first or last enabled option.
+- **Enter** and **Space** open the list, then select the highlighted option.
+- **Escape** closes the list. **Tab** closes it and moves on.
+- **Letters** jump to the first matching option, and open the list.
+
+**Keyboard, searchable select**: the field is a text input, so most keys are text.
+
+- Typing opens the list and filters it.
+- **ArrowDown** and **ArrowUp** open the list, then move the highlight.
+- **Home**, **End** and **Space** move the caret or type a space. They do not touch the list.
+- **Enter** selects the highlighted option. On a closed field it acts like Enter in any text field,
+  so it can submit an enclosing form.
+- **Escape** closes the list and clears the text. The value is unchanged.
+- **Tab**, leaving the field and clicking outside close the list and clear the text. They never pick
+  the highlighted option.
+
+**States**: the field is a combobox with `aria-expanded` and `aria-activedescendant`; options keep
+focus off themselves. A searchable field adds `aria-autocomplete="list"`. Groups are
+`role="group"` named by their heading. A polite live region says `loadingText` while loading and
+`noResultsText` when a query finds nothing. It does not announce result counts. While loading, Enter
+selects nothing.
+
+**What you must do**: localize `loadingText`, `noResultsText` and `emptyText`. Hide the start icon from
+screen readers with `aria-hidden="true"`, or label it yourself if it carries meaning.

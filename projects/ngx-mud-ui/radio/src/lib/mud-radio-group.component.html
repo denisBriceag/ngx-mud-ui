@@ -7,7 +7,9 @@
   </div>
 }
 
-<ng-content />
+<div class="radio-group__options">
+  <ng-content />
+</div>
 
 @if (_hasMessages()) {
   <div class="radio-group__assistive" role="alert" [id]="_assistiveId">

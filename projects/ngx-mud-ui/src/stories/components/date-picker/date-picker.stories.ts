@@ -45,6 +45,7 @@ const meta: Meta<DateArgs> = {
     moduleMetadata({ imports: [MudDateInput, MudDatePicker, MudLabel, MudInlineMessage] }),
   ],
   argTypes: {
+    headerStyle: { control: 'select', options: ['title', 'dropdown'] },
     dateFilter: {
       control: 'select',
       options: Object.keys(DATE_FILTERS),
@@ -78,6 +79,7 @@ const meta: Meta<DateArgs> = {
     size: 'medium',
     variant: 'default',
     clearable: true,
+    touchUi: false,
     disabled: false,
     required: false,
     invalid: false,
@@ -99,6 +101,8 @@ export const Playground: Story = {
           [size]="size"
           [variant]="variant"
           [clearable]="clearable"
+          [headerStyle]="headerStyle"
+          [touchUi]="touchUi"
           [disabled]="disabled"
           [required]="required"
           [invalid]="invalid"
@@ -264,6 +268,32 @@ export const DropdownHeader: Story = {
     template: `
       <div style="${COL}">
         <mud-date-picker headerStyle="dropdown" />
+      </div>
+    `,
+  }),
+};
+
+export const MonthYearDropdowns: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <div style="${COL}">
+        <mud-date-input headerStyle="dropdown">
+          <mud-label>Data nașterii</mud-label>
+        </mud-date-input>
+      </div>
+    `,
+  }),
+};
+
+export const TouchUi: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <div style="${COL}">
+        <mud-date-input touchUi>
+          <mud-label>Data nașterii</mud-label>
+        </mud-date-input>
       </div>
     `,
   }),

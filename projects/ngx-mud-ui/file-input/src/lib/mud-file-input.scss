@@ -215,6 +215,9 @@
 // ----- file item -----
 
 .file-item {
+  --_file-item-radius: var(--mud-border-radius-6, 6px);
+
+  position: relative;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -226,7 +229,7 @@
   background-color: var(--mud-color-background-base-tertiary);
   // Resting rows are borderless pills; only the error state draws a rule.
   border: 1px solid transparent;
-  border-radius: var(--mud-border-radius-6, 6px);
+  border-radius: var(--_file-item-radius);
   color: var(--mud-color-text-base-default);
   font-family: var(--mud-font-family-base);
   transition:
@@ -448,10 +451,113 @@
   }
 }
 
+
+.file-item__progress {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: 2px;
+  overflow: hidden;
+  background-color: var(--mud-color-background-base-default-active);
+  clip-path: inset(
+    -4px 0 0 0 round 0 0 calc(var(--_file-item-radius) - 1px) calc(var(--_file-item-radius) - 1px)
+  );
+}
+
+.file-item__progress-fill {
+  display: block;
+  height: 100%;
+  background-color: var(--mud-color-background-brand-default);
+  transition: inline-size 150ms ease-out;
+}
+
+.file-item--system {
+  --_file-item-radius: var(--mud-border-radius-8, 8px);
+
+  min-height: 70px;
+  padding: calc(var(--mud-spacing-12, 12px) - 1px) var(--mud-spacing-8, 8px)
+    calc(var(--mud-spacing-12, 12px) - 1px) var(--mud-spacing-12, 12px);
+  background-color: var(--mud-color-background-base-secondary);
+}
+
+.file-item--system.file-item--error {
+  background-color: var(--mud-color-input-background, var(--mud-color-background-base-default));
+}
+
+.file-item--system .file-item__body {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--mud-spacing-6, 6px);
+}
+
+.file-item--system .file-item__filename-wrap {
+  max-width: 100%;
+}
+
+.file-item__system-glyph {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.file-item.is-disabled .file-item__system-glyph {
+  opacity: 0.45;
+}
+
+.file-item__info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mud-spacing-4, 4px) var(--mud-spacing-6, 6px);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--mud-color-text-base-secondary);
+
+  // Upstream's info value (the date) is medium weight in the default text colour.
+  strong {
+    font-weight: 500;
+    color: var(--mud-color-text-base-default);
+  }
+
+  &:empty {
+    display: none;
+  }
+}
+
+// On the info line the size takes the line's type; the middot only separates it from projected info.
+.file-item__info .file-item__meta {
+  font-size: inherit;
+  line-height: inherit;
+
+  // The line's 6px gap sits before the dot, so match it after.
+  &::before {
+    margin-right: var(--mud-spacing-6, 6px);
+  }
+
+  &:first-child::before {
+    content: none;
+  }
+}
+
+.file-item.is-disabled .file-item__info,
+.file-item.is-disabled .file-item__info strong {
+  color: var(--mud-color-text-disabled-default);
+}
+
+.file-item--system .file-item__remove svg {
+  width: 16px;
+  height: 16px;
+}
+
 @media (forced-colors: active) {
   .file-field__dropzone,
   .file-item {
     border-color: CanvasText;
+  }
+
+  .file-item__progress-fill {
+    background-color: Highlight;
   }
 }
 
@@ -465,5 +571,9 @@
 
   .file-item__spinner {
     animation: none;
+  }
+
+  .file-item__progress-fill {
+    transition: none;
   }
 }

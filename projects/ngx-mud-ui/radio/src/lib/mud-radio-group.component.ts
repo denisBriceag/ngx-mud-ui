@@ -25,6 +25,8 @@ import { _MudSelectionControlStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudRadioGroupSize = 'medium' | 'small';
 
+export type MudRadioGroupOrientation = 'vertical' | 'horizontal';
+
 let nextUniqueId = 0;
 
 /**
@@ -44,6 +46,7 @@ let nextUniqueId = 0;
   templateUrl: './mud-radio-group.component.html',
   host: {
     class: 'radio-group',
+    '[class.radio-group--horizontal]': "orientation() === 'horizontal'",
     role: 'radiogroup',
     '[attr.aria-labelledby]': '_ariaLabelledby()',
     '[attr.aria-label]': '_ariaLabel()',
@@ -70,6 +73,9 @@ export class MudRadioGroup<T = unknown> implements ControlValueAccessor, FormVal
 
   /** @description Size rung applied to every child radio. */
   readonly size = input<MudRadioGroupSize>('medium');
+
+  /** @description Stacks the options (default) or lays them in a wrapping row. */
+  readonly orientation = input<MudRadioGroupOrientation>('vertical');
 
   readonly disabled = input(false, { transform: booleanAttribute });
 

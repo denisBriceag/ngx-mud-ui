@@ -7,4 +7,4 @@ export type {
   MudFileInputVariant,
 } from './lib/mud-file-input.component';
 export { MudFileItem } from './lib/mud-file-item.component';
-export type { MudFileItemRemove, MudFileItemState } from './lib/mud-file-item.component';
+export type { MudFileItemRemove, MudFileItemState, MudFileItemVariant } from './lib/mud-file-item.component';

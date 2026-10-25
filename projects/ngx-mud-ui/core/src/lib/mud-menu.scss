@@ -1,4 +1,5 @@
 @use '../../../src/lib/styles/abstracts/mixins/host';
+@use '../../../src/lib/styles/abstracts/mixins/menu-section';
 
 @include host.typography('mud-menu-item');
 
@@ -164,18 +165,12 @@
 }
 
 .menu__separator {
-  block-size: 1px;
-  margin-block: var(--mud-spacing-4, 4px);
-  background-color: var(--mud-color-border-base-default);
+  @include menu-section.rule;
 }
 
 .menu__heading {
   display: block;
-  padding: var(--mud-spacing-4, 4px) var(--mud-spacing-16, 16px);
-  color: var(--mud-color-text-base-tertiary);
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 500;
+  @include menu-section.heading;
 
   &:empty {
     display: none;

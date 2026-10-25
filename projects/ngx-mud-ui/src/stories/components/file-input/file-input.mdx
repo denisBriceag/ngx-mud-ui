@@ -82,6 +82,19 @@ empty selection and custom validators receive the real files.
 `mud-file-item` ships from the same entry point and renders standalone, so you
 can build your own list surfaces (upload progress, read-only summaries).
 
+While a row is `uploading`, set `progress` (0–100) to show how far it got. A
+2px bar fills along the row's bottom edge, and screen readers hear it as a
+progress bar named after the file. Without `progress`, the row shows only the
+spinner. Values outside 0–100 are clamped.
+
+```html
+<mud-file-item filename="extras.pdf" state="uploading" [progress]="45" />
+```
+
+An uploading row also keeps its remove button, which then cancels the upload.
+It fires the same `removed` event, so stop the request there. Its label reads
+"Cancel upload" + the file name; localize it with `cancelLabel`.
+
 <Canvas of={FileInputStories.FileItemStates} />
 
 Project an `[icon]` to replace the leading glyph — a per-extension icon, or an
@@ -89,7 +102,29 @@ Project an `[icon]` to replace the leading glyph — a per-extension icon, or an
 
 <Canvas of={FileInputStories.ProjectedIcon} />
 
+## Issued documents
+
+For a document the state issued, such as a certificate or a registry extract,
+set `variant="system"`. The row becomes a taller grey card with a blue document
+glyph. Put the issue date and the issuer in an element with the `info`
+attribute; it shows under the file name. Wrap the value in `<strong>` to set it
+apart. You format the date and write the words, so the line follows your
+app's language. A `size`, if you set one, joins the same line.
+
+```html
+<mud-file-item variant="system" filename="certificat.pdf" [removable]="false">
+  <span info>Emis <strong>12.03.2026</strong> · EVO</span>
+</mud-file-item>
+```
+
+<Canvas of={FileInputStories.IssuedDocuments} />
+
 ## Consumer-driven upload
+
+The example uploads each picked file with Angular's `HttpClient`, using
+`reportProgress: true` and `observe: 'events'`, and feeds the percentage into
+`progress`. Removing a row unsubscribes, which cancels its request. The demo
+fakes the requests; files over 5 MB fail at 40%.
 
 <Canvas of={FileInputStories.ConsumerDrivenUpload} />
 
@@ -122,7 +157,7 @@ assistive text — *you* decide when they render:
 - **Upload is not included.** The component never touches the network. Watch
   `value` (or `valueChange`), upload each file yourself, and reflect progress by
   turning `showFileList` off and rendering your own `mud-file-item` rows with
-  per-file `state`.
+  per-file `state` and `progress`.
 - **The value is always a `File[]`**, even with `multiple` off — the array just
   never holds more than one entry, and a new pick replaces it.
 - **Rejected files never enter the value.** Each one fires `rejected` with a

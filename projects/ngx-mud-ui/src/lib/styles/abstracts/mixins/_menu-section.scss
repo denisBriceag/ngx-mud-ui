@@ -1,0 +1,13 @@
+@mixin heading {
+  padding: var(--mud-spacing-4, 4px) var(--mud-spacing-16, 16px);
+  color: var(--mud-color-text-base-tertiary);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+
+@mixin rule {
+  block-size: 0;
+  margin-block: var(--mud-spacing-4, 4px);
+  border-block-start: 1px solid var(--mud-color-border-base-default);
+}

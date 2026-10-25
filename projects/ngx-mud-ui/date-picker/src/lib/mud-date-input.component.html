@@ -173,6 +173,7 @@
     role="dialog"
     aria-modal="true"
     cdkTrapFocus
+    [class.date-field__panel--touch]="_touchPanel()"
     [cdkTrapFocusAutoCapture]="false"
     [id]="_dialogId"
     [attr.aria-label]="_labels().calendar"
@@ -180,6 +181,7 @@
   >
     <mud-date-picker
       appearance="flat"
+      [headerStyle]="_headerStyle()"
       [mode]="_isRange() ? 'range' : 'single'"
       [value]="_isRange() ? _range() : _valueIso()"
       [startAt]="_pickerStartAt()"

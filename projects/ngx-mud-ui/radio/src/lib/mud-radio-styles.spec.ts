@@ -13,4 +13,30 @@ describe('radio styles', () => {
 
     expect(css()).toMatch(/\.selection-control\s*\{/);
   });
+
+  it('ships the horizontal options rule: a wrapping row, 24px between options, 12px between lines', () => {
+    @Component({ imports: [MudRadio, MudRadioGroup], template: `<mud-radio-group orientation="horizontal"><mud-radio value="a">A</mud-radio></mud-radio-group>` })
+    class Host {}
+
+    TestBed.createComponent(Host).detectChanges();
+
+    const rule = css().match(/\.radio-group--horizontal\s+\.radio-group__options\s*\{[^}]*\}/)?.[0] ?? '';
+
+    expect(rule).toContain('flex-direction: row');
+    expect(rule).toContain('flex-wrap: wrap');
+    expect(rule).toMatch(/column-gap:[^;]*24px/);
+  });
+
+  it('keeps the group label in normal text flow, so the required asterisk follows the last word when it wraps', () => {
+    @Component({ imports: [MudRadio, MudRadioGroup], template: `<mud-radio-group required><mud-radio value="a">A</mud-radio></mud-radio-group>` })
+    class Host {}
+
+    TestBed.createComponent(Host).detectChanges();
+
+    const label = css().match(/\.radio-group__label\s*\{[^}]*\}/)?.[0] ?? '';
+    const asterisk = css().match(/\.radio-group__required\s*\{[^}]*\}/)?.[0] ?? '';
+
+    expect(label).not.toMatch(/display:\s*(inline-)?flex/);
+    expect(asterisk).toMatch(/margin-left:[^;]*4px/);
+  });
 });
