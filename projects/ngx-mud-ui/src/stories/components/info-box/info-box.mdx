@@ -30,7 +30,7 @@ import { MudInfoBox } from 'ngx-mud-ui/info-box';
 @Component({
   imports: [MudInfoBox],
   template: `
-    <mud-info-box variant="prominent">
+    <mud-info-box variant="moderate" emphasis="strong">
       <p heading>Before you begin</p>
       You will need your IDNP.
     </mud-info-box>
@@ -51,14 +51,45 @@ The base stylesheet must be in your app's `angular.json` `styles` once:
 <Canvas of={InfoBoxStories.Playground} />
 <Controls of={InfoBoxStories.Playground} />
 
-## Variants
+## Variants and emphasis
 
-Five, and unlike `mud-banner` there is no separate subtle/strong axis — each
-variant carries its own surface. `neutral`,
-`moderate` and `prominent` share the info glyph and differ in icon colour and
-background; `prominent` is the only one with a tinted surface.
+Two settings decide how a box looks:
+
+- `variant` sets what the box means and its icon: `neutral` (grey info icon),
+  `moderate` (blue info icon), `warning` (amber triangle) or `error` (red
+  circle). The default is `neutral`.
+- `emphasis` sets how loudly it says it. `subtle` (the default) keeps the grey
+  surface. `strong` tints it: blue for `neutral` and `moderate`, amber for
+  `warning`, red for `error`.
+
+```html
+<mud-info-box variant="error" emphasis="strong">
+  <p heading>Your application was rejected</p>
+  Upload a clearer copy of your passport and submit again.
+</mud-info-box>
+```
+
+Use `strong` for the message a person must not miss on a busy page, such as a
+rejection or a deadline. Keep `subtle` for everything else, so the strong
+boxes stand out. Strong `neutral` and strong `moderate` look the same, as in
+the design system.
+
+The tinted surfaces stay light in dark mode, so their text, icons and links
+switch to dark colours to stay readable.
 
 <Canvas of={InfoBoxStories.Variants} />
+
+## Layout
+
+The box follows the design system's desktop and phone layouts:
+
+- **Desktop:** a 24px icon, 24px above and below the text, an 18px heading
+  and a 16px body, 6px apart.
+- **Phones** (screens up to 640px): a 20px icon, 20px above and below the
+  text, a 14px body and rounder 12px corners. The heading stays 18px.
+- A button among the actions sits 8px lower than a link, as in the design.
+- Long unbroken text, such as a link, breaks rather than running past the
+  edge.
 
 ## Heading
 
@@ -66,7 +97,7 @@ A slot, not an input — so **you** own the element. Pick the tag, and clamp or
 truncate the title however your layout needs; the box imposes nothing:
 
 ```html
-<mud-info-box variant="prominent">
+<mud-info-box variant="moderate" emphasis="strong">
   <p heading style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
     A title you have decided to clamp to one line
   </p>
@@ -149,7 +180,7 @@ built-in glyph only when nothing is projected — so a `mud-icon` **replaces**
 the default rather than sitting alongside it:
 
 ```html
-<mud-info-box variant="prominent">
+<mud-info-box variant="moderate" emphasis="strong">
   <mud-icon name="light-bulb" />
   A custom icon replaces the default glyph.
 </mud-info-box>

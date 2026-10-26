@@ -1,13 +1,14 @@
 import { Component, PLATFORM_ID, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MudInfoBox } from './mud-info-box.component';
-import type { MudInfoBoxVariant } from './mud-info-box.component';
+import type { MudInfoBoxEmphasis, MudInfoBoxVariant } from './mud-info-box.component';
 
 @Component({
   imports: [MudInfoBox],
   template: `
     <mud-info-box
       [variant]="variant()"
+      [emphasis]="emphasis()"
       [closable]="closable()"
       [hideIcon]="hideIcon()"
       [closeLabel]="closeLabel()"
@@ -20,6 +21,7 @@ import type { MudInfoBoxVariant } from './mud-info-box.component';
 })
 class Host {
   readonly variant = signal<MudInfoBoxVariant>('neutral');
+  readonly emphasis = signal<MudInfoBoxEmphasis>('subtle');
   readonly closable = signal(false);
   readonly hideIcon = signal(false);
   readonly closeLabel = signal('Close');
@@ -44,11 +46,12 @@ async function render() {
 }
 
 describe('MudInfoBox', () => {
-  it('renders a neutral box with a default glyph and projected body', async () => {
+  it('renders a neutral, subtle box with a default glyph and projected body', async () => {
     const { el } = await render();
 
     expect(el.classList.contains('info-box')).toBe(true);
     expect(el.classList.contains('info-box--neutral')).toBe(true);
+    expect(el.classList.contains('info-box--subtle')).toBe(true);
     expect(el.querySelector('.info-box__icon svg')).toBeTruthy();
     expect(el.querySelector('.info-box__message')?.textContent).toContain('You will need your IDNP.');
   });
@@ -59,27 +62,35 @@ describe('MudInfoBox', () => {
     expect(el.querySelector('.info-box__icon')?.getAttribute('aria-hidden')).toBe('true');
   });
 
-  it('maps all five variants to their classes', async () => {
+  it('maps every variant × emphasis pair to its two classes', async () => {
     const { fixture, host, el } = await render();
 
-    for (const variant of ['neutral', 'moderate', 'prominent', 'warning', 'error'] as MudInfoBoxVariant[]) {
-      host.variant.set(variant);
-      await fixture.whenStable();
+    for (const variant of ['neutral', 'moderate', 'warning', 'error'] as MudInfoBoxVariant[]) {
+      for (const emphasis of ['subtle', 'strong'] as MudInfoBoxEmphasis[]) {
+        host.variant.set(variant);
+        host.emphasis.set(emphasis);
+        await fixture.whenStable();
 
-      expect(el.classList.contains(`info-box--${variant}`)).toBe(true);
+        expect(el.classList.contains(`info-box--${variant}`)).toBe(true);
+        expect(el.classList.contains(`info-box--${emphasis}`)).toBe(true);
+        expect(el.classList.contains(`info-box--${emphasis === 'subtle' ? 'strong' : 'subtle'}`)).toBe(false);
+      }
     }
   });
 
-  // neutral / moderate / prominent share the info glyph; warning and error
-  // have their own. Three distinct paths across five variants.
-  it('uses three distinct default glyphs across the five variants', async () => {
+  // neutral and moderate share the info glyph; warning and error have their own. Emphasis only
+  // changes colours, never the glyph.
+  it('uses three distinct default glyphs across the variants, whatever the emphasis', async () => {
     const { fixture, host, el } = await render();
     const glyphs = new Set<string>();
 
-    for (const variant of ['neutral', 'moderate', 'prominent', 'warning', 'error'] as MudInfoBoxVariant[]) {
-      host.variant.set(variant);
-      await fixture.whenStable();
-      glyphs.add(el.querySelector('.info-box__icon path')!.getAttribute('d')!);
+    for (const variant of ['neutral', 'moderate', 'warning', 'error'] as MudInfoBoxVariant[]) {
+      for (const emphasis of ['subtle', 'strong'] as MudInfoBoxEmphasis[]) {
+        host.variant.set(variant);
+        host.emphasis.set(emphasis);
+        await fixture.whenStable();
+        glyphs.add(el.querySelector('.info-box__icon path')!.getAttribute('d')!);
+      }
     }
 
     expect(glyphs.size).toBe(3);
@@ -282,7 +293,7 @@ describe('MudInfoBox projection', () => {
     @Component({
       imports: [MudInfoBox],
       template: `
-        <mud-info-box variant="prominent">
+        <mud-info-box variant="moderate" emphasis="strong">
           <svg data-custom="1" viewBox="0 0 20 20"><path d="M0 0h20v20H0z" /></svg>
           Body text
           <a actions href="/help" data-action="1">Read the guide</a>
@@ -357,7 +368,8 @@ describe('MudInfoBox on the server', () => {
       const fixture = TestBed.createComponent(Host);
 
       fixture.componentInstance.closable.set(true);
-      fixture.componentInstance.variant.set('prominent');
+      fixture.componentInstance.variant.set('error');
+      fixture.componentInstance.emphasis.set('strong');
       await fixture.whenStable();
 
       return (fixture.nativeElement.querySelector('mud-info-box') as HTMLElement).outerHTML;

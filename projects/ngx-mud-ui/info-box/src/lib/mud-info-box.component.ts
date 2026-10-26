@@ -1,12 +1,13 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, output, ViewEncapsulation } from '@angular/core';
 
-export type MudInfoBoxVariant = 'neutral' | 'moderate' | 'prominent' | 'warning' | 'error';
+export type MudInfoBoxVariant = 'neutral' | 'moderate' | 'warning' | 'error';
+export type MudInfoBoxEmphasis = 'subtle' | 'strong';
 
 const DEFAULT_CLOSE_LABEL = 'Close';
 
 /**
  * ```html
- * <mud-info-box variant="prominent" closable (closed)="hide()">
+ * <mud-info-box variant="moderate" emphasis="strong" closable (closed)="hide()">
  *   <p heading>Before you begin</p>
  *   You will need your IDNP and a scanned copy of your passport.
  *   <a actions mudLink href="/help">Read the guide</a>
@@ -80,8 +81,11 @@ const DEFAULT_CLOSE_LABEL = 'Close';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MudInfoBox {
-  /** @description Semantic treatment. `prominent` is the brand-tinted surface. */
+  /** @description Semantic treatment: the icon and, with `emphasis="strong"`, the surface colour. */
   readonly variant = input<MudInfoBoxVariant>('neutral');
+
+  /** @description `subtle` is a grey surface; `strong` tints it (blue for neutral and moderate, amber, red). */
+  readonly emphasis = input<MudInfoBoxEmphasis>('subtle');
 
   /** @description Renders a trailing close button. Activating it emits `closed`. */
   readonly closable = input(false, { transform: booleanAttribute });
@@ -101,7 +105,9 @@ export class MudInfoBox {
   protected readonly _closeLabel = computed(() => this.closeLabel().trim() || DEFAULT_CLOSE_LABEL);
 
   protected readonly _hostClasses = computed(
-    () => `info-box info-box--${this.variant()}${this.closable() ? ' info-box--closable' : ''}`,
+    () =>
+      `info-box info-box--${this.variant()} info-box--${this.emphasis()}` +
+      (this.closable() ? ' info-box--closable' : ''),
   );
 
   protected readonly _label = computed(() => this.ariaLabel()?.trim() || null);

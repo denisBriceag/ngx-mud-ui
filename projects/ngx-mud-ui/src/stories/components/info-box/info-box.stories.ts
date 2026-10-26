@@ -18,6 +18,7 @@ const meta: Meta<InfoBoxArgs> = {
   decorators: [moduleMetadata({ imports: [MudInfoBox, MudLink, MudButton] })],
   args: {
     variant: 'neutral',
+    emphasis: 'subtle',
     closable: false,
     hideIcon: false,
     closeLabel: 'Close',
@@ -38,6 +39,7 @@ export const Playground: Story = {
       <div style="${COL}">
         <mud-info-box
           [variant]="variant"
+          [emphasis]="emphasis"
           [closable]="closable"
           [hideIcon]="hideIcon"
           [closeLabel]="closeLabel"
@@ -51,17 +53,36 @@ export const Playground: Story = {
   }),
 };
 
-/** All five variants. Only `prominent` carries a tinted surface. */
+const CAPTION = 'margin:8px 0 0;font-family:var(--mud-font-family-base);font-size:14px;line-height:20px;font-weight:600;color:var(--mud-color-text-base-secondary)';
+
+/**
+ * Every `variant` × `emphasis` pair. Subtle boxes share the grey surface and differ by icon; strong boxes
+ * tint the surface. Strong neutral and strong moderate look the same, as upstream draws them.
+ */
 export const Variants: Story = {
   parameters: { controls: { disable: true } },
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-info-box variant="neutral">Quiet, informational. Grey icon.</mud-info-box>
-        <mud-info-box variant="moderate">Brand-blue icon on the neutral surface.</mud-info-box>
-        <mud-info-box variant="prominent">Brand-blue icon on the tinted surface.</mud-info-box>
-        <mud-info-box variant="warning">Check this before continuing.</mud-info-box>
-        <mud-info-box variant="error">This application could not be submitted.</mud-info-box>
+        <p style="${CAPTION}">Subtle (default)</p>
+        <mud-info-box variant="neutral">Neutral. Quiet, informational: grey icon.</mud-info-box>
+        <mud-info-box variant="moderate">Moderate. Brand-blue icon.</mud-info-box>
+        <mud-info-box variant="warning">Warning. Check this before continuing.</mud-info-box>
+        <mud-info-box variant="error">Error. This application could not be submitted.</mud-info-box>
+
+        <p style="${CAPTION}">Strong</p>
+        <mud-info-box variant="neutral" emphasis="strong">Neutral, strong. Tinted blue surface.</mud-info-box>
+        <mud-info-box variant="moderate" emphasis="strong">Moderate, strong. The same tinted blue surface.</mud-info-box>
+        <mud-info-box variant="warning" emphasis="strong">
+          <p heading>The deadline is tomorrow</p>
+          Submit the application before 23:59, or start again next month.
+          <a actions mudLink href="/help">What happens after the deadline?</a>
+        </mud-info-box>
+        <mud-info-box variant="error" emphasis="strong">
+          <p heading>Your application was rejected</p>
+          The scanned passport is unreadable. Upload a clearer copy and submit again.
+          <button actions mudButton="outlined" size="small">Upload again</button>
+        </mud-info-box>
       </div>
     `,
   }),
@@ -76,7 +97,7 @@ export const WithHeading: Story = {
   render: () => ({
     template: `
       <div style="${COL}">
-        <mud-info-box variant="prominent">
+        <mud-info-box variant="moderate" emphasis="strong">
           <p heading>Before you begin</p>
           You will need your IDNP and a scanned copy of your passport. Applications
           submitted without both documents are returned automatically.
