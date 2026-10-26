@@ -13,6 +13,7 @@ import { MudLabel } from '../../../label/src/public-api';
       [countries]="countries()"
       [disabled]="disabled()"
       [readonly]="readonly()"
+      [loading]="loading()"
     >
       <mud-label>Telefon</mud-label>
     </mud-phone-input>
@@ -24,6 +25,7 @@ class Host {
   readonly countries = signal<readonly string[] | undefined>(undefined);
   readonly disabled = signal(false);
   readonly readonly = signal(false);
+  readonly loading = signal(false);
 }
 
 async function render() {
@@ -69,6 +71,23 @@ function keydown(el: HTMLElement, key: string) {
 describe('MudPhoneInput international mode', () => {
   afterEach(() => {
     document.querySelectorAll('.cdk-overlay-container').forEach((node) => node.remove());
+  });
+
+  it('loading disables the country trigger and closes an open list', async () => {
+    const harness = await render();
+
+    await open(harness);
+    expect(harness.panel()).not.toBeNull();
+
+    harness.host.loading.set(true);
+    await harness.fixture.whenStable();
+
+    expect(harness.panel()).toBeNull();
+    expect(harness.trigger()!.disabled).toBe(true);
+
+    harness.host.loading.set(false);
+    await harness.fixture.whenStable();
+    expect(harness.trigger()!.disabled).toBe(false);
   });
 
   it('renders a combobox trigger instead of the static pill', async () => {

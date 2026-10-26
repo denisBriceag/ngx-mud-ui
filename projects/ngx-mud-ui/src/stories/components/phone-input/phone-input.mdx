@@ -65,6 +65,18 @@ country list.
 
 ## States
 
+Besides `disabled` and `readonly`, the field has a `loading` state for when its
+number is still being fetched, for example from the person's profile. While
+`loading` is on, a spinner shows inside the field, nothing can be typed or
+cleared, the country list can't open (an open one closes), and screen readers
+hear the field as busy. It works like `loading` on the text and number fields.
+
+```html
+<mud-phone-input [value]="phone()" [loading]="profileLoading()">
+  <mud-label>Telefon</mud-label>
+</mud-phone-input>
+```
+
 <Canvas of={PhoneInputStories.States} />
 
 ## Composed content

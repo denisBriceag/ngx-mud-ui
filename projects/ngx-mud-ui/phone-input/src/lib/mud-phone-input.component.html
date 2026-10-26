@@ -21,7 +21,7 @@
       [attr.aria-label]="
         countryLabel() + ': ' + _countryName(_country()) + ' ' + _country().dialCode
       "
-      [disabled]="_effectiveDisabled() || readonly()"
+      [disabled]="_locked()"
       (click)="_toggleList()"
       (keydown)="_onTriggerKeydown($event)"
     >
@@ -63,7 +63,7 @@
     [attr.name]="name() || null"
     [attr.placeholder]="placeholder() ?? _country().mask"
     [disabled]="_effectiveDisabled()"
-    [readOnly]="readonly()"
+    [readOnly]="readonly() || loading()"
     [required]="required()"
     inputmode="tel"
     autocomplete="tel-national"
@@ -96,6 +96,10 @@
         />
       </svg>
     </button>
+  }
+
+  @if (loading()) {
+    <span class="input-field__spinner" aria-hidden="true"></span>
   }
 </div>
 

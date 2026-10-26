@@ -19,6 +19,7 @@ const meta: Meta<MudPhoneInput> = {
     disabled: false,
     required: false,
     readonly: false,
+    loading: false,
     invalid: false,
     clearable: true,
   },
@@ -43,6 +44,7 @@ export const Playground: Story = {
           [disabled]="disabled"
           [required]="required"
           [readonly]="readonly"
+          [loading]="loading"
           [invalid]="invalid"
           [clearable]="clearable"
           [placeholder]="placeholder"
@@ -181,6 +183,9 @@ export const States: Story = {
         </mud-phone-input>
         <mud-phone-input value="+37362123456" disabled>
           <mud-label>Dezactivat</mud-label>
+        </mud-phone-input>
+        <mud-phone-input value="+37362123456" loading>
+          <mud-label>Se încarcă</mud-label>
         </mud-phone-input>
         <mud-phone-input size="large" value="+37362123456" clearable>
           <mud-label>Mare (large)</mud-label>

@@ -18,6 +18,7 @@ import type { MudPhoneInputChange } from './mud-phone-input.component';
       [required]="required()"
       [invalid]="invalid()"
       [clearable]="clearable()"
+      [loading]="loading()"
       (changed)="changes.push($event)"
     >
       @if (withLabel()) {
@@ -40,6 +41,7 @@ class Host {
   readonly required = signal(false);
   readonly invalid = signal(false);
   readonly clearable = signal(false);
+  readonly loading = signal(false);
   readonly withLabel = signal(true);
   readonly showHelper = signal(false);
   readonly showError = signal(false);
@@ -75,6 +77,39 @@ async function type(
   native.dispatchEvent(new Event('input', { bubbles: true }));
   await fixture.whenStable();
 }
+
+describe('MudPhoneInput loading', () => {
+  it('shows the spinner, sets aria-busy and is-loading, and makes the field read-only', async () => {
+    const { fixture, host, el, native } = await render();
+
+    expect(el.getAttribute('aria-busy')).toBeNull();
+    expect(el.querySelector('.input-field__spinner')).toBeNull();
+
+    host.loading.set(true);
+    await fixture.whenStable();
+
+    expect(el.getAttribute('aria-busy')).toBe('true');
+    expect(el.classList).toContain('is-loading');
+    expect(el.querySelector('.input-field__spinner')?.getAttribute('aria-hidden')).toBe('true');
+    expect(native().readOnly).toBe(true);
+  });
+
+  it('ignores typing and hides the clear button while loading', async () => {
+    const { fixture, host, native, clear } = await render();
+
+    host.clearable.set(true);
+    await type(fixture, native(), '62123456');
+    expect(host.value()).toBe('+37362123456');
+    expect(clear()).not.toBeNull();
+
+    host.loading.set(true);
+    await fixture.whenStable();
+    expect(clear()).toBeNull();
+
+    await type(fixture, native(), '69');
+    expect(host.value()).toBe('+37362123456');
+  });
+});
 
 describe('MudPhoneInput local mode', () => {
   it('renders the label and a static dial-code pill for the country', async () => {

@@ -83,6 +83,7 @@ let nextUniqueId = 0;
   encapsulation: ViewEncapsulation.None,
   host: {
     '[class]': '_hostClasses()',
+    '[attr.aria-busy]': "loading() ? 'true' : null",
   },
   providers: [
     {
@@ -137,6 +138,9 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly required = input(false, { transform: booleanAttribute });
   readonly readonly = input(false, { transform: booleanAttribute });
+
+  /** @description Shows a spinner and blocks editing, e.g. while the number is fetched. */
+  readonly loading = input(false, { transform: booleanAttribute });
 
   /** @description Destructive visuals + `aria-invalid`. Signal forms bind this automatically. */
   readonly invalid = input(false, { transform: booleanAttribute });
@@ -410,12 +414,13 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
 
   protected readonly _isInternational = computed(() => this.mode() === 'international');
 
+  /** @docs-private Disabled, read-only or loading: nothing the user does may change the value or open the list. */
+  protected readonly _locked = computed(
+    () => this._effectiveDisabled() || this.readonly() || this.loading(),
+  );
+
   protected readonly _showClear = computed(
-    () =>
-      this.clearable() &&
-      !this._effectiveDisabled() &&
-      !this.readonly() &&
-      this._display().length > 0,
+    () => this.clearable() && !this._locked() && this._display().length > 0,
   );
 
   protected readonly _describedBy = computed<string | null>(() => {
@@ -443,6 +448,8 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
 
     if (this.readonly()) classes.push('is-readonly');
 
+    if (this.loading()) classes.push('is-loading');
+
     if (this._effectiveInvalid()) classes.push('is-invalid');
 
     if (this._focused() && !this._effectiveDisabled()) classes.push('is-focused');
@@ -455,6 +462,13 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
 
     styles.load(_MudInputFieldStyles);
     styles.load(_MudMenuPanelStyles);
+
+    // Becoming disabled, read-only or loading closes an open country list.
+    effect(() => {
+      if (this._locked() && untracked(this._open)) {
+        untracked(() => this._closeList({ restoreFocus: false }));
+      }
+    });
 
     effect(() => {
       const display = this._display();
@@ -571,7 +585,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   }
 
   protected _onInput(event: Event): void {
-    if (this._effectiveDisabled() || this.readonly()) return;
+    if (this._locked()) return;
 
     const native = event.target as HTMLInputElement;
     const raw = native.value;
@@ -609,7 +623,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   }
 
   protected _onClear(): void {
-    if (this._effectiveDisabled() || this.readonly()) return;
+    if (this._locked()) return;
 
     this._publish('');
     this._native().nativeElement.value = '';
@@ -617,14 +631,14 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   }
 
   protected _toggleList(): void {
-    if (this._effectiveDisabled() || this.readonly()) return;
+    if (this._locked()) return;
 
     if (this._open()) this._closeList();
     else this._openList();
   }
 
   private _openList(): void {
-    if (this._effectiveDisabled() || this.readonly() || this._open()) return;
+    if (this._locked() || this._open()) return;
 
     // Every open starts from a clean search, priming the current country.
     this._query.set('');
