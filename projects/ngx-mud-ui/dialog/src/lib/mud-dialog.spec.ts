@@ -181,8 +181,48 @@ describe('MudDialog', () => {
     expect(overlayRoot().querySelector('mud-dialog-container')).toBeTruthy();
   });
 
-  it('disableClose suppresses backdrop and Escape', async () => {
-    const ref = TestBed.inject(MudDialog).open(GreetingDialog, { data: { name: 'x' }, disableClose: true });
+  it('closeOnBackdrop false ignores a backdrop click but still closes on Escape', async () => {
+    const ref = TestBed.inject(MudDialog).open(GreetingDialog, { data: { name: 'x' }, closeOnBackdrop: false });
+    const outcomes: unknown[] = [];
+
+    ref.closed.subscribe((o) => outcomes.push(o));
+    await TestBed.inject(ApplicationRef).whenStable();
+    (document.querySelector('.cdk-overlay-backdrop') as HTMLElement).click();
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    expect(outcomes).toEqual([]);
+    expect(overlayRoot().querySelector('mud-dialog-container')).toBeTruthy();
+
+    overlayRoot().querySelector('mud-dialog-container')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    expect(outcomes).toEqual([{ result: undefined, reason: 'escape' }]);
+  });
+
+  it('closeOnEscape false ignores Escape but still closes on a backdrop click', async () => {
+    const ref = TestBed.inject(MudDialog).open(GreetingDialog, { data: { name: 'x' }, closeOnEscape: false });
+    const outcomes: unknown[] = [];
+
+    ref.closed.subscribe((o) => outcomes.push(o));
+    await TestBed.inject(ApplicationRef).whenStable();
+    overlayRoot().querySelector('mud-dialog-container')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    expect(outcomes).toEqual([]);
+    expect(overlayRoot().querySelector('mud-dialog-container')).toBeTruthy();
+
+    (document.querySelector('.cdk-overlay-backdrop') as HTMLElement).click();
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    expect(outcomes).toEqual([{ result: undefined, reason: 'backdrop' }]);
+  });
+
+  it('both false leave only the close button and actions to close it', async () => {
+    const ref = TestBed.inject(MudDialog).open(GreetingDialog, {
+      data: { name: 'x' },
+      closeOnBackdrop: false,
+      closeOnEscape: false,
+    });
     const outcomes: unknown[] = [];
 
     ref.closed.subscribe((o) => outcomes.push(o));

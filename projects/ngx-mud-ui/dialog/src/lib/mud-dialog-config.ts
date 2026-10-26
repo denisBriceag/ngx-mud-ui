@@ -14,7 +14,7 @@ export const MUD_DIALOG_DATA = DIALOG_DATA;
 
 /**
  * ```ts
- * this.dialog.open(ConfirmComponent, { data: { id }, size: 'sm', disableClose: true });
+ * this.dialog.open(ConfirmComponent, { data: { id }, size: 'sm', closeOnBackdrop: false });
  * ```
  */
 export interface MudDialogConfig<D = unknown> {
@@ -26,8 +26,10 @@ export interface MudDialogConfig<D = unknown> {
   showCloseButton?: boolean;
   /** @description Accessible name of the close button. Localize per app. */
   closeLabel?: string;
-  /** @description Suppresses backdrop-click AND Escape dismissal. */
-  disableClose?: boolean;
+  /** @description Closes on a backdrop click; default true. */
+  closeOnBackdrop?: boolean;
+  /** @description Closes on Escape; default true. */
+  closeOnEscape?: boolean;
   /** @description Accessible name when the dialog has no mudDialogTitle. */
   ariaLabel?: string;
   /** @description CDK autofocus target passthrough. */

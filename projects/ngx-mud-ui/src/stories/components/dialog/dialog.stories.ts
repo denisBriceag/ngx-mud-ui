@@ -29,7 +29,8 @@ const HERO_IMAGE =
 interface PlaygroundArgs {
   size: MudDialogSize;
   showCloseButton: boolean;
-  disableClose: boolean;
+  closeOnBackdrop: boolean;
+  closeOnEscape: boolean;
   closeLabel: string;
   autoFocus: string;
 }
@@ -41,7 +42,7 @@ interface PlaygroundArgs {
     <h2 mudDialogTitle>Confirmați modificările</h2>
     <div mudDialogContent>
       Acest dialog reflectă opțiunile <code>size</code>, <code>showCloseButton</code>,
-      <code>disableClose</code>, <code>closeLabel</code> și <code>autoFocus</code> alese în
+      <code>closeOnBackdrop</code>, <code>closeOnEscape</code>, <code>closeLabel</code> și <code>autoFocus</code> alese în
       panoul Controls — redeschideți-l după fiecare schimbare ca să vedeți unde aterizează
       focusul.
     </div>
@@ -63,7 +64,8 @@ class PlaygroundLauncher {
 
   readonly size = input<MudDialogSize>('md');
   readonly showCloseButton = input(true);
-  readonly disableClose = input(false);
+  readonly closeOnBackdrop = input(true);
+  readonly closeOnEscape = input(true);
   readonly closeLabel = input('Close');
   readonly autoFocus = input<string>('first-tabbable');
 
@@ -71,7 +73,8 @@ class PlaygroundLauncher {
     this._dialog.open<boolean>(PlaygroundDialogContent, {
       size: this.size(),
       showCloseButton: this.showCloseButton(),
-      disableClose: this.disableClose(),
+      closeOnBackdrop: this.closeOnBackdrop(),
+      closeOnEscape: this.closeOnEscape(),
       closeLabel: this.closeLabel(),
       autoFocus: this.autoFocus(),
     });
@@ -265,7 +268,8 @@ export class SettingsComponent {
     const ref = this.dialog.open<boolean>(ConfirmDialog, {
       size: '${args.size}',
       showCloseButton: ${args.showCloseButton},
-      disableClose: ${args.disableClose},
+      closeOnBackdrop: ${args.closeOnBackdrop},
+      closeOnEscape: ${args.closeOnEscape},
       closeLabel: '${args.closeLabel}',
       autoFocus: '${args.autoFocus}',
     });
@@ -446,7 +450,8 @@ const meta: Meta<PlaygroundArgs> = {
   argTypes: {
     size: { control: 'select', options: ['sm', 'md', 'lg'] },
     showCloseButton: { control: 'boolean' },
-    disableClose: { control: 'boolean' },
+    closeOnBackdrop: { control: 'boolean' },
+    closeOnEscape: { control: 'boolean' },
     closeLabel: { control: 'text' },
     autoFocus: {
       control: 'select',
@@ -458,7 +463,8 @@ const meta: Meta<PlaygroundArgs> = {
   args: {
     size: 'md',
     showCloseButton: true,
-    disableClose: false,
+    closeOnBackdrop: true,
+    closeOnEscape: true,
     closeLabel: 'Close',
     autoFocus: 'first-tabbable',
   },
@@ -482,7 +488,8 @@ export const Playground: Story = {
         <mud-dialog-story-playground-launcher
           [size]="size"
           [showCloseButton]="showCloseButton"
-          [disableClose]="disableClose"
+          [closeOnBackdrop]="closeOnBackdrop"
+          [closeOnEscape]="closeOnEscape"
           [closeLabel]="closeLabel"
           [autoFocus]="autoFocus"
         />

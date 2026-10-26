@@ -281,18 +281,40 @@ describe('MudDrawer', () => {
     expect(container()).toBeTruthy();
   });
 
-  it('disableClose suppresses backdrop and Escape', async () => {
-    const ref = TestBed.inject(MudDrawer).open(GreetingDrawer, { data: { name: 'x' }, disableClose: true });
+  it('closeOnBackdrop false ignores a backdrop click but still closes on Escape', async () => {
+    const ref = TestBed.inject(MudDrawer).open(GreetingDrawer, { data: { name: 'x' }, closeOnBackdrop: false });
     const outcomes: unknown[] = [];
 
     ref.closed.subscribe((o) => outcomes.push(o));
     await stable();
     (document.querySelector('.cdk-overlay-backdrop') as HTMLElement).click();
+    await stable();
+
+    expect(outcomes).toEqual([]);
+    expect(container()).toBeTruthy();
+
+    container().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await stable();
+
+    expect(outcomes).toEqual([{ result: undefined, reason: 'escape' }]);
+  });
+
+  it('closeOnEscape false ignores Escape but still closes on a backdrop click', async () => {
+    const ref = TestBed.inject(MudDrawer).open(GreetingDrawer, { data: { name: 'x' }, closeOnEscape: false });
+    const outcomes: unknown[] = [];
+
+    ref.closed.subscribe((o) => outcomes.push(o));
+    await stable();
     container().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     await stable();
 
     expect(outcomes).toEqual([]);
     expect(container()).toBeTruthy();
+
+    (document.querySelector('.cdk-overlay-backdrop') as HTMLElement).click();
+    await stable();
+
+    expect(outcomes).toEqual([{ result: undefined, reason: 'backdrop' }]);
   });
 
   it('config.ariaLabel sets aria-label on the container', async () => {

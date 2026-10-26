@@ -43,8 +43,11 @@ export class MudDialog {
       providers: (dialogRef: DialogRef<R>) => {
         mudRef = new MudDialogRef<R>(dialogRef);
 
-        if (!config.disableClose) {
+        if (config.closeOnBackdrop ?? true) {
           dialogRef.backdropClick.subscribe(() => mudRef.close(undefined, 'backdrop'));
+        }
+
+        if (config.closeOnEscape ?? true) {
           dialogRef.keydownEvents.subscribe((event) => {
             // Parity with CdkDialog's own ESC handling: modified Escape (e.g.
             // Shift+Escape, a screen-reader chord) is not a dismissal.

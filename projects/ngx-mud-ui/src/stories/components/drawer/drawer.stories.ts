@@ -20,7 +20,8 @@ interface PlaygroundArgs {
   position: MudDrawerPosition;
   width: string;
   height: string;
-  disableClose: boolean;
+  closeOnBackdrop: boolean;
+  closeOnEscape: boolean;
 }
 
 /** Shared demo body: header with title + ×, text, one action. Consumer-owned chrome. */
@@ -72,14 +73,16 @@ class PlaygroundLauncher {
   readonly position = input<MudDrawerPosition>('right');
   readonly width = input('382px');
   readonly height = input('auto');
-  readonly disableClose = input(false);
+  readonly closeOnBackdrop = input(true);
+  readonly closeOnEscape = input(true);
 
   openDrawer(): void {
     this._drawer.open<string>(PlaygroundContent, {
       position: this.position(),
       width: this.width(),
       height: this.height(),
-      disableClose: this.disableClose(),
+      closeOnBackdrop: this.closeOnBackdrop(),
+      closeOnEscape: this.closeOnEscape(),
     });
   }
 }
@@ -150,7 +153,8 @@ class CookieLauncher {
   open(): void {
     this._drawer.open<'all' | 'necessary'>(CookieContent, {
       position: 'bottom',
-      disableClose: true,
+      closeOnBackdrop: false,
+      closeOnEscape: false,
       ariaLabel: 'Consimțământ cookie-uri',
       panelClass: 'story-cookie-drawer',
     });
@@ -252,7 +256,8 @@ export class CatalogComponent {
       position: '${args.position}',
       width: '${args.width}',   // left/right only
       height: '${args.height}', // top/bottom only
-      disableClose: ${args.disableClose},
+      closeOnBackdrop: ${args.closeOnBackdrop},
+      closeOnEscape: ${args.closeOnEscape},
     });
 
     ref.closed.subscribe(({ result, reason }) => console.log(result, reason));
@@ -307,7 +312,8 @@ export class AppComponent {
       this.drawer
         .open<'all' | 'necessary'>(CookieBanner, {
           position: 'bottom',          // height: auto = content height
-          disableClose: true,          // a choice is required
+          closeOnBackdrop: false,      // a choice is required:
+          closeOnEscape: false,        // only the banner's own buttons close it
           ariaLabel: 'Consimțământ cookie-uri',
           panelClass: 'cookie-drawer',
         })
@@ -367,9 +373,10 @@ const meta: Meta<PlaygroundArgs> = {
     position: { control: 'select', options: ['top', 'right', 'bottom', 'left'] },
     width: { control: 'text', description: 'Left/right only. Full screen width at ≤480px.' },
     height: { control: 'text', description: 'Top/bottom only. `auto` = content height.' },
-    disableClose: { control: 'boolean' },
+    closeOnBackdrop: { control: 'boolean' },
+    closeOnEscape: { control: 'boolean' },
   },
-  args: { position: 'right', width: '382px', height: 'auto', disableClose: false },
+  args: { position: 'right', width: '382px', height: 'auto', closeOnBackdrop: true, closeOnEscape: true },
 };
 
 export default meta;
@@ -389,7 +396,8 @@ export const Playground: Story = {
           [position]="position"
           [width]="width"
           [height]="height"
-          [disableClose]="disableClose"
+          [closeOnBackdrop]="closeOnBackdrop"
+          [closeOnEscape]="closeOnEscape"
         />
       </div>
     `,

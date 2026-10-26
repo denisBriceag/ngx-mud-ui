@@ -14,7 +14,7 @@ export class MudDialogRef<R = unknown> {
   /** @description Emits once with the result and the dismissal reason. */
   readonly closed: Observable<MudDialogCloseResult<R>>;
 
-  /** @description Backdrop clicks, also when disableClose left them unhandled. */
+  /** @description Backdrop clicks, also when closeOnBackdrop is false and they close nothing. */
   readonly backdropClick: Observable<MouseEvent>;
 
   private _reason: MudDialogCloseReason = 'action';

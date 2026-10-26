@@ -56,8 +56,11 @@ export class MudDrawer {
       providers: (dialogRef: DialogRef<R>) => {
         mudRef = new MudDrawerRef<R>(dialogRef);
 
-        if (!config.disableClose) {
+        if (config.closeOnBackdrop ?? true) {
           dialogRef.backdropClick.subscribe(() => mudRef.close(undefined, 'backdrop'));
+        }
+
+        if (config.closeOnEscape ?? true) {
           dialogRef.keydownEvents.subscribe((event) => {
             if (event.key === 'Escape' && !hasModifierKey(event) && !event.defaultPrevented) {
               event.preventDefault();

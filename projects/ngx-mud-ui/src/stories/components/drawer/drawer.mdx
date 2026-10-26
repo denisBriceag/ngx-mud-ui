@@ -151,8 +151,12 @@ The drawer has no exit animation. It disappears as soon as it closes.
 
 ## Requiring a choice
 
-Set `disableClose: true` to ignore backdrop clicks and Escape. The drawer then closes only from
-your own buttons. Use this when the user must decide, as in a cookie banner.
+By default a click on the backdrop or Escape closes the drawer. Set `closeOnBackdrop: false` to
+ignore backdrop clicks, and `closeOnEscape: false` to ignore Escape. With both off, the drawer
+closes only from your own buttons. Use that when the user must decide, as in a cookie banner.
+
+Turning off only `closeOnBackdrop` suits a drawer holding a form: a stray click outside can't
+throw away what was typed, while Escape still closes it for keyboard users.
 
 To show a drawer as soon as the page loads, open it inside `afterNextRender()` in the constructor.
 That code runs only in the browser, so server-side rendering never outputs the drawer.
@@ -189,7 +193,7 @@ the element that had it before, unless you set `restoreFocus: false`.
 **Keyboard.**
 
 - **Tab / Shift+Tab** move between the drawer's controls and wrap around inside it.
-- **Escape** closes the drawer, unless `disableClose` is set.
+- **Escape** closes the drawer, unless `closeOnEscape` is `false`.
 
 **What you must do.** Give your close button an `aria-label`, because the × alone has no name.
-Keep a visible way to close the drawer, especially with `disableClose`.
+Keep a visible way to close the drawer, especially with `closeOnEscape: false`.

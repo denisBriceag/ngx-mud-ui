@@ -25,8 +25,10 @@ export interface MudDrawerConfig<D = unknown> {
   width?: string;
   /** @description Top/bottom height (default auto = content height; % = of the viewport). Ignored for left/right. */
   height?: string;
-  /** @description Suppresses backdrop-click AND Escape dismissal. */
-  disableClose?: boolean;
+  /** @description Closes on a backdrop click; default true. */
+  closeOnBackdrop?: boolean;
+  /** @description Closes on Escape; default true. */
+  closeOnEscape?: boolean;
   /** @description Accessible name when the drawer has no mudDrawerTitle. */
   ariaLabel?: string;
   /** @description CDK autofocus target passthrough. */
