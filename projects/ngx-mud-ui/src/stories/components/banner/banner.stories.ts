@@ -83,6 +83,37 @@ export const WithLink: Story = {
   }),
 };
 
+/**
+ * Links marked `actions` sit after the message, their click areas 12px apart. On strong banners they take the banner's
+ * text colour, so they stay readable on the filled surface.
+ */
+export const WithActions: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <div style="${COL}">
+        <mud-banner variant="warning" closable>
+          Scheduled maintenance tonight 22:00–00:00.
+          <a actions mudLink href="/status">Details</a>
+        </mud-banner>
+        <mud-banner variant="info" type="strong" closable>
+          A new version of the portal is available.
+          <a actions mudLink href="/news">What changed</a>
+          <a actions mudLink href="/feedback">Send feedback</a>
+        </mud-banner>
+        <mud-banner variant="warning" type="strong">
+          Payments may be delayed today.
+          <a actions mudLink href="/status">Details</a>
+        </mud-banner>
+        <mud-banner variant="error" type="strong" closable>
+          Payments are currently unavailable.
+          <a actions mudLink href="/status">Check the status</a>
+        </mud-banner>
+      </div>
+    `,
+  }),
+};
+
 export const Closable: Story = {
   parameters: { controls: { disable: true } },
   render: () => ({

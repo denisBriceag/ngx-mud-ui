@@ -257,3 +257,51 @@ describe('MudBanner projected icon', () => {
     expect(svgs[0].getAttribute('data-custom')).toBe('1');
   });
 });
+
+describe('MudBanner actions and links', () => {
+  const css = () => [...document.querySelectorAll('style')].map((s) => s.textContent ?? '').join('\n');
+
+  @Component({
+    imports: [MudBanner],
+    template: `
+      <mud-banner variant="info" type="strong">
+        Scheduled maintenance tonight.
+        <a actions href="/status" class="probe-details">Details</a>
+        <a actions href="/history" class="probe-history">History</a>
+      </mud-banner>
+    `,
+  })
+  class ActionsHost {}
+
+  it('puts [actions] after the message, each a direct child of the actions row', async () => {
+    const fixture = TestBed.createComponent(ActionsHost);
+
+    await fixture.whenStable();
+
+    const el = fixture.nativeElement.querySelector('mud-banner') as HTMLElement;
+    const message = el.querySelector('.banner__message')!;
+    const actions = el.querySelector('.banner__actions')!;
+
+    expect(message.textContent).toContain('Scheduled maintenance tonight.');
+    expect(message.querySelector('a')).toBeNull();
+    expect([...actions.children].map((c) => c.className)).toEqual(['probe-details', 'probe-history']);
+    expect(message.compareDocumentPosition(actions)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+
+  it('renders an empty actions row when nothing is projected there, which the CSS collapses', async () => {
+    const { el } = await render();
+
+    expect(el.querySelector('.banner__actions')!.children).toHaveLength(0);
+    expect(css()).toMatch(/\.banner__actions:empty\s*\{[^}]*display:\s*none/);
+  });
+
+  // A link takes the brand blue, which IS the strong info surface (#0058D2 on #0058D2, 1:1) and sits at
+  // ~1.5:1 on strong error. On strong banners links follow the banner's own text colour.
+  it('re-points link colours to the banner text on strong banners', () => {
+    TestBed.createComponent(ActionsHost).detectChanges();
+
+    expect(css()).toMatch(
+      /\.banner--strong\s*\{[^}]*--mud-color-link-primary-default:\s*var\(--_banner-text\)/,
+    );
+  });
+});

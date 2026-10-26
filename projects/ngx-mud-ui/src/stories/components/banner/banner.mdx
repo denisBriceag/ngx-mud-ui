@@ -148,6 +148,26 @@ The message is projected, so put whatever you need inside — including a
 
 <Canvas of={BannerStories.WithLink} />
 
+## Actions
+
+To put links after the message rather than inside it, mark each one with the
+`actions` attribute. The first link's text starts 8px after the message. Each
+link keeps its own padded click area, and the click areas sit 12px apart. On
+phones the links follow the message, and move under it when the line is full.
+
+```html
+<mud-banner variant="info" type="strong">
+  A new version of the portal is available.
+  <a actions mudLink routerLink="/news">What changed</a>
+</mud-banner>
+```
+
+On strong banners, links take the banner's text colour: white on blue and red,
+dark on amber. The underline still marks them as links. This applies to links
+inside the message too, so you never set a colour yourself.
+
+<Canvas of={BannerStories.WithActions} />
+
 ## Dismissing
 
 `closable` renders a close button that emits `closed`. **The banner does

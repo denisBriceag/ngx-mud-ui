@@ -53,7 +53,11 @@ const DEFAULT_CLOSE_LABEL = 'Close';
       </ng-content>
     </span>
 
-    <span class="banner__message"><ng-content /></span>
+    <!-- Message and actions as one block: on phones the actions wrap under the message, not under the icon. -->
+    <span class="banner__content">
+      <span class="banner__message"><ng-content /></span>
+      <span class="banner__actions"><ng-content select="[actions]" /></span>
+    </span>
 
     @if (closable()) {
       <button type="button" class="banner__close" [attr.aria-label]="_closeLabel()" (click)="_dismiss()">

@@ -43,10 +43,28 @@
   --_banner-surface: var(--mud-color-background-brand-default);
   --_banner-text: var(--mud-color-text-base-inverse-on-color);
   --_banner-icon: var(--mud-color-icon-base-inverse-on-color);
+
+  --mud-color-link-primary-default: var(--_banner-text);
+  --mud-color-link-primary-hover: var(--_banner-text);
+  --mud-color-link-primary-active: var(--_banner-text);
+  --mud-color-link-primary-visited: var(--_banner-text);
+  --mud-color-link-strict-default: var(--_banner-text);
+  --mud-color-link-strict-hover: var(--_banner-text);
+  --mud-color-link-strict-active: var(--_banner-text);
+  --mud-color-link-strict-visited: var(--_banner-text);
 }
 
-// Amber is too light for white text — 1.84:1. Upstream uses the accent fill
-// with a dark foreground here, and only here; info and error keep white.
+.banner:not(.banner--strong) {
+  --mud-color-link-primary-default: var(--mud-color-text-brand-on-secondary);
+  --mud-color-link-primary-visited: var(--mud-color-text-brand-visited-on-secondary);
+  --mud-color-link-primary-hover: var(--mud-blue-sky-700);
+  --mud-color-link-primary-active: var(--mud-blue-sky-800);
+}
+
+.banner--strong a:not(.link) {
+  color: inherit;
+}
+
 .banner--strong.banner--warning {
   --_banner-surface: var(--mud-color-background-warning-accent);
   --_banner-text: var(--mud-color-text-base-default-on-color);
@@ -72,8 +90,34 @@
   block-size: 20px;
 }
 
+.banner__content {
+  display: flex;
+  align-items: center;
+  gap: var(--mud-spacing-8, 8px);
+  min-inline-size: 0;
+}
+
 .banner__message {
   white-space: nowrap;
+}
+
+.banner__actions {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--mud-spacing-12, 12px);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.banner__actions > .link-target-pointer:first-child {
+  margin-inline-start: calc(-1 * var(--mud-spacing-8, 8px));
+}
+
+.banner__actions > .link-target-touch:first-child {
+  margin-inline-start: calc(-1 * var(--mud-spacing-12, 12px));
 }
 
 .banner__close {
@@ -95,8 +139,6 @@
   cursor: pointer;
 }
 
-// Expands the HIT AREA without changing the visible control, so there is no
-// visual jump between pointer types. Same technique as `_chip.scss`.
 .banner__close::before {
   content: '';
   position: absolute;
@@ -128,6 +170,12 @@
     justify-content: flex-start;
     padding-inline-start: var(--mud-spacing-16, 16px);
     padding-inline-end: var(--mud-spacing-12, 12px);
+  }
+
+  .banner__content {
+    flex: 1 1 0;
+    flex-wrap: wrap;
+    align-items: flex-start;
   }
 
   .banner__message {
