@@ -51,6 +51,9 @@ jobs:
       - name: Tool tests (icons, prebuilt CSS, style guard)
         run: pnpm test:tools
 
+      - name: Schematic tests (ng add)
+        run: pnpm test:schematics
+
       - name: Build library
         run: pnpm build
 

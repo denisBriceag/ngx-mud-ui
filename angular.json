@@ -102,7 +102,8 @@
           "options": {
             "lintFilePatterns": [
               "projects/ngx-mud-ui/**/*.ts",
-              "projects/ngx-mud-ui/**/*.html"
+              "projects/ngx-mud-ui/**/*.html",
+              "schematics/**/*.ts"
             ],
             "eslintConfig": "projects/ngx-mud-ui/eslint.config.mjs",
             "cache": true,

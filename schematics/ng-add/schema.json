@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "ngx-mud-ui-ng-add",
+  "title": "ngx-mud-ui ng-add options",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "The application to set up.",
+      "$default": { "$source": "projectName" }
+    },
+    "darkMode": {
+      "type": "boolean",
+      "description": "Also add the opt-in dark theme stylesheet.",
+      "default": false,
+      "x-prompt": "Include dark mode styles?"
+    }
+  }
+}
