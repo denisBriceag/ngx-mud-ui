@@ -56,7 +56,7 @@ const GROUPED: MudSelectItem<string>[] = [
 ];
 
 const meta: Meta<MudSelectInput> = {
-  title: 'Components/Select input',
+  title: 'Components/Form/Select input',
   component: MudSelectInput,
   decorators: [moduleMetadata({ imports: [MudSelectInput, MudLabel, MudInlineMessage] })],
   argTypes: {

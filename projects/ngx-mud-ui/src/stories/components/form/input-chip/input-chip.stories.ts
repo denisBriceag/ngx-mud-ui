@@ -10,7 +10,7 @@ import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:480px;padding:24px';
 
 const meta: Meta<MudInputChip> = {
-  title: 'Components/Input chip',
+  title: 'Components/Form/Input chip',
   component: MudInputChip,
   decorators: [moduleMetadata({ imports: [MudInputChip, MudLabel, MudInlineMessage] })],
   argTypes: {

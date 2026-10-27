@@ -12,7 +12,7 @@ const PAD = 'padding:24px';
 const COL = 'display:flex;flex-direction:column;gap:16px;align-items:flex-start;padding:24px';
 
 const meta: Meta<MudSegmentedControl<string>> = {
-  title: 'Components/Segmented Control',
+  title: 'Components/Form/Segmented Control',
   component: MudSegmentedControl,
   decorators: [
     applicationConfig({ providers: [provideMudIcons([bulletList, dotGrid, mapPin])] }),

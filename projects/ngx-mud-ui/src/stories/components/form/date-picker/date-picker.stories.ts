@@ -40,7 +40,7 @@ type DateArgs = Omit<MudDateInput, 'dateFilter' | 'disabledDates'> & {
 };
 
 const meta: Meta<DateArgs> = {
-  title: 'Components/Date picker',
+  title: 'Components/Form/Date picker',
   component: MudDateInput,
   decorators: [
     moduleMetadata({ imports: [MudDateInput, MudDatePicker, MudLabel, MudInlineMessage] }),

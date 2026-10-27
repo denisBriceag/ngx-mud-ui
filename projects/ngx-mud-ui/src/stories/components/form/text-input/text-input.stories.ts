@@ -12,7 +12,7 @@ import { MudIconComponent, provideMudIcons, search, envelope } from 'ngx-mud-ui/
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:360px;padding:24px';
 
 const meta: Meta<MudTextInput> = {
-  title: 'Components/Text input',
+  title: 'Components/Form/Text input',
   component: MudTextInput,
   decorators: [
     applicationConfig({ providers: [provideMudIcons([search, envelope])] }),

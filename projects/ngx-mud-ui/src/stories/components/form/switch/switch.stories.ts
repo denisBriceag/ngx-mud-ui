@@ -8,7 +8,7 @@ import { MudLabel } from 'ngx-mud-ui/label';
 const COL = 'display:flex;flex-direction:column;gap:20px;max-width:420px;padding:24px';
 
 const meta: Meta<MudSwitch> = {
-  title: 'Components/Switch',
+  title: 'Components/Form/Switch',
   component: MudSwitch,
   decorators: [moduleMetadata({ imports: [MudSwitch, MudLabel] })],
   argTypes: {

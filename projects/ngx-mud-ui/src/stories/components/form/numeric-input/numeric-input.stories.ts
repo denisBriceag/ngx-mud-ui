@@ -9,7 +9,7 @@ import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:360px;padding:24px';
 
 const meta: Meta<MudNumericInput> = {
-  title: 'Components/Numeric input',
+  title: 'Components/Form/Numeric input',
   component: MudNumericInput,
   decorators: [moduleMetadata({ imports: [MudNumericInput, MudLabel, MudInlineMessage] })],
   argTypes: {

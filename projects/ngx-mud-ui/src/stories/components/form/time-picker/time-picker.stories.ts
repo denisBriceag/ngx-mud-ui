@@ -34,7 +34,7 @@ type TimeArgs = Omit<MudTimeInput, 'timeFilter'> & {
 };
 
 const meta: Meta<TimeArgs> = {
-  title: 'Components/Time picker',
+  title: 'Components/Form/Time picker',
   component: MudTimeInput,
   decorators: [
     moduleMetadata({ imports: [MudTimeInput, MudTimePicker, MudLabel, MudInlineMessage] }),

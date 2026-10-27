@@ -23,7 +23,7 @@ import {
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:560px;padding:24px';
 
 const meta: Meta<MudFileInput> = {
-  title: 'Components/File input',
+  title: 'Components/Form/File input',
   component: MudFileInput,
   decorators: [moduleMetadata({ imports: [MudFileInput, MudLabel, MudInlineMessage] })],
   args: {

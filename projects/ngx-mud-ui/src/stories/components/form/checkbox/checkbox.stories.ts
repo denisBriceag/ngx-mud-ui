@@ -8,7 +8,7 @@ import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 const COL = 'display:flex;flex-direction:column;gap:20px;max-width:420px;padding:24px';
 
 const meta: Meta<MudCheckbox> = {
-  title: 'Components/Checkbox',
+  title: 'Components/Form/Checkbox',
   component: MudCheckbox,
   decorators: [moduleMetadata({ imports: [MudCheckbox, MudLabel, MudInlineMessage] })],
   argTypes: {

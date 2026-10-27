@@ -9,7 +9,7 @@ import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 const COL = 'display:flex;flex-direction:column;gap:32px;max-width:420px;padding:24px';
 
 const meta: Meta<MudRadioGroup> = {
-  title: 'Components/Radio',
+  title: 'Components/Form/Radio',
   component: MudRadioGroup,
   decorators: [moduleMetadata({ imports: [MudRadioGroup, MudRadio, MudLabel, MudInlineMessage] })],
   argTypes: {

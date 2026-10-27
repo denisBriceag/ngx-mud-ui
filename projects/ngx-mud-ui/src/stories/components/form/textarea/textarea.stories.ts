@@ -7,7 +7,7 @@ import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:420px;padding:24px';
 
 const meta: Meta<MudTextarea> = {
-  title: 'Components/Textarea',
+  title: 'Components/Form/Textarea',
   component: MudTextarea,
   decorators: [moduleMetadata({ imports: [MudTextarea, MudLabel, MudInlineMessage] })],
   argTypes: {
