@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 
 import { MUD_MENU_PANEL } from './mud-menu.types';
-import type { MudMenuItemLeading } from './mud-menu.types';
+import type { MudMenuItemLeading, MudMenuTriggerHandle } from './mud-menu.types';
 
 /**
  * ```html
@@ -78,6 +78,7 @@ import type { MudMenuItemLeading } from './mud-menu.types';
     '(click)': '_onClick()',
     '(keydown)': '_onKeydown($event)',
     '(mouseenter)': '_onMouseEnter()',
+    '(mouseleave)': '_onMouseLeave()',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -106,6 +107,9 @@ export class MudMenuItem {
 
   /** @docs-private Set by a same-element MudMenuTrigger; renders the chevron. */
   readonly _hasSubmenu = signal(false);
+
+  /** @docs-private Same-element MudMenuTrigger, if any. */
+  _submenuTrigger: MudMenuTriggerHandle | null = null;
 
   /** @docs-private Selection menus derive from the panel value; contextual uses the input. */
   readonly _selected = computed(() => {
@@ -173,5 +177,9 @@ export class MudMenuItem {
     if (this.heading()) return;
 
     this._panel?._itemEntered(this);
+  }
+
+  protected _onMouseLeave(): void {
+    this._panel?._itemLeft(this);
   }
 }

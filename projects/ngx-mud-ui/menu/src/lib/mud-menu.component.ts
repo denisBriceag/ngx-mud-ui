@@ -4,6 +4,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
   input,
   model,
@@ -27,6 +28,8 @@ import type { MudMenuItem } from './mud-menu-item.component';
 import { _MudMenuStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 let nextUniqueId = 0;
+
+const AIM_DELAY_MS = 300;
 
 /**
  * ```html
@@ -88,6 +91,8 @@ export class MudMenu implements MudMenuPanel {
 
   private readonly _items = signal<readonly MudMenuItem[]>([]);
   private readonly _active = signal<MudMenuItem | null>(null);
+  private _hoveredItem: MudMenuItem | null = null;
+  private _aimTimer: ReturnType<typeof setTimeout> | null = null;
 
   protected readonly _renderInline = computed(() => this.open() && !this._attachedTrigger());
 
@@ -106,6 +111,7 @@ export class MudMenu implements MudMenuPanel {
 
   constructor() {
     inject(MudStyleLoader).load(_MudMenuStyles);
+    inject(DestroyRef).onDestroy(() => this._clearAimTimer());
 
     afterRenderEffect(() => {
       const focusable = this._focusable();
@@ -143,11 +149,27 @@ export class MudMenu implements MudMenuPanel {
     }
   }
 
-  /** @docs-private Hovering another item closes the open submenu. */
+  /** @docs-private Hovering another item closes the open submenu, unless the pointer is heading into it. */
   _itemEntered(item: MudMenuItem): void {
+    this._hoveredItem = item;
     const child = this._attachedTrigger()?._childTrigger;
 
+    if (child && child._hostItem !== item && child._checkAim()) {
+      this._aimTimer ??= setTimeout(() => this._settleAim(), AIM_DELAY_MS);
+
+      return;
+    }
+
+    this._clearAimTimer();
+
     if (child && child._hostItem !== item) child._scheduleClose();
+
+    item._submenuTrigger?._hoverOpen();
+  }
+
+  /** @docs-private */
+  _itemLeft(item: MudMenuItem): void {
+    if (this._hoveredItem === item) this._hoveredItem = null;
   }
 
   _focusFirst(): void {
@@ -158,6 +180,31 @@ export class MudMenu implements MudMenuPanel {
     const focusable = this._focusable();
 
     this._focusItem(focusable[focusable.length - 1]);
+  }
+
+  private _settleAim(): void {
+    this._aimTimer = null;
+    const item = this._hoveredItem;
+    const child = this._attachedTrigger()?._childTrigger;
+
+    if (!child || child._hostItem === item || child._pointerInPanel()) return;
+
+    // Still travelling towards the submenu: give it another window.
+    if (child._checkAim()) {
+      this._aimTimer = setTimeout(() => this._settleAim(), AIM_DELAY_MS);
+
+      return;
+    }
+
+    child.close(false);
+    item?._submenuTrigger?._hoverOpen();
+  }
+
+  private _clearAimTimer(): void {
+    if (this._aimTimer !== null) {
+      clearTimeout(this._aimTimer);
+      this._aimTimer = null;
+    }
   }
 
   private _focusItem(item: MudMenuItem | undefined): void {

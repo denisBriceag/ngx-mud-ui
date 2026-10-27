@@ -175,7 +175,7 @@ export const Truncation: Story = {
   }),
 };
 
-/** A submenu on the Share item, MatMenu-style. */
+/** Submenus on the first and third items (Export nests a third level), MatMenu-style. */
 export const Nested: Story = {
   parameters: { controls: { disable: true } },
   render: () => ({
@@ -183,12 +183,29 @@ export const Nested: Story = {
       <div style="${WRAP}">
         <button mudButton [mudMenuTriggerFor]="root">Options</button>
         <mud-menu #root aria-label="Options">
-          <mud-menu-item value="rename">Rename</mud-menu-item>
           <mud-menu-item [mudMenuTriggerFor]="share">Share</mud-menu-item>
+          <mud-menu-item value="rename">Rename</mud-menu-item>
+          <mud-menu-item [mudMenuTriggerFor]="exportMenu">Export</mud-menu-item>
+          <mud-menu-item value="duplicate">Duplicate</mud-menu-item>
+          <mud-menu-item value="archive">Archive</mud-menu-item>
+          <mud-menu-item value="delete">Delete</mud-menu-item>
         </mud-menu>
         <mud-menu #share aria-label="Share">
           <mud-menu-item value="email">Email</mud-menu-item>
           <mud-menu-item value="copy">Copy link</mud-menu-item>
+          <mud-menu-item value="sms">SMS</mud-menu-item>
+          <mud-menu-item value="qr">QR code</mud-menu-item>
+          <mud-menu-item value="embed">Embed</mud-menu-item>
+        </mud-menu>
+        <mud-menu #exportMenu aria-label="Export">
+          <mud-menu-item value="pdf">PDF</mud-menu-item>
+          <mud-menu-item value="docx">Word</mud-menu-item>
+          <mud-menu-item [mudMenuTriggerFor]="excel">Excel</mud-menu-item>
+          <mud-menu-item value="csv">CSV</mud-menu-item>
+        </mud-menu>
+        <mud-menu #excel aria-label="Excel">
+          <mud-menu-item value="xlsx">Workbook (.xlsx)</mud-menu-item>
+          <mud-menu-item value="xls">Excel 97–2003 (.xls)</mud-menu-item>
         </mud-menu>
       </div>
     `,

@@ -25,6 +25,9 @@ export interface MudMenuTriggerHandle {
   closeAll(restoreFocus: boolean): void;
   _containsEvent(target: Node): boolean;
   _scheduleClose(): void;
+  _hoverOpen(): void;
+  _checkAim(): boolean;
+  _pointerInPanel(): boolean;
 }
 
 /** @docs-private Panel surface items talk to; implemented by MudMenu (breaks the import cycle). */
@@ -37,6 +40,7 @@ export interface MudMenuPanel {
   _unregister(item: MudMenuItem): void;
   _activate(item: MudMenuItem): void;
   _itemEntered(item: MudMenuItem): void;
+  _itemLeft(item: MudMenuItem): void;
 }
 
 /** @docs-private Provided by MudMenu on itself; items and item-hosted triggers inject it. */

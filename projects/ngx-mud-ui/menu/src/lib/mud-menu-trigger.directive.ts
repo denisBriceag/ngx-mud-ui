@@ -10,18 +10,22 @@ import {
   PLATFORM_ID,
   signal,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Overlay } from '@angular/cdk/overlay';
 import type { ConnectedPosition, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import type { Subscription } from 'rxjs';
 
 import type { MudMenu } from './mud-menu.component';
+import { isAimingAt } from './mud-menu-aim';
+import type { MudMenuAimPoint } from './mud-menu-aim';
 import { MudMenuItem } from './mud-menu-item.component';
 import { MUD_MENU_PANEL } from './mud-menu.types';
 import type { MudMenuPositionX, MudMenuPositionY, MudMenuTriggerHandle } from './mud-menu.types';
 
 const SUBMENU_HOVER_DELAY_MS = 120;
+const AIM_SAMPLE_COUNT = 5;
+const AIM_TOLERANCE_PX = 20;
 
 function rootPositions(x: MudMenuPositionX, y: MudMenuPositionY): ConnectedPosition[] {
   const alignX = x === 'before' ? 'end' : 'start';
@@ -65,7 +69,6 @@ function submenuPositions(x: MudMenuPositionX): ConnectedPosition[] {
     '[attr.aria-controls]': '_isOpen() ? menu()._panelId : null',
     '(click)': '_onClick($event)',
     '(keydown)': '_onKeydown($event)',
-    '(mouseenter)': '_onMouseEnter()',
     '(mouseleave)': '_onMouseLeave()',
   },
 })
@@ -81,6 +84,7 @@ export class MudMenuTrigger implements MudMenuTriggerHandle {
 
   private readonly _overlay = inject(Overlay);
   private readonly _host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly _document = inject(DOCUMENT);
   private readonly _injector = inject(Injector);
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   // On an item this is the CONTAINING menu: projected content keeps its declaration-site injector.
@@ -99,6 +103,10 @@ export class MudMenuTrigger implements MudMenuTriggerHandle {
   private _overlayRef: OverlayRef | null = null;
   private _outsideSub: Subscription | null = null;
   private _hoverTimer: ReturnType<typeof setTimeout> | null = null;
+  // Native listeners: template ones would schedule change detection on every mousemove.
+  private _pointerTracking: AbortController | null = null;
+  private _pointer: MudMenuAimPoint[] = [];
+  private _lastAimCheck: MudMenuAimPoint | undefined;
 
   /** @docs-private */
   readonly _isOpen = signal(false);
@@ -106,7 +114,11 @@ export class MudMenuTrigger implements MudMenuTriggerHandle {
   private _destroyed = false;
 
   constructor() {
-    this._hostItem?._hasSubmenu.set(true);
+    if (this._hostItem) {
+      this._hostItem._hasSubmenu.set(true);
+      this._hostItem._submenuTrigger = this;
+    }
+
     inject(DestroyRef).onDestroy(() => {
       this._destroyed = true;
       this._clearHoverTimer();
@@ -148,6 +160,8 @@ export class MudMenuTrigger implements MudMenuTriggerHandle {
       this._parentTrigger._childTrigger = this;
     }
 
+    if (this.isSubmenu) this._trackPointer(this._overlayRef.overlayElement);
+
     // Only the chain root watches outside clicks; descendant overlays count as inside via _containsEvent.
     if (!this.isSubmenu) {
       this._outsideSub = this._overlayRef.outsidePointerEvents().subscribe((event) => {
@@ -167,6 +181,10 @@ export class MudMenuTrigger implements MudMenuTriggerHandle {
     if (!this._isOpen()) return;
 
     this._clearHoverTimer();
+    this._pointerTracking?.abort();
+    this._pointerTracking = null;
+    this._pointer = [];
+    this._lastAimCheck = undefined;
     this._childTrigger?.close(false);
     this._childTrigger = null;
     this._outsideSub?.unsubscribe();
@@ -212,6 +230,39 @@ export class MudMenuTrigger implements MudMenuTriggerHandle {
     this._hoverTimer = setTimeout(() => this.close(false), SUBMENU_HOVER_DELAY_MS);
   }
 
+  /** @docs-private Hover-open after the delay; on an open submenu, cancels a pending close. */
+  _hoverOpen(): void {
+    if (!this.isSubmenu || this._hostItem?.disabled()) return;
+
+    this._clearHoverTimer();
+
+    if (!this._isOpen()) this._hoverTimer = setTimeout(() => this.open(), SUBMENU_HOVER_DELAY_MS);
+  }
+
+  /** @docs-private True when the pointer moved since the last check and is heading into this submenu's panel. */
+  _checkAim(): boolean {
+    const from = this._pointer[0];
+    const to = this._pointer.at(-1);
+    const moved = to !== this._lastAimCheck;
+
+    this._lastAimCheck = to;
+
+    if (!from || !to || !moved || !this._overlayRef) return false;
+
+    return isAimingAt(from, to, this._overlayRef.overlayElement.getBoundingClientRect(), AIM_TOLERANCE_PX);
+  }
+
+  /** @docs-private True when the last tracked pointer position lies over this submenu's panel. */
+  _pointerInPanel(): boolean {
+    const point = this._pointer.at(-1);
+
+    if (!point || !this._overlayRef) return false;
+
+    const rect = this._overlayRef.overlayElement.getBoundingClientRect();
+
+    return point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom;
+  }
+
   protected _onClick(event: MouseEvent): void {
     if (this._hostItem?.disabled()) return;
 
@@ -243,24 +294,28 @@ export class MudMenuTrigger implements MudMenuTriggerHandle {
     }
   }
 
-  protected _onMouseEnter(): void {
-    if (!this.isSubmenu || this._hostItem?.disabled()) return;
-
-    if (this._isOpen()) {
-      this._clearHoverTimer();
-
-      return;
-    }
-
-    this._clearHoverTimer();
-    this._hoverTimer = setTimeout(() => this.open(), SUBMENU_HOVER_DELAY_MS);
-  }
-
   protected _onMouseLeave(): void {
     // Cancel only a PENDING open; an open submenu stays while the pointer heads into its panel.
     if (!this.isSubmenu || this._isOpen()) return;
 
     this._clearHoverTimer();
+  }
+
+  private _trackPointer(pane: HTMLElement): void {
+    this._pointerTracking = new AbortController();
+    const { signal } = this._pointerTracking;
+
+    this._document.addEventListener(
+      'mousemove',
+      (event) => {
+        this._pointer.push({ x: event.clientX, y: event.clientY });
+
+        if (this._pointer.length > AIM_SAMPLE_COUNT) this._pointer.shift();
+      },
+      { passive: true, signal },
+    );
+    // Reaching the panel cancels a close scheduled while the pointer crossed a sibling.
+    pane.addEventListener('mouseenter', () => this._clearHoverTimer(), { signal });
   }
 
   private _clearHoverTimer(): void {

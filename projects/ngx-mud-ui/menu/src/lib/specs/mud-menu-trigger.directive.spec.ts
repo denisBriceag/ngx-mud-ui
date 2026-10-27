@@ -421,6 +421,83 @@ describe('MudMenuTrigger (nested)', () => {
     }
   });
 
+  describe('menu aim', () => {
+    const labels = (panels: () => HTMLElement[]) => panels().map((p) => p.getAttribute('aria-label'));
+    const move = (x: number, y: number) =>
+      document.dispatchEvent(new MouseEvent('mousemove', { clientX: x, clientY: y }));
+
+    // jsdom has no layout: place the Share submenu at x 200..400, y 0..200.
+    async function openShare() {
+      const rendered = await renderNested();
+
+      rendered.shareItem().dispatchEvent(new MouseEvent('mouseenter'));
+      vi.advanceTimersByTime(130);
+      await rendered.fixture.whenStable();
+      const pane = rendered.panels()[1].closest<HTMLElement>('.cdk-overlay-pane')!;
+
+      vi.spyOn(pane, 'getBoundingClientRect').mockReturnValue(new DOMRect(200, 0, 200, 200));
+
+      return { ...rendered, pane };
+    }
+
+    beforeEach(() => vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] }));
+    afterEach(() => vi.useRealTimers());
+
+    it('crossing a sibling while heading into the submenu keeps it open', async () => {
+      const { fixture, panels, exportItem, pane } = await openShare();
+
+      move(100, 20);
+      move(120, 40);
+      exportItem().dispatchEvent(new MouseEvent('mouseenter'));
+      vi.advanceTimersByTime(200);
+      await fixture.whenStable();
+      expect(labels(panels)).toEqual(['Options', 'Share']);
+
+      exportItem().dispatchEvent(new MouseEvent('mouseleave'));
+      move(250, 60);
+      pane.dispatchEvent(new MouseEvent('mouseenter'));
+      vi.advanceTimersByTime(500);
+      await fixture.whenStable();
+      expect(labels(panels)).toEqual(['Options', 'Share']);
+    });
+
+    it('resting on the sibling settles after the aim delay', async () => {
+      const { fixture, panels, exportItem } = await openShare();
+
+      move(100, 20);
+      move(120, 40);
+      exportItem().dispatchEvent(new MouseEvent('mouseenter'));
+      vi.advanceTimersByTime(300);
+      await fixture.whenStable();
+      vi.advanceTimersByTime(130);
+      await fixture.whenStable();
+      expect(labels(panels)).toEqual(['Options', 'Export']);
+    });
+
+    it('a move away from the submenu closes it like a plain sibling hover', async () => {
+      const { fixture, panels, exportItem } = await openShare();
+
+      move(100, 20);
+      move(98, 60);
+      exportItem().dispatchEvent(new MouseEvent('mouseenter'));
+      vi.advanceTimersByTime(130);
+      await fixture.whenStable();
+      expect(labels(panels)).toEqual(['Options', 'Export']);
+    });
+
+    it('reaching the submenu panel cancels a close scheduled by a sibling hover', async () => {
+      const { fixture, panels, exportItem, pane } = await openShare();
+
+      exportItem().dispatchEvent(new MouseEvent('mouseenter'));
+      vi.advanceTimersByTime(60);
+      exportItem().dispatchEvent(new MouseEvent('mouseleave'));
+      pane.dispatchEvent(new MouseEvent('mouseenter'));
+      vi.advanceTimersByTime(200);
+      await fixture.whenStable();
+      expect(labels(panels)).toEqual(['Options', 'Share']);
+    });
+  });
+
   it('a click inside a submenu overlay is not an outside interaction', async () => {
     const { fixture, panels, shareItem } = await renderNested();
 
