@@ -3,8 +3,6 @@
 @include host.typography('nav[mudBreadcrumb]');
 
 .mud-breadcrumb {
-  // The container query below measures this element, so it must be a container
-  // AND must not be inline — an inline box has no inline-size to query.
   container-type: inline-size;
   display: flex;
   align-items: center;
@@ -92,8 +90,6 @@
   font: inherit;
   text-align: inherit;
   text-decoration: none;
-  // The hover colour is now set on THIS element, so the fade has to live here
-  // too; the <li>'s own transition would never see the change.
   transition: color 150ms ease-out;
 }
 
@@ -176,6 +172,10 @@
 .mud-breadcrumb__panel {
   margin: 0;
   list-style: none;
+}
+
+.menu.mud-breadcrumb__panel {
+  min-inline-size: var(--mud-breadcrumb-menu-min-width);
 }
 
 .mud-breadcrumb__panel-item {

@@ -342,6 +342,17 @@ describe('MudBreadcrumb stylesheet selector contract', () => {
   });
 });
 
+describe('MudBreadcrumb overflow menu width', () => {
+  it('overrides the shared `.menu` 270px minimum with upstream’s 160px', async () => {
+    await render(trail(3));
+
+    const css = [...document.querySelectorAll('style')].map((style) => style.textContent ?? '').join('\n');
+
+    // Two classes, so it beats `.menu` on specificity regardless of stylesheet order.
+    expect(css).toMatch(/\.menu\.mud-breadcrumb__panel\s*\{[^}]*min-inline-size:\s*var\(--mud-breadcrumb-menu-min-width\)/);
+  });
+});
+
 describe('MudBreadcrumb collapsible gate', () => {
   // The container query below 640px hides the whole trail and reveals the back
   // link. Ungated it hides the trail even when NO back link exists, leaving a
