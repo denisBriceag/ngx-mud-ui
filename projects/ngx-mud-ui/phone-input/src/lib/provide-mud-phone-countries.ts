@@ -2,20 +2,13 @@ import { InjectionToken, makeEnvironmentProviders } from '@angular/core';
 import type { EnvironmentProviders } from '@angular/core';
 import type { MudPhoneCountry } from './phone-countries';
 
-/**
- * App-wide country list for `mud-phone-input`, as supplied by
- * {@link provideMudPhoneCountries}. A field's own `countries` input takes
- * precedence over this.
- *
- * @docs-private Configure it through the provider rather than injecting the
- * token yourself.
- */
+/** @docs-private App-wide country list from {@link provideMudPhoneCountries}; a field's `countries` input wins. */
 export const MUD_PHONE_COUNTRIES_CONFIG = new InjectionToken<
   readonly (string | MudPhoneCountry)[]
 >('MUD_PHONE_COUNTRIES_CONFIG');
 
 /**
- * Sets the country list for `mud-phone-input`
+ * Sets the app-wide country list for `mud-phone-input`.
  *
  * ```ts
  * bootstrapApplication(App, {
@@ -29,8 +22,6 @@ export const MUD_PHONE_COUNTRIES_CONFIG = new InjectionToken<
  *   ],
  * });
  * ```
- *
- * A single field can still opt out by setting its own `countries`.
  */
 export function provideMudPhoneCountries(
   countries: readonly (string | MudPhoneCountry)[],

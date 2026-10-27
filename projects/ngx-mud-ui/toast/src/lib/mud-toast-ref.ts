@@ -15,7 +15,7 @@ export class MudToastRef<T = void> {
   private readonly _opened = new Subject<void>();
   private readonly _dismissed = new Subject<MudToastDismissReason>();
   private readonly _dismissRequest = new Subject<MudToastDismissReason>();
-  // Defensive: RxJS already stops completed Subjects; this flag ensures future non-Subject side effects stay idempotent.
+  // Keeps dismiss() and _settle() idempotent.
   private _settled = false;
 
   /** @description Emits after the enter animation, then completes. */
@@ -34,7 +34,7 @@ export class MudToastRef<T = void> {
     this._dismissRequest.next(reason);
   }
 
-  /** @internal No _settled guard: service calls this only before settle, and Subject.complete() is idempotent. */
+  /** @internal Called only before settle. */
   _markOpened(): void {
     this._opened.next();
     this._opened.complete();

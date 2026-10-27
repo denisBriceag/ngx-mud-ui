@@ -17,8 +17,7 @@
   gap: var(--mud-spacing-8, 8px);
   inline-size: 100%;
   padding-block: var(--mud-spacing-12, 12px);
-  // Inline padding leaves room for the absolutely-positioned close button so
-  // the centered content never collides with it.
+  // Leaves room for the absolutely-positioned close button.
   padding-inline: var(--mud-spacing-48, 48px);
   background: var(--_banner-surface);
   color: var(--_banner-text);
@@ -137,6 +136,18 @@
   background: transparent;
   color: inherit;
   cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+// A wash of the glyph colour reads on every banner fill.
+.banner__close:hover {
+  background-color: color-mix(in srgb, currentcolor 12%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner__close {
+    transition: none;
+  }
 }
 
 .banner__close::before {

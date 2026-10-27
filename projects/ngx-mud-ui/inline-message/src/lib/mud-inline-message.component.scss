@@ -34,8 +34,8 @@
 }
 
 .inline-message--success {
-  --_im-text: var(--mud-color-text-positive-on-secondary);
-  --_im-icon: var(--mud-color-icon-positive-on-secondary);
+  --_im-text: var(--mud-color-inline-message-success-text);
+  --_im-icon: var(--mud-color-inline-message-success-icon);
 }
 
 .inline-message--error {

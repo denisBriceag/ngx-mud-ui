@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
 import { MudTag } from 'ngx-mud-ui/tag';
 import { MudIconComponent, provideMudIcons } from 'ngx-mud-ui/icons';
-import { checkmarkSmall, circleInfo } from 'ngx-mud-ui/icons';
+import { checkmarkSmall, chevronRightSmall, circleInfo } from 'ngx-mud-ui/icons';
 
 const ROW = 'display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:24px';
 const COLORS = ['muted', 'neutral', 'accent', 'success', 'brand', 'danger', 'info'] as const;
@@ -11,7 +11,7 @@ const meta: Meta<MudTag> = {
   title: 'Components/Tag',
   component: MudTag,
   decorators: [
-    applicationConfig({ providers: [provideMudIcons([checkmarkSmall, circleInfo])] }),
+    applicationConfig({ providers: [provideMudIcons([checkmarkSmall, chevronRightSmall, circleInfo])] }),
     moduleMetadata({ imports: [MudTag, MudIconComponent] }),
   ],
   argTypes: {
@@ -22,11 +22,13 @@ const meta: Meta<MudTag> = {
       description: 'info supports only subtle and strong; outlined falls back to subtle with a dev warning',
     },
     size: { control: 'inline-radio', options: ['medium', 'small'] },
+    disabled: { control: 'boolean' },
   },
   args: {
     color: 'success',
     type: 'subtle',
     size: 'medium',
+    disabled: false,
   },
 };
 
@@ -39,7 +41,7 @@ export const Playground: Story = {
     props: args,
     template: `
       <div style="${ROW}">
-        <mud-tag [color]="color" [type]="type" [size]="size">Label</mud-tag>
+        <mud-tag [color]="color" [type]="type" [size]="size" [disabled]="disabled">Label</mud-tag>
       </div>
     `,
   }),
@@ -64,6 +66,24 @@ export const Matrix: Story = {
   }),
 };
 
+/** Disabled replaces every color with the disabled pair; outlined keeps its transparent fill. */
+export const Disabled: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => ({
+    template: `
+      <div style="${ROW}">
+        <mud-tag color="success" disabled>Subtle</mud-tag>
+        <mud-tag color="danger" type="strong" disabled>Strong</mud-tag>
+        <mud-tag color="brand" type="outlined" disabled>Outlined</mud-tag>
+        <mud-tag color="success" disabled>
+          <mud-icon icon-start name="checkmark-small" [scale]="16" />
+          With icon
+        </mud-tag>
+      </div>
+    `,
+  }),
+};
+
 /** Medium is 24px tall (14/20 text), small is 20px (12/16 text). */
 export const Sizes: Story = {
   parameters: { controls: { disable: true } },
@@ -78,26 +98,33 @@ export const Sizes: Story = {
 };
 
 /**
- * An icon on either edge tightens that edge's padding (6px on medium, 4px on
- * small) and is forced to 16px (medium) / 12px (small). Pass `scale="16"` so
- * the icon geometry matches the rendered size.
+ * Mark an icon `icon-start` or `icon-end`. It tightens only its own edge
+ * (6px on medium, 4px on small) and is forced to 16px (medium) / 12px (small).
+ * Pass `scale="16"` so the icon geometry matches the rendered size.
  */
-export const LeadingIcon: Story = {
+export const Icons: Story = {
   parameters: { controls: { disable: true } },
   render: () => ({
     template: `
       <div style="${ROW}">
         <mud-tag color="success">
-          <mud-icon name="checkmark-small" [scale]="16" /> Approved
+          <mud-icon icon-start name="checkmark-small" [scale]="16" /> Approved
         </mud-tag>
         <mud-tag color="info" type="strong">
-          <mud-icon name="circle-info" [scale]="16" /> In review
+          <mud-icon icon-start name="circle-info" [scale]="16" /> In review
         </mud-tag>
         <mud-tag color="brand">
-          Details <mud-icon name="chevron-right-small" [scale]="16" />
+          Details <mud-icon icon-end name="chevron-right-small" [scale]="16" />
+        </mud-tag>
+        <mud-tag color="neutral" type="outlined">
+          <mud-icon icon-start name="circle-info" [scale]="16" /> Both
+          <mud-icon icon-end name="chevron-right-small" [scale]="16" />
         </mud-tag>
         <mud-tag color="danger" type="outlined" size="small">
-          <mud-icon name="circle-info" [scale]="16" /> Rejected
+          <mud-icon icon-start name="circle-info" [scale]="16" /> Rejected
+        </mud-tag>
+        <mud-tag color="brand" size="small">
+          Details <mud-icon icon-end name="chevron-right-small" [scale]="16" />
         </mud-tag>
       </div>
     `,

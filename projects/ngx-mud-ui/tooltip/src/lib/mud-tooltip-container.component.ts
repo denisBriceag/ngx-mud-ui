@@ -9,10 +9,7 @@ import {
 } from '@angular/core';
 import type { MudTooltipPlacement, MudTooltipSize } from './tooltip-positions';
 
-/**
- * The tooltip bubble rendered in a CDK overlay. Created by the `MudTooltip`
- * directive - not meant to be used directly in templates.
- */
+/** Overlay bubble created by the `MudTooltip` directive; not for direct template use. */
 @Component({
   selector: 'mud-tooltip-container',
   template: `

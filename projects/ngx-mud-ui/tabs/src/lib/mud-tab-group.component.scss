@@ -16,6 +16,7 @@
   flex: 1 1 auto;
   min-width: 0;
   overflow-x: auto;
+  scroll-behavior: smooth;
   scrollbar-width: none; // Firefox
   -ms-overflow-style: none; // legacy Edge
   --_fade-start: 0px;
@@ -121,16 +122,37 @@
   padding: 0 16px;
   background: transparent;
   border: none;
+  // Reserves the indicator's 2px; the bar itself is ::after, painted over it.
   border-bottom: 2px solid transparent;
+  position: relative;
   color: var(--mud-color-text-base-secondary, #383838);
   font-family: inherit; // <button> does not inherit by default; takes the host typography (token)
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
   cursor: pointer;
-  transition:
-    color 150ms ease-out,
-    border-color 150ms ease-out;
+  transition: color 150ms ease-out;
+
+  // Sits over the border, outside the padding box, so the inset focus ring never covers it.
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: -2px;
+    height: 2px;
+    background: var(--mud-color-border-brand-default, #0058d2);
+    opacity: 0;
+    transform: scaleX(0.4);
+    transition:
+      opacity 150ms ease-out,
+      transform 150ms ease-out;
+    pointer-events: none;
+  }
+
+  &.active::after {
+    opacity: 1;
+    transform: scaleX(1);
+  }
 
   mud-icon svg,
   > svg {
@@ -145,7 +167,6 @@
 
   &.active {
     color: var(--mud-color-text-brand-default, #0058d2);
-    border-color: var(--mud-color-border-brand-default, #0058d2);
     font-weight: 500;
   }
 
@@ -160,10 +181,11 @@
   &:disabled {
     color: var(--mud-color-text-disabled-default, #B2B2B2);
     cursor: not-allowed;
+    // Custom property: the icon is in the consumer's mudTabLabel template, out of encapsulated reach.
+    --mud-icon-color: var(--mud-color-icon-disabled-default, #B2B2B2);
   }
 }
 
-// The official count pill after the label.
 .tab-badge {
   display: inline-flex;
   align-items: center;
@@ -181,9 +203,9 @@
 
 .tab-button:disabled .tab-badge {
   color: var(--mud-color-text-disabled-default, #B2B2B2);
+  opacity: 0.6;
 }
 
-// Explicit compact variant (size="sm").
 .tabs--sm .tab-button {
   height: 40px;
   padding: 0 12px;
@@ -212,7 +234,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .tab-viewport {
+    scroll-behavior: auto;
+  }
+
   .tab-button,
+  .tab-button::after,
   .tab-scroll {
     transition: none;
   }

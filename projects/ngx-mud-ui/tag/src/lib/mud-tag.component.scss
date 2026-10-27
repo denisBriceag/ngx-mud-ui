@@ -27,17 +27,20 @@
   max-width: 100%;
   justify-content: safe center;
 
-  &:not(:has(> :is(mud-icon, svg))) {
+  // Text only: a block box, so a long label can end in an ellipsis.
+  &:not(:has(> :is([icon-start], [icon-end]))) {
     display: inline-block;
     line-height: 22px;
     text-align: center;
   }
 
-  &:has(> :is(mud-icon, svg):first-child) {
+  // An icon tightens only its own edge. Marked by attribute, not DOM position: text
+  // nodes aren't elements, so a lone icon is both :first-child and :last-child.
+  &:has(> [icon-start]) {
     padding-left: var(--mud-spacing-6, 6px);
   }
 
-  &:has(> :is(mud-icon, svg):last-child) {
+  &:has(> [icon-end]) {
     padding-right: var(--mud-spacing-6, 6px);
   }
 
@@ -54,15 +57,15 @@
     font-size: 12px;
     line-height: 16px;
 
-    &.status-tag:not(:has(> :is(mud-icon, svg))) {
+    &.status-tag:not(:has(> :is([icon-start], [icon-end]))) {
       line-height: 18px;
     }
 
-    &:has(> :is(mud-icon, svg):first-child) {
+    &:has(> [icon-start]) {
       padding-left: var(--mud-spacing-4, 4px);
     }
 
-    &:has(> :is(mud-icon, svg):last-child) {
+    &:has(> [icon-end]) {
       padding-right: var(--mud-spacing-4, 4px);
     }
 
@@ -85,9 +88,9 @@ $tag-colors: (
   muted: (
     subtle-bg: var(--mud-color-background-base-default),
     subtle-color: var(--mud-color-text-base-tertiary),
-    // Official binding (resolves to gray-600; white on it passes AA at 9.7:1).
+    // Label follows the inverse surface: an always-white label is 1.41:1 on dark gray-250.
     strong-bg: var(--mud-color-background-base-inverse-default-active),
-    strong-color: var(--mud-color-text-base-inverse-on-color),
+    strong-color: var(--mud-color-text-base-inverse-default),
     outlined-border: var(--mud-color-border-base-default),
     outlined-color: var(--mud-color-text-base-tertiary),
   ),
@@ -110,9 +113,7 @@ $tag-colors: (
   success: (
     subtle-bg: var(--mud-color-background-positive-secondary),
     subtle-color: var(--mud-color-text-positive-on-secondary),
-    // Figma shows green-600, but white on green-600 fails AA (3.73:1). The
-    // official design system also deviates here: its token resolves to
-    // green-700 (5.48:1), which is exactly this semantic binding.
+    // Not green-600: white on it fails AA (3.73:1); this resolves to green-700 (5.48:1).
     strong-bg: var(--mud-color-background-positive-default-hover),
     strong-color: var(--mud-color-text-base-inverse-on-color),
     outlined-border: var(--mud-color-border-positive-default),
@@ -168,4 +169,16 @@ $tag-colors: (
       }
     }
   }
+}
+
+// Three classes so disabled out-ranks every .status-tag--x.is-type.
+.status-tag.is-disabled:not(.is-outlined) {
+  background-color: var(--mud-color-background-disabled-default);
+  color: var(--mud-color-text-disabled-on-disabled);
+}
+
+// Outlined keeps its transparent fill, so the label sits on the page surface.
+.status-tag.is-disabled.is-outlined {
+  color: var(--mud-color-text-disabled-default);
+  border-color: var(--mud-color-border-disabled-default);
 }

@@ -1,9 +1,17 @@
 // Storybook's own page styles — the "host app" around the stories. Not library CSS.
-// A deliberately plain host app: browser default font, line-height and text colour. Any library
-// component that changes when these change was inheriting from the app — it must set its own.
+// Like a real app, the page sets Onest, so text a story writes itself (labels, captions, value
+// read-outs) matches the design system. Library components must still set their own font:
+// `pnpm stories:fonts` swaps this font for a sentinel and fails on any component that inherits it.
 body {
   margin: 0;
   background: var(--mud-color-background-base-default, #fff);
+  font-family: var(--mud-font-family-base);
+}
+
+// Story-only code read-outs and plain native controls follow the page font too. Zero
+// specificity (:where), so any library rule wins and the sentinel scan still sees inheritance.
+:where(code, pre, kbd, samp, button, input, select, textarea) {
+  font-family: inherit;
 }
 
 [data-theme='dark'] {

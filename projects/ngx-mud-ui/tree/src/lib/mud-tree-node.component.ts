@@ -35,7 +35,7 @@ declare const ngDevMode: boolean | undefined;
     <span class="mud-tree-item__selected-icon" aria-hidden="true"><ng-content select="[selectedIcon]" /></span>
     <span class="mud-tree-item__label" #label><ng-content /></span>
     <span class="mud-tree-item__secondary"><ng-content select="[secondaryLabel]" /></span>
-    <span class="mud-tree-item__trailing"><ng-content select="[trailing]" />@if (isExpandable) {<ng-template #chevron>@if (isExpanded) {<svg viewBox="0 0 20 20" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M3.217 13.35c.31.31.812.31 1.122 0l5.122-5.122a.76.76 0 0 1 1.078 0l5.122 5.122a.793.793 0 0 0 1.122-1.122L11.66 7.106a2.35 2.35 0 0 0-3.322 0l-5.122 5.122a.793.793 0 0 0 0 1.122z" clip-rule="evenodd"/></svg>} @else {<svg viewBox="0 0 20 20" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M3.217 6.65a.793.793 0 0 1 1.122 0l5.122 5.122a.76.76 0 0 0 1.078 0L15.66 6.65a.793.793 0 0 1 1.122 1.122l-5.122 5.122a2.35 2.35 0 0 1-3.322 0L3.217 7.772a.793.793 0 0 1 0-1.122" clip-rule="evenodd"/></svg>}</ng-template>@if (isDisabled) {<span class="mud-tree-item__toggle" aria-hidden="true" [attr.data-direction]="isExpanded ? 'up' : 'down'" (click)="$event.preventDefault()"><ng-container *ngTemplateOutlet="chevron" /></span>} @else {<span class="mud-tree-item__toggle" cdkTreeNodeToggle aria-hidden="true" [attr.data-direction]="isExpanded ? 'up' : 'down'" (click)="$event.preventDefault()"><ng-container *ngTemplateOutlet="chevron" /></span>}}</span>
+    <span class="mud-tree-item__trailing"><ng-content select="[trailing]" />@if (isExpandable) {<ng-template #chevron><svg viewBox="0 0 20 20" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M3.217 6.65a.793.793 0 0 1 1.122 0l5.122 5.122a.76.76 0 0 0 1.078 0L15.66 6.65a.793.793 0 0 1 1.122 1.122l-5.122 5.122a2.35 2.35 0 0 1-3.322 0L3.217 7.772a.793.793 0 0 1 0-1.122" clip-rule="evenodd"/></svg></ng-template>@if (isDisabled) {<span class="mud-tree-item__toggle" aria-hidden="true" [attr.data-direction]="isExpanded ? 'up' : 'down'" (click)="$event.preventDefault()"><ng-container *ngTemplateOutlet="chevron" /></span>} @else {<span class="mud-tree-item__toggle" cdkTreeNodeToggle aria-hidden="true" [attr.data-direction]="isExpanded ? 'up' : 'down'" (click)="$event.preventDefault()"><ng-container *ngTemplateOutlet="chevron" /></span>}}</span>
   `,
   host: {
     class: 'mud-tree-item mud-tree-node',
@@ -59,7 +59,7 @@ export class MudTreeNode<T, K = T> extends CdkTreeNode<T, K> implements OnInit {
   private readonly _label = viewChild.required<ElementRef<HTMLElement>>('label');
   private readonly _multiple = inject(MudTree, { optional: true })?.multiple ?? (() => false);
 
-  /** @description Marks the node as the current page (aria-current), or as chosen in a `multiple` tree (aria-selected); same visuals either way. */
+  /** @description Marks the node as the current page, or as chosen in a `multiple` tree. */
   readonly selected = input(false, { transform: booleanAttribute });
 
   protected readonly _ariaCurrent = computed(() =>

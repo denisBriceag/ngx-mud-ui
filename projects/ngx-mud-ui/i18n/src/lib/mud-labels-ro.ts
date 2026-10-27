@@ -18,7 +18,7 @@ const files = (n: number): string => {
   return `${n} ${form === 'one' ? 'fișier' : form === 'few' ? 'fișiere' : 'de fișiere'}`;
 };
 
-/** Romanian pack (ro-MD copy from the upstream design system where it exists). */
+/** Romanian pack. */
 export const MUD_LABELS_RO: MudLabels = {
   avatar: { initials: (i) => `Avatar pentru ${i}`, fallback: 'Avatar utilizator' },
   badge: { notification: 'Notificare' },

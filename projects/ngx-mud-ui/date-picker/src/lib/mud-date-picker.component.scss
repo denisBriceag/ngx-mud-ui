@@ -25,8 +25,7 @@
     );
 }
 
-// `flat` sits inside a surface that already casts the shadow — the popover
-// in mud-date-input, or a consumer's own card.
+// `flat` sits inside a surface that already casts the shadow.
 .date-picker--flat {
   box-shadow: none;
 }
@@ -50,8 +49,6 @@
   border: 0;
   border-radius: var(--mud-border-radius-6, 6px);
   box-sizing: border-box;
-  // base-default, not -secondary: upstream's nav icon is #121212 light / #fff
-  // dark, which is what the default icon token resolves to.
   color: var(--mud-color-icon-base-default);
   cursor: pointer;
   display: inline-flex;
@@ -65,7 +62,12 @@
     background: var(--mud-color-background-base-tertiary-hover);
   }
 
-  // Upstream: #B2B2B2 light / #616161 dark — the tertiary-active pair exactly.
+  &:focus-visible {
+    outline: var(--mud-focus-ring-outer-width, 3px) solid
+      var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500));
+    outline-offset: 2px;
+  }
+
   &:active:not(:disabled) {
     background: var(--mud-color-background-base-tertiary-active);
   }
@@ -89,17 +91,26 @@
   color: inherit;
   cursor: pointer;
   font: inherit;
-  // Pinned, not inherited: upstream's header title is 16/24 at 500 regardless
-  // of the context the calendar is embedded in.
+  // Pinned, not inherited from the embedding context.
   font-size: 16px;
   font-weight: 500;
-  // Figma: the header date matches the 40px nav arrows, not its text box.
+  // Matches the 40px nav arrows, not its text box.
   height: 40px;
   line-height: 24px;
   padding: 0 var(--mud-spacing-8, 8px);
 
   &:hover:not(:disabled) {
     background: var(--mud-color-background-base-secondary-hover);
+  }
+
+  &:active:not(:disabled) {
+    background: var(--mud-color-background-base-secondary-active);
+  }
+
+  &:focus-visible {
+    outline: var(--mud-focus-ring-outer-width, 3px) solid
+      var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500));
+    outline-offset: 2px;
   }
 
   &:disabled {
@@ -125,9 +136,7 @@
   width: 100%;
 }
 
-// Upstream metrics: 32px row, 14/20 at 500, uppercase. The COLOR deliberately
-// diverges: upstream's #757575 light / #B2B2B2 dark sit at the AA borderline,
-// so these keep base-secondary like the rest of the library's secondary text.
+// base-secondary on purpose: lighter greys sit at the WCAG AA borderline.
 .date-picker__day-label {
   color: var(--mud-color-text-base-secondary);
   font-size: 14px;
@@ -154,8 +163,7 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
-  // 40px rows x 6 fixed weeks: the calendar never changes height, so a short
-  // month cannot resize the popover under the pointer.
+  // 40px rows x 6 fixed weeks, so a short month cannot resize the popover under the pointer.
   height: 40px;
   width: 100%;
 
@@ -177,29 +185,17 @@
   color: var(--mud-color-text-base-default);
 }
 
-// `--mud-color-text-base-secondary` alone (no opacity) — halving it again with
-// `opacity` compounds the two dimmings and drops below WCAG AA's 4.5:1 for
-// this 16px/normal-weight text (axe `color-contrast`, task 14 audit: 3.54:1).
-// These cells are ordinary enabled buttons (a real adjacent-month date one
-// click away), not disabled controls, so the contrast requirement applies.
+// No extra `opacity`: it would drop these enabled buttons below WCAG AA 4.5:1.
 .date-picker__day.is-outside .date-picker__day-button {
   color: var(--mud-color-text-base-secondary);
 }
 
-// Ordered AFTER `.is-outside` deliberately: the two selectors tie on
-// specificity, and an outside-month day that is ALSO unavailable must read as
-// unavailable. A SELECTED out-of-range day is the deliberate exception — the
-// `.is-selected` rule below is later still and keeps the brand fill, because
-// dropping a consumer's value out of sight is the failure mode this library
-// rejects (see `writeValue`).
+// After `.is-outside` (equal specificity) so unavailable wins; `.is-selected` below still wins over this.
 .date-picker__day .date-picker__day-button[aria-disabled='true'] {
   color: var(--mud-color-text-disabled-default);
   cursor: default;
 }
 
-// Upstream's today cell is brand-COLOURED text inside a 1.5px brand ring
-// (`--date-picker-day-cell-today-color/border-color`), not just the ring. Both
-// tokens here resolve to upstream's exact pair in each theme.
 .date-picker__day.is-today .date-picker__day-button {
   box-shadow: inset 0 0 0 1.5px var(--mud-color-border-brand-default);
   color: var(--mud-color-text-brand-default);
@@ -227,12 +223,10 @@
 }
 
 .date-picker__day.is-range-middle .date-picker__day-button:not([aria-disabled='true']) {
-  color: var(--mud-color-text-brand-on-secondary);
+  color: var(--mud-color-text-base-default-on-color);
 }
 
-// The endpoint half-bars only exist once BOTH ends are set. `is-range-lone`
-// marks a start with no end yet — it renders as a plain selected day, with no
-// half-bar pointing into empty space.
+// Half-bars only once both ends are set (`is-range-lone` = start without end).
 .date-picker__day.is-range-start:not(.is-range-lone) {
   background: linear-gradient(to right, transparent 50%, var(--mud-color-background-brand-secondary) 50%);
 }
@@ -246,8 +240,7 @@
   background: none;
 }
 
-// Both pickers are upstream's 4x3 twelve-cell grid — months always, years
-// because the page size is 12 (see YEAR_PAGE in date-grid.ts).
+// 4x3 grid: years too, because YEAR_PAGE is 12.
 .date-picker__month-grid,
 .date-picker__year-grid {
   display: grid;
@@ -310,5 +303,33 @@
     outline: var(--mud-focus-ring-outer-width, 3px) solid
       var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500));
     outline-offset: 2px;
+  }
+}
+
+.date-picker__nav,
+.date-picker__chip,
+.date-picker__month-button,
+.date-picker__year-button,
+.date-picker__today {
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out;
+}
+
+.date-picker__day-button {
+  transition:
+    background-color 150ms ease-out,
+    box-shadow 150ms ease-out,
+    color 150ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .date-picker__nav,
+  .date-picker__chip,
+  .date-picker__month-button,
+  .date-picker__year-button,
+  .date-picker__today,
+  .date-picker__day-button {
+    transition: none;
   }
 }

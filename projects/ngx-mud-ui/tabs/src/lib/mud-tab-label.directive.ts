@@ -10,8 +10,6 @@ import { CdkPortal } from '@angular/cdk/portal';
  *   …content…
  * </mud-tab>
  * ```
- *
- * Extends `CdkPortal` so the group can project it into the tab button.
  */
 @Directive({ selector: '[mudTabLabel]' })
 export class MudTabLabel extends CdkPortal {}

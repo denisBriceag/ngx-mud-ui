@@ -86,23 +86,13 @@ export class MudTextInput implements ControlValueAccessor, FormValueControl<stri
   /** @description Read-only: the field stays focusable and copyable. */
   readonly readonly = input(false, { transform: booleanAttribute });
 
-  /**
-   * @description Forces destructive visuals and `aria-invalid`. Pair with a projected
-   * `mud-inline-message` to surface the message. Signal forms bind this automatically.
-   */
+  /** @description Destructive visuals + `aria-invalid`. Signal forms bind this automatically. */
   readonly invalid = input(false, { transform: booleanAttribute });
 
-  /**
-   * @description Loading: the control becomes uninteractive and a trailing spinner
-   * replaces the end icon; the host carries `aria-busy`.
-   */
+  /** @description Loading: uninteractive with a trailing spinner; the host carries `aria-busy`. */
   readonly loading = input(false, { transform: booleanAttribute });
 
-  /**
-   * @description Shows a trailing clear (×) button while the field holds a value.
-   * Clearing empties the field and returns focus to it. Suppressed when
-   * disabled, read-only, or loading.
-   */
+  /** @description Shows a trailing clear (×) button while the field holds a value. */
   readonly clearable = input(false, { transform: booleanAttribute });
 
   /** @description Current value. Two-way bindable; also driven by both forms systems. */

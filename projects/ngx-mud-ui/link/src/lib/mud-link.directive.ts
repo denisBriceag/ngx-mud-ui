@@ -48,10 +48,7 @@ export class MudLink {
   readonly underline = input<MudLinkUnderline>('always');
   readonly touchTarget = input<MudLinkTouchTarget>('auto');
   readonly disabled = input(false, { transform: booleanAttribute });
-  /**
-   * @description When true (the default), anchors with `target="_blank"` and no trailing
-   * icon get the external-link indicator glyph after the label.
-   */
+  /** @description Shows the external-link glyph on `target="_blank"` anchors with no trailing icon. */
   readonly external = input(true, { transform: booleanAttribute });
 
   // SSR has no media queries; assume fine pointer until the browser hydrates.
@@ -85,7 +82,7 @@ export class MudLink {
   constructor() {
     inject(MudStyleLoader).load(_MudLinkStyles);
 
-    // New-tab anchors get the official safety rel unless the consumer set one.
+    // New-tab anchors get a safety rel unless the consumer set one.
     const anchor = this._element as HTMLAnchorElement;
 
     if (anchor.getAttribute?.('target') === '_blank' && !anchor.getAttribute('rel')) {

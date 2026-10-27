@@ -30,10 +30,7 @@ export class MudTab {
   readonly ariaLabelledby = input<string | undefined>(undefined, { alias: 'aria-labelledby' });
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly id = input<string | undefined>(undefined);
-  /**
-   * @description Count pill rendered after the label (official tabs badge).
-   * Shown when >= 0; null hides it.
-   */
+  /** @description Count pill after the label; null hides it. */
   readonly badgeCount = input<number | null, number | string | null | undefined>(null, {
     transform: (value) => (value == null || value === '' ? null : numberAttribute(value)),
   });

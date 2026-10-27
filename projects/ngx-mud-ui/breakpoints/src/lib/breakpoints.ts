@@ -1,4 +1,4 @@
-/** @description The official MUD breakpoints in px; mirrored by `ngx-mud-ui/breakpoints` Sass. */
+/** @description MUD breakpoints in px; mirrored by `ngx-mud-ui/breakpoints` Sass. */
 export const MudBreakpointValues = {
   Xs: 320,
   Sm: 576,

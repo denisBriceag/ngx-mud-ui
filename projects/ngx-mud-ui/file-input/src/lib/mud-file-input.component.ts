@@ -67,11 +67,6 @@ const MIME_EXTENSIONS: Record<string, string> = {
 let nextUniqueId = 0;
 
 /**
- * Drag-and-drop / click-to-browse file selection. Owns selection, validation
- * and display; the actual upload (progress, retries) is consumer-driven from
- * the `value` — render your own `mud-file-item` rows with per-file `state`
- * and turn `showFileList` off when you do.
- *
  * ```html
  * <mud-file-input [formField]="form.documents" accept=".pdf,image/*" multiple [maxSize]="5242880">
  *   <mud-label>Documente</mud-label>
@@ -126,10 +121,7 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
   /** @description Destructive visuals + `aria-invalid`. Signal forms bind this automatically. */
   readonly invalid = input(false, { transform: booleanAttribute });
 
-  /**
-   * @description Set false to suppress the built-in file list — for consumers that render
-   * their own `mud-file-item` rows with per-file upload state.
-   */
+  /** @description Set false to render your own `mud-file-item` rows instead of the built-in list. */
   readonly showFileList = input(true, { transform: booleanAttribute });
 
   readonly name = input<string>('');
@@ -152,17 +144,10 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
   /** @description Builds each row's remove-button accessible name from the filename. */
   readonly removeLabel = input<((filename: string) => string) | undefined>(undefined);
 
-  /**
-   * @description Accessible name of the built-in file list; set to an empty string to leave
-   * the list unnamed (an exception to blank-means-unset).
-   */
+  /** @description Accessible name of the built-in file list; an empty string leaves it unnamed. */
   readonly fileListLabel = input<string | undefined>(undefined);
 
-  /**
-   * @description Word appended to the label, for assistive tech only, while `required`
-   * is set. The visible asterisk stays `aria-hidden`, and `aria-required`
-   * cannot be used because the browse control is a button.
-   */
+  /** @description Screen-reader-only word appended to the label while `required` (`aria-required` is prohibited on a button). */
   readonly requiredLabel = input<string | undefined>(undefined);
 
   /** @description Builds the live-region announcement for added files. */
@@ -442,11 +427,8 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
     this._announce(this.announceRemoved()?.(file) ?? this._labels().fileInput.removed(file.name));
     this.removed.emit({ file, index, files: next });
 
-    // The button that was just pressed is gone; without this, focus falls back
-    // to the document body and a keyboard user loses their place in the list.
-    // `@for` tracks by $index, so the row node at this index already exists and
-    // is reused for the file that shifts into the slot — focusing it now lands
-    // on the right control without waiting for change detection.
+    // The pressed button is gone; refocus or focus drops to body. `@for` tracks by
+    // $index, so the row at this index is reused and focusable without waiting for CD.
     if (next.length === 0 || !this._rows()[Math.min(index, next.length - 1)]?.focusRemove()) {
       this.focus();
     }
@@ -481,11 +463,7 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
     if (typeof URL.revokeObjectURL === 'function') URL.revokeObjectURL(url);
   }
 
-  /**
-   * A repeated message (same file rejected twice) would leave the live
-   * region's DOM unchanged and never re-announce — alternate a trailing
-   * zero-width space to force a mutation screen readers pick up.
-   */
+  /** Toggles a trailing zero-width space so a repeated message still mutates the live region. */
   private _announce(message: string): void {
     this._announcement.set(this._announcement() === message ? `${message}\u200B` : message);
   }
@@ -494,8 +472,7 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
     if (this._effectiveDisabled()) return;
 
     event.preventDefault();
-    // The inline browse link stops here so the dropzone's own click handler
-    // does not open the picker a second time.
+    // Stop so the dropzone's own click handler doesn't open the picker twice.
     event.stopPropagation();
     this._native().nativeElement.click();
   }

@@ -99,11 +99,7 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
   /** @description Maximum chips accepted; further additions emit `errored` with code `max`. */
   readonly maxChips = input<number | undefined>(undefined);
 
-  /**
-   * @description Values that don't match are rejected with code `pattern`.
-   * Deliberately not named `pattern`: signal forms auto-bind that member with
-   * an incompatible protocol (readonly RegExp[] of the field's own validators).
-   */
+  /** @description Non-matching values reject with code `pattern` (not named `pattern`: signal forms bind that). */
   readonly validatePattern = input<RegExp | undefined>(undefined);
 
   /** @description Characters that confirm a chip in addition to Enter. Newlines always split pastes. */
@@ -191,11 +187,7 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
     return max !== undefined && this.value().length >= max;
   });
 
-  /**
-   * @docs-private The input locks at max only once the draft is empty: a
-   * leftover draft (typed before a paste filled the last slots) must stay
-   * editable, or readOnly would trap it.
-   */
+  /** @docs-private Locks at max only once the draft is empty, so a leftover draft stays editable. */
   protected readonly _effectiveReadonly = computed(
     () => this.readonly() || (this._maxReached() && this.draft().length === 0),
   );
@@ -276,11 +268,7 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
     this._native().nativeElement.focus(options);
   }
 
-  /**
-   * A repeated message (same value rejected twice) would leave the live
-   * region's DOM unchanged and never re-announce — alternate a trailing
-   * zero-width space to force a mutation screen readers pick up.
-   */
+  /** Toggles a trailing zero-width space so a repeated message still mutates the live region. */
   private _announce(message: string): void {
     this._announcement.set(this._announcement() === message ? `${message}\u200B` : message);
   }
@@ -312,8 +300,7 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
     const pattern = this.validatePattern();
 
     if (pattern) {
-      // A /g or /y regex is stateful across .test() calls; reset it so a
-      // consumer-supplied global flag can't make validation alternate.
+      // A /g or /y regex is stateful across .test() calls; reset lastIndex.
       pattern.lastIndex = 0;
 
       if (!pattern.test(value)) return 'pattern';
@@ -361,9 +348,7 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
     this._announce(_mudText(this.announceRemoved(), this._labels().inputChip.removed)(chip));
     this.chipRemoved.emit({ chip, index, chips: next });
 
-    // Keyboard removals need focus to land somewhere predictable: the chip
-    // now occupying this index, the new last chip, or back on the input.
-    // @for tracks by $index, so the target button node already exists.
+    // Refocus a chip or the input; @for tracks by $index, so the target node already exists.
     if (next.length === 0) {
       this.focus();
     } else {
@@ -402,8 +387,7 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
     }
 
     if (event.key === 'Escape') {
-      // Only swallow Escape while it has a draft to clear; otherwise it
-      // stays free for consumers (dialogs, overlays).
+      // Only swallow Escape with a draft to clear; otherwise it's free for dialogs/overlays.
       if (this.draft().length > 0) {
         event.preventDefault();
         this.draft.set('');

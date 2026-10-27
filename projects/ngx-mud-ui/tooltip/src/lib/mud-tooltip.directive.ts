@@ -73,11 +73,7 @@ export class MudTooltip {
     this._pushedContent.set(text);
   }
 
-  /**
-   * @description Points positioning and `aria-describedby` at a descendant instead of the host.
-   * For a wrapper host (breadcrumb's `<li>`) the host is neither focusable nor the
-   * element a screen reader describes, so both must move to the inner control.
-   */
+  /** @description Moves positioning and `aria-describedby` to a descendant, for non-focusable wrapper hosts. */
   setAnchor(element: HTMLElement | null): void {
     this._pushedAnchor.set(element);
   }
@@ -89,24 +85,15 @@ export class MudTooltip {
   readonly content = computed(() => this.mudTooltip() || this._pushedContent() || '');
   readonly tooltipPlacement = input<MudTooltipPlacement>('top-center');
   readonly tooltipSize = input<MudTooltipSize>('small');
-  /**
-   * @description What opens the tooltip. `hover` also opens on focus; `manual`
-   * only reacts to `show()`/`hide()`. Coach tooltips ignore hover/focus paths.
-   */
+  /** @description What opens the tooltip; `hover` also opens on focus, `manual` only reacts to `show()`/`hide()`. */
   readonly tooltipTrigger = input<MudTooltipTrigger>('hover');
-  /**
-   * @description `coach` is the persistent onboarding bubble: it stays open until
-   * Escape, the close button, or an outside click, and shows a hint line.
-   */
+  /** @description `coach` stays open until Escape, the close button or an outside click, and shows a hint line. */
   readonly tooltipVariant = input<MudTooltipVariant>('default');
   /** @description Optional bold title line rendered above the message. */
   readonly tooltipTitle = input<string | undefined>(undefined);
   /** @description Hint line shown by coach tooltips. Unset or blank follows the app labels (`tooltip.coachHint`). */
   readonly tooltipCoachHint = input<string | undefined>(undefined);
-  /**
-   * @description Keeps the bubble open while the pointer is over it (so links inside
-   * stay reachable). Off by default, matching the official tooltip.
-   */
+  /** @description Keeps the bubble open while the pointer is over it. */
   readonly tooltipInteractive = input(false, { transform: booleanAttribute });
   readonly tooltipClosable = input(false, { transform: booleanAttribute });
   readonly tooltipDisabled = input(false, { transform: booleanAttribute });
@@ -133,10 +120,7 @@ export class MudTooltip {
   private _hideTimeout: ReturnType<typeof setTimeout> | null = null;
   private _pinned = false;
 
-  /**
-   * @description Registered in the capture phase (only while the tooltip is open) so a
-   * consumed Escape closes just the tooltip, not an enclosing dialog too.
-   * */
+  /** Capture phase so a consumed Escape closes only the tooltip, not an enclosing dialog. */
   private readonly _onDocumentKeydown = (event: KeyboardEvent): void => {
     if (event.key !== 'Escape') return;
 
@@ -156,11 +140,7 @@ export class MudTooltip {
   constructor() {
     inject(DestroyRef).onDestroy(() => this._detach());
 
-    /**
-     * @description The attach-time setInput calls are one-shot snapshots; this keeps an
-     * open tooltip in sync when its inputs change (e.g. "Copy" → "Copied!").
-     * Placement stays attach-time - the position strategy is built from it.
-     * */
+    // Attach-time setInput calls are snapshots; this syncs an open tooltip (placement stays attach-time).
     effect(() => {
       const container = this._containerRef();
 
@@ -247,10 +227,7 @@ export class MudTooltip {
     this._showTimeout = setTimeout(() => this._attach(), delay);
   }
 
-  /**
-   * @description Hides after the hide delay so the pointer can travel onto an
-   * interactive bubble before it disappears.
-   * */
+  /** Delayed so the pointer can travel onto an interactive bubble. */
   private _scheduleHide(): void {
     if (this._pinned) return;
 
@@ -259,10 +236,7 @@ export class MudTooltip {
   }
 
   private _attach(): void {
-    /**
-     * DOM events never fire during SSR, but show() may be called from app code
-     * so we never build an overlay on the server.
-     * */
+    // show() may be called from app code during SSR.
     if (!this._isBrowser) return;
 
     if (this.content().length === 0) return;
@@ -283,11 +257,7 @@ export class MudTooltip {
       scrollStrategy: this._overlay.scrollStrategies.close(),
     });
 
-    /**
-     * The close scroll strategy detaches the overlay behind our back, so the
-     * trigger cleanup (aria-describedby, keydown listener, pinned state) must
-     * follow every detachment, not only the ones this directive initiates.
-     * */
+    // The close scroll strategy detaches behind our back; cleanup must follow every detachment.
     this._overlayRef.detachments().subscribe(() => this._detach());
 
     const containerRef: ComponentRef<MudTooltipContainer> = this._overlayRef.attach(
@@ -306,10 +276,7 @@ export class MudTooltip {
     containerRef.setInput('coachHint', this._coachHintText());
     this._containerRef.set(containerRef);
 
-    /**
-     * When the preferred placement doesn't fit, CDK falls back to another
-     * position — mirror the placement that actually applied so the arrow moves with it.
-     * */
+    // Mirror the placement CDK actually applied so the arrow follows fallbacks.
     positionStrategy.positionChanges.subscribe((change) => {
       const applied = positions.find((p) => p.position === change.connectionPair);
 
@@ -318,8 +285,6 @@ export class MudTooltip {
 
     containerRef.instance.closed.subscribe(() => this._dismiss('close-button'));
 
-    // Hovering the bubble keeps it open only for interactive tooltips
-    // (official behavior); otherwise leaving the trigger hides it.
     if (this.tooltipInteractive()) {
       containerRef.instance.hovered.subscribe((inside) => {
         if (inside) {
@@ -333,17 +298,13 @@ export class MudTooltip {
     this._overlayRef.outsidePointerEvents().subscribe((event) => {
       const target = event.target as Node | null;
 
-      // The HOST, not the anchor: with a wrapper host the anchor is a subset of
-      // it, and a click on the wrapper's own padding is still "on the trigger".
+      // The host, not the anchor: a click on a wrapper host's padding is still on the trigger.
       if (this._pinned && target && !this._host.contains(target)) this._dismiss('click-outside');
     });
 
     this._pinned = this.tooltipClosable() || this._isCoach;
 
-    /**
-     * aria-describedby is a token list the trigger may already use (form hints etc.)
-     * append rather than replace, and remove only our own token again on detach.
-     * */
+    // Append to the trigger's existing describedby tokens; remove only our own on detach.
     if (this.tooltipDescribesTrigger()) {
       const described = this._trigger;
       const describedby = described.getAttribute('aria-describedby');

@@ -84,9 +84,7 @@
   position: relative;
 }
 
-// Consumers nudge a corner badge with the --mud-badge-offset-* tokens (declared in
-// base/_component-tokens.scss; positive values pull the badge inward from its anchored edge;
-// -bottom/-left extend the official top/right pair for the extra positions).
+// --mud-badge-offset-* (base/_component-tokens.scss): positive values pull the badge inward.
 .badge--fixed {
   position: absolute;
   z-index: 1;
@@ -123,9 +121,6 @@
   border: 0;
 }
 
-// The first five entries are the official design-system palette; the last
-// four are extra names (dark = default; accent sits on the warning-accent
-// surface; light/neutral have no official equivalent).
 $badge-colors: (
   default: (
     bg: var(--mud-color-background-base-inverse-default),
@@ -176,4 +171,9 @@ $badge-colors: (
 .badge.badge--disabled {
   background-color: var(--mud-color-background-disabled-default);
   color: var(--mud-color-text-disabled-on-disabled);
+}
+
+// A corner badge fades with its disabled control.
+.mud-badge-host:is(:disabled, [aria-disabled='true']) > .badge--fixed {
+  opacity: 0.3;
 }

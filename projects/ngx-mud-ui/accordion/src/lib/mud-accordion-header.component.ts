@@ -23,8 +23,7 @@ import { MudAccordion } from './mud-accordion.component';
           <span class="accordion__text"><ng-content /></span>
         </span>
         @if (!_item.hideToggle()) {
-          <!-- Plus drawn as two bars; the vertical one collapses (scaleY) when
-               open so the glyph morphs into a minus, per the official design. -->
+          <!-- Two bars: the vertical one collapses (scaleY) when open, morphing plus into minus. -->
           <span class="accordion__icon" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="20" height="20" fill="currentColor" focusable="false">
               <rect x="2.75" y="9.25" width="14.5" height="1.5" rx="0.75" />
@@ -40,9 +39,7 @@ import { MudAccordion } from './mud-accordion.component';
   `,
 })
 export class MudAccordionHeader {
-  /**
-   * @description Heading level exposed to assistive tech (aria-level).
-   * */
+  /** @description Heading level exposed to assistive tech (aria-level). */
   readonly headingLevel = input(3, { transform: numberAttribute });
 
   protected readonly _item = inject(MudAccordion);

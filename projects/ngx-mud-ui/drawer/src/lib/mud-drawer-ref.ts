@@ -30,7 +30,7 @@ export class MudDrawerRef<R = unknown> {
     this._cdkRef.close(result);
   }
 
-  /** @docs-private Container instance; CDK hand-builds the content injector, so directives reach the container through here. */
+  /** @docs-private CDK hand-builds the content injector, so directives reach the container through here. */
   get _container(): MudDrawerContainer | undefined {
     return this._cdkRef.containerInstance as MudDrawerContainer | undefined;
   }

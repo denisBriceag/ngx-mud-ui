@@ -43,7 +43,7 @@ export class MudFooterCellDef extends CdkFooterCellDef {}
   providers: [{ provide: CdkColumnDef, useExisting: MudColumnDef }],
 })
 export class MudColumnDef extends CdkColumnDef {
-  /** @description Unique column name referenced by the row definitions' `columns` list; also becomes the `mud-column-<name>` class on every cell, for per-column widths. */
+  /** @description Unique column name; also adds a `mud-column-<name>` class to every cell. */
   @Input('mudColumnDef')
   override get name(): string {
     return this._name;
@@ -67,7 +67,6 @@ export class MudColumnDef extends CdkColumnDef {
 })
 export class MudHeaderCell extends CdkHeaderCell {}
 
-/** Footer cell of a column. */
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'mud-footer-cell, td[mud-footer-cell]',
@@ -75,7 +74,6 @@ export class MudHeaderCell extends CdkHeaderCell {}
 })
 export class MudFooterCell extends CdkFooterCell {}
 
-/** Body cell of a column. */
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'mud-cell, td[mud-cell]',

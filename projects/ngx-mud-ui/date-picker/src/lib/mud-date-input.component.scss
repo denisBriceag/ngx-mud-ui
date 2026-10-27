@@ -20,10 +20,7 @@
   flex: 0 1 auto;
 }
 
-// The input and the ghost row occupy the same grid cell, so the untyped tail
-// of the pattern lines up with the caret without any measuring. Every metric
-// that affects glyph position must match — including line-height, which the
-// real input gets from `.input-field__native` and the bare ghost span does not.
+// Input and ghost share one grid cell; every glyph metric (incl. line-height) must match to align.
 .date-field__entry > .date-field__native,
 .date-field__entry > .date-field__ghost-row {
   grid-area: 1 / 1;
@@ -62,9 +59,6 @@
   visibility: hidden;
 }
 
-// Only the untyped tail is visible, and `.date-field__ghost` holds ONLY that
-// tail — the typed prefix is its sibling, not its child, so reading this
-// element's text yields the remainder alone.
 .date-field__ghost {
   color: var(--mud-color-text-base-secondary);
 }
@@ -106,9 +100,7 @@
     color: var(--mud-color-icon-base-default);
   }
 
-  // Touch devices get a 40px hit area without the visible button growing —
-  // the glyph stays 24px inside the field row; only the invisible target
-  // extends. A child of the button still hit-tests as the button.
+  // 40px touch hit area without growing the visible 24px button.
   @media (pointer: coarse) {
     &::before {
       content: '';

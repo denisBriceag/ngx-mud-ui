@@ -48,7 +48,7 @@ declare const ngDevMode: boolean | undefined;
 export class MudTreeItem {
   private readonly _isAnchor = (inject(ElementRef).nativeElement as HTMLElement).tagName === 'A';
 
-  /** @description Marks the row as the current page: brand colours, filled icon, inline-start bar and aria-current. */
+  /** @description Marks the row as the current page (aria-current). */
   readonly selected = input(false, { transform: booleanAttribute });
   /** @description Nesting depth when used outside a tree; every level past 1 indents the row by 32px. */
   readonly level = input(1, { transform: numberAttribute });

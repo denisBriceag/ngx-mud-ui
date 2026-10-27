@@ -2,9 +2,7 @@
 
 @include host.typography('mud-toast-stack');
 
-// The insets live here rather than on the CDK position strategy, because
-// GlobalPositionStrategy writes margin-* as INLINE styles on the pane, which no
-// media query can override. Padding is untouched by CDK.
+// Insets as padding: GlobalPositionStrategy writes margins inline, which no media query can override.
 .mud-toast-stack {
   display: flex;
   flex-direction: column;
@@ -19,14 +17,7 @@
   pointer-events: auto;
 }
 
-// FALLBACK ONLY. In browsers with the popover API, CDK 22 puts every overlay in
-// the top layer, where z-index is ignored and the last-shown overlay wins; there
-// MudToast keeps toasts on top by re-showing their hosts whenever another
-// overlay opens (see `_raiseStacks` in mud-toast.service.ts). Without popover
-// support CDK falls back to z-index: every `.cdk-overlay-*` ships at 1000 and
-// equal panes stack by DOM order, so a toast opened *before* a dialog would sit
-// under its backdrop. This class (the toast overlay's `panelClass`) lifts the
-// toast pane one step above that baseline for that case.
+// Fallback for browsers without popover (the top layer is handled by `_raiseStacks`): lift above CDK's 1000.
 .cdk-overlay-pane.mud-toast-stack-pane {
   z-index: 1001; // two classes: out-ranks CDK's own `.cdk-overlay-pane { z-index: 1000 }`
 }
@@ -108,8 +99,7 @@
   gap: var(--mud-toast-container-content-gap);
 }
 
-// Text-only: icon, message and close sit centred on the single line, per the
-// Figma `Content = Text-only` variant. With a heading they top-align instead.
+// Text-only toasts centre on the line; with a heading they top-align.
 .mud-toast:not(.mud-toast--has-title),
 .mud-toast:not(.mud-toast--has-title) .mud-toast__main {
   align-items: center;

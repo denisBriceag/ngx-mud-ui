@@ -1,9 +1,10 @@
   import type { Meta, StoryObj } from '@storybook/angular-vite';
-import { moduleMetadata } from '@storybook/angular-vite';
+import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
 import { Component, signal } from '@angular/core';
 import { MudSearchInput } from 'ngx-mud-ui/search-input';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+import { MudIconComponent, filter, provideMudIcons, sparkles } from 'ngx-mud-ui/icons';
 
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:420px;padding:24px';
 
@@ -79,6 +80,32 @@ export const Shapes: Story = {
         </mud-search-input>
         <mud-search-input size="large" withButton placeholder="Caută...">
           <mud-label>Rectangular cu buton, large</mud-label>
+        </mud-search-input>
+      </div>
+    `,
+  }),
+};
+
+/**
+ * `icon-start` replaces the search glyph; `icon-end` adds a trailing icon and
+ * replaces the clear (×) button while it is there.
+ */
+export const Icons: Story = {
+  parameters: { controls: { disable: true } },
+  decorators: [
+    applicationConfig({ providers: [provideMudIcons([filter, sparkles])] }),
+    moduleMetadata({ imports: [MudIconComponent] }),
+  ],
+  render: () => ({
+    template: `
+      <div style="${COL}">
+        <mud-search-input placeholder="Caută..." value="pașaport">
+          <mud-label>Trailing icon (no clear button)</mud-label>
+          <mud-icon icon-end name="filter" [scale]="20" />
+        </mud-search-input>
+        <mud-search-input placeholder="Întreabă asistentul...">
+          <mud-label>Custom leading icon</mud-label>
+          <mud-icon icon-start name="sparkles" [scale]="20" />
         </mud-search-input>
       </div>
     `,

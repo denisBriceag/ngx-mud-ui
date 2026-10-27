@@ -126,7 +126,7 @@ export const DisabledTabs: Story = {
   selector: 'mud-tabs-demo',
   imports: [MudTabGroup, MudTab],
   template: `
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-family:system-ui">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
       <button type="button" (click)="tabs.focusTab(0)">focusTab(0)</button>
       <button type="button" (click)="selected.set(clamp(selected() - 1))">Prev</button>
       <button type="button" (click)="selected.set(clamp(selected() + 1))">Next</button>

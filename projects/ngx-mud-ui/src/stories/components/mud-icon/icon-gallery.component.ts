@@ -83,7 +83,7 @@ const drawnScale = (icon: MudIcon, variant: MudIconVariant, want: MudIconScale) 
     :host {
       display: block;
       padding: 1.5rem 2rem;
-      font-family: system-ui, sans-serif;
+      font-family: var(--mud-font-family-base);
       color: var(--mud-color-text-base-default);
     }
     .search {

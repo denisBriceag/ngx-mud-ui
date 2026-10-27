@@ -46,12 +46,7 @@ export interface MudTooltipConnectedPosition {
   position: ConnectedPosition;
 }
 
-/**
- * @description Preferred position for a placement followed by its viewport fallbacks:
- * the flipped side first (same alignment), then the remaining alignments on
- * the preferred and flipped sides — mirroring the design-system behavior of
- * shifting the arrow when the related element sits near a viewport edge.
- */
+/** @description Preferred position followed by its viewport fallbacks: flipped side first, then the other alignments. */
 export function connectedPositionsFor(placement: MudTooltipPlacement): MudTooltipConnectedPosition[] {
   const [side] = placement.split('-');
   const flippedSide = FLIPPED_SIDE[side];

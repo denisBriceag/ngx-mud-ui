@@ -63,8 +63,6 @@
   cursor: pointer;
 }
 
-// A long label truncates on its single line instead of wrapping or
-// stretching the field.
 .input-field__label-text {
   min-width: 0;
   overflow: hidden;
@@ -92,15 +90,20 @@
     border-color 150ms ease-out,
     box-shadow 150ms ease-out,
     background-color 150ms ease-out;
+}
 
-  &:hover {
-    border-color: var(--_if-border-hover);
-  }
+// The extra hover pixel is an inset shadow so content doesn't shift.
+.input-field:not(.is-focused, .is-open, .is-disabled, .is-readonly, .is-loading) .input-field__control:hover {
+  border-color: var(--_if-border-hover);
+  box-shadow: inset 0 0 0 1px var(--_if-border-hover);
 }
 
 .input-field.is-focused .input-field__control {
   border-color: var(--_if-border-focus);
-  box-shadow: 0 0 0 2px var(--_if-focus-ring);
+  // 1px border + 1px inset shadow (no content shift), then a 4px halo.
+  box-shadow:
+    inset 0 0 0 1px var(--_if-border-focus),
+    0 0 0 4px var(--_if-focus-ring);
 }
 
 .input-field__native {
@@ -169,6 +172,17 @@
     background-color: var(--mud-color-background-base-tertiary);
   }
 
+  &:active {
+    color: var(--mud-color-icon-base-default);
+    background-color: var(--mud-color-background-base-tertiary-active);
+  }
+
+  // Most clear buttons are tabindex=-1; this covers the focusable ones (phone).
+  &:focus-visible {
+    outline: 2px solid var(--_if-border-focus);
+    outline-offset: 2px;
+  }
+
   svg {
     width: var(--_if-clear-size);
     height: var(--_if-clear-size);
@@ -194,9 +208,13 @@
 .input-field.is-readonly .input-field__control {
   background-color: var(--mud-color-input-readonly-background, var(--mud-color-background-base-secondary));
 
-  &:hover {
-    border-color: var(--_if-border);
+  .input-field__native {
+    cursor: default;
   }
+}
+
+.numeric-field.is-readonly:not(.is-disabled) .input-field__control {
+  border-color: transparent;
 }
 
 .input-field.is-loading .input-field__control {
@@ -204,8 +222,7 @@
 
   .input-field__native,
   .input-field__affix {
-    // 0.7 is the floor for WCAG 1.4.3: gray-900 value text dimmed at 0.6
-    // blends to #787878 on white - 4.41:1, under the 4.5:1 minimum.
+    // 0.7 is the WCAG 1.4.3 floor: 0.6 gives 4.41:1 on white.
     opacity: 0.7;
   }
 }
@@ -236,7 +253,6 @@
 
 // ----- search-input additions (mud-search-input shares the contract) -----
 
-// Circular silhouette: full pill container; the submit button rounds with it.
 .input-field--circular {
   .input-field__control {
     border-radius: var(--mud-border-radius-full, 9999px);
@@ -251,6 +267,11 @@ input[type='search'].input-field__native::-webkit-search-cancel-button,
 input[type='search'].input-field__native::-webkit-search-decoration {
   -webkit-appearance: none;
   appearance: none;
+  display: none;
+}
+
+// Icon-end slot content replaces the clear (×); display:none also drops it from the a11y tree.
+.input-field__control:has(.input-field__affix--end > *) .input-field__search-clear {
   display: none;
 }
 
@@ -278,6 +299,7 @@ input[type='search'].input-field__native::-webkit-search-decoration {
   }
 
   &:active {
+    color: var(--mud-color-icon-base-default);
     background-color: var(--mud-color-background-base-tertiary-active);
   }
 
@@ -287,8 +309,7 @@ input[type='search'].input-field__native::-webkit-search-decoration {
   }
 }
 
-// Integrated brand submit button: 32px (md) / 40px (lg) square with a
-// 16/20px glyph, inset on the trailing edge.
+// The margin insets the submit button evenly from the trailing edge.
 .input-field__submit {
   flex-shrink: 0;
   display: inline-flex;
@@ -311,6 +332,11 @@ input[type='search'].input-field__native::-webkit-search-decoration {
 
   &:active:not(:disabled) {
     background-color: var(--mud-color-background-brand-default-active);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mud-color-border-brand-default);
+    outline-offset: 2px;
   }
 
   &:disabled {
@@ -419,12 +445,14 @@ input[type='search'].input-field__native::-webkit-search-decoration {
   color: var(--mud-color-text-base-secondary);
 }
 
+.input-field.is-disabled .numeric-field__stepper {
+  background-color: var(--mud-color-input-disabled-background, var(--mud-color-background-disabled-default));
+}
+
 .input-field.is-disabled .numeric-field__affix {
   color: var(--mud-color-text-disabled-on-disabled, var(--mud-color-text-disabled-default));
 }
 
-// The trailing stepper pair: 24px (md) / 32px (lg) wide, inset 4px from the
-// control edge per the official with-stepper padding.
 .numeric-field__control--steppers {
   padding-right: var(--mud-spacing-4, 4px);
 }
@@ -455,6 +483,11 @@ input[type='search'].input-field__native::-webkit-search-decoration {
 
   &:hover:not(:disabled) {
     background-color: var(--mud-color-background-base-secondary);
+    color: var(--mud-color-icon-base-default);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--mud-color-background-base-secondary-hover);
     color: var(--mud-color-icon-base-default);
   }
 
@@ -504,7 +537,9 @@ textarea.input-field__native {
   resize: vertical;
 }
 
-.input-field--no-resize textarea.input-field__native {
+.input-field--no-resize textarea.input-field__native,
+.input-field.is-disabled textarea.input-field__native,
+.input-field.is-readonly textarea.input-field__native {
   resize: none;
 }
 
@@ -563,8 +598,7 @@ textarea.input-field__native {
   --_im-gap: var(--mud-spacing-4, 4px);
 }
 
-// Assistive text clamps at two lines inside a field (standalone
-// inline-messages are unaffected).
+// Assistive text clamps at two lines inside a field only.
 .input-field__assistive .inline-message__text {
   display: -webkit-box;
   -webkit-box-orient: vertical;

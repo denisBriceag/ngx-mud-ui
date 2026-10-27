@@ -60,11 +60,7 @@ export class MudCheckbox implements ControlValueAccessor, FormCheckboxControl {
   /** @description Checked state. Two-way bindable; also driven by both forms systems. */
   readonly checked = model(false);
 
-  /**
-   * @description Mixed state (the dash). Consumer-owned: rendering follows this input
-   * only, and user toggles do not clear it — update it yourself on change.
-   * Exposed to assistive tech via the native indeterminate property.
-   */
+  /** @description Mixed state (the dash); consumer-owned, user toggles do not clear it. */
   readonly indeterminate = input(false, { transform: booleanAttribute });
 
   readonly disabled = input(false, { transform: booleanAttribute });
@@ -158,8 +154,7 @@ export class MudCheckbox implements ControlValueAccessor, FormCheckboxControl {
   constructor() {
     inject(MudStyleLoader).load(_MudSelectionControlStyles);
 
-    // The mixed state only exists as a DOM property; mirror the input onto
-    // the native control so assistive tech announces "mixed".
+    // Indeterminate exists only as a DOM property; mirror it so AT announces "mixed".
     afterRenderEffect(() => {
       this._native().nativeElement.indeterminate = this.indeterminate();
     });
@@ -195,8 +190,7 @@ export class MudCheckbox implements ControlValueAccessor, FormCheckboxControl {
   // ----- internal handlers -----
 
   protected _onClick(event: MouseEvent): void {
-    // A native checkbox has no readonly; blocking click (which also carries
-    // keyboard Space activation) emulates it while keeping focusability.
+    // Native checkboxes have no readonly; blocking click (also Space) emulates it.
     if (this.readonly()) event.preventDefault();
   }
 

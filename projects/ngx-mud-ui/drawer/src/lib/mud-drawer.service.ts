@@ -28,8 +28,7 @@ export class MudDrawer {
   ): MudDrawerRef<R> {
     const position = config.position ?? 'right';
     const isSide = position === 'left' || position === 'right';
-    // CDK invokes `providers` synchronously before open() returns — the ref built
-    // there is the one both the opened component and this method see.
+    // CDK calls `providers` synchronously, so the component and caller share this ref.
     let mudRef!: MudDrawerRef<R>;
 
     this._cdkDialog.open<R, D>(componentOrTemplate, {

@@ -107,7 +107,7 @@ export class MudTimeInput implements ControlValueAccessor, FormValueControl<MudT
   readonly invalid = input(false, { transform: booleanAttribute });
   readonly name = input<string>('');
 
-  /** @description Format pattern shown while empty and as the typing ghost: two non-digits, `:`, two non-digits (e.g. `OO:MM`). Defaults to `HH:MM`. */
+  /** @description Empty-state and typing-ghost pattern shaped like `HH:MM` with non-digits (e.g. `OO:MM`). */
   readonly placeholder = input<string | undefined>(undefined);
 
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });

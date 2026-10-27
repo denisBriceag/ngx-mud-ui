@@ -59,11 +59,7 @@ export interface MudStepperStepClick {
     >
       @for (step of _stepList(); track step; let i = $index) {
         <div class="stepper-step" [class]="'stepper-step--' + _stateOf(step)" role="listitem">
-          <!--
-            A real element (not a ::before) so axe can compute the text's
-            effective background: ancestor pseudo-elements with a painted
-            background make the color-contrast check abstain.
-          -->
+          <!-- Real element, not ::before: a painted pseudo-element makes axe's contrast check abstain. -->
           <span class="stepper-step__connector" aria-hidden="true"></span>
           <mud-step-header
             [id]="_getStepLabelId(i)"
@@ -118,28 +114,16 @@ export interface MudStepperStepClick {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MudStepper extends CdkStepper {
-  /**
-   * CdkStepper declares `_stepHeader` as a CONTENT query, but our headers
-   * live in this component's view — override with a view query (same
-   * pattern as MatStepper) so FocusKeyManager finds them.
-   */
+  /** CdkStepper's content query can't see headers in our view; a view query lets FocusKeyManager find them. */
   @ViewChildren(MudStepHeader) declare _stepHeader: QueryList<MudStepHeader>;
 
   /** Only `mud-step` matches the content query, so narrow CdkStepper's typing. */
   declare readonly steps: QueryList<MudStep>;
 
-  /**
-   * @description Forces the number-less dot rail (labels visually hidden but still
-   * announced). Horizontal steppers also switch to it automatically when
-   * their container is narrower than 600px, matching the official stepper.
-   */
+  /** @description Forces the dot rail; horizontal steppers also switch to it below 600px. */
   readonly compact = input(false, { transform: booleanAttribute });
 
-  /**
-   * Emitted before a header activation (click, Enter or Space) selects the
-   * step. Call `preventDefault()` on the event to keep the selection unchanged
-   * (official mudStepClick contract).
-   */
+  /** @description Emitted before a header activation selects the step; `preventDefault()` cancels it. */
   readonly stepClick = output<MudStepperStepClick>();
 
   protected readonly _stepList = signal<readonly MudStep[]>([]);
@@ -202,9 +186,7 @@ export class MudStepper extends CdkStepper {
     return this.compact() || (this.orientation === 'horizontal' && this._autoCompact());
   }
 
-  /**
-   * @docs-private Derives the visual state of a step (spec state model).
-   * */
+  /** @docs-private */
   protected _stateOf(step: MudStep): MudStepState {
     this._controlStatus();
 
@@ -273,11 +255,7 @@ export class MudStepper extends CdkStepper {
     if (!prevented) step.select();
   }
 
-  /**
-   * @docs-private Enter/Space activate the focused header through the same
-   * cancelable `stepClick` path as a click; everything else is key-manager
-   * navigation. (CdkStepper's own handler would select directly.)
-   */
+  /** @docs-private Enter/Space go through cancelable `stepClick`; CdkStepper's handler would select directly. */
   protected _onHeaderKeydown(event: KeyboardEvent, step: MudStep): void {
     if ((event.key === 'Enter' || event.key === ' ') && !hasModifierKey(event)) {
       event.preventDefault();
@@ -289,11 +267,7 @@ export class MudStepper extends CdkStepper {
     this._onKeydown(event);
   }
 
-  /**
-   * Signal-forms fields are functions and already reactive; only
-   * reactive-forms controls (objects with statusChanges) need their
-   * validity bridged into the signal graph for OnPush/zoneless updates.
-   */
+  /** Bridges reactive-forms statusChanges into signals; signal-forms fields are already reactive. */
   private _watchControls(steps: readonly MudStep[]): void {
     this._statusSub?.unsubscribe();
     this._statusSub = null;

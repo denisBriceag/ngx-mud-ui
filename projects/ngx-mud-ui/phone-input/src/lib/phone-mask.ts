@@ -51,11 +51,7 @@ export function digitsBefore(value: string, caret: number): number {
   return digitsOf(value.slice(0, Math.max(0, caret))).length;
 }
 
-/**
- * The caret offset immediately after the nth digit of a masked value, so a
- * re-mask can restore the caret to the digit the user was working on instead
- * of flinging it to the end.
- */
+/** Offset right after the nth digit, so a re-mask keeps the caret where the user was typing. */
 export function caretForDigitIndex(masked: string, digitIndex: number): number {
   if (digitIndex <= 0) return 0;
 

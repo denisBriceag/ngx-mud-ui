@@ -386,8 +386,7 @@ export class MudSelectInput<T = unknown>
       this._selectFieldText();
     });
 
-    // The overlay follows the open model (which is also settable from
-    // outside), so attach/detach lives in one browser-only effect.
+    // `open` is settable from outside, so attach/detach lives in one browser-only effect.
     effect(() => {
       if (!this._isBrowser) return;
 

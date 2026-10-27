@@ -50,10 +50,7 @@ declare const ngDevMode: boolean | undefined;
 
 let nextUniqueId = 0;
 
-/**
- * Day-of-month of a Sunday, used to render localized weekday names: 2024-01-07
- * is a Sunday, so indices 0–6 map to Jan 7–13, all inside one month.
- */
+/** 2024-01-07 is a Sunday, so weekday indices 0–6 map to Jan 7–13. */
 const WEEKDAY_ANCHOR_DAY = 7;
 
 /**
@@ -80,19 +77,8 @@ const WEEKDAY_ANCHOR_DAY = 7;
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-// `FormValueControl<TValue>` types its optional `min`/`max` slots as
-// `NonNullable<TValue> | undefined` — i.e. shaped like the *value*. Ours are
-// always ISO date scalars regardless of mode (a range's min is still a single
-// date, not a `MudDateRange`), so they can never structurally satisfy that
-// slot for a generic `M`, and are Omit'd below to keep the class compiling.
-// That Omit is a COMPILE-TIME-ONLY fix: the signal-forms `Field` directive
-// binds `min`/`max` by matching input NAME at runtime (see
-// `@angular/forms/fesm2022/signals.mjs`, `customControlCreate` /
-// `CONTROL_BINDING_NAMES`), which has no notion of the TypeScript interface
-// this class claims to implement. A schema calling `min(field, …)` on a
-// range- or multi-mode field can still route a `MudDateRange`/`string[]`
-// into this `string`-typed input, with no compile-time check to catch it.
-// `_minIso`/`_maxIso` below are what actually guard `_isDisabled` against that.
+// min/max are Omit'd: FormValueControl types them like the value, ours are always ISO scalars.
+// Compile-time only — signal forms still bind them by name at runtime; `_minIso`/`_maxIso` guard that.
 export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   implements ControlValueAccessor, Omit<FormValueControl<MudDateValue<M>>, 'min' | 'max'>
 {
@@ -173,8 +159,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   protected readonly _effectiveDisabled = computed(() => this.disabled() || this._cvaDisabled());
   protected readonly _effectiveInvalid = computed(() => this.invalid());
 
-  /** Bounds arriving from a signal-forms schema are name-matched at runtime and
-   *  are not type-checked, so anything that is not an ISO date is ignored. */
+  /** Schema bounds are name-matched at runtime, not type-checked: non-ISO values are ignored. */
   private readonly _minIso = computed(() => toValidIsoOrUndefined(this.min()));
 
   private readonly _maxIso = computed(() => toValidIsoOrUndefined(this.max()));
@@ -203,9 +188,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
     return compareIso(hover, start) < 0 ? { start: hover, end: start } : { start, end: hover };
   });
 
-  /**
-   * Selected ISO dates, normalized across modes.
-   */
+  /** Selected ISO dates, normalized across modes. */
   protected readonly _selected = computed<readonly string[]>(() => {
     const value = this.value();
 
@@ -222,20 +205,10 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
     }
   });
 
-  /**
-   * The date the user most recently picked. Preferred over `_selected()[0]` as
-   * the anchor because in multi mode that FIRST entry moves: deselecting the
-   * earliest of `['2026-08-05', '2026-12-20']` promotes December, which would
-   * re-page the visible month and the roving focus out from under a user who is
-   * still working in August.
-   */
+  /** Latest pick; anchors the view because `_selected()[0]` moves when multi mode deselects the earliest. */
   private readonly _lastPicked = signal<string | null>(null);
 
-  /** The month the calendar opens on when nothing has moved it yet. `startAt`
-   *  is guarded like every other consumer-supplied ISO input: a malformed one
-   *  (`"15/04/2026"` — the format the sibling FIELD displays, so an easy
-   *  mistake) would otherwise make `_viewYear` NaN and have `_monthLabel`
-   *  throw out of a computed during render. */
+  /** Initial month; a malformed `startAt` is ignored, or `_monthLabel` would throw on NaN. */
   private readonly _anchor = computed(
     () =>
       toValidIsoOrUndefined(this.startAt()) ??
@@ -244,11 +217,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
       this._today,
   );
 
-  /**
-   * Visible month, as the ISO first-of-month. `linkedSignal` keeps it writable
-   * for navigation while still resetting when the anchor changes — an effect
-   * writing this signal would be an NG0950 violation.
-   */
+  /** Visible month (ISO first-of-month); a linkedSignal, as an effect writing it would hit NG0950. */
   protected readonly _viewIso = linkedSignal<string, string>({
     source: () => this._anchor(),
     computation: (anchor) => startOfMonth(anchor),
@@ -265,11 +234,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   /** Screen-reader announcements for changes the DOM does not surface. */
   protected readonly _announcement = signal('');
 
-  /**
-   * Roving-focus target. Resets to the anchor whenever the anchor moves, and
-   * is written directly by navigation — the same `linkedSignal` shape as
-   * `_viewIso`, for the same NG0950 reason.
-   */
+  /** Roving-focus target; a linkedSignal for the same NG0950 reason as `_viewIso`. */
   protected readonly _focusedIso = linkedSignal<string, string>({
     source: () => this._anchor(),
     computation: (anchor) => anchor,
@@ -289,8 +254,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
     });
   });
 
-  /** Header title in days view: "August 2026". A `monthNamesLong` override
-   *  replaces the month word; Intl otherwise (which also owns the word order). */
+  /** Days-view title, e.g. "August 2026"; a `monthNamesLong` override replaces the month word. */
   protected readonly _monthLabel = computed(() => {
     const override = this._labels().monthNamesLong;
 
@@ -315,11 +279,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
 
     const formatter = new Intl.DateTimeFormat(this._activeLocale(), { month: style });
 
-    // Month names don't depend on the year, so any fixed one does.
-    // The trailing dot many locales put on short names (`ro` "nov.", `de`
-    // "Aug.") is stripped: the Figma style is dotless, and the dot breaks the
-    // short-is-a-prefix-of-long property that keeps the month buttons clear of
-    // WCAG 2.5.3 label-in-name mismatches.
+    // Short names drop the trailing dot ("nov.") so short stays a prefix of long (WCAG 2.5.3).
     return Array.from({ length: 12 }, (_, index) => {
       const name = formatter.format(mudDateToDate(toIso({ y: 2024, m: index + 1, d: 1 })));
 
@@ -389,13 +349,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
     }));
   });
 
-  /**
-   * When the roving target is not on the visible page (only possible if the
-   * view was paged by the header buttons), fall back to an in-month cell so
-   * the grid never loses its single tab stop. Prefers an enabled cell — a
-   * `disabled` button cannot receive focus — but still always returns one,
-   * even when every visible day is disabled.
-   */
+  /** Tabbable in-month fallback (enabled first) when the roving target is off-page, so the grid keeps a tab stop. */
   protected readonly _fallbackTabbableIso = computed(() => {
     const cells = this._cells();
 
@@ -421,8 +375,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
 
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       effect(() => {
-        // In the effect, not the constructor: a signal-backed token can swap the
-        // arrays at runtime.
+        // In the effect, not the constructor: a signal-backed token can swap the arrays at runtime.
         for (const key of ['monthNamesShort', 'monthNamesLong'] as const) {
           const names = this._labels()[key];
 
@@ -458,14 +411,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
 
   // ----- ControlValueAccessor -----
 
-  /**
-   * Deliberately does not run the value through `_isDisabled`: an
-   * out-of-range or otherwise unselectable incoming value is still shown as
-   * selected (and, separately, rendered `aria-disabled`) rather than
-   * silently dropped. Silently clearing a consumer's value is the failure
-   * mode this library rejects elsewhere too (see `select-input`'s orphan
-   * value, which warns instead of clearing).
-   */
+  /** Unselectable incoming values stay selected (rendered aria-disabled), never silently dropped. */
   writeValue(value: MudDateValue<M>): void {
     this.value.set(value);
   }
@@ -540,10 +486,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   protected _onCellEnter(iso: string): void {
     if (this.mode() !== 'range') return;
 
-    // A preview band promising a range the click will then refuse is worse
-    // than no preview at all. Clearing rather than just returning: moving the
-    // pointer from an enabled day onto a disabled one would otherwise leave the
-    // previous day's band drawn behind it.
+    // Clear, not just return: otherwise the previous day's preview band stays drawn.
     if (this._isDisabled(iso)) {
       this._rangeHover.set(null);
 
@@ -573,10 +516,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
 
   // ----- views -----
 
-  /** Routed through `_openView` rather than writing `_view` itself, so cycling
-   *  gets the same focus repair as the dropdown chips — the title button that
-   *  the user just pressed only exists while the view is NOT days in
-   *  `dropdown` style, so cycling back to days destroys it. */
+  /** Via `_openView` for its focus repair: in dropdown style, returning to days destroys the title button. */
   protected _cycleView(): void {
     const view = this._view();
 
@@ -586,14 +526,10 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   protected _openView(view: MudDatePickerView): void {
     this._view.set(view);
 
-    // The control that opened this view may have been inside the block just
-    // torn down, so focus would otherwise fall to <body>.
+    // The opener may have been torn down with the old view; otherwise focus falls to <body>.
     if (view === 'months') this._focusAfterRender(`[data-month="${this._viewMonth()}"] button`);
     else if (view === 'years') this._focusAfterRender(`[data-year="${this._viewYear()}"] button`);
-    // Landing back on days tears down the month/year grid the press came from,
-    // so focus has to be put back on the header: the month chip in `dropdown`
-    // style (where the title button does not exist in days view at all), the
-    // title button itself otherwise.
+    // Back on days: refocus the header (month chip in dropdown style, where days view has no title button).
     else {
       this._focusAfterRender(
         this.headerStyle() === 'dropdown' ? '[data-header="month"]' : '.date-picker__title',
@@ -607,9 +543,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
     this.monthChange.emit({ year: this._viewYear(), month: month - 1 });
     this._announce(this._labels().monthChanged(this._monthLabel()));
 
-    // `_viewIso` is already the first of the newly selected month, so
-    // `_focusCell`'s own month-paging branch sees no change and does not
-    // emit a second `monthChange` — this call only moves focus.
+    // `_viewIso` already moved, so this only moves focus (no second `monthChange`).
     this._focusCell(this._viewIso());
   }
 
@@ -641,12 +575,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
 
   // ----- keyboard grid navigation -----
 
-  /**
-   * Keeps the roving target in step with real DOM focus. Focus can arrive
-   * without going through `_focusCell` — tabbing into the fallback cell after
-   * the header paged the view — and arrow keys must continue from the cell the
-   * user is actually on, not the one we last moved to.
-   */
+  /** Syncs the roving target with real DOM focus (e.g. tabbing into the fallback cell). */
   protected _onCellFocus(iso: string): void {
     if (this._focusedIso() !== iso) this._focusedIso.set(iso);
   }
@@ -676,9 +605,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
     );
   }
 
-  /** Politely announces a change the DOM does not otherwise surface. Two
-   *  identical consecutive messages will not be re-announced — signal writes
-   *  coalesce into one render, so there is no transient blank to reset on. */
+  /** Identical consecutive messages are not re-announced: signal writes coalesce into one render. */
   private _announce(message: string): void {
     this._announcement.set(message);
   }
@@ -705,8 +632,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
         event.preventDefault();
         this._focusCell(addDays(iso, 7));
         break;
-      // `addMonths` clamps the day when the target month is shorter, so
-      // 31 August + 1 month lands on 30 September rather than nowhere.
+      // `addMonths` clamps the day: 31 August + 1 month lands on 30 September.
       case 'PageUp':
         event.preventDefault();
         this._focusCell(addMonths(iso, event.shiftKey ? -12 : -1));

@@ -1,9 +1,7 @@
 import type { MudBreadcrumbItem } from './mud-breadcrumb-item.directive';
 
 /**
- * Shared by the overflow panel's mirrored links and the mobile back link: both
- * are stand-ins for a crumb that lives elsewhere in the DOM, so a plain click
- * has to be replayed on the original element.
+ * Replays a plain click from a stand-in link on the original crumb.
  *
  * ```ts
  * forwardCrumbClick(event, crumb, () => this.close(false));

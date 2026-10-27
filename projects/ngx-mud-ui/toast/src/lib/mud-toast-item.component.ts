@@ -142,9 +142,7 @@ export class MudToastItem implements OnDestroy {
 
   readonly entry = input.required<MudToastEntry>();
 
-  // Type locator, not a template ref string: resolves to the NgComponentOutlet
-  // instance inside the @if block by directive type, so a renamed exportAs
-  // can't silently turn this into an unnoticed `undefined`.
+  // Type locator, not a ref string, so a renamed exportAs can't silently yield `undefined`.
   private readonly _outlet = viewChild(NgComponentOutlet);
   private _timer: MudToastTimer | null = null;
   private _hovering = false;
@@ -184,8 +182,7 @@ export class MudToastItem implements OnDestroy {
       });
     });
 
-    // Reports the rendered instance back to the service, which owns the ref
-    // and is the only thing allowed to write to it.
+    // The service owns the ref and is the only writer of ref.instance.
     effect(() => {
       const instance = this._outlet()?.componentInstance;
 
@@ -203,17 +200,8 @@ export class MudToastItem implements OnDestroy {
     await this._settleAnimations();
   }
 
-  // Two situations genuinely leave no animation running: prefers-reduced-motion
-  // sets `animation: none`, and a unit test can render this component without
-  // _toast.scss loaded at all. In both, animationend never fires, so waiting on
-  // it unconditionally would strand this toast and permanently block a queue
-  // slot. The typeof guard covers any render target without getAnimations at
-  // all; the empty-array return is what actually skips the wait when the API
-  // exists but nothing is animating. Already-finished animations are filtered
-  // out too: `.mud-toast`'s enter animation uses `fill: both`, so a completed
-  // enter is still returned by getAnimations() and its already-resolved
-  // `finished` promise would settle the whole race in a microtask, making the
-  // exit look "done" before it ever started.
+  // No running animation (reduced motion, no CSS) must not strand a queue slot. Finished animations are
+  // filtered: the `fill: both` enter stays in getAnimations() and would end the race early.
   private async _settleAnimations(): Promise<void> {
     const el = this._host.nativeElement;
     const animations = (typeof el.getAnimations === 'function' ? el.getAnimations({ subtree: true }) : []).filter(
@@ -247,8 +235,7 @@ export class MudToastItem implements OnDestroy {
     this._timer?.resume();
   }
 
-  // Focus pausing is unconditional: dismissing a toast that owns focus destroys
-  // the user's focus target mid-interaction.
+  // Unconditional: dismissing a toast that owns focus destroys the user's focus target.
   onFocusIn(): void {
     if (this._focused) return;
 

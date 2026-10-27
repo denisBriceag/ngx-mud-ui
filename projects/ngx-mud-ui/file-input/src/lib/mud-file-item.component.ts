@@ -32,27 +32,15 @@ export interface MudFileItemRemove {
 }
 
 /**
- * Single-file row inside `mud-file-input`, or standalone in any file list
- * (consumer-driven upload progress, read-only summaries).
- *
  * ```html
  * <mud-file-item filename="raport.pdf" [size]="245760" state="uploading" />
  * ```
- *
- * Project an `[icon]` to replace the leading file glyph — a per-extension icon,
- * or an `<img ngSrc>` when the preview comes from a server (`previewSrc` mints
- * object URLs, which `NgOptimizedImage` rejects):
  *
  * ```html
  * <mud-file-item filename="raport.pdf">
  *   <mud-icon icon name="file-pdf" />
  * </mud-file-item>
  * ```
- *
- * A `previewSrc` thumbnail still wins over the projected icon, and the `error`
- * state drops the leading icon entirely so the status icon carries the row.
- *
- * An issued document (a certificate from a registry) uses the `system` card with an `[info]` line:
  *
  * ```html
  * <mud-file-item variant="system" filename="certificat.pdf" [removable]="false">
@@ -78,10 +66,7 @@ export class MudFileItem {
   /** @description File size in bytes, rendered human-readable (B / KB / MB / GB). */
   readonly size = input<number | undefined>(undefined);
 
-  /**
-   * @description Lifecycle state. `uploaded` and `error` rows are removable, `uploading` shows a spinner
-   * and a cancel button, `success` a confirmation tick.
-   */
+  /** @description Lifecycle state: `uploaded`, `uploading` (spinner + cancel), `success` or `error`. */
   readonly state = input<MudFileItemState>('uploaded');
 
   /** @description `system` renders the issued-document card, with a projected `[info]` line under the name. */
@@ -93,10 +78,7 @@ export class MudFileItem {
   /** @description Per-item error message, shown below the row only when `state` is `error`. */
   readonly errorText = input<string | undefined>(undefined);
 
-  /**
-   * @description Image-preview URL (object URL or data URI) rendered as a thumbnail in
-   * place of the file glyph. Falls back to the glyph if the image fails to load.
-   */
+  /** @description Thumbnail URL shown instead of the glyph; falls back to the glyph on load error. */
   readonly previewSrc = input<string | undefined>(undefined);
 
   /** @description Disables the remove button. */
@@ -111,19 +93,14 @@ export class MudFileItem {
   /** @description Builds the button's accessible name from the filename while `uploading`, where it cancels. */
   readonly cancelLabel = input<((filename: string) => string) | undefined>(undefined);
 
-  /** Fired when the remove button is pressed (also to cancel an upload). The owner splices the file out of its list. */
-
+  /** Fired when the remove (or cancel) button is pressed. */
   readonly removed = output<MudFileItemRemove>();
 
   private readonly _filenameEl = viewChild<ElementRef<HTMLElement>>('filenameEl');
   private readonly _removeEl = viewChild<ElementRef<HTMLButtonElement>>('removeEl');
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  /**
-   * @docs-private The glyph is our own constant; the bypass only exempts it from the
-   * sanitizer's data-URI blocklist (`data:image/svg+xml` is not on Angular's
-   * allowed image list), no untrusted value flows in.
-   */
+  /** @docs-private Trusted constant; the sanitizer blocks `data:image/svg+xml` URLs otherwise. */
   protected readonly _glyphSrc = inject(DomSanitizer).bypassSecurityTrustUrl(FILE_GLYPH_SRC);
 
   /** @docs-private Cleared automatically when `previewSrc` changes to give the new image a chance. */
@@ -223,10 +200,7 @@ export class MudFileItem {
     this._truncated.set(el.scrollWidth > el.clientWidth + 1);
   }
 
-  /**
-   * @description Focuses this row's remove button. The owning list calls it after a
-   * removal so focus never falls back to the document body.
-   */
+  /** @description Focuses this row's remove button; returns false if it can't. */
   focusRemove(): boolean {
     const button = this._removeEl()?.nativeElement;
 

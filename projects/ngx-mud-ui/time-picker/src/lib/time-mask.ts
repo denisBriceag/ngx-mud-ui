@@ -7,12 +7,7 @@ function digitsOf(value: string): string {
   return value.replace(/\D/g, '');
 }
 
-/**
- * Walks the typed digits into the two segments. A first digit that can never
- * start a valid segment (`3`–`9` for hours, `6`–`9` for minutes) is padded to
- * `0d`, as `<input type="time">` does; a second digit that would overflow the
- * segment (`2` then `7`) is dropped. At most four digits survive.
- */
+/** Fits typed digits into HH/MM: an impossible first digit pads to `0d`, an overflowing second is dropped. */
 export function acceptDigits(raw: string): string {
   let out = '';
   let segment = 0;
@@ -37,12 +32,7 @@ export function acceptDigits(raw: string): string {
   return out + current;
 }
 
-/**
- * Re-formats raw input as `HH:MM`. The separator is LAZY — written only once a
- * minute digit exists — exactly as the date mask does it: an eager `09:` made
- * the field un-deletable, because Backspace removed the `:` and the re-mask
- * put it straight back.
- */
+/** Re-formats raw input as `HH:MM`; the `:` is lazy or Backspace could never delete it. */
 export function formatMasked(raw: string): string {
   const digits = acceptDigits(raw);
 
@@ -70,12 +60,7 @@ export function digitsBefore(value: string, caret: number): number {
   return digitsOf(value.slice(0, Math.max(0, caret))).length;
 }
 
-/**
- * Offset immediately after the nth digit, so a re-mask restores the caret to
- * the digit the user was working on instead of flinging it to the end. Copied
- * from the date mask; the lazy separator means a masked string always ends on
- * a digit, so there is never a separator to step over after the last one.
- */
+/** Offset right after the nth digit, so a re-mask keeps the caret where the user was typing. */
 export function caretForDigitIndex(masked: string, digitIndex: number): number {
   if (digitIndex <= 0) return 0;
 

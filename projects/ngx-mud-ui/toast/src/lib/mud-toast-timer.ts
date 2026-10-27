@@ -18,7 +18,6 @@ export class MudToastTimer {
   start(): void {
     if (this._duration <= 0 || this._destroyed) return;
 
-    // Respect outstanding pause depth: if already paused, do not arm yet.
     if (this._pauseDepth > 0) return;
 
     this._arm();
@@ -54,13 +53,12 @@ export class MudToastTimer {
   }
 
   private _arm(): void {
-    // Clear any live handle to prevent double-firing when re-arming.
     if (this._handle !== null) clearTimeout(this._handle);
 
     this._handle = null;
 
     if (this._remaining <= 0) {
-      // Fires synchronously inside the caller's stack (e.g., pause/resume), not deferred.
+      // Fires synchronously inside the caller's stack, not deferred.
       this._onExpire();
 
       return;

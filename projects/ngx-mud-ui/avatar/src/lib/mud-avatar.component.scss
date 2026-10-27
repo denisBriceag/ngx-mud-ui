@@ -18,6 +18,7 @@
   text-transform: uppercase;
   -webkit-user-select: none;
   user-select: none;
+  transition: box-shadow 150ms ease-out;
 
   // Anchor a mudBadge on the circle's NE circumference instead of the
   // bounding-box corner: 14.6% = (1 - sin45deg) * 50%.
@@ -33,8 +34,7 @@
     color: var(--mud-color-icon-base-secondary);
   }
 
-  // Derived initials (from the name/initials inputs) act as the fallback:
-  // hidden while a healthy photo or an icon is projected.
+  // Derived initials are the fallback: hidden while a healthy photo or icon is projected.
   &:has(> img:not(.avatar-img-failed)) .avatar-initials,
   &:has(> :is(mud-icon, svg)) .avatar-initials {
     display: none;
@@ -51,6 +51,10 @@
     &.avatar-img-failed {
       display: none;
     }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 
   &:focus-visible {
@@ -131,7 +135,7 @@
   }
 }
 
-// Stack overlap grows with the rung (official avatar.stack.overlap tokens).
+// Stack overlap grows with the rung.
 .avatar-stack {
   display: inline-flex;
 

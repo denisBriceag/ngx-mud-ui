@@ -23,7 +23,7 @@ export type MudTimePickerColumn = 'hours' | 'minutes';
 
 const HOURS: readonly number[] = Array.from({ length: 24 }, (_, i) => i);
 
-/** Rows visible at once (Figma 13810:9451); the columns scroll the rest. */
+/** Rows visible at once; the columns scroll the rest. */
 const VISIBLE_ROWS = 7;
 
 /**
@@ -142,7 +142,7 @@ export class MudTimePicker {
   );
 
   constructor() {
-    // Open with each selected value at the top of its column (Figma 13810:9450).
+    // Open with each selected value at the top of its column.
     afterNextRender(() => this._scrollSelectedToTop());
   }
 
@@ -189,8 +189,7 @@ export class MudTimePicker {
 
       if (minutes !== null && this._isDisabled('minutes', minutes)) this._minutes.set(null);
 
-      // First pass moves on to the minutes; re-editing a complete time stays
-      // on the hour just picked instead of pulling focus away.
+      // First pass moves on to minutes; re-editing a complete time keeps focus on the hour.
       if (this._minutes() === null) this._editColumn('minutes');
       else this._activeColumn.set('hours');
 

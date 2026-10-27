@@ -35,9 +35,7 @@ export function minuteOfDay(value: string | null | undefined): number | null {
   return time ? time.hours * 60 + time.minutes : null;
 }
 
-/** A bound arriving from a signal-forms schema is name-matched at runtime and
- *  not type-checked, so anything that is not `HH:MM` is ignored rather than
- *  allowed to block every commit. */
+/** Schema bounds are not type-checked at runtime: anything not `HH:MM` is ignored. */
 export function toValidTimeOrUndefined(value: string | undefined): string | undefined {
   return isValidTime(value) ? value : undefined;
 }

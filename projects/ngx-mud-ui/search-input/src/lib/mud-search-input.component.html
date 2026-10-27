@@ -65,6 +65,10 @@
 
   @if (loading()) {
     <span class="input-field__spinner" aria-hidden="true"></span>
+  } @else {
+    <span class="input-field__affix input-field__affix--end">
+      <ng-content select="[icon-end]" />
+    </span>
   }
 
   @if (withButton()) {
@@ -87,8 +91,7 @@
 </div>
 
 @if (_hasMessages()) {
-  <!-- Field-owned wrapper: stable id + role=alert survive whatever the
-       consumer projects; alert announces on insertion (WCAG 4.1.3). -->
+  <!-- Field-owned role=alert wrapper announces on insertion (WCAG 4.1.3). -->
   <div class="input-field__assistive" role="alert" [id]="_assistiveId">
     <ng-content select="mud-inline-message" />
   </div>

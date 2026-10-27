@@ -12,8 +12,7 @@
   --_nav-padding-end: var(--mud-pagination-nav-padding-end-medium);
   --_icon-size: var(--mud-pagination-nav-icon-size-medium);
 
-  // Block-level on purpose: the host must fill its container to be measured. Align the nav
-  // with justify-content on the host.
+  // Block-level on purpose: the host must fill its container to be measured.
   display: flex;
   position: relative;
   min-inline-size: 0;
@@ -187,8 +186,7 @@
   white-space: nowrap;
 }
 
-// The jump list reuses the shared .menu panel (menu/src/lib/mud-menu.scss) and only narrows it to
-// upstream's overflow-menu metrics. (0,2,0) beats .menu / .menu__item at (0,1,0).
+// Narrows the shared .menu panel; (0,2,0) beats .menu / .menu__item at (0,1,0).
 .menu.mud-pagination__menu {
   min-inline-size: var(--mud-pagination-menu-min-width);
   max-block-size: var(--mud-pagination-menu-max-height);

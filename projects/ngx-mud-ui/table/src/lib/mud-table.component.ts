@@ -29,8 +29,7 @@ export type MudTableRowStyle = 'default' | 'zebra';
 @Component({
   selector: 'mud-table, table[mud-table]',
   exportAs: 'mudTable',
-  // Verbatim copy of CdkTable's template (CDK does not export it). The server branch
-  // captures unprojected content so hydration does not throw; CDK removes it on the client.
+  // Copy of CdkTable's (unexported) template; the server branch keeps hydration from throwing.
   template: `
     <ng-content select="caption" />
     <ng-content select="colgroup, col" />
@@ -71,17 +70,17 @@ export type MudTableRowStyle = 'default' | 'zebra';
     { provide: STICKY_POSITIONING_LISTENER, useValue: null },
   ],
   encapsulation: ViewEncapsulation.None,
-  // CdkTable drives its outlets imperatively; Material also keeps the table Eager.
+  // CdkTable drives its outlets imperatively.
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Eager,
   imports: [HeaderRowOutlet, DataRowOutlet, NoDataRowOutlet, FooterRowOutlet],
 })
 export class MudTable<T> extends CdkTable<T> {
-  /** @description Header treatment: 'subtle' light grey (default), 'strong' dark with white text for emphasis, or 'white' matching the body with a bottom line (tables inside cards). */
+  /** @description Header treatment: 'subtle', 'strong' or 'white'. */
   readonly headerStyle = input<MudTableHeaderStyle>('subtle');
-  /** @description Body rows: 'default' keeps only the divider under each row; 'zebra' also alternates the row background for long or dense tables. */
+  /** @description Body rows: 'default' dividers only, or 'zebra' alternating backgrounds. */
   readonly rowStyle = input<MudTableRowStyle>('default');
-  /** @description Adds a hover background and pointer cursor to body rows; use it when rows are clickable (bind your own (click) on the row). */
+  /** @description Hover background and pointer cursor on body rows, for clickable rows. */
   readonly hoverable = input(false, { transform: booleanAttribute });
 
   constructor() {

@@ -60,10 +60,7 @@
 }
 
 @if (_view() === 'days') {
-  <!--
-    Roving tabindex: the grid itself is never a tab stop, only the single
-    cell.tabbable button inside it, so the keydown listener lives here instead.
-  -->
+  <!-- Roving tabindex: the grid is not a tab stop, but owns the keydown listener. -->
   <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -->
   <table
     class="date-picker__grid"
@@ -103,15 +100,7 @@
               [attr.aria-current]="cell.today ? 'date' : null"
               (mouseenter)="_onCellEnter(cell.iso)"
             >
-              <!--
-                `disabled` is reserved for the whole-control state: a native
-                `disabled` button is unfocusable and drops out of the tab
-                order regardless of `tabindex`, which would let the grid lose
-                its only tab stop (or silently swallow arrow-key focus) on a
-                per-date disabled day. Per-date unavailability is conveyed with
-                `aria-disabled` instead, which keeps the button focusable;
-                `_select` still refuses to commit a disabled date.
-              -->
+              <!-- Per-date unavailability uses aria-disabled: native `disabled` is unfocusable and breaks the roving tab stop. -->
               <button
                 type="button"
                 class="date-picker__day-button"
@@ -135,10 +124,7 @@
   <div class="date-picker__month-grid" role="group" [attr.aria-label]="_labels().chooseMonth(_monthOnlyLabel())">
     @for (cell of _monthCells(); track cell.month) {
       <div class="date-picker__month" [attr.data-month]="cell.month" [class.is-selected]="cell.selected">
-        <!-- The visible text is the SHORT name; the full month is the
-             accessible name. Intl-derived short names are dot-stripped so the
-             visible label stays a prefix of the accessible name (WCAG 2.5.3);
-             consumer-provided overrides own that property themselves. -->
+        <!-- Visible short name must stay a prefix of the full accessible name (WCAG 2.5.3). -->
         <button
           type="button"
           class="date-picker__month-button"

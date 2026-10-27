@@ -2,7 +2,7 @@ export type MudPaginationSlot =
   | { readonly kind: 'page'; readonly page: number }
   | { readonly kind: 'overflow'; readonly key: 'leading' | 'trailing'; readonly pages: readonly number[] };
 
-// Figma always shows the first and last page.
+// The first and last page are always shown.
 const BOUNDARY = 1;
 
 /** Slots for a 1-based `current` page: siblings 1 → at most 7 slots, siblings 0 → at most 5. */

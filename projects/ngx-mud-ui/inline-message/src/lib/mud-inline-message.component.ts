@@ -67,10 +67,7 @@ export type MudInlineMessageSize = 'small' | 'medium';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MudInlineMessage {
-  /**
-   * @description Semantic variant. `info` (default) uses neutral text with a
-   * brand-blue icon; `warning` / `success` / `error` color both icon and text.
-   */
+  /** @description Semantic variant; `info` colours only the icon, the others colour icon and text. */
   readonly variant = input<MudInlineMessageVariant>('info');
 
   /** @description Size rung: `small` (12/16, 16px icon) or `medium` (14/20, 20px icon). */

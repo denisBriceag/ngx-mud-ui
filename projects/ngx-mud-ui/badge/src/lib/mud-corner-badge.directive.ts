@@ -121,11 +121,7 @@ export class MudCornerBadge {
   constructor() {
     inject(MudStyleLoader).load(_MudBadgeStyles);
 
-    /**
-     * @description The badge span is created imperatively, so a server-rendered copy
-     * could never be claimed during hydration - it would end up duplicated
-     * next to the client-created one. Browser-only keeps SSR markup clean.
-     * */
+    // Browser-only: an imperatively created span can't be claimed by hydration and would duplicate.
     if (!isPlatformBrowser(inject(PLATFORM_ID))) return;
 
     effect(() => {
@@ -178,8 +174,7 @@ export class MudCornerBadge {
 
     this._renderer.setAttribute(element, 'id', this._descriptionId);
     this._renderer.setAttribute(element, 'class', 'mud-badge-description');
-    // Polite live region so a changing description (e.g. an updated unread
-    // count) is announced, matching the official badge's role="status".
+    // Polite live region so a changing description (e.g. unread count) is announced.
     this._renderer.setAttribute(element, 'role', 'status');
     this._renderer.setAttribute(element, 'aria-live', 'polite');
     this._renderer.appendChild(this._host, element);

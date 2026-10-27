@@ -247,3 +247,12 @@
     }
   }
 }
+
+// Secondary line on the active fill uses the on-color pair for contrast, not the tree's brand blue.
+.mud-sidebar .mud-tree-item--selected {
+  font-weight: var(--mud-font-weight-semibold, 500);
+
+  .mud-tree-item__secondary {
+    color: var(--mud-color-text-base-secondary-on-color);
+  }
+}

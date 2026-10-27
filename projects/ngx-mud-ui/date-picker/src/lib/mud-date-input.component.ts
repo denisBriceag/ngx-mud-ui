@@ -126,7 +126,7 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   readonly readonly = input(false, { transform: booleanAttribute });
   readonly invalid = input(false, { transform: booleanAttribute });
   readonly name = input<string>('');
-  /** @description Format pattern shown while empty and as the typing ghost; must mirror the format's shape (e.g. `ZZ/LL/AAAA`). Defaults to the format. */
+  /** @description Empty-state and typing-ghost pattern matching the format's shape (e.g. `ZZ/LL/AAAA`). */
   readonly placeholder = input<string | undefined>(undefined);
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
@@ -620,12 +620,7 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
     else this._rewriteDraft(this._endDraft, end);
   }
 
-  /**
-   * The date an entry settles on when focus leaves it: what it resolves to, the
-   * last usable date when it resolves to nothing, and `null` when the entry is
-   * empty — deleting everything is a deliberate "no date", not a failed edit,
-   * and must never be undone.
-   */
+  /** Date an entry settles on at blur: its parse, else the last usable date; `null` when emptied (never undone). */
   private _settledIso(display: string, fallback: string | null): string | null {
     if (!display) return null;
 

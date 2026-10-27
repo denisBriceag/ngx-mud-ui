@@ -24,13 +24,13 @@ import type {
   ResolvedToastConfig,
 } from './mud-toast-config';
 
-/** Focus candidates for _restoreFocusFrom's survivor search — not just the close button, so `showCloseButton: false` toasts still qualify. */
+/** Not just the close button, so `showCloseButton: false` toasts still receive focus. */
 const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 interface StackHandle {
   readonly overlayRef: OverlayRef;
   readonly componentRef: ComponentRef<MudToastStack>;
-  /** Plain mutable field, written and pushed to the component's input at the same call site — never bridged via effect. */
+  /** Always written together with the stack's input (see _setEntries), never via effect. */
   entries: readonly MudToastEntry[];
 }
 
@@ -136,12 +136,7 @@ export class MudToast {
 
     this._visible++;
 
-    // Deliberately not awaited: _show stays synchronous so the queue can promote
-    // a toast without blocking. playEnter resolves immediately when there is no
-    // animation (reduced motion, jsdom), so `opened` always fires. A throw here
-    // (e.g. a consumer template failing during detectChanges) must not strand
-    // the toast forever, so `opened` still fires in `finally` and the error is
-    // reported rather than swallowed.
+    // Not awaited so _show stays synchronous; `opened` fires in `finally` so a throw can't strand the toast.
     void (async () => {
       try {
         handle.componentRef.changeDetectorRef.detectChanges();
@@ -155,11 +150,7 @@ export class MudToast {
   }
 
   private async _dismiss(entry: MudToastEntry, reason: MudToastDismissReason): Promise<void> {
-    // MudToastRef only guards on `_settled`, which this method doesn't set
-    // until its own `finally` runs — i.e. after `await playExit()`. A second
-    // dismiss() call (double-click, or a timeout racing a manual close) would
-    // otherwise re-enter here and run its own `finally`, double-decrementing
-    // `_visible` and over-promoting the queue for a single freed slot.
+    // `_settled` is only set after playExit, so a re-entrant dismiss would double-decrement `_visible`.
     if (this._dismissing.has(entry)) return;
 
     this._dismissing.add(entry);
@@ -179,14 +170,9 @@ export class MudToast {
 
       if (!handle || !handle.entries.includes(entry)) return;
 
-      // Same throw-must-not-strand contract as _show: settling the ref and
-      // dropping the entry happen in `finally`, so a failure mid-exit can't burn
-      // the toast's slot forever (Task 8's queue depends on this).
+      // Settle in `finally` so a failure mid-exit can't burn the queue slot.
       try {
-        // Flip the signal before detectChanges runs so `[class.mud-toast--leaving]`
-        // is already in the DOM by the time playExit reads getAnimations() —
-        // under zoneless scheduling the class would otherwise land a render late,
-        // and playExit would see no exit animation at all.
+        // Flip before detectChanges so the leaving class is in the DOM when playExit reads getAnimations().
         entry.leaving.set(true);
         handle.componentRef.changeDetectorRef.detectChanges();
         await handle.componentRef.instance.itemFor(entry.id)?.playExit();
@@ -306,10 +292,8 @@ export class MudToast {
     }
   }
 
-  // CDK 22 shows overlays in the browser top layer, where z-index is ignored and
-  // the last-shown overlay wins — a toast opened before a dialog would sit under
-  // its backdrop. Watching the overlay container for any other overlay and
-  // re-showing the toast stacks keeps toasts on top whatever the open order.
+  // CDK overlays live in the top layer where z-index is ignored and the last shown wins;
+  // re-show the toast stacks whenever another overlay opens.
   private _watchOtherOverlays(): void {
     if (!this._isBrowser || this._otherOverlays || typeof MutationObserver === 'undefined') return;
 
@@ -326,13 +310,10 @@ export class MudToast {
     for (const { overlayRef } of this._stacks.values()) {
       const host = overlayRef.hostElement;
 
-      // Only top-layer hosts need it; without popover support CDK falls back to
-      // z-index, where the stack pane's 1001 already wins.
+      // Without popover support CDK falls back to z-index, where the pane's 1001 already wins.
       if (!host.hasAttribute('popover') || !host.matches(':popover-open')) continue;
 
-      // hide + show is the only way to move an element to the top of the top layer.
-      // It doesn't replay the toast's enter animation: CDK's display:flex on the
-      // host overrides the hidden popover's display:none, so nothing is re-rendered.
+      // hide + show is the only way to re-top an element; CDK's display:flex prevents an animation replay.
       host.hidePopover();
       host.showPopover();
     }

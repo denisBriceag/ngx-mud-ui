@@ -22,11 +22,7 @@ const SIZE_CLASSES: Record<MudAvatarSize, string> = {
 
 declare const ngDevMode: boolean | undefined;
 
-/**
- * Derives up to two uppercase initials from a full name (first + last word,
- * split on whitespace and hyphens), matching the official design system:
- * 'Ion Popescu' -> 'IP', 'Maria-Andreea Pop' -> 'MP', 'Ștefan' -> 'Ș'.
- */
+/** 'Ion Popescu' -> 'IP', 'Maria-Andreea Pop' -> 'MP', 'Ștefan' -> 'Ș'. */
 export function deriveInitials(name: string | undefined): string {
   if (!name) return '';
 
@@ -49,11 +45,6 @@ export function deriveInitials(name: string | undefined): string {
  * <mud-avatar size="large"><mud-icon name="person" scale="24" /></mud-avatar>
  * <mud-avatar name="Olga Popescu"><img src="…" alt="Olga Popescu" /></mud-avatar>
  * ```
- *
- * Either project content (initials text, an icon, or an `<img>`) or pass
- * `name`/`initials` and let the avatar render the derived initials itself.
- * When a projected `<img>` fails to load it collapses, so a `name` alongside
- * the photo acts as the official photo -> initials fallback.
  */
 @Component({
   selector: 'mud-avatar',
@@ -70,23 +61,13 @@ export function deriveInitials(name: string | undefined): string {
 export class MudAvatar {
   readonly size = input<MudAvatarSize>('medium');
 
-  /**
-   * @description Accessible name for the avatar. When set, the host becomes `role="img"`
-   * with this label and the projected content (initials, icon or image) turns
-   * presentational for assistive tech.
-   */
+  /** @description Accessible name for the avatar. */
   readonly label = input<string | undefined>(undefined);
 
-  /**
-   * @description Full name of the represented person. Used to derive the rendered
-   * initials when no content is projected and to seed the accessible name.
-   */
+  /** @description Full name; derives the initials and the accessible name. */
   readonly name = input<string | undefined>(undefined);
 
-  /**
-   * @description Pre-computed initials; overrides derivation from `name`. Trimmed to
-   * two characters and uppercased.
-   */
+  /** @description Pre-computed initials; overrides derivation from `name`. */
   readonly initials = input<string | undefined>(undefined);
 
   private readonly _labels = injectMudLabels();
@@ -101,10 +82,7 @@ export class MudAvatar {
     return deriveInitials(this.name());
   });
 
-  /**
-   * @description Official accessible-name chain: label -> name -> "Avatar for {initials}"
-   * -> "User avatar". The avatar is always exposed as a labelled image.
-   */
+  /** @description Accessible-name chain: label -> name -> initials -> fallback. */
   protected readonly _accessibleName = computed(() => {
     const label = this.label();
 
@@ -124,12 +102,10 @@ export class MudAvatar {
   private readonly _el = inject<ElementRef<HTMLElement>>(ElementRef);
 
   constructor() {
-    // afterNextRender only runs in the browser, so both hooks are SSR-safe.
     afterNextRender(() => {
       const host = this._el.nativeElement;
 
-      // error does not bubble; capture it so a failed projected photo
-      // collapses and the tinted circle + derived initials show instead.
+      // `error` does not bubble; capture it so a failed photo collapses to the initials.
       host.addEventListener(
         'error',
         (event) => {

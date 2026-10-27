@@ -87,10 +87,7 @@
   --mud-color-text-base-inverse-on-color: var(--mud-white-1000);
 
   --mud-color-text-brand-default: var(--mud-blue-sky-600);
-  // 700, not 600: upstream's generated tokens duplicate the default here (so
-  // hover is a no-op), but their backlog doc
-  // (2026-05-27-text-brand-hover-active-semantic-gap.md) proposes 700/800 —
-  // we ship their intended fix.
+  // 700/800, not 600: hover/active must differ from the default to be visible.
   --mud-color-text-brand-default-hover: var(--mud-blue-sky-700);
   --mud-color-text-brand-default-active: var(--mud-blue-sky-800);
   --mud-color-text-brand-on-secondary: var(--mud-blue-sky-600);
@@ -109,8 +106,7 @@
   --mud-color-text-danger-default: var(--mud-red-600);
   --mud-color-text-danger-on-secondary: var(--mud-red-700);
 
-  // Legacy aliases (predate the Figma token names); --mud-color-text-base-disabled
-  // is still consumed by components/forms/_input-date.scss.
+  // Legacy aliases; --mud-color-text-base-disabled is still consumed by components/forms/_input-date.scss.
   --mud-color-text-base-disabled: var(--mud-gray-300);
   --mud-color-text-success-default: var(--mud-green-700);
 }
@@ -173,14 +169,13 @@
   --mud-color-input-border-hover: var(--mud-gray-600);
   --mud-color-input-focus-ring: var(--mud-blue-sky-200);
 
-  // Official focusRing tokens: a white inner ring + brand outer ring drawn as
-  // stacked box-shadows (same values in both themes upstream).
+  // Focus ring: white inner + brand outer, drawn as stacked box-shadows.
   --mud-focus-ring-inner-color: var(--mud-color-text-base-inverse-on-color);
   --mud-focus-ring-outer-color: var(--mud-blue-sky-500);
   --mud-focus-ring-inner-width: 2px;
   --mud-focus-ring-outer-width: 3px;
   --mud-color-input-focus-border: var(--mud-blue-sky-600);
-  --mud-color-input-disabled-background: var(--mud-gray-100);
+  --mud-color-input-disabled-background: var(--mud-gray-200); // disabled.default; readonly stays gray-100
   --mud-color-input-disabled-border: var(--mud-gray-250);
   --mud-color-input-disabled-text: var(--mud-gray-500);
   --mud-color-input-readonly-background: var(--mud-gray-100);
@@ -188,9 +183,7 @@
   --mud-color-input-readonly-text: var(--mud-gray-700);
 }
 
-// Status accents (warning/destructive/success borders, focus rings and
-// readonly tints) intentionally stay on palette primitives until dark values
-// are specified in Figma; they remain legible on dark surfaces.
+// Status accents deliberately stay on palette primitives; they remain legible on dark surfaces.
 :root {
   --mud-modal-width-sm: 350px;
   --mud-modal-width-md: 590px;
@@ -216,9 +209,11 @@
   --mud-color-link-strict-active: var(--mud-color-text-base-default);
   --mud-color-link-strict-visited: var(--mud-color-text-brand-visited);
 
-  // Tag (status-tag) outlined text: the on-secondary shades are right on the
-  // light theme but too dark against dark surfaces, so the dark theme
-  // overrides these with lighter shades.
+  // Outlined tag text: on-secondary shades are too dark on dark surfaces, so dark lightens them.
   --mud-color-tag-outlined-success: var(--mud-color-text-positive-on-secondary);
   --mud-color-tag-outlined-danger: var(--mud-color-text-danger-on-secondary);
+
+  // Inline message success sits on the page, not a green surface, so dark lightens it too.
+  --mud-color-inline-message-success-text: var(--mud-color-text-positive-on-secondary);
+  --mud-color-inline-message-success-icon: var(--mud-color-icon-positive-on-secondary);
 }

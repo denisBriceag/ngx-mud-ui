@@ -7,11 +7,7 @@ export interface MudCivilDate {
 
 const ISO_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 
-/**
- * Days between the civil date and 1970-01-01, by Howard Hinnant's
- * `days_from_civil`. Pure integer arithmetic — no `Date`, so no timezone or
- * DST transition can influence the result.
- */
+/** Days since 1970-01-01 (Hinnant's `days_from_civil`); no `Date`, so immune to timezone/DST. */
 function daysFromCivil({ y, m, d }: MudCivilDate): number {
   const year = y - (m <= 2 ? 1 : 0);
   const era = Math.floor(year / 400);
@@ -50,10 +46,7 @@ export function daysInMonth(year: number, month: number): number {
   return [4, 6, 9, 11].includes(month) ? 30 : 31;
 }
 
-/**
- * True only for a `YYYY-MM-DD` string naming a date that exists. Datetime
- * strings are rejected on purpose — see the strict-format decision in the spec.
- */
+/** True only for a `YYYY-MM-DD` string naming a date that exists; datetime strings are rejected on purpose. */
 export function isValidIso(value: string): boolean {
   const match = ISO_PATTERN.exec(value);
 
@@ -126,13 +119,7 @@ export function compareIso(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
-/**
- * Orders a range's endpoints, so entering the later date first still yields a
- * valid range. Shared by the calendar's range-completion path and the field's
- * range commit — the two used to make opposite choices for the same user
- * intent (the calendar swapped, the field nullified the end), which is exactly
- * what a shared helper prevents from drifting apart again.
- */
+/** Orders a range's endpoints; shared by the calendar and the field so both swap the same way. */
 export function normalizeRange(a: string, b: string): { start: string; end: string } {
   return compareIso(a, b) <= 0 ? { start: a, end: b } : { start: b, end: a };
 }
@@ -146,8 +133,7 @@ export function isWithin(iso: string, min?: string, max?: string): boolean {
   return true;
 }
 
-/** Passes an ISO date through, and anything else out. Bounds arriving from a
- *  signal-forms schema are name-matched at runtime and are not type-checked. */
+/** Passes an ISO date through and drops anything else (schema bounds are not type-checked). */
 export function toValidIsoOrUndefined(value: unknown): string | undefined {
   return typeof value === 'string' && isValidIso(value) ? value : undefined;
 }
@@ -159,11 +145,7 @@ export function mudDateFromDate(date: Date): string {
   return toIso({ y: date.getFullYear(), m: date.getMonth() + 1, d: date.getDate() });
 }
 
-/**
- * Local **noon**, not midnight: a DST transition can move midnight across a
- * day boundary, noon cannot. `new Date('2026-08-27')` would parse as UTC and
- * reintroduce exactly the bug this library avoids.
- */
+/** Local noon, not midnight: DST can move midnight across a day boundary; `new Date(iso)` parses as UTC. */
 export function mudDateToDate(iso: string): Date {
   const date = parseIso(iso);
 

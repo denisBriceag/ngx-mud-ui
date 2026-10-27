@@ -78,9 +78,10 @@
     outline-offset: -2px;
   }
 
+  // The selected value in the other (inactive) column.
   &.is-selected {
     background: var(--mud-color-background-brand-secondary);
-    color: var(--mud-color-text-brand-on-secondary);
+    color: var(--mud-color-text-base-default-on-color);
   }
 
   &.is-selected.is-active {
@@ -104,4 +105,16 @@
 
 .time-picker__separator-cell {
   padding-inline: 0;
+}
+
+.time-picker__option {
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .time-picker__option {
+    transition: none;
+  }
 }

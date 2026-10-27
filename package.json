@@ -13,6 +13,7 @@
     "build-storybook": "ng run ngx-mud-ui:build-storybook",
     "lint": "ng lint",
     "styles:check": "node tools/check-styles.mjs",
+    "stories:fonts": "node tools/check-story-fonts.mjs",
     "docs:json": "compodoc -p projects/ngx-mud-ui/.storybook/tsconfig.json -e json -d projects/ngx-mud-ui --disableProtected --disablePrivate --disableInternal --silent",
     "postinstall": "pnpm docs:json"
   },

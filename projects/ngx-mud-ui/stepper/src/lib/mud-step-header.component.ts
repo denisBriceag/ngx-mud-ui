@@ -6,11 +6,7 @@ export const MUD_STEP_STATES = ['current', 'completed', 'incomplete', 'blocked',
 
 export type MudStepState = (typeof MUD_STEP_STATES)[number];
 
-/**
- * @docs-private Visual header of one stepper step: state circle
- * (number / check / exclamation) plus heading and supporting text.
- * Rendered by {@link MudStepper}; not part of the public API.
- */
+/** @docs-private Visual header of one stepper step, rendered by {@link MudStepper}. */
 @Component({
   selector: 'mud-step-header',
   template: `
@@ -56,10 +52,7 @@ export type MudStepState = (typeof MUD_STEP_STATES)[number];
   `,
   host: {
     class: 'stepper-step__header',
-    // Overrides CdkStepHeader's role="tab": the stepper uses the
-    // list + aria-current="step" pattern, not tablist/tab/tabpanel —
-    // a tablist may not contain the vertical mode's inline panels
-    // (axe aria-required-children), so headers are plain buttons.
+    // Overrides CdkStepHeader's role="tab": a tablist can't hold the vertical inline panels.
     role: 'button',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,

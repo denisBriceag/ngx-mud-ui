@@ -181,14 +181,7 @@ export class MudTabGroup {
       const tabs = this.tabs();
       const index = this.selectedIndex();
 
-      /**
-       * The selected tab can disappear (an @if/@for removes it) or become
-       * disabled (programmatic selectedIndex writes bypass the interactive
-       * guard; a selected tab's [disabled] can flip). Either way the
-       * selection must land on an enabled tab, otherwise no panel is shown —
-       * or a disabled tab is presented as active — and every tab button
-       * keeps tabindex="-1", making the tablist unreachable by keyboard.
-       * */
+      // A removed or disabled selected tab leaves every button at tabindex=-1; re-select an enabled one.
       if (tabs.length > 0 && (!tabs[index] || tabs[index].disabled())) {
         const fallback = this._closestEnabled(tabs[index] ? index : tabs.length - 1);
 
@@ -271,7 +264,7 @@ export class MudTabGroup {
       return;
     }
 
-    // Automatic activation (official): arrows move focus AND selection.
+    // Automatic activation: arrows move focus AND selection.
     switch (event.key) {
       case 'ArrowRight':
       case 'ArrowDown':

@@ -70,8 +70,7 @@ $icon-sizes: (
   extra-small: 12px
 );
 
-// Input surfaces flip with the theme via these tokens (dark overrides in
-// themes/_dark.scss). Light values are the original input palette.
+// Input surfaces; dark overrides live in themes/_dark.scss.
 
 $input-colors: (
   default: (

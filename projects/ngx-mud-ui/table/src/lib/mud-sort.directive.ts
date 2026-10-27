@@ -36,17 +36,17 @@ export class MudSort implements OnInit, OnDestroy {
   /** Emits once the inputs are bound; MudTableDataSource waits on it before its first sort. */
   readonly initialized: Observable<void> = this._initialized.asObservable();
 
-  /** @description Id of the column currently sorted ('' = unsorted). Two-way bindable, e.g. to restore a saved sort or drive it from the URL. */
+  /** @description Id of the sorted column ('' = unsorted); two-way bindable. */
   readonly active = model('');
-  /** @description Direction of the active column: 'asc', 'desc' or '' (unsorted). Two-way bindable alongside `active`. */
+  /** @description Direction of the active column: 'asc', 'desc' or ''; two-way bindable. */
   readonly direction = model<MudSortDirection>('');
-  /** @description Direction the first click lands on for every column ('asc' default); use 'desc' when the useful order is biggest/newest first. A header's own `start` overrides it. */
+  /** @description First-click direction for every column; a header's own `start` overrides it. */
   readonly start = input<'asc' | 'desc'>('asc');
-  /** @description Removes the unsorted step from the click cycle (asc → desc → asc), so the table is always sorted; use it when the backend requires a sort or the data has no natural order. A header's own `disableClear` overrides it. */
+  /** @description Removes the unsorted step from the click cycle; a header's own `disableClear` overrides it. */
   readonly disableClear = input(false, { transform: booleanAttribute });
-  /** @description Disables every sort header at once (loading or read-only states); each header renders a disabled button without a chevron. */
+  /** @description Disables every sort header at once. */
   readonly disabled = input(false, { transform: booleanAttribute });
-  /** @description Fires after every click on a sort header with `{ active, direction }`; handle it yourself for server-side sorting, or hand the directive to a MudTableDataSource. */
+  /** @description Fires after every sort header click with `{ active, direction }`. */
   readonly sortChange = output<MudSortState>();
 
   register(sortable: MudSortable): void {

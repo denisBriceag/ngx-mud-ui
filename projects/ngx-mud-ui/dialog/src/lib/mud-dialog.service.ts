@@ -23,9 +23,7 @@ export class MudDialog {
     componentOrTemplate: ComponentType<unknown> | TemplateRef<unknown>,
     config: MudDialogConfig<D> = {},
   ): MudDialogRef<R> {
-    // CDK invokes `providers` synchronously — with the real DialogRef already
-    // built, before attaching the component, so the instance created here is
-    // exactly the one both the opened component and this method return.
+    // CDK calls `providers` synchronously before attaching, so the component and caller share this ref.
     let mudRef!: MudDialogRef<R>;
 
     this._cdkDialog.open<R, D>(componentOrTemplate, {
@@ -49,8 +47,7 @@ export class MudDialog {
 
         if (config.closeOnEscape ?? true) {
           dialogRef.keydownEvents.subscribe((event) => {
-            // Parity with CdkDialog's own ESC handling: modified Escape (e.g.
-            // Shift+Escape, a screen-reader chord) is not a dismissal.
+            // A modified Escape (e.g. a screen-reader chord) is not a dismissal.
             if (event.key === 'Escape' && !hasModifierKey(event) && !event.defaultPrevented) {
               event.preventDefault();
               mudRef.close(undefined, 'escape');

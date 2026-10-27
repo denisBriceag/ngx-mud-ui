@@ -91,19 +91,13 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
   /** @description Shows the `n / max` character counter while `maxLength` is set. */
   readonly showCounter = input(true, { transform: booleanAttribute });
 
-  /**
-   * @description Optional screen-reader text for the counter, fully owned by the
-   * consumer
-   */
+  /** @description Optional consumer-owned screen-reader sentence for the counter. */
   readonly counterLabel = input<string | undefined>(undefined);
 
   /** @description Accessible name used when no `mud-label` is projected. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
-  /**
-   * @description Extra id(s) merged into the native control's aria-describedby —
-   * for messages rendered OUTSIDE the field.
-   */
+  /** @description Extra id(s) merged into the native control's aria-describedby. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
   /** Signal-forms touch contract: emitted when focus leaves the control. */

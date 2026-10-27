@@ -143,7 +143,7 @@ export class MudMenu implements MudMenuPanel {
     }
   }
 
-  /** @docs-private Hover coordination; submenu sibling-closing arrives with the trigger. */
+  /** @docs-private Hovering another item closes the open submenu. */
   _itemEntered(item: MudMenuItem): void {
     const child = this._attachedTrigger()?._childTrigger;
 

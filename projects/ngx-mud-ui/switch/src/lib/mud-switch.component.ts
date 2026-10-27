@@ -24,20 +24,6 @@ import { _MudSelectionControlStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 let nextUniqueId = 0;
 
 /**
- * Switch — an instant on/off toggle. A native
- * `<input type="checkbox" role="switch">` (the official a11y pattern) drives
- * a styled track + thumb; the label toggles on click.
- *
- * Works with BOTH forms systems:
- * - Signal forms via the FormCheckboxControl contract
- *   (`<mud-switch [formField]="form.notifications" />` binds `checked`).
- * - Reactive/template-driven forms via ControlValueAccessor (boolean value).
- * - Standalone via the two-way `[(checked)]` model.
- *
- * Deliberately minimal like the official switch: one size, no invalid /
- * readonly / supporting-text states. Associate an external message via
- * `aria-describedby` when needed.
- *
  * ```html
  * <mud-switch [formControl]="notifications">
  *   <mud-label>Notificări prin e-mail</mud-label>

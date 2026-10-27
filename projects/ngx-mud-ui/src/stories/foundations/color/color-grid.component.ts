@@ -67,7 +67,7 @@ const COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\(/i;
     :host {
       display: block;
       padding: 1.5rem 2rem;
-      font-family: system-ui, sans-serif;
+      font-family: var(--mud-font-family-base);
       color: var(--mud-color-text-base-default);
     }
     .toolbar {
@@ -118,7 +118,6 @@ const COLOR_VALUE = /^#([0-9a-f]{3,8})$|^rgba?\(/i;
       min-width: 0;
     }
     .swatch__name {
-      font-family: ui-monospace, monospace;
       font-size: 0.78rem;
       white-space: nowrap;
       overflow: hidden;

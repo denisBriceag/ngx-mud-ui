@@ -181,7 +181,6 @@ export class MudPagination implements OnInit, OnDestroy {
 
   protected readonly _labels = computed(() => this._allLabels().pagination);
 
-  // Page numbers rendered in the format locale; cached per locale.
   private readonly _numberFormat = computed(() => new Intl.NumberFormat(this._formatLocale(), { useGrouping: false }));
 
   protected _formatNumber(value: number): string {
@@ -211,7 +210,7 @@ export class MudPagination implements OnInit, OnDestroy {
     return Number.isFinite(value) ? Math.min(Math.max(value, 0), last) : 0;
   });
 
-  /** @docs-private True when only 5 slots fit (Task 6 drives it). */
+  /** @docs-private True when only 5 slots fit. */
   readonly _compact = signal(false);
 
   protected readonly _slots = computed(() => computeSlots(this._current() + 1, this._pageCount(), this._compact() ? 0 : 1));

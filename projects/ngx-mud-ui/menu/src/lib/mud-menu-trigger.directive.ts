@@ -83,9 +83,7 @@ export class MudMenuTrigger implements MudMenuTriggerHandle {
   private readonly _host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly _injector = inject(Injector);
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  // On an item this resolves the CONTAINING menu (the panel the item lives in),
-  // because MUD_MENU_PANEL is provided by MudMenu and projected content keeps
-  // its declaration-site injector chain.
+  // On an item this is the CONTAINING menu: projected content keeps its declaration-site injector.
   private readonly _parentPanel = inject(MUD_MENU_PANEL, { optional: true });
 
   /** @docs-private Same-element item when this trigger opens a submenu. */
@@ -150,8 +148,7 @@ export class MudMenuTrigger implements MudMenuTriggerHandle {
       this._parentTrigger._childTrigger = this;
     }
 
-    // Only the root of a chain watches outside interactions; clicks inside
-    // descendant overlays count as inside via the chain walk.
+    // Only the chain root watches outside clicks; descendant overlays count as inside via _containsEvent.
     if (!this.isSubmenu) {
       this._outsideSub = this._overlayRef.outsidePointerEvents().subscribe((event) => {
         const target = event.target as Node | null;
@@ -209,7 +206,7 @@ export class MudMenuTrigger implements MudMenuTriggerHandle {
     return this._childTrigger?._containsEvent(target) ?? false;
   }
 
-  /** @docs-private Delayed close, cancelled by re-hovering (Task 5 wires callers). */
+  /** @docs-private Delayed close, cancelled by re-hovering. */
   _scheduleClose(): void {
     this._clearHoverTimer();
     this._hoverTimer = setTimeout(() => this.close(false), SUBMENU_HOVER_DELAY_MS);
@@ -218,11 +215,7 @@ export class MudMenuTrigger implements MudMenuTriggerHandle {
   protected _onClick(event: MouseEvent): void {
     if (this._hostItem?.disabled()) return;
 
-    // stopPropagation doesn't affect MudMenuItem's own (click) on this same
-    // element — same-element listeners fire regardless of propagation; the
-    // real guard against double handling is _activate()'s _hasSubmenu()
-    // early return. What this DOES stop is the click reaching an ANCESTOR
-    // panel's keydown/click handling once nested (submenu) triggers exist.
+    // Keeps the click from an ancestor panel; same-element item activation is guarded by _hasSubmenu().
     event.stopPropagation();
     this.toggle();
   }
@@ -264,9 +257,7 @@ export class MudMenuTrigger implements MudMenuTriggerHandle {
   }
 
   protected _onMouseLeave(): void {
-    // A pointer that merely crossed the item must not open the submenu later —
-    // cancel the PENDING open only. An open submenu stays (the pointer is
-    // usually heading into its panel); sibling-hover close owns that case.
+    // Cancel only a PENDING open; an open submenu stays while the pointer heads into its panel.
     if (!this.isSubmenu || this._isOpen()) return;
 
     this._clearHoverTimer();

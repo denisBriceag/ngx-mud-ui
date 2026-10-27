@@ -18,10 +18,6 @@ import { _MudSelectionControlStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 let nextUniqueId = 0;
 
 /**
- * One option inside a {@link MudRadioGroup}. Its checked state DERIVES from
- * the group's value (single source of truth); a radio cannot be used outside
- * a group — for a single yes/no toggle use `mud-checkbox`.
- *
  * ```html
  * <mud-radio value="mpay">
  *   <mud-label>MPay</mud-label>
@@ -115,8 +111,7 @@ export class MudRadio<T = unknown> {
   }
 
   protected _onKeydown(event: KeyboardEvent): void {
-    // click-blocking covers pointer and Space, but arrow keys select
-    // natively without a click — stop them before the browser acts.
+    // Arrow keys select natively without a click, so readonly must block them here.
     if (!this._readonly()) return;
 
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {

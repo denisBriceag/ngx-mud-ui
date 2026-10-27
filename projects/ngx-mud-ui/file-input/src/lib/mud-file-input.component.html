@@ -3,12 +3,7 @@
     <span class="input-field__label-text"><ng-content select="mud-label" /></span>
     @if (required()) {
       <span class="input-field__required" aria-hidden="true">*</span>
-      <!--
-        Every other field in the library conveys required via `required` /
-        `aria-required` on its native control. Here the only interactive element
-        is a button, where `aria-required` is a prohibited attribute, so the
-        word rides the label, which is also the button's accessible name.
-      -->
+      <!-- aria-required is prohibited on a button, so "required" rides the label (the button's name). -->
       <span class="input-field__sr-only file-field__required-text">{{ _requiredText() }}</span>
     }
   </label>
@@ -43,12 +38,7 @@
     {{ _chooseFilesText() }}
   </button>
 } @else {
-  <!--
-    Drop-target only: no button role, tabindex or aria naming here. ARIA
-    forbids a button role around a focusable descendant, and the inner browse
-    button is the keyboard activator carrying every association - clicks
-    anywhere on the dropzone still reach the picker.
-  -->
+  <!-- Drop target only: no button role here, ARIA forbids it around the focusable browse button. -->
   <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
   <div
     class="file-field__dropzone"
@@ -141,8 +131,7 @@
 }
 
 @if (_hasMessages()) {
-  <!-- Field-owned wrapper: stable id + role=alert survive whatever the
-       consumer projects; alert announces on insertion (WCAG 4.1.3). -->
+  <!-- Field-owned role=alert wrapper announces on insertion (WCAG 4.1.3). -->
   <div class="input-field__assistive" role="alert" [id]="_assistiveId">
     <ng-content select="mud-inline-message" />
   </div>

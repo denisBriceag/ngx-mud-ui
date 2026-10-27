@@ -1,5 +1,4 @@
-// Component-level design tokens, declared on :root so consumers can theme a component by
-// overriding them at :root. They live in the foundation — component sheets never emit :root.
+// Component tokens live here because component sheets never emit :root.
 
 // Badge — nudge a corner badge ([mudBadge]) inward from its anchored edge.
 :root {
@@ -7,6 +6,10 @@
   --mud-badge-offset-right: 0;
   --mud-badge-offset-bottom: 0;
   --mud-badge-offset-left: 0;
+}
+
+:root {
+  --mud-icon-color: currentColor;
 }
 
 // Toast

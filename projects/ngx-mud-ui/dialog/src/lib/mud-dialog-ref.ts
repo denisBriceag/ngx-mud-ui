@@ -30,7 +30,7 @@ export class MudDialogRef<R = unknown> {
     this._cdkRef.close(result);
   }
 
-  /** @docs-private Container instance; CDK builds the opened component's injector by hand, so directives can't inject MudDialogContainer directly - they go through here instead. */
+  /** @docs-private CDK hand-builds the content injector, so directives reach the container through here. */
   get _container(): MudDialogContainer | undefined {
     return this._cdkRef.containerInstance as MudDialogContainer | undefined;
   }

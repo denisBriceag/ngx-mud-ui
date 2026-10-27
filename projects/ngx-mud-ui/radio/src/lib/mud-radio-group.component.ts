@@ -47,6 +47,7 @@ let nextUniqueId = 0;
   host: {
     class: 'radio-group',
     '[class.radio-group--horizontal]': "orientation() === 'horizontal'",
+    '[class.radio-group--disabled]': '_effectiveDisabled()',
     role: 'radiogroup',
     '[attr.aria-labelledby]': '_ariaLabelledby()',
     '[attr.aria-label]': '_ariaLabel()',
@@ -105,10 +106,10 @@ export class MudRadioGroup<T = unknown> implements ControlValueAccessor, FormVal
 
   protected readonly _radios = contentChildren(forwardRef(() => MudRadio));
 
-  /** @docs-private Projected label element; descendants:false so a child mud-radio's own label isn't picked up instead. */
+  /** @docs-private descendants:false so a child mud-radio's own label isn't picked up. */
   protected readonly _label = contentChild(MudLabel, { descendants: false });
 
-  /** @docs-private Consumer-projected assistive messages; same descendants:false reasoning as `_label`. */
+  /** @docs-private descendants:false, same reason as `_label`. */
   private readonly _messages = contentChildren(MudInlineMessage, { descendants: false });
 
   protected readonly _hasLabel = computed(() => !!this._label());
@@ -180,10 +181,7 @@ export class MudRadioGroup<T = unknown> implements ControlValueAccessor, FormVal
     this._cvaDisabled.set(isDisabled);
   }
 
-  /**
-   * @description Focuses the selected option, or the first enabled one (also used by
-   * signal forms' focus requests, e.g. focus-on-invalid).
-   */
+  /** @description Focuses the selected option, or the first enabled one. */
   focus(options?: FocusOptions): void {
     if (!this._isBrowser) return;
 

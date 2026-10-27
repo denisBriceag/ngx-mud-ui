@@ -2,8 +2,7 @@
 
 @include host.typography('mud-stepper, mud-step-indicator, mud-indicator-step');
 
-// Off-screen but still read by assistive tech (the state suffix always,
-// the labels in compact mode). Local: the library ships no utility classes.
+// Off-screen but still read by assistive tech.
 @mixin visually-hidden {
   position: absolute;
   width: 1px;
@@ -35,8 +34,6 @@
   flex: 1 1 0;
   min-width: 0;
 
-  // First step is content-sized at the left edge and has no incoming
-  // connector; the rest grow to fill the space between circles.
   &:first-child {
     flex: 0 0 auto;
 
@@ -68,10 +65,7 @@
   user-select: none;
   transition: background-color 150ms ease-out;
 
-  // Horizontal headers are only as wide as the dot column (the zero-width
-  // label trick keeps step spacing even), so a header background would paint
-  // a stripe behind part of the overflowing text. Hover reads as a halo
-  // around the dot instead; vertical mode (below) restores the full pill.
+  // Headers are only dot-column wide (overflowing labels), so hover is a halo, not a background.
   &:hover:not([aria-disabled='true']) .stepper-step__circle {
     box-shadow: 0 0 0 4px var(--mud-color-background-base-tertiary);
   }
@@ -118,13 +112,9 @@
   color: var(--mud-color-text-disabled-default);
 }
 
-// Labels center under their circle; the width-0 trick keeps a wide label from
-// stretching the flex column. First/last steps anchor inward so their labels
-// don't spill past the track edges.
+// width: 0 keeps a wide label from stretching the flex column.
 .stepper-step__label {
-  // Above the following (transparent) step boxes: the overflowing text would
-  // otherwise paint beneath them, and axe abstains from color-contrast on
-  // text "overlapped by another element".
+  // Above the next step boxes: overlapped text paints beneath them and axe abstains on contrast.
   position: relative;
   z-index: 1;
   display: flex;
@@ -161,8 +151,7 @@
   color: var(--mud-color-text-base-tertiary);
 }
 
-// ", completed" / ", has errors" — the glyphs are aria-hidden, this is the
-// programmatic state. Never visible, so it must not take layout space either.
+// Programmatic state for AT; the glyphs are aria-hidden.
 .stepper-step__state {
   @include visually-hidden;
 }
@@ -183,6 +172,7 @@
   }
 
   .stepper-step__heading {
+    color: var(--mud-color-text-brand-default);
     font-weight: 500;
   }
 }
@@ -213,7 +203,6 @@
   }
 }
 
-// Completed steps that can be revisited read as links (actionable label).
 .stepper-step--completed .stepper-step__header:not([aria-disabled='true']) .stepper-step__heading {
   color: var(--mud-color-text-brand-default);
 }
@@ -233,7 +222,6 @@
   }
 }
 
-// Disabled (non-navigable) interactive steps mute entirely.
 .stepper-step__header[aria-disabled='true'] {
   .stepper-step__circle {
     border-color: var(--mud-color-border-disabled-default);
@@ -274,10 +262,7 @@
       display: none;
     }
 
-    // In vertical mode the connector runs OUT of a step, below its
-    // circle, alongside the inline panel, down to the next circle -
-    // so the FIRST step shows it and the LAST hides it. State colors
-    // come from the shared state rules above; only geometry changes.
+    // Vertical connectors run out of a step (down to the next), so the first shows it.
     &:first-child .stepper-step__connector {
       display: block;
     }
@@ -300,8 +285,6 @@
     align-items: flex-start;
     gap: var(--mud-spacing-12, 12px);
 
-    // The vertical header box wraps circle, heading, AND supporting text, so
-    // the full hover pill works here (and the halo is dropped).
     &:hover:not([aria-disabled='true']) {
       background-color: var(--mud-color-background-base-tertiary);
 
@@ -309,6 +292,20 @@
         box-shadow: none;
       }
     }
+  }
+
+  .stepper-step--current .stepper-step__header,
+  .stepper-step--current .stepper-step__header:hover:not([aria-disabled='true']) {
+    background-color: var(--mud-color-background-brand-secondary);
+  }
+
+  // On-secondary pair: plain brand/tertiary text fails contrast on the dark band.
+  .stepper-step--current .stepper-step__heading {
+    color: var(--mud-color-text-brand-on-secondary);
+  }
+
+  .stepper-step--current .stepper-step__supporting {
+    color: var(--mud-color-text-base-secondary-on-color);
   }
 
   .stepper-step__label,
@@ -331,7 +328,7 @@
   }
 }
 
-// ----- pending connectors are thinner (official thicknessPending: 1px) --
+// ----- pending connectors ----------------------------------------------
 
 .stepper-step--incomplete .stepper-step__connector,
 .stepper-step--available .stepper-step__connector {
@@ -345,10 +342,6 @@
 }
 
 // ----- compact (number-less dot rail) ----------------------------------
-// Set by the component: the `compact` input, or automatically when a
-// horizontal stepper's container is narrower than 600px. Indicators keep
-// their full 24px size; numbers and the error glyph go, the completed
-// check stays. Labels stay in the DOM for AT (visually hidden).
 .stepper--compact {
   .stepper-step__number,
   .stepper-step__icon--blocked {
@@ -394,9 +387,7 @@
   }
 }
 
-// Real element for the same axe color-contrast reason as
-// .stepper-step__connector. Absolutely positioned, so it takes no
-// grid track in the .indicator-step grid.
+// Real element (not ::before) for axe's contrast check; absolute so it takes no grid track.
 .indicator-step__connector {
   position: absolute;
   inset-inline-start: 11px;

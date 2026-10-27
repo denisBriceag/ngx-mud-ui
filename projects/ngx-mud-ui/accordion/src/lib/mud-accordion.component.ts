@@ -77,9 +77,7 @@ export class MudAccordion extends CdkAccordionItem {
   /** Emitted after the body's collapse animation happens. */
   readonly afterCollapse = output<void>();
 
-  /**
-   * @docs-private Signal mirrors of the CDK getter/setter state, for OnPush templates.
-   * */
+  /** @docs-private Signal mirrors of the CDK getter/setter state, for OnPush templates. */
   readonly _expandedState = signal(false);
   readonly _disabledState = signal(false);
 
@@ -98,7 +96,7 @@ export class MudAccordion extends CdkAccordionItem {
   /** @docs-private */
   readonly _iconPosition = computed(() => this._group?.iconPosition() ?? 'right');
 
-  /** @docs-private Set below NARROW_BELOW px of the item's own width: trailing content stacks under the text. */
+  /** @docs-private True below NARROW_BELOW px of the item's own width. */
   readonly _narrow = signal(false);
 
   private _viewReady = false;
@@ -160,10 +158,7 @@ export class MudAccordion extends CdkAccordionItem {
     this._pendingAfterEvent = expanded ? 'expand' : 'collapse';
     this._clearFallbackTimer();
 
-    /**
-     * When no transition will run (prefers-reduced-motion, or styles not
-     * loaded), transitionend never fires — emit right after the render.
-     * */
+    // transitionend never fires without a transition (reduced motion, no styles); fall back to a timer.
     afterNextRender(
       () => {
         if (!this._pendingAfterEvent) return;

@@ -86,7 +86,7 @@ export class MudInfoBox {
   /** @description `subtle` is a grey surface; `strong` tints it (blue for neutral and moderate, amber, red). */
   readonly emphasis = input<MudInfoBoxEmphasis>('subtle');
 
-  /** @description Renders a trailing close button. Activating it emits `closed`. */
+  /** @description Renders a trailing close button that emits `closed`. */
   readonly closable = input(false, { transform: booleanAttribute });
 
   /** @description Suppresses the leading icon entirely. */
@@ -98,7 +98,7 @@ export class MudInfoBox {
   /** @description Accessible name for the box itself. Gives the host a `region` role. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
-  /** Emitted when the close button is activated. The CONSUMER removes the box. */
+  /** @description Emitted when the close button is activated; the consumer removes the box. */
   readonly closed = output<void>();
 
   private readonly _labels = injectMudLabels();

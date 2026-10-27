@@ -27,7 +27,7 @@ declare const ngDevMode: boolean | undefined;
 export class MudTree<T, K = T> extends CdkTree<T, K> {
   private readonly _treeHost: HTMLElement = inject(ElementRef).nativeElement;
 
-  /** @description Several nodes can be chosen at once (filters): `selected` then maps to aria-selected instead of aria-current. */
+  /** @description Several nodes can be chosen at once; `selected` then maps to aria-selected. */
   readonly multiple = input(false, { transform: booleanAttribute });
 
   constructor() {

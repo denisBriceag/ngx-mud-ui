@@ -5,9 +5,6 @@ export type MudBannerVariant = 'info' | 'warning' | 'error';
 export type MudBannerType = 'subtle' | 'strong';
 
 /**
- * Full-width, top-of-page system message bar - maintenance, outages,
- * announcements. Persistent and non-contextual; it draws attention without
- * blocking interaction and stays until dismissed or resolved.
  * ```html
  * <mud-banner variant="warning" closable (closed)="hide()">
  *   Scheduled maintenance tonight 22:00–00:00.
@@ -52,7 +49,7 @@ export type MudBannerType = 'subtle' | 'strong';
       </ng-content>
     </span>
 
-    <!-- Message and actions as one block: on phones the actions wrap under the message, not under the icon. -->
+    <!-- One block so on phones the actions wrap under the message, not under the icon. -->
     <span class="banner__content">
       <span class="banner__message"><ng-content /></span>
       <span class="banner__actions"><ng-content select="[actions]" /></span>
@@ -81,30 +78,18 @@ export type MudBannerType = 'subtle' | 'strong';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MudBanner {
-  /** @description Semantic colour family. Upstream exposes no `success` for banners. */
+  /** @description Semantic colour family. */
   readonly variant = input<MudBannerVariant>('info');
 
   /** @description Surface treatment: `subtle` (tinted) or `strong` (filled, on-colour text). */
   readonly type = input<MudBannerType>('subtle');
 
-  /** @description Renders a trailing close button. Activating it emits `closed`. */
+  /** @description Renders a trailing close button that emits `closed`. */
   readonly closable = input(false, { transform: booleanAttribute });
 
   /**
-   * @description Announce the message when it CHANGES while this banner is
-   * already on screen — a session countdown, a connection banner that updates,
-   * a persistent status bar flipping to degraded.
-   *
-   * Off by default, because a banner already present at page load would
-   * interrupt the screen reader mid-read, and an assertive one would cut off
-   * whatever was being announced.
-   *
-   * This will NOT announce a banner that appears. A live region must be in the
-   * accessibility tree before its content changes, so mounting an
-   * already-populated `live` banner is not a content change and announces
-   * nothing. If you need an ARRIVING message announced, keep your own live
-   * region in the layout from first render and write into it, and leave this
-   * off.
+   * @description Announces message CHANGES while mounted; a banner that appears is NOT announced
+   * (a live region must exist before its content changes).
    */
   readonly live = input(false, { transform: booleanAttribute });
 
@@ -114,7 +99,7 @@ export class MudBanner {
   /** @description Accessible name for the banner itself. Gives the host a `region` role. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
-  /** Emitted when the close button is activated. The CONSUMER removes the banner. */
+  /** @description Emitted when the close button is activated; the consumer removes the banner. */
   readonly closed = output<void>();
 
   private readonly _labels = injectMudLabels();

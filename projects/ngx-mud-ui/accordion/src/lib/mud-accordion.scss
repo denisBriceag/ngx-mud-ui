@@ -3,11 +3,7 @@
 
 @include host.typography('mud-accordion, mud-accordion-group');
 
-/**
- * Accordion (official design-system parity). Mobile-first: <768px uses the
- * compact ramp (22/30 heading, 24px block padding); >=768px the desktop ramp
- * (24/32, 32px). The --sm modifier pins the compact ramp at any viewport.
- */
+// Mobile-first: compact ramp below 768px, desktop ramp above; --sm pins the compact one.
 .accordion__item {
   --_padding-block: 24px;
   --_padding-inline: 0px;
@@ -37,7 +33,6 @@
   }
 }
 
-// Declarative compact rung, independent of viewport (dense surfaces).
 .accordion__item--sm {
   --_padding-block: 24px;
   --_gap: var(--mud-spacing-8, 8px);
@@ -50,7 +45,6 @@
   --_icon-color: var(--mud-color-icon-brand-default);
 }
 
-// trail-sites tints OPEN items with the brand-secondary surface.
 .accordion__item--trail-sites.accordion__item--open {
   --_bg: var(--mud-color-background-brand-secondary);
   --_padding-inline: var(--mud-spacing-20, 20px);

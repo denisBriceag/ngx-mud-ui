@@ -150,4 +150,6 @@
 :root[data-theme='dark'] {
   --mud-color-tag-outlined-success: var(--mud-color-text-positive-default);
   --mud-color-tag-outlined-danger: var(--mud-red-400);
+  --mud-color-inline-message-success-text: var(--mud-color-text-positive-default);
+  --mud-color-inline-message-success-icon: var(--mud-color-icon-positive-default);
 }

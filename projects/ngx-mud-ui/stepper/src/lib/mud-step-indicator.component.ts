@@ -13,10 +13,7 @@ import { _MudStepperStyles } from './mud-stepper-styles.component';
 
 declare const ngDevMode: boolean | undefined;
 
-/**
- * One entry of an {@link MudStepIndicator}. Projected content renders
- * under the heading as supporting text and/or an action.
- */
+/** One entry of a {@link MudStepIndicator}; projected content renders under the heading. */
 @Component({
   selector: 'mud-indicator-step',
   template: `

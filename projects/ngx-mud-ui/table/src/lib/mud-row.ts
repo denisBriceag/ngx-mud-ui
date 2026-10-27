@@ -15,7 +15,7 @@ import {
 @Directive({
   selector: '[mudHeaderRowDef]',
   providers: [{ provide: CdkHeaderRowDef, useExisting: MudHeaderRowDef }],
-  // The inputs are inherited CDK fields; re-aliasing them needs the metadata form (Material does the same).
+  // Inherited CDK fields can only be re-aliased through the metadata form.
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: [
     { name: 'columns', alias: 'mudHeaderRowDef' },
@@ -63,7 +63,6 @@ export class MudRowDef<T> extends CdkRowDef<T> {}
 })
 export class MudHeaderRow extends CdkHeaderRow {}
 
-/** Footer row. */
 @Component({
   selector: 'mud-footer-row, tr[mud-footer-row]',
   exportAs: 'mudFooterRow',
@@ -95,7 +94,7 @@ export class MudFooterRow extends CdkFooterRow {}
   imports: [CdkCellOutlet],
 })
 export class MudRow extends CdkRow {
-  /** @description Marks the row as selected: brand selection background and `aria-selected="true"`; bind it to your SelectionModel in a selection column recipe. */
+  /** @description Marks the row as selected (background and `aria-selected`). */
   readonly selected = input(false, { transform: booleanAttribute });
 }
 

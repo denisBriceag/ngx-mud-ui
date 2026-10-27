@@ -42,9 +42,37 @@ The base stylesheet must be in your app's `angular.json` `styles` once:
 
 <Canvas of={TagStories.Sizes} />
 
-## Leading icon
+## Icons
 
-<Canvas of={TagStories.LeadingIcon} />
+A tag can show an icon before its label, after it, or both. Mark each icon with
+`icon-start` or `icon-end`; the tag places it on that side, whatever order you
+write it in.
+
+```html
+<mud-tag color="success"><mud-icon icon-start name="checkmark-small" [scale]="16" /> Approved</mud-tag>
+<mud-tag color="brand">Details <mud-icon icon-end name="chevron-right-small" [scale]="16" /></mud-tag>
+```
+
+Each icon tightens only its own edge: 6px on a medium tag, 4px on a small one. The
+icon renders at 16px on medium and 12px on small, so pass `[scale]="16"`.
+
+<Canvas of={TagStories.Icons} />
+
+## Disabled
+
+Use `disabled` when the thing the tag labels is unavailable, such as a status inside a
+disabled row. It replaces every `color` with the disabled grey, because a disabled tag
+carries no state meaning. An `outlined` tag keeps its transparent fill and greys its
+border and text.
+
+```html
+<mud-tag color="success" disabled>Approved</mud-tag>
+```
+
+The change is visual only. The tag adds no `aria-disabled`, so the disabled state must
+be announced by the control or row that owns it.
+
+<Canvas of={TagStories.Disabled} />
 
 ## Announced status
 

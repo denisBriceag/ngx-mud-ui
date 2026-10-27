@@ -52,7 +52,6 @@
   margin-bottom: var(--mud-spacing-2, 2px);
 }
 
-// Coach hint line (official: 12/16 at 0.72 opacity, 6px above).
 .tooltip-hint {
   margin-top: var(--mud-spacing-6, 6px);
   font-size: 12px;
@@ -71,9 +70,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  // ≥32px pointer/touch target; the visible icon stays 16px.
+  // ≥32px pointer target; the visible icon stays 16px.
   width: 32px;
   height: 32px;
+
+  // 40px on touch screens, grown outward so the icon stays put.
+  @media (pointer: coarse) {
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+    }
+  }
   padding: 0;
   border: none;
   border-radius: var(--mud-border-radius-6, 6px);
@@ -102,10 +110,8 @@
   }
 }
 
-// The arrow is a rotated square whose diagonal is the official triangle
-// width (16px small / 24px large -> 8px / 12px visible height). Its tip
-// pokes (s·√2 − s)/2 past its own box; inset by that plus 2px so the tip
-// always sits exactly 2px away from the trigger, whichever side it's on.
+// Arrow = rotated square whose diagonal is the triangle width; its tip pokes (s·√2 − s)/2
+// past its box, so inset by that plus 2px to keep the tip 2px from the trigger.
 $arrow-size: 11.31px; // 16px / sqrt(2)
 $arrow-size-lg: 16.97px; // 24px / sqrt(2)
 $arrow-inset: 2px + math.div($arrow-size * (math.sqrt(2) - 1), 2);

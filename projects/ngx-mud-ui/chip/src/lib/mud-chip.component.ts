@@ -16,22 +16,10 @@ import { _MudChipStyles } from './mud-chip-styles.component';
 export type MudChipType = 'filter' | 'input';
 export type MudChipSize = 'small' | 'medium';
 
-/**
- * Selection behaviour for `type="filter"`:
- * - `mono` — single-choice (radio-like); the selected chip just flips color.
- * - `multi` — multi-choice (checkbox-like); a leading check appears when selected.
- */
+/** `mono` is radio-like; `multi` is checkbox-like with a leading check. */
 export type MudChipSelectionMode = 'mono' | 'multi';
 
 /**
- * Compact pill for filter selection or token display.
- *
- * - `type="filter"` (default): a toggle button — click flips `selected`
- *   (`aria-pressed` exposed). Mono-exclusivity across a group is
- *   consumer-owned via `selectedChange`.
- * - `type="input"`: a discrete user-entered value. The body is static (no
- *   dead tab stop); with `removable`, a trailing close button emits `removed`.
- *
  * ```html
  * <mud-chip selectionMode="multi" [(selected)]="active" [count]="12">Acte</mud-chip>
  * <mud-chip type="input" removable (removed)="drop(tag)">{{ tag }}</mud-chip>
@@ -59,7 +47,7 @@ export class MudChip {
   /** @description In `multi` mode a leading check renders automatically while selected. */
   readonly selectionMode = input<MudChipSelectionMode>('mono');
 
-  /** @description Optional numeric badge after the label; its colors invert with the surface. */
+  /** @description Optional numeric badge after the label. */
   readonly count = input<number | undefined>(undefined);
 
   readonly disabled = input(false, { transform: booleanAttribute });
@@ -67,26 +55,18 @@ export class MudChip {
   /** @description For `type="input"`: renders the trailing close button that emits `removed`. */
   readonly removable = input(false, { transform: booleanAttribute });
 
-  /**
-   * @description ARIA-only fallback name (mud-button convention): applied as `aria-label`
-   * when set, and appended to the remove button's accessible name. Visible
-   * text belongs in the default content.
-   */
+  /** @description ARIA-only name; also feeds the remove button's accessible name. */
   readonly label = input<string | undefined>(undefined);
 
   /** @description Builds the remove button's accessible name from the chip's `label`. */
   readonly removeLabel = input<((label: string) => string) | undefined>(undefined);
 
-  /** Fired when the remove button of a removable `input` chip is activated. */
+  /** @description Fired when the remove button is activated. */
   readonly removed = output<void>();
 
   protected readonly _isFilter = computed(() => this.type() === 'filter');
 
-  /**
-   * @docs-private `model()` has no `booleanAttribute` transform, so a static
-   * `selected` attribute delivers `''` — coerce it here (present = true) and
-   * read only this everywhere (class, check, aria-pressed, toggle).
-   */
+  /** @docs-private `model()` has no `booleanAttribute` transform; a bare `selected` attribute delivers `''`. */
   protected readonly _selected = computed(() => booleanAttribute(this.selected()));
 
   protected readonly _showRemove = computed(() => this.type() === 'input' && this.removable());

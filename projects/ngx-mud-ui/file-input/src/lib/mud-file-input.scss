@@ -14,7 +14,6 @@
 
   --_ff-border: var(--mud-color-border-base-default);
   --_ff-border-hover: var(--mud-color-border-brand-default);
-  --_ff-focus-ring: var(--mud-color-input-focus-ring, var(--mud-blue-sky-200));
   --_ff-bg: var(--mud-color-input-background, var(--mud-color-background-base-default));
   --_ff-bg-active: var(--mud-color-background-brand-secondary);
 }
@@ -32,7 +31,6 @@
 .file-field.is-invalid {
   --_ff-border: var(--mud-color-border-danger-default);
   --_ff-border-hover: var(--mud-color-border-danger-default);
-  --_ff-focus-ring: var(--mud-red-200);
 }
 
 .file-field__native {
@@ -72,12 +70,15 @@
   border-color: var(--_ff-border-hover);
 }
 
-// The inner browse button owns the focus ring; painting it on the zone as well
-// makes the whole target read as focused, which is what the design shows.
+// The inner browse button's focus ring is painted on the whole zone.
 .file-field__dropzone:has(.file-field__browse:focus-visible) {
   border-style: solid;
   border-color: var(--_ff-border-hover);
-  box-shadow: 0 0 0 2px var(--_ff-focus-ring);
+  // Standard ring even when invalid; the border alone carries the error colour.
+  box-shadow:
+    0 0 0 var(--mud-focus-ring-inner-width, 2px) var(--mud-focus-ring-inner-color, #fff),
+    0 0 0 calc(var(--mud-focus-ring-inner-width, 2px) + var(--mud-focus-ring-outer-width, 3px))
+      var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500));
 }
 
 .file-field.is-dragover .file-field__dropzone {
@@ -175,8 +176,6 @@
   }
 }
 
-// The button-variant upload control is a plain mudButton; it only needs to
-// stop stretching to the field width.
 .file-field__upload-button {
   align-self: flex-start;
 }
@@ -268,9 +267,7 @@
   opacity: 0.45;
 }
 
-// A projected `[icon]` sizes to the same box as the built-in glyph and inherits
-// the row's icon colour (so `fill="currentColor"` just works). Scoped to svg /
-// mud-icon so it cannot catch the glyph or thumbnail, both of which are <img>.
+// Scoped to svg / mud-icon so it never catches the glyph or thumbnail <img>.
 .file-item__leading-icon > svg,
 .file-item__leading-icon > mud-icon {
   width: 24px;
@@ -350,13 +347,10 @@
   font-size: 12px;
   line-height: 16px;
   font-weight: 400;
-  // Upstream tints this tertiary (#757575), which only reaches 4.07:1 on the
-  // row's gray surface - below the 4.5:1 minimum for 12px text. Secondary
-  // keeps the hierarchy against the 500-weight filename and passes.
+  // Not tertiary: #757575 is only 4.07:1 on the gray row (WCAG needs 4.5:1).
   color: var(--mud-color-text-base-secondary);
   white-space: nowrap;
 
-  // Middot separator between the name and the size.
   &::before {
     content: '·';
     margin-right: var(--mud-spacing-4, 4px);
@@ -514,7 +508,6 @@
   font-weight: 400;
   color: var(--mud-color-text-base-secondary);
 
-  // Upstream's info value (the date) is medium weight in the default text colour.
   strong {
     font-weight: 500;
     color: var(--mud-color-text-base-default);

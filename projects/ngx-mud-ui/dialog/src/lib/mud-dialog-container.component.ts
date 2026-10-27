@@ -38,8 +38,7 @@ export type MudResolvedDialogConfig = DialogConfig & {
     }
     <ng-template cdkPortalOutlet />
   `,
-  // Host metadata is NOT inherited from CdkDialogContainer — re-declared verbatim,
-  // plus our card class and the size rung.
+  // Host metadata is NOT inherited from CdkDialogContainer; re-declared verbatim.
   host: {
     tabindex: '-1',
     '[attr.id]': '_config.id || null',

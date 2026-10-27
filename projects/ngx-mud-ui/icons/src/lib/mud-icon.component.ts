@@ -25,6 +25,7 @@ const UPSCALED: MudIconScale = 32;
     :host {
       display: inline-flex;
       line-height: 0;
+      color: var(--mud-icon-color, currentColor);
     }
   `,
   host: {

@@ -39,8 +39,7 @@ let nextUniqueId = 0;
     </button>
 
     <ng-template #panel>
-      <!-- The ul itself is never focused: focus always lives on one of its link/button
-           children, which is what the roving arrow-key navigation moves between. -->
+      <!-- Focus lives on the roving children, never on the ul itself. -->
       <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -->
       <ul class="menu mud-breadcrumb__panel" [id]="panelId" (keydown)="_onKeydown($event)">
         @for (crumb of items(); track crumb) {

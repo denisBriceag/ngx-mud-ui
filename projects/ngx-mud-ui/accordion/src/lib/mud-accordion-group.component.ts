@@ -26,19 +26,13 @@ export type MudAccordionIconPosition = 'right' | 'left';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MudAccordionGroup extends CdkAccordion {
-  /**
-   * @description trail-sites tints OPEN items with the brand-secondary surface and
-   * on-secondary text colors (the eGov "trail sites" pattern).
-   */
+  /** @description `trail-sites` tints open items with the brand-secondary surface. */
   readonly appearance = input<MudAccordionAppearance>('default');
 
-  /**
-   * @description small compresses the header to the mobile type ramp (22/30) and 24px
-   * block padding regardless of viewport - for dense surfaces.
-   */
+  /** @description `small` uses the compact mobile header at every viewport. */
   readonly size = input<MudAccordionSize>('medium');
 
-  /** @description left places the +/- trigger before the text (chevron-style navigation). */
+  /** @description `left` places the +/- trigger before the text. */
   readonly iconPosition = input<MudAccordionIconPosition>('right');
 
   constructor() {
@@ -55,12 +49,7 @@ export class MudAccordionGroup extends CdkAccordion {
 
     if (key !== 'ArrowDown' && key !== 'ArrowUp' && key !== 'Home' && key !== 'End') return;
 
-    /**
-     * @description Items may be wrapped in intermediate elements, so a child-combinator
-     * query would silently miss them. Instead take every descendant trigger
-     * that (a) belongs to this group rather than a nested one and (b) is not
-     * inside an item's panel (an accordion nested in another's content).
-     * */
+    // Descendant query (items may be wrapped), minus triggers of nested groups or inside panels.
     const host = this._el.nativeElement;
     const triggers = Array.from(
       host.querySelectorAll<HTMLButtonElement>('mud-accordion-header .accordion__trigger'),
@@ -81,8 +70,6 @@ export class MudAccordionGroup extends CdkAccordion {
     const count = triggers.length;
     let target = -1;
 
-    // Official behavior: arrows wrap around and skip disabled headers;
-    // Home/End land on the first/last enabled header.
     if (key === 'ArrowDown' || key === 'ArrowUp') {
       const direction = key === 'ArrowDown' ? 1 : -1;
       let i = index;

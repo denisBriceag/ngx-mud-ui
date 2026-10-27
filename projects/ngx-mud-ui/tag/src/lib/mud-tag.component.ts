@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, ViewEncapsulation } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, ViewEncapsulation } from '@angular/core';
 
 export type MudTagColor = 'muted' | 'neutral' | 'accent' | 'success' | 'brand' | 'danger' | 'info';
 export type MudTagType = 'subtle' | 'strong' | 'outlined';
@@ -10,13 +10,14 @@ declare const ngDevMode: boolean | undefined;
  * ```html
  * <mud-tag color="success">Approved</mud-tag>
  * <mud-tag color="danger" type="strong" size="small">
- *   <mud-icon name="alert-small" scale="16" /> Rejected
+ *   <mud-icon icon-start name="alert-small" [scale]="16" /> Rejected
  * </mud-tag>
+ * <mud-tag color="brand">Details <mud-icon icon-end name="chevron-right-small" [scale]="16" /></mud-tag>
  * ```
  */
 @Component({
   selector: 'mud-tag',
-  template: '<ng-content />',
+  template: '<ng-content select="[icon-start]" /><ng-content /><ng-content select="[icon-end]" />',
   styleUrl: './mud-tag.component.scss',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,11 +32,9 @@ export class MudTag {
   readonly color = input<MudTagColor>('neutral');
   readonly type = input<MudTagType>('subtle');
   readonly size = input<MudTagSize>('medium');
-  /**
-   * Accessible name for tags whose state change should be announced. Only when
-   * set does the tag become a polite live region (role="status"); unlabelled
-   * tags stay a11y-silent, matching the official design system.
-   */
+  /** Visual-only disabled design; the owning container announces the state. */
+  readonly disabled = input(false, { transform: booleanAttribute });
+  /** Accessible name; when set the tag becomes a polite live region (role="status"). */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
   private readonly _effectiveType = computed<MudTagType>(() => {
@@ -57,6 +56,8 @@ export class MudTag {
     const classes = ['status-tag', `status-tag--${this.color()}`, `is-${this._effectiveType()}`];
 
     if (this.size() === 'small') classes.push('status-tag--small');
+
+    if (this.disabled()) classes.push('is-disabled');
 
     return classes.join(' ');
   });

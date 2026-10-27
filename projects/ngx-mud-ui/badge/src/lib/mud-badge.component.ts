@@ -11,8 +11,7 @@ import type { MudBadgeSize, MudBadgeType, MudBadgeVariant } from './mud-badge.ty
  */
 @Component({
   selector: 'mud-badge',
-  // Live: the count is the live region's content (aria-label changes are not announced). Otherwise the
-  // host is a named image and the text is hidden so it is not read twice.
+  // Live: the count is the region's content (aria-label changes aren't announced); else hidden so it isn't read twice.
   template: `@if (_text()) {<span class="badge-count" [attr.aria-hidden]="live() ? null : 'true'">{{ _text() }}</span>}`,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

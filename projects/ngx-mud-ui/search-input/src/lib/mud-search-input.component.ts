@@ -34,6 +34,7 @@ let nextUniqueId = 0;
  * ```html
  * <mud-search-input shape="circular" placeholder="Caută servicii" (searched)="find($event)">
  *   <mud-label>Căutare</mud-label>
+ *   <mud-icon icon-end name="filter" [scale]="20" />
  * </mud-search-input>
  * ```
  */

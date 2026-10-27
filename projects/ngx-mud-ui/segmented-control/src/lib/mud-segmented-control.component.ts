@@ -22,13 +22,7 @@ import type { FormValueControl } from '@angular/forms/signals';
 
 export type MudSegmentedControlSize = 'medium' | 'small';
 
-/**
- * @description A segment created inside @for receives its [value] binding one change-
- * detection pass AFTER the group's content query already sees the segment,
- * so reading the required input in that window throws NG0950. Reads from
- * the group go through {@link MudSegment._valueOrUnset} instead, which
- * reports this sentinel until the binding is applied.
- * */
+/** A @for segment's [value] lands one CD pass after the content query sees it (NG0950); this sentinel covers that window. */
 const VALUE_UNSET = Symbol('mud-segment-value-unset');
 
 /** Emitted by {@link MudSegmentedControl.selectionChange} whenever the selection lands on a segment. */
@@ -38,16 +32,6 @@ export interface MudSegmentedControlChange<T> {
 }
 
 /**
- * One choice inside an {@link MudSegmentedControl}. Applied to a native
- * button so the DOM matches the design-system CSS contract
- * (`.segmented-control > .segment-item`).
- *
- * Keep labels short; an unavoidable long label truncates to one line with
- * an ellipsis. Truncation is visual-only (the full text stays in the
- * accessible name). If you want a tooltip on a truncated segment, compose
- * `mudTooltip` from `ngx-mud-ui/tooltip` on the same button element —
- * this component deliberately doesn't add one itself.
- *
  * ```html
  * <button mud-segment value="list"><mud-icon name="list" />List</button>
  * ```
@@ -88,10 +72,7 @@ export class MudSegment<T = unknown> {
     this._elementRef.nativeElement.focus();
   }
 
-  /**
-   * @docs-private The read still registers the reactive dependency before NG0950 is
-   * thrown, so effects/computeds using this re-run once the binding lands.
-   * */
+  /** @docs-private The read registers the dependency before NG0950 throws, so callers re-run when the binding lands. */
   _valueOrUnset(): T | typeof VALUE_UNSET {
     try {
       return this.value();
@@ -110,10 +91,6 @@ export class MudSegment<T = unknown> {
 }
 
 /**
- * Works standalone via `[(value)]` or inside reactive/template-driven forms
- * (implements ControlValueAccessor, so `formControlName`/`ngModel` and form
- * resets behave like any native control).
- *
  * ```html
  * <mud-segmented-control [(value)]="view" aria-label="View">
  *   <button mud-segment value="list">List</button>

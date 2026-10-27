@@ -43,7 +43,7 @@ import { _MudTreeItemStyles } from 'ngx-mud-ui/tree-item';
 export class MudSidebarItem {
   private readonly _isAnchor = (inject(ElementRef).nativeElement as HTMLElement).tagName === 'A';
 
-  /** @description Marks the row as the current page: brand colours, filled icon, start bar and aria-current. */
+  /** @description Marks the row as the current page (aria-current). */
   readonly selected = input(false, { transform: booleanAttribute });
 
   protected readonly _ariaCurrent = computed(() => (this.selected() ? (this._isAnchor ? 'page' : 'true') : null));

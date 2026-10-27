@@ -27,20 +27,23 @@
         <img class="phone-field__flag" [src]="_flagSrc()" alt="" width="20" height="14" />
       }
       <span class="phone-field__dial-code">{{ _country().dialCode }}</span>
-      <span class="phone-field__chevron" aria-hidden="true">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          focusable="false"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M4.41 7.077a.833.833 0 0 1 1.18 0L10 11.488l4.41-4.411a.833.833 0 1 1 1.18 1.178l-5 5a.833.833 0 0 1-1.18 0l-5-5a.833.833 0 0 1 0-1.178"
-          />
-        </svg>
-      </span>
+      <!-- Read-only: flag and code, no chevron. -->
+      @if (!readonly()) {
+        <span class="phone-field__chevron" aria-hidden="true">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            focusable="false"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M4.41 7.077a.833.833 0 0 1 1.18 0L10 11.488l4.41-4.411a.833.833 0 1 1 1.18 1.178l-5 5a.833.833 0 0 1-1.18 0l-5-5a.833.833 0 0 1 0-1.178"
+            />
+          </svg>
+        </span>
+      }
     </button>
   } @else {
     <span class="phone-field__prefix">
@@ -102,8 +105,7 @@
 </div>
 
 @if (_hasMessages()) {
-  <!-- Field-owned wrapper: stable id + role=alert survive whatever the
-       consumer projects; alert announces on insertion (WCAG 4.1.3). -->
+  <!-- Field-owned role=alert wrapper: stable id, announces on insertion (WCAG 4.1.3). -->
   <div class="input-field__assistive" role="alert" [id]="_assistiveId">
     <ng-content select="mud-inline-message" />
   </div>
@@ -128,11 +130,7 @@
       />
     </div>
 
-    <!--
-      The search field is a keyboard-bound surface, not a focus surface:
-      the options are non-focusable, and the click path is gated by aria-activedescendant,
-      not by the panel itself.
-    -->
+    <!-- Focus stays in the search field; options are non-focusable and driven by aria-activedescendant. -->
     <div
       class="phone-field__listbox"
       role="listbox"
@@ -140,8 +138,7 @@
       [attr.aria-label]="_countryListLabel()"
     >
       @if (_filtered().length === 0) {
-        <!-- A listbox must contain options (axe aria-required-children); the
-             empty state is a disabled option so it is announced too. -->
+        <!-- Empty state is a disabled option: a listbox must contain options (axe aria-required-children). -->
         <div class="menu-panel__empty" role="option" aria-disabled="true" aria-selected="false">
           {{ _countryEmptyText() }}
         </div>

@@ -63,10 +63,6 @@ export interface MudPhoneInputChange {
 let nextUniqueId = 0;
 
 /**
- * Phone entry with a country dial-code prefix and a per-country format mask.
- * The form value is canonical E.164 (`+37362123456`); the masked national
- * segment is only ever a rendering of it.
- *
  * ```html
  * <mud-phone-input [formField]="form.phone" required>
  *   <mud-label>Telefon</mud-label>
@@ -98,35 +94,16 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   /** @description Canonical E.164 (`+37362123456`). */
   readonly value = model<string>('');
 
-  /**
-   * @description Selected country as ISO 3166-1 alpha-2. Two-way: writing an E.164 whose
-   * dial code belongs to another country moves it. Unknown codes warn in dev
-   * and fall back to Moldova.
-   */
+  /** @description Selected country (ISO 3166-1 alpha-2); follows the dial code of a written E.164. */
   readonly country = model<string>(MUD_PHONE_DEFAULT_ISO);
 
-  /**
-   * @description `local` (default) fixes the country to `country` and renders its prefix
-   * as inert text. `international` renders a combobox that opens a searchable
-   * country list.
-   */
+  /** @description `local` shows a fixed dial-code prefix; `international` adds a searchable country list. */
   readonly mode = input<MudPhoneInputMode>('local');
 
-  /**
-   * @description The countries to offer in `international` mode, in this order. Defaults
-   * to the full curated list.
-   *
-   * Entries are either an ISO code from the built-in table (`'RO'`) or a whole
-   * `MudPhoneCountry` object, which is how you add a country the table does not
-   * carry. Unknown ISO codes and malformed objects warn in development.
-   */
+  /** @description Countries offered in `international` mode, in order: built-in ISO codes or `MudPhoneCountry` objects. */
   readonly countries = input<readonly (string | MudPhoneCountry)[] | undefined>(undefined);
 
-  /**
-   * @description BCP 47 locale the country names are rendered in. Defaults to the app's
-   * format locale (`provideMudFormatLocale`, else `LOCALE_ID`). Names come from `Intl.DisplayNames`, so no per-language data
-   * ships with the component.
-   */
+  /** @description BCP 47 locale for country names (via `Intl.DisplayNames`). Defaults to the format locale. */
   readonly locale = input<string | undefined>(undefined);
 
   /** @description Size rung: medium (40px) or large (48px). */
@@ -260,11 +237,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
     );
   });
 
-  /**
-   * @docs-private The masked national segment is a PURE derivation of the value and
-   * country — no separate display state, so there is no sync effect to get
-   * wrong (contrast the numeric-input display bridge).
-   */
+  /** @docs-private Masked national segment, a pure derivation of value + country (no sync state). */
   protected readonly _display = computed(() =>
     applyMask(nationalOf(this.value(), this._country()), this._country()),
   );
@@ -277,11 +250,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
     this._effectiveInvalid() ? 'destructive' : this.variant(),
   );
 
-  /**
-   * Trusted-URL cache: bypassing per render would allocate on every CD pass.
-   * Keyed on the flag ITSELF, not the ISO - a supplied entry may override a
-   * built-in country's flag, and an ISO key would keep serving the old one.
-   */
+  /** Trusted-URL cache keyed on the flag itself, not the ISO: a supplied entry may override a built-in flag. */
   private readonly _flagCache = new Map<string, SafeUrl>();
 
   /** @docs-private Flag for any country row; memoized per ISO. */
@@ -309,11 +278,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   /** `Intl.DisplayNames` is not cheap to construct; one per locale is plenty. */
   private readonly _displayNamesCache = new Map<string, Intl.DisplayNames | null>();
 
-  /**
-   * Resolved names, keyed by locale + ISO + fallback. `_countryName` is called
-   * once per row per change-detection pass and once per row per search
-   * keystroke, and `of()` is not free.
-   */
+  /** Resolved names by locale + ISO + fallback; `of()` is not free and runs per row per CD pass. */
   private readonly _countryNameCache = new Map<string, string>();
 
   private _displayNames(locale: string): Intl.DisplayNames | null {
@@ -334,11 +299,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
     return instance;
   }
 
-  /**
-   * @docs-private The displayed country name, derived from the ISO code in the active
-   * locale. `of()` echoes the code back when it has no data, which is not a
-   * usable label, so that falls through to the entry's own `name`.
-   */
+  /** @docs-private Country name in the active locale, else the entry's own `name`. */
   protected _countryName(country: MudPhoneCountry): string {
     const locale = this._activeLocale();
     const key = `${locale}|${country.iso}|${country.name}`;
@@ -356,10 +317,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
     return resolved;
   }
 
-  /**
-   * Resolution kept PURE - it returns the diagnostics rather than logging them,
-   * so the computed has no side effects. An effect below does the warning.
-   */
+  /** Pure: returns diagnostics instead of logging; an effect below warns. */
   private readonly _resolvedCountries = computed<{
     readonly list: readonly MudPhoneCountry[];
     readonly problems: readonly string[];
@@ -476,6 +434,8 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
 
     if (this._focused() && !this._effectiveDisabled()) classes.push('is-focused');
 
+    if (this._open()) classes.push('is-open');
+
     return classes.join(' ');
   });
 
@@ -510,8 +470,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
       });
     }
 
-    // An unknown ISO is a consumer bug worth surfacing, but must not break
-    // rendering — `_country()` already falls back to Moldova.
+    // Unknown ISO warns but must not break rendering; `_country()` falls back to Moldova.
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       effect(() => {
         const requested = this.country();
@@ -760,8 +719,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   }
 
   protected _selectCountry(country: MudPhoneCountry): void {
-    // Setting the model runs the reconciliation effect, which keeps the digits
-    // and swaps the dial code.
+    // The reconciliation effect keeps the digits and swaps the dial code.
     this.country.set(country.iso);
     this._closeList();
   }

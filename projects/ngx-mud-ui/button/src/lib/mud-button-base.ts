@@ -3,10 +3,7 @@ import type { Signal } from '@angular/core';
 import { MudStyleLoader } from 'ngx-mud-ui/core';
 import { _MudButtonStyles } from './mud-button-styles.component';
 
-/**
- * Shared behavior for mudButton/mudIconButton: disabled semantics for
- * buttons and anchors, and the loading state with its accessibility contract.
- */
+/** Shared disabled and loading behavior for mudButton/mudIconButton. */
 @Directive({
   host: {
     '[class]': '_hostClasses()',

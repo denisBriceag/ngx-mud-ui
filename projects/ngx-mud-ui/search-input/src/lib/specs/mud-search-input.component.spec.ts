@@ -229,6 +229,20 @@ describe('MudSearchInput', () => {
     expect(native.getAttribute('aria-describedby')).toBe(`${wrapper.id} extra-id`);
   });
 
+  it('projects icon-end into the trailing affix and drops it while loading', async () => {
+    const fixture = TestBed.createComponent(IconEndHost);
+
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+
+    expect(el.querySelector('.input-field__affix--end [icon-end]')?.textContent).toBe('F');
+
+    fixture.componentInstance.loading.set(true);
+    await fixture.whenStable();
+    expect(el.querySelector('[icon-end]')).toBeNull();
+    expect(el.querySelector('.input-field__spinner')).not.toBeNull();
+  });
+
   it('works as a reactive form control', async () => {
     const fixture = TestBed.createComponent(ReactiveHost);
 
@@ -293,4 +307,12 @@ class SignalHost {
 class ExternalDescribedHost {
   readonly value = signal('');
   readonly showMessage = signal(false);
+}
+
+@Component({
+  imports: [MudSearchInput],
+  template: `<mud-search-input aria-label="Search" value="q" [loading]="loading()"><i icon-end>F</i></mud-search-input>`,
+})
+class IconEndHost {
+  readonly loading = signal(false);
 }

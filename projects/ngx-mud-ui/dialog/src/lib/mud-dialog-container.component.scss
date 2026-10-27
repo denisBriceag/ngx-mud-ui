@@ -33,6 +33,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .dialog { animation: none; }
+  .dialog__close { transition: none; }
 }
 
 @media (forced-colors: active) {
@@ -115,6 +116,7 @@
   color: var(--mud-color-icon-base-secondary, #444);
   cursor: pointer;
   z-index: 1;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
 
   svg { inline-size: 16px; block-size: 16px; }
 

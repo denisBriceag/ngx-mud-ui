@@ -3,24 +3,16 @@ export interface MudPhoneCountry {
   readonly iso: string;
   /** International dial code, leading `+` included (`+373`). */
   readonly dialCode: string;
-  /**
-   * Fallback label and search term, in English.
-   */
+  /** Fallback label and search term, in English. */
   readonly name: string;
   readonly aliases?: readonly string[];
-  /**
-   * National-segment format: `X` marks a digit, everything else is a literal
-   * separator.
-   */
+  /** National-segment format: `X` marks a digit, anything else is a literal separator. */
   readonly mask: string;
   /** Inclusive minimum national-segment digit count. */
   readonly minDigits: number;
   /** Inclusive maximum national-segment digit count. */
   readonly maxDigits: number;
-  /**
-   * Flag image for this country, as a URL or data URI. Only needed for
-   * countries you supply yourself.
-   */
+  /** Flag image URL or data URI; only needed for countries you supply yourself. */
   readonly flag?: string;
 }
 
@@ -44,11 +36,7 @@ export function validateCountry(country: MudPhoneCountry): string[] {
   return problems;
 }
 
-/**
- * The curated Moldova-diaspora list the official component ships, in its
- * original order - Moldova first, then the countries with the largest
- * Moldovan communities.
- */
+/** Curated list: Moldova first, then the countries with the largest Moldovan communities. */
 export const MUD_PHONE_COUNTRIES: readonly MudPhoneCountry[] = [
   { iso: 'MD', dialCode: '+373', name: 'Moldova', mask: 'XXX XX XXX', minDigits: 8, maxDigits: 8 },
   { iso: 'RO', dialCode: '+40', name: 'Romania', mask: 'XXX XXX XXX', minDigits: 9, maxDigits: 9 },
@@ -77,11 +65,7 @@ export function findCountry(iso: string | undefined): MudPhoneCountry | undefine
   return iso ? BY_ISO.get(iso.toUpperCase()) : undefined;
 }
 
-/**
- * Resolves the country whose dial code an E.164 number starts with, preferring
- * the LONGEST match so `+373…` never resolves as `+3` and `+1…` does not
- * swallow `+1…` neighbors.
- */
+/** Country whose dial code an E.164 number starts with; the LONGEST match wins (`+373` over `+3`). */
 export function findCountryByDialCode(
   e164: string,
   within: readonly MudPhoneCountry[] = MUD_PHONE_COUNTRIES,

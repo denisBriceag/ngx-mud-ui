@@ -106,11 +106,7 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
   /** @description When false, the minus sign is blocked and negative commits clamp up. */
   readonly allowNegative = input(true, { transform: booleanAttribute });
 
-  /**
-   * @description BCP 47 locale for display formatting and lenient parsing of grouped
-   * input (e.g. ro-MD renders 1250.5 as "1.250,5"). Unset = ungrouped digits with
-   * the decimal separator of the format locale ("1234.5" in en-US).
-   */
+  /** @description BCP 47 locale for grouped formatting/parsing; unset = ungrouped, format-locale decimal. */
   readonly locale = input<string | undefined>(undefined);
 
   /** @description Shows a trailing clear (×) while the field holds a value. */
@@ -145,7 +141,6 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
 
   protected readonly _clearLabel = computed(() => _mudText(this.clearLabel(), this._labels().numericInput.clear));
 
-  // Explicit `locale` wins; else the format locale.
   private readonly _numberLocale = computed(() => _safeLocale(this.locale(), this._formatLocale()));
 
   /** Counter digits follow the locale, never grouped (an unconfigured app keeps "1234"). */
@@ -288,10 +283,8 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
   constructor() {
     inject(MudStyleLoader).load(_MudInputFieldStyles);
 
-    // External value changes (writeValue, [(value)], signal forms) reformat
-    // the display. While focused, a change that merely echoes the user's own
-    // typing (model === parse(display)) must NOT reformat mid-entry; a
-    // genuinely different programmatic value still wins.
+    // External value changes reformat the display, except while focused when the
+    // value merely echoes the user's own typing (model === parse(display)).
     effect(() => {
       const value = this.value();
 
@@ -299,8 +292,7 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
       this._numberLocale();
       this.locale();
 
-      // Untracked: the display must not re-trigger this effect (typing a
-      // partial like "abc" or "1," would otherwise be clobbered instantly).
+      // Untracked, or a partial entry like "1," would be clobbered while typing.
       const typedValue = untracked(() => this._parse(this._display()));
 
       if (untracked(this._focused) && Object.is(typedValue, value)) return;

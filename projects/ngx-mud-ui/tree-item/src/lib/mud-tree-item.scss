@@ -28,6 +28,7 @@
   text-decoration: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transition: background-color 150ms ease-out;
 
   &:hover {
     background: var(--mud-color-background-base-default-hover);
@@ -68,7 +69,7 @@
   &:is(:disabled, [aria-disabled='true']):hover {
     background: transparent;
     color: var(--mud-color-text-disabled-default);
-    cursor: not-allowed; // same as every other disabled control in the library
+    cursor: not-allowed;
   }
 }
 
@@ -88,7 +89,7 @@
     height: 20px;
   }
 
-  // <mud-icon> keeps its own inline-flex (it always won); everything else projected goes block.
+  // <mud-icon> keeps its own inline-flex; everything else projected goes block.
   > :not(mud-icon) {
     display: block;
   }
@@ -201,11 +202,23 @@
     display: block;
     width: 20px;
     height: 20px;
+    transition: transform 150ms ease-out;
+  }
+
+  &[data-direction='up'] > svg {
+    transform: rotate(180deg);
   }
 }
 
 .mud-tree-item[aria-disabled='true'] .mud-tree-item__toggle {
   pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mud-tree-item,
+  .mud-tree-item__toggle > svg {
+    transition: none;
+  }
 }
 
 @media (forced-colors: active) {

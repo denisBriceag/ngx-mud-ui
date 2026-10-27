@@ -116,6 +116,19 @@
   overflow-wrap: anywhere;
 }
 
+// Touch tap target: 6px past the row, drawn on the <label>; the native input (z-index 1) stays on top.
+@media (pointer: coarse) {
+  .selection-control:not(.selection-control--radio) .selection-control__row {
+    position: relative;
+  }
+
+  .selection-control:not(.selection-control--radio) .selection-control__label::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+  }
+}
+
 .selection-control__required {
   color: var(--mud-color-text-danger-default);
   font-size: 12px;
@@ -133,10 +146,6 @@
   --_im-line-height: var(--_sc-supporting-line);
   --_im-icon-size: 16px;
   --_im-gap: var(--mud-spacing-4, 4px);
-}
-
-.selection-control.is-invalid .selection-control__label {
-  color: var(--mud-color-text-danger-default);
 }
 
 // ----- states -------------------------------------------------------------
@@ -195,16 +204,29 @@
     border-color: var(--mud-color-border-danger-default);
   }
 
+  // Hidden with opacity, not display, so the grow-in transition can run.
   .selection-control__dot {
-    display: none;
+    display: block;
     width: var(--_sc-dot);
     height: var(--_sc-dot);
     border-radius: var(--mud-border-radius-full, 9999px);
     background-color: var(--mud-color-background-brand-default);
+    opacity: 0;
+    transform: scale(0.6);
+    transition:
+      opacity 150ms ease-out,
+      transform 150ms ease-out;
   }
 
   &.is-checked .selection-control__dot {
-    display: block;
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .selection-control__dot {
+      transition: none;
+    }
   }
 
   &.is-invalid .selection-control__dot {
@@ -265,6 +287,10 @@
   line-height: 20px;
   font-weight: 500;
   color: var(--mud-color-text-base-secondary);
+}
+
+.radio-group--disabled .radio-group__label {
+  color: var(--mud-color-text-disabled-default);
 }
 
 .radio-group__required {
@@ -335,6 +361,10 @@
 
 .switch-control.is-checked .switch-control__thumb {
   transform: translateX(20px);
+}
+
+.switch-control.is-disabled .switch-control__thumb {
+  box-shadow: none;
 }
 
 .switch-control__native {

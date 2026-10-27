@@ -16,6 +16,13 @@
 .segmented-control--full-width {
   display: grid;
   width: 100%;
+  // Full width is the mobile layout: 4px track padding, 44px segments.
+  padding: var(--mud-spacing-4, 4px);
+}
+
+// Small keeps its 32px row at full width; 44px is medium's mobile height only.
+.segmented-control--full-width:not(.segmented-control--sm) .segment-item {
+  height: 44px;
 }
 
 .segment-item {
@@ -87,8 +94,8 @@
     color: var(--mud-color-text-base-inverse-default);
     font-weight: 500;
     box-shadow:
-      0 0 0.25px rgba(0, 0, 0, 0.3),
-      0 1px 1.5px rgba(0, 0, 0, 0.16);
+      0 1px 3px rgba(0, 0, 0, 0.16),
+      0 0 0.5px rgba(0, 0, 0, 0.3);
 
     &:hover:not(:disabled) {
       background-color: var(--mud-color-background-base-inverse-default-hover);

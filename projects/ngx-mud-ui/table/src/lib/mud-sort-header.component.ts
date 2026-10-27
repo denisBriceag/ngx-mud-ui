@@ -71,17 +71,17 @@ export class MudSortHeader implements MudSortable, OnInit, OnDestroy {
 
   protected readonly _descriptionId = `mud-sort-header-description-${String(nextUniqueId++)}`;
 
-  /** @description Key reported as `active` when this column is sorted; defaults to the enclosing mudColumnDef name, so set it only when the sort key differs from the column. */
+  /** @description Sort key reported as `active`; defaults to the enclosing mudColumnDef name. */
   readonly id = input('', { alias: 'mud-sort-header' });
-  /** @description First-click direction for this column ('asc' or 'desc'); overrides the container's `start`, e.g. `start="desc"` on an amount column. */
+  /** @description First-click direction for this column; overrides the container's `start`. */
   readonly start = input<'asc' | 'desc' | undefined>(undefined);
-  /** @description Removes the unsorted step for this column only (asc → desc → asc); overrides the container's `disableClear`. */
+  /** @description Removes the unsorted step for this column; overrides the container's `disableClear`. */
   readonly disableClear = input<boolean | undefined, unknown>(undefined, {
     transform: (value) => (value === undefined ? undefined : booleanAttribute(value)),
   });
-  /** @description Makes this header non-sortable: the button renders disabled, without chevron or aria-sort. The container's `disabled` disables it too. */
+  /** @description Makes this header non-sortable. */
   readonly disabled = input(false, { transform: booleanAttribute });
-  /** @description Visually hidden text screen readers announce after the header label; defaults to the localized 'Sort'. */
+  /** @description Screen-reader text announced after the label; defaults to the localized 'Sort'. */
   readonly sortActionDescription = input<string | undefined>(undefined);
 
   private readonly _labels = injectMudLabels();

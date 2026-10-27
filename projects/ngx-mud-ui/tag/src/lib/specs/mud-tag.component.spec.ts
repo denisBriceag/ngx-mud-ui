@@ -6,13 +6,14 @@ import type { MudTagColor, MudTagSize, MudTagType } from '../mud-tag.component';
 @Component({
   imports: [MudTag],
   template: `
-    <mud-tag [color]="color()" [type]="type()" [size]="size()">Label</mud-tag>
+    <mud-tag [color]="color()" [type]="type()" [size]="size()" [disabled]="disabled()">Label</mud-tag>
   `,
 })
 class Host {
   readonly color = signal<MudTagColor>('neutral');
   readonly type = signal<MudTagType>('subtle');
   readonly size = signal<MudTagSize>('medium');
+  readonly disabled = signal(false);
 }
 
 async function render() {
@@ -58,6 +59,17 @@ describe('MudTag', () => {
     host.type.set('outlined');
     await fixture.whenStable();
     expect(el.classList.contains('is-outlined')).toBe(true);
+  });
+
+  it('adds is-disabled for the disabled design, keeping the color and type classes', async () => {
+    const { fixture, host, el } = await render();
+
+    expect(el.classList.contains('is-disabled')).toBe(false);
+    host.disabled.set(true);
+    await fixture.whenStable();
+    expect(el.classList.contains('is-disabled')).toBe(true);
+    expect(el.classList.contains('status-tag--neutral')).toBe(true);
+    expect(el.classList.contains('is-subtle')).toBe(true);
   });
 
   it('adds the small modifier for size small', async () => {
@@ -129,6 +141,25 @@ describe('MudTag', () => {
 })
 class LabelledHost {}
 
+describe('MudTag icons', () => {
+  it('puts icon-start before the label and icon-end after it, whatever the source order', async () => {
+    @Component({
+      imports: [MudTag],
+      template: `<mud-tag><i icon-end>E</i>Label<i icon-start>S</i></mud-tag>`,
+    })
+    class IconsHost {}
+
+    const fixture = TestBed.createComponent(IconsHost);
+
+    await fixture.whenStable();
+    const el = fixture.nativeElement.querySelector('mud-tag') as HTMLElement;
+
+    expect(el.textContent).toBe('SLabelE');
+    expect(el.firstElementChild?.hasAttribute('icon-start')).toBe(true);
+    expect(el.lastElementChild?.hasAttribute('icon-end')).toBe(true);
+  });
+});
+
 describe('MudTag styles', () => {
   // The component brings its own CSS — there is no global stylesheet in jsdom.
   it('ships its own CSS', () => {
@@ -140,6 +171,6 @@ describe('MudTag styles', () => {
 
     expect(css).toMatch(/\.status-tag\s*\{/);
     // A long label ends in an ellipsis: only a non-flex box can show one.
-    expect(css).toMatch(/\.status-tag:not\(:has\(> :is\(mud-icon, svg\)\)\)\s*\{[^}]*display:\s*inline-block/);
+    expect(css).toMatch(/\.status-tag:not\(:has\(> :is\(\[icon-start\], \[icon-end\]\)\)\)\s*\{[^}]*display:\s*inline-block/);
   });
 });

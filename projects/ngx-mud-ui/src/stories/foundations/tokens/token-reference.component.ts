@@ -102,7 +102,7 @@ const ownerOf = (name: string): string | undefined =>
     :host {
       display: block;
       padding: 1.5rem 2rem;
-      font-family: system-ui, sans-serif;
+      font-family: var(--mud-font-family-base);
       color: var(--mud-color-text-base-default);
     }
     h2 {
@@ -137,7 +137,6 @@ const ownerOf = (name: string): string | undefined =>
       border-top: 1px solid var(--mud-color-border-base-default);
     }
     .name {
-      font-family: ui-monospace, monospace;
       font-size: 0.78rem;
     }
     .value {

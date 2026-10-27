@@ -55,17 +55,7 @@ function digitsOf(value: string): string {
   return value.replace(/\D/g, '');
 }
 
-/**
- * Strips everything that isn't a digit, then walks the segment spec inserting
- * the separator between segments. Typing `1504` yields `15/04`, so the
- * separator is never something the user has to press.
- *
- * The separator is LAZY — emitted only when a following digit exists — exactly
- * as `phone-input`'s `phone-mask` does it. Appending it the instant a segment
- * filled (`15` → `15/`) made the field un-deletable: Backspace removes the
- * `/`, the re-mask puts it straight back, and the user can never delete the
- * month, never the day, and never clear the field with Backspace at all.
- */
+/** Masks digits into the format (`1504` → `15/04`); the separator is lazy or Backspace could never delete it. */
 export function formatMasked(raw: string, spec: MudDateFormatSpec): string {
   const maxDigits = spec.segments.reduce((sum, segment) => sum + segment.length, 0);
   const digits = digitsOf(raw).slice(0, maxDigits);
@@ -83,8 +73,6 @@ export function formatMasked(raw: string, spec: MudDateFormatSpec): string {
     out += chunk;
     next += chunk.length;
 
-    // Nothing typed past this segment yet, so there is no separator to write —
-    // and the last segment can never have anything past it.
     if (next >= digits.length) break;
 
     out += spec.separator;
@@ -129,18 +117,7 @@ export function digitsBefore(value: string, caret: number): number {
   return digitsOf(value.slice(0, Math.max(0, caret))).length;
 }
 
-/**
- * Offset immediately after the nth digit, so a re-mask restores the caret to
- * the digit the user was working on instead of flinging it to the end.
- *
- * Task 14 needed an extra clause here — when the nth digit was the LAST one
- * typed and a just-auto-inserted separator followed it, the caret had to land
- * after that separator, or it would visibly stall one position short of where
- * forward typing continues. `formatMasked`'s separator is now lazy, so a
- * masked string always ENDS on a digit: for the last digit, `i + 1` is already
- * the end of the string and there is no separator left to step over. The
- * clause was removed with the bug that made it necessary.
- */
+/** Offset right after the nth digit, so a re-mask keeps the caret where the user was typing. */
 export function caretForDigitIndex(masked: string, digitIndex: number): number {
   if (digitIndex <= 0) return 0;
 

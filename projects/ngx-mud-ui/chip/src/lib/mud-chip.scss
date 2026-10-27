@@ -97,19 +97,17 @@ button.chip__control {
   pointer-events: none;
 }
 
-.chip:not(.is-disabled):hover .chip__control,
-.chip:not(.is-disabled):hover .chip__remove {
+// Filter chips only: an input chip's body isn't interactive.
+.chip--filter:not(.is-disabled):hover .chip__control {
   background-color: var(--_chip-bg-hover);
 }
 
-// Asymmetric leading padding when a leading visual is present.
 .chip:has(.chip__icon:not(:empty)) .chip__control,
 .chip.shows-check .chip__control {
   padding-inline-start: var(--_chip-padding-inline-icon);
 }
 
-// The avatar hugs the leading edge, inset so the circle centers in the
-// pill's rounded corner.
+// Inset so the avatar circle centers in the pill's rounded corner.
 .chip:has(.chip__avatar:not(:empty)) .chip__control {
   padding-inline-start: calc((var(--_chip-height) - var(--_chip-avatar-size)) / 2);
 }
@@ -188,8 +186,7 @@ button.chip__control {
 
 // ----- remove button (removable input chips) ------------------------------
 
-// The control and the remove button read as one fused pill: the control
-// gives up its trailing radius/padding, the remove button its leading ones.
+// Control and remove button read as one fused pill.
 .chip.is-removable .chip__control {
   border-start-end-radius: 0;
   border-end-end-radius: 0;
@@ -270,4 +267,8 @@ button.chip__control {
   .chip__remove-icon {
     transition: none;
   }
+}
+
+.chip.is-disabled .chip__avatar {
+  opacity: 0.6;
 }

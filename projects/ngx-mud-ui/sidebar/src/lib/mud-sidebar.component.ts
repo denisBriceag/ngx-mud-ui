@@ -107,7 +107,7 @@ export class MudSidebar implements MudSidebarGroupHost {
     { initialValue: false },
   );
 
-  /** @description What is actually drawn: collapsed and not on a narrow viewport. Swap compact content on this. */
+  /** @description Collapsed and not narrow, i.e. what is drawn; swap compact content on this. */
   readonly compact = computed(() => this.collapsed() && !this.narrow());
 
   private readonly _tooltip = viewChild.required(MudTooltip);

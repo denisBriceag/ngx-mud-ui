@@ -23,7 +23,7 @@ const added = (n: number): string => {
   return `Добавлено ${n} файлов.`;
 };
 
-/** Russian pack (ru-MD copy from the upstream design system where it exists). */
+/** Russian pack. */
 export const MUD_LABELS_RU: MudLabels = {
   avatar: { initials: (i) => `Аватар для ${i}`, fallback: 'Аватар пользователя' },
   badge: { notification: 'Уведомление' },

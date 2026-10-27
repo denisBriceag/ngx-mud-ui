@@ -4,10 +4,7 @@ export interface MudDateRange {
   end: string | null;
 }
 
-/**
- * Value shape per mode. Every mode is nullable so `null` is a legal default
- * for all three and the generic needs no casts.
- */
+/** Value shape per mode; all nullable so `null` is a legal default without casts. */
 export interface MudDateValueMap {
   single: string | null;
   range: MudDateRange | null;

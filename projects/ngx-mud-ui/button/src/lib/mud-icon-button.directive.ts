@@ -6,9 +6,6 @@ declare const ngDevMode: boolean | undefined;
 export type MudIconButtonSize = 'medium' | 'small';
 
 /**
- * Icon-only button: a transparent circle that must be given an accessible
- * name (`aria-label`, `aria-labelledby` or `title`).
- *
  * ```html
  * <button mudIconButton aria-label="Add">
  *   <svg>...</svg>
@@ -21,7 +18,7 @@ export type MudIconButtonSize = 'medium' | 'small';
   exportAs: 'mudIconButton',
 })
 export class MudIconButton extends MudButtonBase {
-  /** @description Circle size: 'medium' 40px with a 20px glyph (default), 'small' 32px with a 16px glyph — the size that fits a 40px table row. */
+  /** @description Circle size: 'medium' 40px or 'small' 32px. */
   readonly size = input<MudIconButtonSize>('medium');
 
   protected override readonly _hostClasses = computed(() => {

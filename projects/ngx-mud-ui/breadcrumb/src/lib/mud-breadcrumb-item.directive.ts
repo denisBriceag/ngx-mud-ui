@@ -35,14 +35,6 @@ const LIST_TAGS = new Set(['OL', 'UL', 'MENU']);
  * <li mudBreadcrumbItem><a routerLink="/servicii">Servicii</a></li>
  * <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
  * ```
- *
- * Sits on the `<li>`, so the trail is a real `<nav><ol><li>` list; the
- * consumer's own anchor stays inside it and keeps `routerLink`. ARIA state and
- * the tooltip are redirected onto that anchor — see `target()`.
- *
- * The truncation tooltip is driven by `text()`, which falls back to
- * `element.textContent` — a non-reactive DOM read, so it only re-evaluates
- * when the `label` input changes, not when projected content changes on its own.
  */
 @Directive({
   selector: '[mudBreadcrumbItem]',
@@ -103,16 +95,12 @@ export class MudBreadcrumbItem {
     this._state.set(state);
   }
 
-  /**
-   * The crumb's real interactive element — the consumer's `<a>` or `<button>`
-   * inside the `<li>`, or the `<li>` itself for a plain text crumb. This is what
-   * a synthesised click must hit; firing on the `<li>` would never run routerLink.
-   */
+  /** The consumer's `<a>`/`<button>` (or the `<li>` for a text crumb); a click on the `<li>` would never run routerLink. */
   target(): HTMLElement {
     return this.element.querySelector<HTMLElement>(INTERACTIVE) ?? this.element;
   }
 
-  /** Text for the overflow panel and the back link. */
+  /** Text for the overflow panel and back link; textContent is read non-reactively, only `label` changes re-run it. */
   text(): string {
     return this.label() ?? this.element.textContent?.trim() ?? '';
   }
@@ -133,8 +121,7 @@ export class MudBreadcrumbItem {
     this._ariaTarget = target;
     this._toggleAttribute(target, 'aria-current', current ? 'page' : null);
     this._toggleAttribute(target, 'aria-disabled', disabled ? 'true' : null);
-    // The tooltip's host is the <li>, which is neither focusable nor described;
-    // point its aria-describedby and its overlay at the same control.
+    // The <li> host is neither focusable nor described; anchor the tooltip on the control.
     this._tooltip.setAnchor(target === this.element ? null : target);
     this._warnAboutStructure();
   }

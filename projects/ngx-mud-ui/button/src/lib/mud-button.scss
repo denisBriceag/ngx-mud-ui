@@ -2,10 +2,6 @@
 @use '../../../src/lib/styles/abstracts/mud-prefix' as mud;
 @use 'sass:map' as map;
 
-// All variants consume semantic tokens (base/_tokens.scss for light,
-// themes/_dark.scss for dark) so buttons adapt to the active theme.
-// Fallback hexes mirror the light-theme values.
-
 @include buttons.button-variant(
   "primary",
   var(--mud-color-background-brand-default, #0058D2),
@@ -124,9 +120,7 @@
   var(--mud-color-background-base-inverse-default, #1E1E1E)
 );
 
-// "large" is the .mud-btn base look itself (MudButton adds no size class
-// for it), so only the smaller sizes need modifiers. Official axis:
-// lg 48px h / 16-24 font / radius 8; md 40 / 14-20 / 6; sm 32 / 14-20 / 6.
+// "large" is the .mud-btn base itself (no size class), so only sm/md need modifiers.
 $button-sizes: (
   sm: (
     height: 32px,
@@ -170,13 +164,10 @@ $button-sizes: (
   }
 }
 
-// Doubled class so the circular shape always beats the per-size rectangular
-// radius above (.mud-btn.mud-btn-md/-sm), regardless of import order.
+// Doubled class so the pill shape beats the per-size radius above regardless of order.
 .#{mud.mud-class('btn')}.#{mud.mud-class('btn-pill')} { border-radius: 9999px; }
 .#{mud.mud-class('btn')}.#{mud.mud-class('btn-rounded')} { border-radius: var(--mud-border-radius-full, 9999px); }
 
-// Stretches to the container (official full-width): the intrinsic min/max
-// width constraints no longer apply.
 .#{mud.mud-class('btn-full')} {
   display: flex;
   width: 100%;
@@ -184,16 +175,13 @@ $button-sizes: (
   max-width: none;
 }
 
-// The button keeps its own footprint while loading - no explicit sizing here,
-// otherwise toggling `loading` shifts the surrounding layout.
+// No explicit sizing while loading, or toggling `loading` shifts the layout.
 .#{mud.mud-class('btn-loading')} {
   position: relative;
   pointer-events: none;
 }
 
-// Projected content (icons, wrapped labels) keeps its space but is hidden
-// while loading; bare text nodes are hidden by the variant mixin's
-// transparent color instead.
+// Bare text nodes are hidden by the variant mixin's transparent color instead.
 .#{mud.mud-class('btn-loading')} > * {
   visibility: hidden;
 }
@@ -212,21 +200,19 @@ $button-sizes: (
   border-right-color: transparent;
   rotate: 45deg;
 
-  // spinner-rotate is the shared keyframes from the foundation (base/_keyframes.scss) —
-  // a namespaced name a consumer app's own "spin" keyframes can't retime.
+  // Namespaced shared keyframes (base/_keyframes.scss) so a consumer's own "spin" can't retime it.
   animation: spinner-rotate 0.8s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .#{mud.mud-class('btn-loading')}::after {
-    // Static arc, matching the standalone spinner's reduced-motion behavior.
+    // Static arc.
     animation-duration: 0.01ms;
     animation-iteration-count: 1;
   }
 }
 
-// Official disabled treatment for outlined/text appearances: the fill stays
-// transparent with a muted border/label instead of the solid disabled fill.
+// Outline/text disabled: transparent fill with a muted border/label, not the solid disabled fill.
 .#{mud.mud-class('btn')}[class*='#{mud.mud-class('btn-outline-')}'],
 .#{mud.mud-class('btn')}[class*='#{mud.mud-class('btn-text-')}'] {
   &:disabled,
@@ -244,8 +230,7 @@ $button-sizes: (
   }
 }
 
-// Official dual-halo focus ring (white inner + brand outer), shared tokens
-// with avatar/link.
+// Dual-halo focus ring (white inner + brand outer).
 .#{mud.mud-class('btn')}:focus-visible:not(:disabled):not([aria-disabled='true']) {
   outline: none;
   box-shadow:
@@ -254,8 +239,7 @@ $button-sizes: (
       var(--mud-focus-ring-outer-color, var(--mud-blue-sky-500, #3379DB));
 }
 
-// Base = large (48px). The size modifiers in this file override the
-// height/padding/font/radius axis; official touch targets: sm 40, md/lg 48.
+// Base = large (48px); the size modifiers above override it.
 .#{mud.mud-class('btn')} {
   --_btn-height: 48px;
   --_btn-touch-target: 48px;
@@ -293,7 +277,6 @@ $button-sizes: (
     border-color 150ms ease-out,
     box-shadow 150ms ease-out;
 
-  // Icons pull their edge's padding in one step (official paddingInlineIcon).
   &:has(> :is(mud-icon, svg):first-child) {
     padding-left: var(--_btn-padding-inline-icon);
   }
@@ -317,8 +300,7 @@ $button-sizes: (
     cursor: not-allowed;
   }
 
-  // Invisible hit-area extension on touch devices (sm -> 40px, md/lg -> 48px)
-  // without changing the visual size.
+  // Invisible touch hit-area that leaves the visual size unchanged.
   @media (pointer: coarse) {
     &::before {
       content: '';
@@ -332,8 +314,7 @@ $button-sizes: (
   }
 }
 
-// Doubled class so the perfect-circle geometry beats the .mud-btn base
-// min/max-width and per-size radius regardless of specificity ties.
+// Doubled class so the circle geometry beats the base min/max-width and per-size radius.
 .#{mud.mud-class('btn')}.#{mud.mud-class('btn-icon')} {
   background-color: transparent;
   border: none;
@@ -391,10 +372,8 @@ $button-sizes: (
   }
 }
 
-// M-platform badge buttons: `<button mudButton class="mud-btn btn-badge btn-badge--…">`. The
-// `mudButton` directive is what loads this sheet, and it also adds its own variant classes
-// (`.mud-btn-primary`, `.mud-btn-md`…), so every property that competes with them sits on the
-// two-class `.mud-btn.btn-badge` selector and wins by specificity, not by order in this file.
+// M-platform badge buttons. Properties competing with the directive's variant classes sit on
+// the two-class `.mud-btn.btn-badge` selector so they win by specificity, not order.
 .btn-badge {
   --_badge-button-width: auto;
   --_badge-button-bg: var(--mud-color-background-brand-default, #0058D2);
@@ -458,8 +437,7 @@ $button-sizes: (
     box-shadow: 0 0 0 4px var(--mud-blue-sky-500, #3379DB);
   }
 
-  // Same (0,2,0) weight as the shared `.mud-btn:disabled` rule above, so the grey surface has to be
-  // re-asserted here or the badge colours win the tie by order.
+  // Same (0,2,0) weight as `.mud-btn:disabled`; re-asserted or the badge colours win by order.
   &:disabled,
   &[aria-disabled='true']:not(.#{mud.mud-class('btn-loading')}) {
     background-color: var(--mud-color-background-disabled-default, #F1F1F1);

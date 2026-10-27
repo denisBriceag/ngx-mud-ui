@@ -98,6 +98,9 @@ export const International: Story = {
         <mud-phone-input mode="international" disabled value="+37362123456">
           <mud-label>Dezactivat</mud-label>
         </mud-phone-input>
+        <mud-phone-input mode="international" readonly value="+37362123456">
+          <mud-label>Doar citire</mud-label>
+        </mud-phone-input>
       </div>
     `,
   }),

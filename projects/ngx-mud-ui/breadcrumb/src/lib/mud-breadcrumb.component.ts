@@ -77,8 +77,7 @@ const coerceMaxVisible = (value: unknown): number => {
 })
 export class MudBreadcrumb {
   private readonly _element: HTMLElement = inject(ElementRef).nativeElement;
-  // Read once at construction: a host binding would otherwise overwrite a
-  // static aria-label the consumer wrote on the same element.
+  // Read once: the host binding would otherwise overwrite a consumer's static aria-label.
   private readonly _authoredAriaLabel = this._element.getAttribute('aria-label');
 
   /** @description Crumbs shown before the middle collapses into the overflow menu. */
@@ -90,9 +89,7 @@ export class MudBreadcrumb {
   /** @description When false, the trail never collapses to the mobile back link. */
   readonly responsive = input(true, { transform: booleanAttribute });
 
-  // descendants: true is load-bearing — the default (false) only looks at the
-  // host's immediate children, and every crumb is now one level down inside the
-  // consumer's <ol>, so the query would silently come back empty.
+  // descendants: true is load-bearing: crumbs sit inside the consumer's <ol>, not directly under the host.
   protected readonly _items = contentChildren(MudBreadcrumbItem, { descendants: true });
 
   private readonly _labels = injectMudLabels();

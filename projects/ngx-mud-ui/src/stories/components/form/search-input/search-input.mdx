@@ -42,6 +42,23 @@ The base stylesheet must be in your app's `angular.json` `styles` once:
 
 <Canvas of={SearchInputStories.Shapes} />
 
+## Icons
+
+Put an icon with `icon-start` to replace the search glyph. Put one with `icon-end` to
+add a trailing icon. While `icon-end` holds something, it replaces the clear (×)
+button, so a field has one trailing affordance at a time.
+
+```html
+<mud-search-input placeholder="Caută...">
+  <mud-label>Căutare</mud-label>
+  <mud-icon icon-end name="filter" [scale]="20" />
+</mud-search-input>
+```
+
+The trailing icon hides while the field is loading, where the spinner takes its place.
+
+<Canvas of={SearchInputStories.Icons} />
+
 ## States
 
 <Canvas of={SearchInputStories.States} />

@@ -68,9 +68,18 @@
   opacity: 0.45;
 }
 
-.phone-field.is-readonly .phone-field__prefix {
-  background-color: var(--mud-color-input-readonly-background, var(--mud-color-background-base-secondary));
-  color: var(--mud-color-input-readonly-text, var(--mud-color-text-base-secondary));
+// Read-only: no border; the trigger is a disabled <button> then, so its disabled recolour is undone here.
+.phone-field.is-readonly:not(.is-disabled) {
+  .input-field__control {
+    border-color: transparent;
+  }
+
+  .phone-field__prefix,
+  .phone-field__trigger:disabled {
+    background-color: var(--mud-color-background-base-default);
+    color: var(--mud-color-text-base-default);
+    cursor: default;
+  }
 }
 
 // ----- national segment -----
@@ -126,6 +135,7 @@
   display: inline-flex;
   flex-shrink: 0;
   color: var(--mud-color-icon-base-secondary);
+  transition: transform 150ms ease-out;
 
   svg {
     width: 16px;
@@ -143,8 +153,7 @@
 
 // ----- country panel -----
 
-// Doubled class: the shared `.menu-panel` (ngx-mud-ui/core) sits on the same element at (0,1,0) and
-// loads in arbitrary order, so the phone panel's own values must win by specificity.
+// Doubled class: beats the shared `.menu-panel` (0,1,0) by specificity, since load order is arbitrary.
 .menu-panel.phone-field__panel {
   --_pf-flag-width: 20px;
   --_pf-flag-height: 16px;
@@ -153,7 +162,7 @@
   display: flex;
   flex-direction: column;
   max-height: 320px;
-  overflow-y: auto; // same as .menu-panel, stated here so the panel does not depend on which sheet loaded last
+  overflow-y: auto; // restated so the panel does not depend on which sheet loaded last
   overflow-x: hidden;
   padding: var(--mud-spacing-8, 8px);
 }
@@ -208,7 +217,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .phone-field__trigger {
+  .phone-field__trigger,
+  .phone-field__chevron {
     transition: none;
   }
 }

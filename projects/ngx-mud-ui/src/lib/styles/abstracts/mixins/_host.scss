@@ -1,13 +1,8 @@
 @use 'typography' as typ;
 
-// A component's host starts from the official body text style and colour instead of inheriting
-// whatever the app's <body> has. Zero specificity (:where): any rule the component writes wins.
-// Native inputs get the body style too — form controls do not inherit fonts. Include it once per
-// stylesheet, at the top level, with the hosts that stylesheet styles; skip parts that only ever
-// sit inside another library component (they inherit from it) and mud-icon (takes currentColor).
-// A nested host would reset the typography its parent set (a menu inside pagination) — leave it out.
-// Emulated-encapsulation sheets call it with no argument: Angular scopes element selectors to the
-// template, so only `:host` reaches the host there (include it first; later host rules win by order).
+// Host body text + colour at zero specificity (:where) so component rules win; inputs don't inherit fonts.
+// Include once per sheet; omit hosts nested in another library component (they'd reset its typography).
+// Emulated sheets call it with no argument: only `:host` reaches the host there (include it first).
 @mixin typography($hosts: null) {
   @if $hosts {
     :where(#{$hosts}) {
