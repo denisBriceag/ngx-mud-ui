@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { FlexibleConnectedPositionStrategy, Overlay } from '@angular/cdk/overlay';
 import { MudTimeInput } from './mud-time-input.component';
 import { MudLabel } from '../../../label/src/public-api';
 import { MudInlineMessage } from '../../../inline-message/src/public-api';
@@ -83,6 +84,39 @@ async function render() {
 describe('MudTimeInput', () => {
   afterEach(() => {
     document.querySelectorAll('.cdk-overlay-container').forEach((node) => node.remove());
+  });
+
+  // jsdom has no layout, so this pins the configuration; the geometry was checked in Chromium on a
+  // landscape phone, a short window and a right-edge field — all stay on screen.
+  it('keeps the dropdown on screen: right-aligned fallbacks, then pushed when nothing fits', async () => {
+    const push = vi.spyOn(FlexibleConnectedPositionStrategy.prototype, 'withPush');
+    const create = vi.spyOn(Overlay.prototype, 'create');
+    const view = await render();
+
+    try {
+      view.el.querySelector<HTMLButtonElement>('.time-field__toggle')!.click();
+      await view.fixture.whenStable();
+
+      const strategy = create.mock.calls.at(-1)![0]!.positionStrategy as FlexibleConnectedPositionStrategy;
+
+      expect(push).toHaveBeenLastCalledWith(true);
+      expect(strategy.positions.map((p) => `${p.originX}-${p.originY}`)).toEqual([
+        'start-bottom',
+        'start-top',
+        'end-bottom',
+        'end-top',
+      ]);
+    } finally {
+      vi.restoreAllMocks();
+    }
+  });
+
+  it('caps the panel height to the screen so a short window scrolls it', () => {
+    TestBed.createComponent(Host).detectChanges();
+
+    const css = [...document.querySelectorAll('style')].map((s) => s.textContent ?? '').join('\n');
+
+    expect(css).toMatch(/\.time-field__panel\s*\{[^}]*max-height:\s*calc\(100dvh - 16px\)/);
   });
 
   it('wires the field ARIA and describes the expected format', async () => {

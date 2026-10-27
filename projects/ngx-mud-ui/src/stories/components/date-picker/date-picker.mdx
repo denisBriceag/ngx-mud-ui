@@ -127,10 +127,13 @@ by month. The default, `title`, shows "Month Year" as one heading.
 
 ## Touch screens
 
-On a phone, a calendar under the field may not fit: a field in the middle of a
-long form leaves too little room above and below it. Add `touchUi` to open the
-calendar as a dialog in the middle of the screen instead, like Angular
-Material's `touchUi`.
+The calendar always stays on screen. It opens below the field, or above it if
+it doesn't fit below. On a narrow phone it narrows to the screen minus 16px
+on each side. When neither space is big enough, it moves into view and may cover
+the field. On a very short screen, such as a phone held sideways, it scrolls.
+
+On a phone you may prefer a dialog instead. Add `touchUi` to open the calendar
+in the middle of the screen, like Angular Material's `touchUi`.
 
 The dialog sits over a dimmed backdrop and the page behind it does not scroll.
 Tapping the backdrop or pressing `Escape` closes it and returns focus to the

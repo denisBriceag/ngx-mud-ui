@@ -726,10 +726,12 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
       .flexibleConnectedTo(control)
       .withFlexibleDimensions(false)
       .withViewportMargin(8)
-      .withPush(false)
+      .withPush(true)
       .withPositions([
         { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4 },
         { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -4 },
+        { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 4 },
+        { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -4 },
       ]);
 
     this._overlayRef = this._overlay.create({

@@ -147,9 +147,15 @@
 
 .date-field__panel {
   @include field-panel.field-panel;
+
+  max-height: calc(100dvh - 16px);
+  overflow-y: auto;
+
+  .date-picker {
+    max-width: calc(100vw - 32px);
+  }
 }
 
-// touchUi: the same panel, centred as a modal dialog over the shared dim backdrop.
 .cdk-overlay-backdrop.mud-date-input-backdrop {
   @include overlay-backdrop.backdrop;
 }

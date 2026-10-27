@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { BlockScrollStrategy, Overlay } from '@angular/cdk/overlay';
+import { BlockScrollStrategy, FlexibleConnectedPositionStrategy, Overlay } from '@angular/cdk/overlay';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { MudDateInput } from './mud-date-input.component';
@@ -826,6 +826,35 @@ describe('MudDateInput header style and touchUi', () => {
     expect(view.backdrop()).toBeNull();
     expect(view.dialog()!.closest('.cdk-global-overlay-wrapper')).toBeNull();
     expect(view.dialog()!.classList).not.toContain('date-field__panel--touch');
+  });
+
+  // jsdom has no layout, so this pins the configuration; the geometry was checked in Chromium at
+  // 320×568, 375×667, 568×320, a right-edge field and a short window — all stay on screen.
+  it('keeps the dropdown on screen: right-aligned fallbacks, then pushed when nothing fits', async () => {
+    const push = vi.spyOn(FlexibleConnectedPositionStrategy.prototype, 'withPush');
+    const create = vi.spyOn(Overlay.prototype, 'create');
+    const view = await renderTouch();
+
+    await view.openPanel();
+
+    const strategy = create.mock.calls.at(-1)![0]!.positionStrategy as FlexibleConnectedPositionStrategy;
+
+    expect(push).toHaveBeenLastCalledWith(true);
+    expect(strategy.positions.map((p) => `${p.originX}-${p.originY}`)).toEqual([
+      'start-bottom',
+      'start-top',
+      'end-bottom',
+      'end-top',
+    ]);
+  });
+
+  it('caps the panel to the screen so a phone narrows it and a short window scrolls it', () => {
+    TestBed.createComponent(TouchHost).detectChanges();
+
+    const css = [...document.querySelectorAll('style')].map((s) => s.textContent ?? '').join('\n');
+
+    expect(css).toMatch(/\.date-field__panel\s*\{[^}]*max-height:\s*calc\(100dvh - 16px\)/);
+    expect(css).toMatch(/\.date-field__panel \.date-picker\s*\{[^}]*max-width:\s*calc\(100vw - 32px\)/);
   });
 
   it('touchUi opens the calendar centred over a backdrop and blocks page scroll', async () => {

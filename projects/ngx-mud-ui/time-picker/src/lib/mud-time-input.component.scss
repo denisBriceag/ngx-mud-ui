@@ -118,4 +118,7 @@
 
 .time-field__panel {
   @include field-panel.field-panel;
+
+  max-height: calc(100dvh - 16px);
+  overflow-y: auto;
 }
