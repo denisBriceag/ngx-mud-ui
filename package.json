@@ -1,6 +1,12 @@
 {
   "name": "ngx-mud-ui",
   "version": "0.0.0",
+  "license": "MIT",
+  "author": "Denis Briceag",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/denisBriceag/ngx-mud-ui.git"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

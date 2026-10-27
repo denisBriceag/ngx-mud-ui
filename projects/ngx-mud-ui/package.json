@@ -2,9 +2,15 @@
   "name": "ngx-mud-ui",
   "version": "1.0.0",
   "description": "Angular component library implementing MUD — the Moldova Unified Design system by eGov Moldova",
+  "license": "MIT",
+  "author": "Denis Briceag",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/denisBriceag/ngx-mud-ui.git"
+  },
+  "homepage": "https://github.com/denisBriceag/ngx-mud-ui#readme",
+  "bugs": {
+    "url": "https://github.com/denisBriceag/ngx-mud-ui/issues"
   },
   "exports": {
     "./prebuilt/*": {
