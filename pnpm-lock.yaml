@@ -48,6 +48,9 @@ importers:
       '@angular-devkit/core':
         specifier: ^22.2.2
         version: 22.2.2(chokidar@5.0.0)
+      '@angular-devkit/schematics':
+        specifier: ^22.2.2
+        version: 22.2.2(chokidar@5.0.0)
       '@angular-eslint/builder':
         specifier: 22.5.0
         version: 22.5.0(chokidar@5.0.0)(eslint@10.12.0(jiti@2.7.0))(typescript@6.0.3)
@@ -75,6 +78,9 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.12.0(jiti@2.7.0))
+      '@schematics/angular':
+        specifier: ^22.2.2
+        version: 22.2.2(chokidar@5.0.0)
       '@storybook/addon-a11y':
         specifier: ^10.6.1
         version: 10.6.1(storybook@10.6.1(@types/react@19.2.18)(prettier@3.9.9)(react@19.2.8))

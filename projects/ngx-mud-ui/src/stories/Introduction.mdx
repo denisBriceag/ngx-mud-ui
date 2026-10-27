@@ -71,10 +71,23 @@ cd dist/ngx-mud-ui && npm pack     # -> ngx-mud-ui-0.0.1.tgz
 
 ## Global setup
 
-**1. Add the base stylesheet** to your app's `angular.json`, in both the `build` and `test`
-targets' `styles`. It defines the design tokens (`--mud-*`), the Onest font and the shared
-animations; each component brings its own CSS. (An `ng add ngx-mud-ui` schematic is planned
-to automate this step; until it ships, add the entry by hand.)
+Run the schematic in your application:
+
+```bash
+ng add ngx-mud-ui              # asks whether to include dark mode
+ng add ngx-mud-ui --darkMode   # also adds the opt-in dark theme stylesheet
+```
+
+It installs any missing peer dependencies (`@angular/cdk`), adds the stylesheets below to
+`angular.json`, and sets the page font with a `body` rule in your global stylesheet. Running it
+again changes nothing. In a workspace with several applications, pass `--project <name>`.
+
+### Manual setup
+
+**1. Add the base stylesheet** to your app's `angular.json`, in the `build` target's `styles`
+(and in the `test` target's too if it uses Karma; the default vitest runner inherits styles
+from `build`). It defines the design tokens (`--mud-*`), the Onest font and the shared
+animations; each component brings its own CSS.
 
 ```json
 "styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
@@ -115,15 +128,24 @@ through the design tokens only — the colors and the shared scales above. Compo
 element structure and internal styles are private implementation details: they are not a supported
 API and may change in any release, so styling them from your app is not supported.
 
-**2. Add the CDK overlay stylesheet** if you use any component that renders in an
-overlay — tooltip, menu and mega-menu, select, phone, date and time pickers, dialog,
-drawer, toast, breadcrumb overflow, pagination's page menu:
+**2. Add the CDK overlay stylesheet** to the same `styles`, before the base stylesheet. It's
+needed by every component that renders in an overlay — tooltip, menu and mega-menu, select,
+phone, date and time pickers, dialog, drawer, toast, breadcrumb overflow, pagination's page menu:
 
-```ts
-import '@angular/cdk/overlay-prebuilt.css';
+```json
+"styles": ["@angular/cdk/overlay-prebuilt.css", "node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
 ```
 
-**3. Register the icons you use** — see [Icons](#icons) below. Only needed if
+**3. Set the page font** in your global stylesheet, so text outside the components uses Onest too:
+
+```scss
+body {
+  font-family: var(--mud-font-family-base);
+  font-size: 1rem;
+}
+```
+
+**4. Register the icons you use** — see [Icons](#icons) below. Only needed if
 you render `<mud-icon>`.
 
 ## Using a component
