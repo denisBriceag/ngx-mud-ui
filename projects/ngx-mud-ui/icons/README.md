@@ -99,7 +99,8 @@ registration for the same `name` overwrites the earlier one).
 
 - `name` (**required**) — an `MudIconName` (kebab-case id, e.g. `"arrow-left"`).
 - `variant` — `'outlined' | 'filled'`. Default: `'outlined'`.
-- `scale` — `12 | 16 | 20 | 24`. Default: `24`.
+- `scale` — `12 | 16 | 20 | 24 | 32`. Default: `24`. 12–24 each have their
+  own drawing; 32 renders the 24 drawing scaled up.
 - `aria-label` — when set, the host renders `role="img"` + the label; when
   omitted, the host is `aria-hidden="true"` (decorative).
 
@@ -112,7 +113,8 @@ registration for the same `name` overwrites the earlier one).
 Not every icon exists in every variant/scale. If the exact match is missing the
 component degrades gracefully and **never throws**:
 
-- missing scale → nearest larger scale, else nearest smaller;
+- missing scale → nearest larger scale, else nearest smaller (32 always uses
+  the largest drawing, and warns only when that is smaller than 24);
 - missing variant → `outlined`, else whatever variant exists;
 - unregistered `name` → renders nothing.
 
@@ -140,10 +142,9 @@ Icon fills are `currentColor`, so an icon is exactly as adaptive as the CSS
 
 ### Known exceptions
 
-Six icons contain baked-in `#fff` accents inside their SVG paths and
-`upload-icon` uses a gradient fill — those parts don't follow `currentColor`
-in either theme: `circle-download`, `qr-code`, `group`, `education`,
-`upload-icon`, `id-card`. Fixing them requires regenerating the source SVGs
+Five icons contain baked-in `#fff` accents inside their SVG paths — those
+parts don't follow `currentColor` in either theme: `circle-download`,
+`qr-code`, `group`, `education`, `id-card`. Fixing them requires regenerating the source SVGs
 with `currentColor` accents (`pnpm icons:generate`).
 
 ## Types

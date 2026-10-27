@@ -12,8 +12,13 @@ describe('generateIcons', () => {
     result = await generateIcons({ sourceDir: join(process.cwd(), 'tools', '__fixtures__', 'icons'), outDir: OUT });
   });
 
-  it('discovers each distinct icon name once (dedupes the flat copy)', () => {
-    expect(result.names).toEqual(['arrow-left', 'business', 'delete', 'document']);
+  it('discovers each distinct icon name once', () => {
+    expect(result.names).toEqual(['arrow-left', 'business', 'delete']);
+  });
+
+  it('ignores loose SVGs outside the <variant>/<scale> dirs', async () => {
+    await expect(fs.access(join(OUT, 'data', 'stray.ts'))).rejects.toThrow();
+    await expect(fs.access(join(OUT, 'data', 'document.ts'))).rejects.toThrow();
   });
 
   it('sanitizes a reserved-word icon name into a safe export identifier, keeping the real kebab `name`', async () => {
@@ -48,22 +53,14 @@ describe('generateIcons', () => {
     expect(src).toContain("name: 'business'");
   });
 
-  it('picks up icons only present in the flat `filed/` dir as filled@24, stripping -filled and normalizing fills', async () => {
-    const src = await fs.readFile(join(OUT, 'data', 'document.ts'), 'utf8');
-    expect(src).toContain("name: 'document'");
-    expect(src).toContain('filled');
-    expect(src).toContain("'0 0 24 24'");
-    expect(src).toContain('currentColor');
-    expect(src).not.toContain('#121212');
-  });
-
   it('fails loudly when two icon names alias to the same export identifier', async () => {
     const src = join(OUT, 'collision-src');
+    const dir = join(src, 'Outlined', '24');
     const svg = '<svg viewBox="0 0 24 24" fill="none"><path d="M0 0h24v24H0z" fill="#121212"/></svg>';
 
-    await fs.mkdir(src, { recursive: true });
-    await fs.writeFile(join(src, 'delete.svg'), svg);
-    await fs.writeFile(join(src, 'delete-icon.svg'), svg);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(join(dir, 'delete.svg'), svg);
+    await fs.writeFile(join(dir, 'delete-icon.svg'), svg);
 
     await expect(generateIcons({ sourceDir: src, outDir: join(OUT, 'collision-out') })).rejects.toThrow(
       /deleteIcon/,
@@ -75,6 +72,6 @@ describe('generateIcons', () => {
     expect(barrel).toContain("export * from './arrow-left'");
     expect(barrel).toContain("export * from './delete'");
     const names = await fs.readFile(join(OUT, 'icon-name.ts'), 'utf8');
-    expect(names).toContain("'arrow-left' | 'business' | 'delete' | 'document'");
+    expect(names).toContain("'arrow-left' | 'business' | 'delete';");
   });
 });

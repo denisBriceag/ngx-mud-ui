@@ -15,7 +15,8 @@ import { MudIconRegistry } from './mud-icon-registry.service';
 import type { MudIcon, MudIconGeometry, MudIconScale, MudIconVariant } from './types';
 import type { MudIconName } from './icon-name';
 
-const SCALES: readonly MudIconScale[] = [12, 16, 20, 24];
+const DRAWN_SCALES: readonly MudIconScale[] = [12, 16, 20, 24];
+const UPSCALED: MudIconScale = 32;
 
 @Component({
   selector: 'mud-icon',
@@ -127,9 +128,20 @@ export class MudIconComponent {
 
     if (byScale[want]) return want;
 
-    const available = SCALES.filter((s) => byScale[s]);
+    const available = DRAWN_SCALES.filter((s) => byScale[s]);
 
     if (available.length === 0) return undefined;
+
+    // 32 is drawn from the 24 artwork by design; only a smaller source warns.
+    if (want === UPSCALED) {
+      const largest = available.at(-1)!;
+
+      if (largest < 24 && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+        warnings.push(`[mud-icon] "${this.name()}" has no 24 artwork to scale to 32; using ${largest}.`);
+      }
+
+      return largest;
+    }
 
     const larger = available.filter((s) => s > want).sort((a, b) => a - b)[0];
     const chosen = larger ?? available.filter((s) => s < want).sort((a, b) => b - a)[0];

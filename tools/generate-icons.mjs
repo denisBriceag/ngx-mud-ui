@@ -64,31 +64,18 @@ async function listSvgs(dir) {
 }
 
 export async function generateIcons({ sourceDir, outDir }) {
-  /** key `${name}|${variant}|${scale}` -> geometry; first writer wins (canonical dirs processed first) */
+  /** key `${name}|${variant}|${scale}` -> geometry. Only `<Outlined|Filled>/<scale>/` feed the
+   * set: loose SVGs elsewhere in the source dir are ignored, so strays can't become icons. */
   const geo = new Map();
-  const add = (name, variant, scale, geometry) => {
-    const key = `${name}|${variant}|${scale}`;
-    if (!geo.has(key)) geo.set(key, { name, variant, scale, geometry });
-  };
 
-  // 1) canonical structured dirs
   for (const [dir, variant] of Object.entries(VARIANT_DIRS)) {
     for (const scale of SCALES) {
       for (const file of await listSvgs(join(sourceDir, dir, String(scale)))) {
         const name = basename(file, '.svg').replace(/-filled$/, '');
-        add(name, variant, scale, normalizeBody(await fs.readFile(file, 'utf8')));
+        const geometry = normalizeBody(await fs.readFile(file, 'utf8'));
+        geo.set(`${name}|${variant}|${scale}`, { name, variant, scale, geometry });
       }
     }
-  }
-  // 2) flat outlined defaults @24
-  for (const file of await listSvgs(sourceDir)) {
-    const name = basename(file, '.svg').replace(/-filled$/, '');
-    add(name, 'outlined', 24, normalizeBody(await fs.readFile(file, 'utf8')));
-  }
-  // 3) filed/ filled defaults @24
-  for (const file of await listSvgs(join(sourceDir, 'filed'))) {
-    const name = basename(file, '.svg').replace(/-filled$/, '');
-    add(name, 'filled', 24, normalizeBody(await fs.readFile(file, 'utf8')));
   }
 
   // group by icon name

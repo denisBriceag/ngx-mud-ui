@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { MudIconComponent } from '../mud-icon.component';
 import { provideMudIcons } from '../provide-mud-icons';
-import type { MudIcon } from '../types';
+import type { MudIcon, MudIconScale } from '../types';
 import type { MudIconName } from '../icon-name';
 
 const star: MudIcon = {
@@ -18,7 +18,7 @@ const star: MudIcon = {
 };
 
 @Component({ imports: [MudIconComponent], template: `<mud-icon [name]="n" [variant]="v" [scale]="s" />` })
-class Host { n: MudIconName = 'bookmark'; v: 'outlined' | 'filled' = 'outlined'; s: 12 | 16 | 20 | 24 = 24; }
+class Host { n: MudIconName = 'bookmark'; v: 'outlined' | 'filled' = 'outlined'; s: MudIconScale = 24; }
 
 function render() {
   TestBed.configureTestingModule({ imports: [Host], providers: [provideMudIcons([star])] });
@@ -91,6 +91,39 @@ describe('MudIconComponent (fallback + a11y)', () => {
     const svg: SVGSVGElement = fixture.nativeElement.querySelector('svg');
 
     expect(svg.getAttribute('viewBox')).toBe('0 0 25 24');
+  });
+
+  it('renders the 24 artwork at 32px without warning (32 has no artwork by design)', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const fixture = render();
+
+    fixture.componentInstance.s = 32;
+    await fixture.whenStable();
+    const svg: SVGSVGElement = fixture.nativeElement.querySelector('svg');
+
+    expect(svg.getAttribute('viewBox')).toBe('0 0 25 24');
+    expect(svg.getAttribute('width')).toBe('32');
+    expect(svg.getAttribute('height')).toBe('32');
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
+  it('scales a smaller drawing to 32 with a warning when the icon has no 24 artwork', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ imports: [Host], providers: [provideMudIcons([smallScaleOnly])] });
+    const fixture = TestBed.createComponent(Host);
+
+    fixture.componentInstance.n = 'search'; // smallScaleOnly only has outlined@16
+    fixture.componentInstance.s = 32;
+    await fixture.whenStable();
+    const svg: SVGSVGElement = fixture.nativeElement.querySelector('svg');
+
+    expect(svg.getAttribute('viewBox')).toBe('0 0 18 16');
+    expect(svg.getAttribute('width')).toBe('32');
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('no 24 artwork to scale to 32'));
+    warn.mockRestore();
   });
 
   it('falls back to outlined when the requested variant is missing', async () => {

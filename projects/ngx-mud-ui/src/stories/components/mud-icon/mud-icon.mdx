@@ -64,5 +64,7 @@ Selector: `mud-icon`
   templates rather than by its class member name.
 - **Color follows CSS `color`.** The glyph is drawn with `currentColor`, so it
   inherits from the surrounding text and adapts to the theme without extra work.
-- **`scale` is a fixed rung** — 12, 16, 20 or 24 — not an arbitrary pixel size,
-  because the artwork is drawn per size rather than scaled.
+- **`scale` is a fixed rung** — 12, 16, 20, 24 or 32 — not an arbitrary pixel
+  size, because the artwork is drawn per size rather than scaled. 32 is the
+  exception: it has no artwork of its own and renders the 24 drawing scaled
+  up, for feature callouts and empty states.

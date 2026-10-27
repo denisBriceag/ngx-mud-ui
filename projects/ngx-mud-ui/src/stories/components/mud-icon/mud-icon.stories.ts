@@ -6,12 +6,13 @@ import type { MudIcon } from 'ngx-mud-ui/icons';
 // Object.values() enumerates icons without sweeping in the component/provider
 // exports of the public API.
 import * as iconData from '../../../../icons/src/lib/data';
+import { IconGalleryComponent } from './icon-gallery.component';
 
 const ALL_ICONS = Object.values(iconData) as MudIcon[];
 const ICON_NAMES = ALL_ICONS.map((icon) => icon.name).sort();
 
 const meta: Meta<MudIconComponent> = {
-  title: 'Components/MudIcon',
+  title: 'Components/Icons',
   component: MudIconComponent,
   decorators: [
     applicationConfig({ providers: [provideMudIcons(ALL_ICONS)] }),
@@ -24,7 +25,7 @@ const meta: Meta<MudIconComponent> = {
       description: 'Icon name (kebab-case). All icons are registered in this playground.',
     },
     variant: { control: 'inline-radio', options: ['outlined', 'filled'] },
-    scale: { control: 'inline-radio', options: [12, 16, 20, 24] },
+    scale: { control: 'inline-radio', options: [12, 16, 20, 24, 32] },
     ariaLabel: {
       name: 'aria-label',
       control: 'text',
@@ -59,3 +60,17 @@ export default meta;
 type Story = StoryObj<MudIconComponent>;
 
 export const Playground: Story = {};
+
+// Every registered icon, grouped by variant. Only `scale` is live: icons not
+// drawn at that rung show at their nearest drawn size, flagged on the tile.
+export const Gallery: Story = {
+  parameters: {
+    layout: 'fullscreen',
+    controls: { include: ['scale'] },
+  },
+  decorators: [moduleMetadata({ imports: [IconGalleryComponent] })],
+  render: ({ scale }) => ({
+    props: { icons: ALL_ICONS, scale },
+    template: `<mud-icon-gallery [icons]="icons" [scale]="scale" />`,
+  }),
+};
