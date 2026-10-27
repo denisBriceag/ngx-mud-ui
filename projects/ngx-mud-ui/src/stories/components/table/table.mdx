@@ -264,7 +264,7 @@ Selector: `mud-row, tr[mud-row]`. `selected` paints the row and sets `aria-selec
 - **Name the table** with `aria-label` or `aria-labelledby`.
 - **Sortable headers are buttons.** Each `mud-sort-header` renders a native
   `<button>` whose name is the header text, described by a hidden "Sort" text
-  (`sortActionDescription`, translate it). The `<th>` carries `aria-sort`, so
+  (`sortActionDescription`; by default the `table.sort` label). The `<th>` carries `aria-sort`, so
   the column state is announced. Enter, Space and click all sort.
 - **Direction is shown by shape, not colour.** Unsorted columns show the
   two-way grabber; the sorted column shows one chevron.

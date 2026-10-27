@@ -61,11 +61,11 @@ export class MudTooltipContainer {
   readonly placement = input.required<MudTooltipPlacement>();
   readonly size = input.required<MudTooltipSize>();
   readonly closable = input(false);
-  readonly closeLabel = input('Close');
+  readonly closeLabel = input('');
   readonly maxWidth = input('280px');
   readonly title = input<string | undefined>(undefined);
   readonly variant = input<'default' | 'coach'>('default');
-  readonly coachHint = input('Press Esc to close');
+  readonly coachHint = input('');
 
   readonly closed = output<void>();
   readonly hovered = output<boolean>();

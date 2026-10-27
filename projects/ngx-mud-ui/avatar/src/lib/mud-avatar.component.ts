@@ -8,6 +8,7 @@ import {
   input,
   ViewEncapsulation,
 } from '@angular/core';
+import { injectMudLabels } from 'ngx-mud-ui/i18n';
 
 export type MudAvatarSize = 'extra-small' | 'small' | 'medium' | 'large' | 'extra-large';
 
@@ -88,6 +89,8 @@ export class MudAvatar {
    */
   readonly initials = input<string | undefined>(undefined);
 
+  private readonly _labels = injectMudLabels();
+
   protected readonly _hostClasses = computed(() => `avatar ${SIZE_CLASSES[this.size()]}`);
 
   protected readonly _resolvedInitials = computed(() => {
@@ -113,9 +116,9 @@ export class MudAvatar {
 
     const initials = this._resolvedInitials();
 
-    if (initials) return `Avatar for ${initials}`;
+    if (initials) return this._labels().avatar.initials(initials);
 
-    return 'User avatar';
+    return this._labels().avatar.fallback;
   });
 
   private readonly _el = inject<ElementRef<HTMLElement>>(ElementRef);

@@ -18,7 +18,6 @@ const meta: Meta<MudChip> = {
     count: { control: 'number' },
     disabled: { control: 'boolean' },
     removable: { control: 'boolean' },
-    removeLabel: { control: 'text' },
   },
   args: {
     type: 'filter',
@@ -27,7 +26,6 @@ const meta: Meta<MudChip> = {
     selected: false,
     disabled: false,
     removable: false,
-    removeLabel: 'Elimină',
   },
 };
 
@@ -52,7 +50,6 @@ export const Playground: Story = {
           [count]="count"
           [disabled]="disabled"
           [removable]="removable"
-          [removeLabel]="removeLabel"
         >
           Acte necesare
         </mud-chip>
@@ -139,7 +136,6 @@ export const FilterModes: Story = {
           <mud-chip
             type="input"
             removable
-            removeLabel="Elimină"
             [label]="person.name"
             (removed)="drop(person.name)"
           >
@@ -175,7 +171,7 @@ const INPUT_TOKENS_SOURCE = `
   imports: [MudChip],
   template: \`
     @for (person of people(); track person.name) {
-      <mud-chip type="input" removable removeLabel="Elimină" [label]="person.name" (removed)="drop(person.name)">
+      <mud-chip type="input" removable [label]="person.name" (removed)="drop(person.name)">
         <img avatar [src]="person.photo" alt="" />
         {{ person.name }}
       </mud-chip>

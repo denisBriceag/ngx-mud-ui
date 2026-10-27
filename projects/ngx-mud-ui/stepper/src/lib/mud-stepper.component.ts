@@ -22,8 +22,8 @@ import { startWith } from 'rxjs/operators';
 import type { MudStep } from './mud-step.component';
 import type { MudStepState } from './mud-step-header.component';
 import { MUD_STEP_STATES, MudStepHeader } from './mud-step-header.component';
-import { MUD_STEPPER_LABELS } from './stepper-labels';
-import { _injectMudLabels, MudStyleLoader } from 'ngx-mud-ui/core';
+import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { injectMudLabels } from 'ngx-mud-ui/i18n';
 import { _MudStepperStyles } from './mud-stepper-styles.component';
 
 /** Container width below which a horizontal stepper auto-switches to the compact dot rail. */
@@ -148,7 +148,7 @@ export class MudStepper extends CdkStepper {
 
   private readonly _track = viewChild.required<ElementRef<HTMLElement>>('track');
 
-  private readonly _labels = _injectMudLabels(MUD_STEPPER_LABELS);
+  private readonly _labels = injectMudLabels();
 
   /** Bumped on reactive-forms statusChanges so _stateOf re-evaluates. */
   private readonly _controlStatus = signal(0);
@@ -242,7 +242,7 @@ export class MudStepper extends CdkStepper {
   protected _stateLabelOf(step: MudStep): string | undefined {
     const state = this._stateOf(step);
 
-    if (state === 'completed' || state === 'blocked') return this._labels()[state];
+    if (state === 'completed' || state === 'blocked') return this._labels().stepper[state];
 
     return undefined;
   }

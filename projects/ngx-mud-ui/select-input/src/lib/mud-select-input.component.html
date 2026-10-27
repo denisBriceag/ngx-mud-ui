@@ -118,7 +118,7 @@
     role="listbox"
     [id]="_listBoxId"
     [attr.aria-labelledby]="_hasLabel() ? _labelId : null"
-    [attr.aria-label]="!_hasLabel() ? (ariaLabel() ?? 'Options') : null"
+    [attr.aria-label]="!_hasLabel() ? (ariaLabel() ?? _optionsLabel()) : null"
     (mousedown)="$event.preventDefault()"
   >
     @if (loading()) {
@@ -128,17 +128,17 @@
         aria-disabled="true"
         aria-selected="false"
       >
-        <span class="menu-panel__spinner" aria-hidden="true"></span>{{ loadingText() }}
+        <span class="menu-panel__spinner" aria-hidden="true"></span>{{ _loadingText() }}
       </div>
     } @else if (_noResults()) {
       <div class="menu-panel__empty" role="option" aria-disabled="true" aria-selected="false">
-        {{ noResultsText() }}
+        {{ _noResultsText() }}
       </div>
     } @else if (_view().flat.length === 0) {
       <!-- A listbox must contain options (axe aria-required-children); the
            empty state is a disabled option so it is also announced. -->
       <div class="menu-panel__empty" role="option" aria-disabled="true" aria-selected="false">
-        {{ emptyText() }}
+        {{ _emptyText() }}
       </div>
     } @else {
       @for (row of _view().rows; track $index; let rowIndex = $index) {

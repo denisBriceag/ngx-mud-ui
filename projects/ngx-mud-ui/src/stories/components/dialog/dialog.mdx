@@ -153,7 +153,7 @@ injectable inside the opened component/template.
     <tr><td><code>data?: D</code></td><td>—</td><td>Injected via <code>MUD_DIALOG_DATA</code> (components) or as the template's implicit context (templates).</td></tr>
     <tr><td><code>size?: 'sm' | 'md' | 'lg'</code></td><td><code>'md'</code></td><td>Width rung: 480 / 588 / 720px. Mobile is always <code>min(350px, 100vw - 32px)</code> regardless of rung.</td></tr>
     <tr><td><code>showCloseButton?: boolean</code></td><td><code>true</code></td><td>Renders the container-owned × button.</td></tr>
-    <tr><td><code>closeLabel?: string</code></td><td><code>'Close'</code></td><td>Accessible name of the × button — localize per app.</td></tr>
+    <tr><td><code>closeLabel?: string</code></td><td>—</td><td>Accessible name of the × button. Unset, it uses the <code>dialog.close</code> label.</td></tr>
     <tr><td><code>closeOnBackdrop?: boolean</code></td><td><code>true</code></td><td>Closes the dialog on a backdrop click. Turn it off for a form, so a stray click outside can't discard what was typed.</td></tr>
     <tr><td><code>closeOnEscape?: boolean</code></td><td><code>true</code></td><td>Closes the dialog on Escape. Turn both off when the user must answer; then only the × and your own buttons close it.</td></tr>
     <tr><td><code>ariaLabel?: string</code></td><td>—</td><td>Accessible name when the dialog has no <code>mudDialogTitle</code>.</td></tr>
@@ -229,8 +229,10 @@ open-and-await-outcome flow, a bare `.subscribe()` is correct.
 - A projected `mudDialogTitle` wires its auto-generated id into the
   container's `aria-labelledby`. For a title-less dialog, set
   `config.ariaLabel` instead so the dialog still has an accessible name.
-- **Localize `closeLabel`** — it defaults to the English `'Close'` and is the
-  × button's only accessible name.
+- **The × button's only accessible name** is `config.closeLabel`, or the
+  `dialog.close` label (English `'Close'`) when it is unset, so a language pack
+  from `provideMudLabels` translates it. The dialog is opened from the service, so it reads the
+  app-level labels; a `provideMudLabels` in one component's `providers` does not reach it.
 - The hero image is presentational; the consumer owns `alt` (leave it empty
   for decorative heroes, as in the With image example above).
 ### Initial focus

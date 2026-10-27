@@ -23,11 +23,10 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { MudMenu, MudMenuItem, MudMenuTrigger } from 'ngx-mud-ui/menu';
 import { ReplaySubject } from 'rxjs';
 import type { Observable } from 'rxjs';
-import { MUD_PAGINATION_LABELS } from './mud-pagination-labels';
 import type { MudPageEvent, MudPaginationSize } from './mud-pagination.types';
 import { computeSlots } from './pagination-range';
 import type { MudPaginationSlot } from './pagination-range';
-import { _injectMudLabels } from 'ngx-mud-ui/core';
+import { injectMudFormatLocale, injectMudLabels } from 'ngx-mud-ui/i18n';
 
 type OverflowSlot = Extract<MudPaginationSlot, { kind: 'overflow' }>;
 
@@ -108,7 +107,7 @@ const FALLBACK_METRICS: Record<MudPaginationSize, { item: number; gap: number; i
                   [attr.aria-label]="_labels().pageAria(slot.page, _pageCount())"
                   (click)="_select(slot.page - 1)"
                 >
-                  {{ slot.page }}
+                  {{ _formatNumber(slot.page) }}
                 </button>
               } @else {
                 <button
@@ -122,7 +121,7 @@ const FALLBACK_METRICS: Record<MudPaginationSize, { item: number; gap: number; i
                 </button>
                 <mud-menu #menu panelClass="mud-pagination__menu" [aria-label]="_overflowLabel(slot)" (selected)="_selectFromMenu($event)">
                   @for (page of slot.pages; track page) {
-                    <mud-menu-item [value]="'' + page" [attr.aria-label]="_labels().pageAria(page, _pageCount())">{{ page }}</mud-menu-item>
+                    <mud-menu-item [value]="'' + page" [attr.aria-label]="_labels().pageAria(page, _pageCount())">{{ _formatNumber(page) }}</mud-menu-item>
                   }
                 </mud-menu>
               }
@@ -177,7 +176,17 @@ export class MudPagination implements OnInit, OnDestroy {
   private readonly _destroyRef = inject(DestroyRef);
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  protected readonly _labels = _injectMudLabels(MUD_PAGINATION_LABELS);
+  private readonly _allLabels = injectMudLabels();
+  private readonly _formatLocale = injectMudFormatLocale();
+
+  protected readonly _labels = computed(() => this._allLabels().pagination);
+
+  // Page numbers rendered in the format locale; cached per locale.
+  private readonly _numberFormat = computed(() => new Intl.NumberFormat(this._formatLocale(), { useGrouping: false }));
+
+  protected _formatNumber(value: number): string {
+    return this._numberFormat().format(value);
+  }
 
   private readonly _length = computed(() => {
     const value = Math.floor(this.length());

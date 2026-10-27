@@ -1,5 +1,6 @@
 import { Component, PLATFORM_ID, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideMudFormatLocale } from 'ngx-mud-ui/i18n';
 import { MudCornerBadge } from './mud-corner-badge.directive';
 import type { MudBadgePosition } from './mud-corner-badge.directive';
 import type { MudBadgeSize, MudBadgeType, MudBadgeVariant } from './mud-badge.types';
@@ -133,6 +134,43 @@ describe('MudCornerBadge ([mudBadge])', () => {
     host.content.set('1204');
     await fixture.whenStable();
     expect(badge()!.textContent).toBe('999+');
+  });
+
+  it('formats the count and the overflow text through the format locale, ungrouped', async () => {
+    TestBed.configureTestingModule({ providers: [provideMudFormatLocale('ar-EG')] });
+
+    const { fixture, host, badge } = await render();
+    const arabic = new Intl.NumberFormat('ar-EG', { useGrouping: false });
+
+    host.content.set(1204);
+    await fixture.whenStable();
+    expect(badge()!.textContent).toBe(arabic.format(1204));
+    expect(badge()!.textContent).toMatch(/^[\u0660-\u0669]+$/);
+
+    host.max.set(999);
+    await fixture.whenStable();
+    expect(badge()!.textContent).toBe(`${arabic.format(999)}+`);
+  });
+
+  it('keeps Latin digits, ungrouped, with the default locale', async () => {
+    const { fixture, host, badge } = await render();
+
+    host.content.set(1204);
+    await fixture.whenStable();
+    expect(badge()!.textContent).toBe('1204');
+  });
+
+  // Intl would round to 3 decimals and print "∞"; only integers go through it, so these stay as before.
+  it('shows non-integer numbers exactly as given', async () => {
+    const { fixture, host, badge } = await render();
+
+    host.content.set(1.23456);
+    await fixture.whenStable();
+    expect(badge()!.textContent).toBe('1.23456');
+
+    host.content.set(Infinity);
+    await fixture.whenStable();
+    expect(badge()!.textContent).toBe('Infinity');
   });
 
   it('leaves in-range numbers and non-numeric content untouched by badgeMax', async () => {

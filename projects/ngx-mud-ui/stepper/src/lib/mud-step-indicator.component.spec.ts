@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideMudFormatLocale } from 'ngx-mud-ui/i18n';
 import { MudIndicatorStep, MudStepIndicator } from './mud-step-indicator.component';
 
 @Component({
@@ -44,6 +45,17 @@ describe('MudStepIndicator', () => {
 
     expect(circles.map((c) => c.textContent?.trim())).toEqual(['1', '2', '3']);
     expect(circles[0].getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('numbers steps in the format locale digits', async () => {
+    TestBed.configureTestingModule({ providers: [provideMudFormatLocale('ar-EG')] });
+
+    const root = await render();
+    const circles = Array.from(root.querySelectorAll<HTMLElement>('.indicator-step__circle'));
+    const arabic = new Intl.NumberFormat('ar-EG', { useGrouping: false });
+
+    expect(circles.map((c) => c.textContent?.trim())).toEqual([1, 2, 3].map((n) => arabic.format(n)));
+    expect(circles[0].textContent?.trim()).toMatch(/^[\u0660-\u0669]$/);
   });
 
   it('dev-mode warns for a wrapped step the content query cannot see, instead of numbering it 0', async () => {

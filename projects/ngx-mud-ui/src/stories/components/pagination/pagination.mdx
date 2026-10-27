@@ -78,10 +78,13 @@ Bind `length` to the server's total and load the page in `(page)`; no data sourc
 
 ## Labels
 
-Every string comes from `provideMudPaginationLabels`. Pass a signal to switch language at runtime.
+Every string lives in the `pagination` namespace of the library's labels. Pick a language pack or
+override single keys with `provideMudLabels`; pass a signal to switch language at runtime. Page
+numbers follow the formatting locale. See the
+[Localization guide](?path=/docs/foundations-localization--docs).
 
 ```ts
-providers: [provideMudPaginationLabels({ previous: 'Anterior', next: 'Următor', pageAria: (p, t) => `Pagina ${p} din ${t}` })]
+providers: [provideMudLabels({ pagination: { previous: 'Anterior', next: 'Următor', pageAria: (p, t) => `Pagina ${p} din ${t}` } })]
 ```
 
 <Canvas of={PaginationStories.LocalizedLabels} />

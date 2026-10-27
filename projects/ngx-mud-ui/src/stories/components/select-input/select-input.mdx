@@ -78,7 +78,7 @@ receives an option and the query. `mudSelectDefaultFilter` is exported if you wa
 
 <Canvas of={SelectInputStories.Searchable} />
 
-When nothing matches, the list shows `noResultsText` (default `'No results'`). Localize it.
+When nothing matches, the list shows `noResultsText`, which defaults to the `selectInput.noResults` label (English 'No results').
 
 <Canvas of={SelectInputStories.NoResults} />
 
@@ -87,7 +87,7 @@ When nothing matches, the list shows `noResultsText` (default `'No results'`). L
 For lists too big to ship to the browser, search on your server. Set `[filterWith]="null"` so the
 select shows `options` exactly as you give them. Watch `query`, fetch matches, and pass them back
 as `options`. Set `loading` while the request runs. The list then shows one loading row with
-`loadingText` (default `'Loading…'`).
+`loadingText`, which defaults to the `selectInput.loading` label (English 'Loading…').
 
 ```html
 <mud-select-input
@@ -195,7 +195,7 @@ assistive text — *you* decide when they render:
 - **`open` is two-way bindable**, which is what makes "open the dropdown when
   the user lands here" possible without reaching into the component.
 - **`emptyText` shows inside the panel** when `options` is empty. It defaults to
-  the English `'No options'` — localize it, and prefer it over hiding the field
+  the `selectInput.empty` label (English 'No options'). Prefer it over hiding the field
   entirely so the user can see the control exists.
 - **`readonly` keeps the trigger focusable but the listbox shut**, which is the
   right state for a value the user may read and copy but not change.
@@ -230,5 +230,5 @@ focus off themselves. A searchable field adds `aria-autocomplete="list"`. Groups
 `noResultsText` when a query finds nothing. It does not announce result counts. While loading, Enter
 selects nothing.
 
-**What you must do**: localize `loadingText`, `noResultsText` and `emptyText`. Hide the start icon from
+**What you must do**: pick a language pack with `provideMudLabels`, or set `loadingText`, `noResultsText` and `emptyText` yourself. The listbox's fallback name comes from `selectInput.options`; a `<mud-label>` or `aria-label` replaces it. A select inside a subtree with its own `provideMudLabels` also localizes its panel. See the [Localization guide](?path=/docs/foundations-localization--docs). Hide the start icon from
 screen readers with `aria-hidden="true"`, or label it yourself if it carries meaning.

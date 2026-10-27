@@ -1,8 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MudPagination } from './mud-pagination.component';
-import { provideMudPaginationLabels } from './mud-pagination-labels';
-import type { MudPaginationLabels } from './mud-pagination-labels';
+import { MUD_LABELS_RO, provideMudFormatLocale, provideMudLabels } from 'ngx-mud-ui/i18n';
+import type { MudLabelsPartial } from 'ngx-mud-ui/i18n';
 import type { MudPageEvent, MudPaginationSize } from './mud-pagination.types';
 
 @Component({
@@ -291,14 +291,57 @@ describe('MudPagination', () => {
   });
 
   it('follows a signal labels provider live', async () => {
-    const lang = signal<Partial<MudPaginationLabels>>({ next: 'Următor' });
+    const lang = signal<MudLabelsPartial>({ pagination: { next: 'Următor' } });
 
-    TestBed.configureTestingModule({ providers: [provideMudPaginationLabels(lang)] });
+    TestBed.configureTestingModule({ providers: [provideMudLabels(lang)] });
     const { next, settle } = await render();
 
     expect(next()!.textContent).toContain('Următor');
-    lang.set({ next: 'Weiter' });
+    lang.set({ pagination: { next: 'Weiter' } });
     await settle();
     expect(next()!.textContent).toContain('Weiter');
+  });
+
+  it('ships English defaults with no provider', async () => {
+    const { root } = await render();
+
+    expect(root.querySelector('nav')!.getAttribute('aria-label')).toBe('Pagination');
+    expect(root.querySelector('.mud-pagination__nav-button--next')!.getAttribute('aria-label')).toBe('Next page, go to page 2');
+    expect(root.querySelector('.mud-pagination__page')!.getAttribute('aria-label')).toBe('Page 1 of 20');
+    expect(root.querySelector('.mud-pagination__overflow')!.getAttribute('aria-label')).toMatch(/^Show pages \d+ to \d+$/);
+  });
+
+  it('uses the Romanian pack when provided', async () => {
+    TestBed.configureTestingModule({ providers: [provideMudLabels(MUD_LABELS_RO)] });
+    const { root } = await render();
+
+    expect(root.querySelector('nav')!.getAttribute('aria-label')).toBe(MUD_LABELS_RO.pagination!.navigation);
+    expect(root.querySelector('.mud-pagination__page')!.getAttribute('aria-label')).toBe(MUD_LABELS_RO.pagination!.pageAria!(1, 20));
+  });
+
+  it('an aria-label input wins over the labels', async () => {
+    TestBed.configureTestingModule({ providers: [provideMudLabels(MUD_LABELS_RO)] });
+    const { root } = await render((h) => h.label.set('Mine'));
+
+    expect(root.querySelector('nav')!.getAttribute('aria-label')).toBe('Mine');
+  });
+
+  it('does not group thousands in page buttons or their names', async () => {
+    const { pageButton } = await render((h) => {
+      h.length.set(20000);
+      h.pageIndex.set(999);
+    });
+    const button = pageButton(1000)!;
+
+    expect(button).toBeTruthy();
+    expect(button.getAttribute('aria-label')).toBe('Page 1000 of 2000');
+    expect(button.getAttribute('aria-label')).toContain(button.textContent!.trim());
+  });
+
+  it('page buttons format in the format locale', async () => {
+    TestBed.configureTestingModule({ providers: [provideMudFormatLocale('ar-EG')] });
+    const { root } = await render();
+
+    expect(root.querySelector('.mud-pagination__page')!.textContent!.trim()).toBe('١');
   });
 });

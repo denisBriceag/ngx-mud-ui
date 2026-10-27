@@ -148,14 +148,15 @@ import { MudStepIndicator, MudIndicatorStep } from 'ngx-mud-ui/stepper';
 ## Translating the state suffixes
 
 Screen readers hear a completed step as "Identity, completed" and a blocked one as "Address, has
-errors". Translate those two words once per app with `provideMudStepperLabels`. Pass a plain
-object, or a signal to switch language at runtime.
+errors". Translate those two words in the `stepper` namespace of the library's labels with
+`provideMudLabels`. The [Localization guide](?path=/docs/foundations-localization--docs) shows how
+to switch language at runtime.
 
 ```ts
-import { provideMudStepperLabels } from 'ngx-mud-ui/stepper';
+import { provideMudLabels } from 'ngx-mud-ui/i18n';
 
 bootstrapApplication(App, {
-  providers: [provideMudStepperLabels({ completed: 'finalizat', blocked: 'conține erori' })],
+  providers: [provideMudLabels({ stepper: { completed: 'finalizat', blocked: 'conține erori' } })],
 });
 ```
 

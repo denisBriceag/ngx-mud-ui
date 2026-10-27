@@ -262,88 +262,45 @@ field you meant to type in is the classic date-picker mistake.
 
 Two independent layers:
 
-1. **Month and weekday names** come from `Intl`, driven by the `locale` input
-   (defaulting to the app's `LOCALE_ID`). `locale="ro"` alone localizes the
-   calendar's names — no translation tables needed.
-2. **Every UI string** — the Today button, the nav arrows, the clear button,
-   the range field names, the screen-reader announcements — ships in English
-   in the `MUD_DATE_LABELS` injection token and is overridden **app-wide in
-   one `provideMudDateLabels` call**. Pass only the keys you change; the rest
-   keep their defaults.
+1. **Month and weekday names** come from `Intl`, driven by the `locale` input.
+   Without it they follow `provideMudFormatLocale`, then the app's `LOCALE_ID`.
+   `locale="ro"` alone localizes the calendar's names, with no translation table.
+2. **Every UI string** (the Today button, the nav arrows, the clear button,
+   the range field names, the screen-reader announcements) lives in the
+   `datePicker` namespace of the library's labels. Pick a language pack or
+   override single keys with `provideMudLabels`. See the
+   [Localization guide](?path=/docs/foundations-localization--docs).
 
-The month-picker grid shows **short** month names (`Aug`), derived from `Intl`.
-When Intl's forms don't match your design — Romanian renders `ian.`, `feb.`
-where the design wants `Ian`, `Feb` — override the names in the same token:
-`monthNamesShort` fills the month-picker grid, `monthNamesLong` the header
+The month-picker grid shows **short** month names (`Aug`), derived from `Intl`
+with a trailing dot removed. When Intl's forms don't match your design, set
+`monthNamesShort` and `monthNamesLong` in the `datePicker` namespace.
+`monthNamesShort` fills the month-picker grid. `monthNamesLong` fills the header
 title, the dropdown chip, the month-change announcements and the month
-buttons' accessible names. Both arrays are 12 entries, January first.
-
-The complete Romanian setup:
+buttons' accessible names. Both arrays have 12 entries, January first.
 
 ```ts
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideMudDateLabels } from 'ngx-mud-ui/date-picker';
+import { MUD_LABELS_RO, provideMudFormatLocale, provideMudLabels } from 'ngx-mud-ui/i18n';
 
 bootstrapApplication(App, {
   providers: [
-    provideMudDateLabels({
-      calendar: 'Calendar',
-      previousMonth: 'Luna precedentă',
-      nextMonth: 'Luna următoare',
-      previousYear: 'Anul precedent',
-      nextYear: 'Anul următor',
-      chooseMonth: 'Alegeți luna',
-      chooseYear: 'Alegeți anul',
-      today: 'Astăzi',
-      clear: 'Șterge',
-      rangeStart: 'Data de început',
-      rangeEnd: 'Data de sfârșit',
-      monthNamesShort: ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Noi', 'Dec'],
-      monthNamesLong: [
-        'Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie',
-        'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie',
-      ],
-      formatHint: (pattern) => `Format: ${pattern}`,
-      rangeStartSelected: (start) => `${start} selectat, alegeți data de sfârșit`,
-      rangeSelected: (start, end) => `${start} – ${end} selectate`,
+    provideMudLabels(MUD_LABELS_RO, {
+      datePicker: {
+        today: 'Astăzi',
+        monthNamesShort: ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Noi', 'Dec'],
+      },
     }),
+    provideMudFormatLocale('ro'),
   ],
 });
 ```
 
 <Canvas of={DateStories.LocalizedRomanian} />
 
-### Switching language at runtime
-
-`provideMudDateLabels` also accepts a **signal** (or a factory returning one —
-the factory runs in an injection context, so it can `inject()` your i18n
-service). Every open calendar re-renders the moment the signal changes: the
-strings, and — through the config's `locale` — the `Intl` month and weekday
-names too. No per-instance wiring.
-
-```ts
-import { computed, inject } from '@angular/core';
-import { provideMudDateLabels } from 'ngx-mud-ui/date-picker';
-import type { MudDateLabels } from 'ngx-mud-ui/date-picker';
-
-const TRANSLATIONS = {
-  en: {},                                    // defaults are English
-  ro: { locale: 'ro', today: 'Astăzi', clear: 'Șterge', /* …the set above… */ },
-} satisfies Record<string, Partial<MudDateLabels>>;
-
-bootstrapApplication(App, {
-  providers: [
-    provideMudDateLabels(() => {
-      const i18n = inject(I18nService);       // exposes lang: Signal<'en' | 'ro'>
-
-      return computed(() => TRANSLATIONS[i18n.lang()]);
-    }),
-  ],
-});
-```
-
-Locale precedence for the `Intl` names: a component's own `locale` input, then
-the config's `locale`, then the app `LOCALE_ID`.
+To switch language at runtime, pass signals to `provideMudLabels` and
+`provideMudFormatLocale`. Every open calendar re-renders at once, month and
+weekday names included. The guide shows the full pattern under
+[Switching language at runtime](?path=/docs/foundations-localization--docs#switching-language-at-runtime).
 
 `firstDayOfWeek` defaults to 1 (Monday), matching the Romanian and wider
 European convention.

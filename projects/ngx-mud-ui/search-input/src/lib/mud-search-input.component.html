@@ -48,7 +48,7 @@
     <button
       type="button"
       class="input-field__search-clear"
-      [attr.aria-label]="clearLabel()"
+      [attr.aria-label]="_clearLabel()"
       tabindex="-1"
       (mousedown)="$event.preventDefault()"
       (click)="_onClear()"
@@ -71,7 +71,7 @@
     <button
       type="button"
       class="input-field__submit"
-      [attr.aria-label]="submitLabel()"
+      [attr.aria-label]="_submitLabel()"
       [disabled]="_inert()"
       (click)="_onSubmitClick()"
     >

@@ -11,7 +11,7 @@ describe('resolveToastConfig', () => {
     expect(resolved.horizontalPosition).toBe('end');
     expect(resolved.verticalPosition).toBe('top');
     expect(resolved.showCloseButton).toBe(true);
-    expect(resolved.closeLabel).toBe('Close');
+    expect(resolved.closeLabel).toBeUndefined(); // the item falls back to the app labels
     expect(resolved.announcementMessage).toBeUndefined();
   });
 
@@ -23,16 +23,16 @@ describe('resolveToastConfig', () => {
 
     expect(resolved.variant).toBe('error'); // explicit wins
     expect(resolved.duration).toBe(9000); // app default wins over fallback
-    expect(resolved.closeLabel).toBe('Close'); // fallback fills the rest
+    expect(resolved.closeLabel).toBeUndefined(); // left to the app labels
   });
 
   it('keeps duration 0 rather than treating it as unset', () => {
     expect(resolveToastConfig({ data: { message: 'x' }, duration: 0 }).duration).toBe(0);
   });
 
-  it('trims closeLabel and falls back when it is blank', () => {
+  it('trims closeLabel and leaves a blank one unset', () => {
     expect(resolveToastConfig({ data: { message: 'x' }, closeLabel: '  Închide  ' }).closeLabel).toBe('Închide');
-    expect(resolveToastConfig({ data: { message: 'x' }, closeLabel: '   ' }).closeLabel).toBe('Close');
+    expect(resolveToastConfig({ data: { message: 'x' }, closeLabel: '   ' }).closeLabel).toBeUndefined();
   });
 
   it('exposes maxVisible 3 as the fallback', () => {

@@ -31,7 +31,6 @@ import type { FormValueControl } from '@angular/forms/signals';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { isValidIso, isWithin, normalizeRange, toValidIsoOrUndefined } from './date-core';
-import { MUD_DATE_LABELS } from './date-labels';
 import {
   caretForDigitIndex,
   digitsBefore,
@@ -48,7 +47,8 @@ import type {
   MudDateRange,
   MudDateValue,
 } from './date-value';
-import { _MudInputFieldStyles, _injectMudLabels, MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
+import { injectMudLabels } from 'ngx-mud-ui/i18n';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -142,7 +142,8 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   readonly cleared = output<void>();
   readonly touch = output<void>();
 
-  protected readonly _labels = _injectMudLabels(MUD_DATE_LABELS);
+  private readonly _allLabels = injectMudLabels();
+  protected readonly _labels = computed(() => this._allLabels().datePicker);
   private readonly _overlay = inject(Overlay);
   private readonly _viewContainerRef = inject(ViewContainerRef);
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));

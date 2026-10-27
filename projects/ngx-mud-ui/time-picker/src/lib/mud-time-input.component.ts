@@ -40,7 +40,6 @@ import {
   toValidTimeOrUndefined,
 } from './time-core';
 import type { MudMinuteStep, MudTimeValue } from './time-core';
-import { MUD_TIME_LABELS } from './time-labels';
 import {
   caretForDigitIndex,
   digitsBefore,
@@ -49,7 +48,8 @@ import {
   padHourOnSeparator,
 } from './time-mask';
 import { MudTimePicker } from './mud-time-picker.component';
-import { _MudInputFieldStyles, _injectMudLabels, MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
+import { injectMudLabels } from 'ngx-mud-ui/i18n';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -128,7 +128,8 @@ export class MudTimeInput implements ControlValueAccessor, FormValueControl<MudT
   readonly cleared = output<void>();
   readonly touch = output<void>();
 
-  protected readonly _labels = _injectMudLabels(MUD_TIME_LABELS);
+  private readonly _allLabels = injectMudLabels();
+  protected readonly _labels = computed(() => this._allLabels().timePicker);
 
   private readonly _overlay = inject(Overlay);
   private readonly _viewContainerRef = inject(ViewContainerRef);

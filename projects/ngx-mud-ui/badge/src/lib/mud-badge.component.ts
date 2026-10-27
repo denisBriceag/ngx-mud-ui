@@ -1,5 +1,6 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, computed, inject, input, numberAttribute } from '@angular/core';
 import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { injectMudFormatLocale, injectMudLabels } from 'ngx-mud-ui/i18n';
 import { _MudBadgeStyles } from './mud-badge-styles.component';
 import type { MudBadgeSize, MudBadgeType, MudBadgeVariant } from './mud-badge.types';
 
@@ -37,11 +38,16 @@ export class MudBadge {
   /** @description Upper bound for the visible count. */
   readonly max = input(99, { transform: numberAttribute });
   /** @description Accessible name when there is no count and no `aria-label`. */
-  readonly notificationLabel = input('Notificare');
+  readonly notificationLabel = input<string | undefined>(undefined);
   /** @description Accessible name; wins over the count and the notification label (`""` = decorative, no role). */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
   /** @description Announces count changes (`role="status"`); off by default so a list of badges stays quiet. */
   readonly live = input(false, { transform: booleanAttribute });
+
+  private readonly _labels = injectMudLabels();
+  private readonly _formatLocale = injectMudFormatLocale();
+  // Cached per locale.
+  private readonly _numberFormat = computed(() => new Intl.NumberFormat(this._formatLocale(), { useGrouping: false }));
 
   protected readonly _isDot = computed(() => this.type() === 'dot' || this.size() === 'xs');
 
@@ -50,7 +56,9 @@ export class MudBadge {
 
     if (this._isDot() || count === undefined || Number.isNaN(count)) return '';
 
-    return count > this.max() ? `${this.max()}+` : `${count}`;
+    const format = this._numberFormat();
+
+    return count > this.max() ? `${format.format(this.max())}+` : format.format(count);
   });
 
   protected readonly _classes = computed(() =>
@@ -66,7 +74,15 @@ export class MudBadge {
   );
 
   // An explicit aria-label (even '') wins, so `aria-label=""` marks a decorative badge; otherwise the count, then the dot label.
-  protected readonly _label = computed(() => this.ariaLabel() ?? (this._text() || this.notificationLabel()));
+  protected readonly _label = computed(() => {
+    const explicit = this.ariaLabel();
+
+    if (explicit != null) return explicit;
+
+    const dotLabel = this.notificationLabel() ?? this._labels().badge.notification;
+
+    return this._text() || dotLabel;
+  });
 
   /** A live badge is a status; a named one an image; one with no name (decorative dot) has no role. */
   protected readonly _role = computed(() => (this.live() ? 'status' : this._label() ? 'img' : null));

@@ -22,6 +22,7 @@ import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl } from '@angular/forms/signals';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+import { injectMudFormatLocale } from 'ngx-mud-ui/i18n';
 import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudTextareaVariant = 'default' | 'warning' | 'destructive' | 'success';
@@ -140,7 +141,18 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
     this._effectiveInvalid() ? 'destructive' : this.variant(),
   );
 
+  private readonly _formatLocale = injectMudFormatLocale();
+
+  private readonly _counterFormat = computed(() => new Intl.NumberFormat(this._formatLocale(), { useGrouping: false }));
+
+  protected _formatCount(value: number): string {
+    return this._counterFormat().format(value);
+  }
+
   protected readonly _showCounter = computed(() => this.showCounter() && this.maxLength() != null);
+
+  /** The counter's limit, formatted; only read while `_showCounter()` guarantees a limit. */
+  protected readonly _maxLengthText = computed(() => this._formatCount(this.maxLength() ?? 0));
 
   protected readonly _describedBy = computed<string | null>(() => {
     const ids: string[] = [];

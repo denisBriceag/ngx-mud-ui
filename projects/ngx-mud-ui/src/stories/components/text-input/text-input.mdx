@@ -108,5 +108,6 @@ assistive text — *you* decide when they render:
   `pattern` attribute.
 - **`clearable` is suppressed** while the field is disabled, read-only or
   loading, so the affordance never appears on a field the user cannot edit.
-- **Localize `clearLabel`** — it defaults to the English `'Clear field'` and is
-  the clear button's accessible name.
+- **`clearLabel` is an optional override.** It names the clear button. Unset or
+  blank, the `textInput.clear` label applies (English 'Clear field'), so a
+  language pack from `provideMudLabels` translates it.

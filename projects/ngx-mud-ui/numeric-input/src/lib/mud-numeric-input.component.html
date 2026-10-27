@@ -53,7 +53,7 @@
     <button
       type="button"
       class="input-field__clear"
-      [attr.aria-label]="clearLabel()"
+      [attr.aria-label]="_clearLabel()"
       tabindex="-1"
       (mousedown)="$event.preventDefault()"
       (click)="_onClear()"
@@ -75,7 +75,7 @@
       <button
         type="button"
         class="numeric-field__stepper"
-        [attr.aria-label]="incrementLabel()"
+        [attr.aria-label]="_incrementLabel()"
         tabindex="-1"
         [disabled]="!_canIncrement()"
         (mousedown)="$event.preventDefault()"
@@ -92,7 +92,7 @@
       <button
         type="button"
         class="numeric-field__stepper"
-        [attr.aria-label]="decrementLabel()"
+        [attr.aria-label]="_decrementLabel()"
         tabindex="-1"
         [disabled]="!_canDecrement()"
         (mousedown)="$event.preventDefault()"
@@ -122,10 +122,10 @@
     @if (_showCounter()) {
       <span class="input-field__counter" [id]="_counterId">
         @if (counterLabel(); as srText) {
-          <span aria-hidden="true">{{ _display().length }} / {{ maxLength() }}</span>
+          <span aria-hidden="true">{{ _formatCount(_display().length) }} / {{ _maxLengthText() }}</span>
           <span class="input-field__sr-only">{{ srText }}</span>
         } @else {
-          {{ _display().length }} / {{ maxLength() }}
+          {{ _formatCount(_display().length) }} / {{ _maxLengthText() }}
         }
       </span>
     }

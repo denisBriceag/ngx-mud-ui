@@ -98,9 +98,11 @@ Selector: `mud-chip`
   something you enforce in the parent, as the Filter modes example shows.
 - **`removable` only applies to `type="input"`.** Setting it on a filter chip
   renders nothing — the remove button requires both.
-- **Localize `removeLabel`.** It defaults to the English `'Remove'` and becomes
-  the remove button's accessible name; when `label` is also set the two are
-  joined (`"Remove Ana Popescu"`).
+- **Rename the remove button with `removeLabel`.** It is a function that gets
+  the chip's `label` and returns the button's accessible name, such as
+  `removeLabel = (name: string) => 'Elimină ' + name`, bound with `[removeLabel]="removeLabel"`. Unset, the `chip.remove` label
+  applies (English `"Remove Ana Popescu"`), so a language pack from
+  `provideMudLabels` translates it. See the [Localization guide](?path=/docs/foundations-localization--docs).
 - **`label` is ARIA-only.** It sets `aria-label` on the chip and enriches the
   remove button's name — it does not render. Visible text belongs in the default
   content.

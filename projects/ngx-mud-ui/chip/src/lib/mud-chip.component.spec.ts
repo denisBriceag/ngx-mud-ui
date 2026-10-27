@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { MUD_LABELS_RO, provideMudLabels } from 'ngx-mud-ui/i18n';
 import { MudChip } from './mud-chip.component';
 import type { MudChipSelectionMode, MudChipSize, MudChipType } from './mud-chip.component';
 
@@ -14,6 +15,7 @@ import type { MudChipSelectionMode, MudChipSize, MudChipType } from './mud-chip.
       [count]="count()"
       [disabled]="disabled()"
       [removable]="removable()"
+      [removeLabel]="removeLabel()"
       label="Acte"
       (removed)="removals = removals + 1"
     >
@@ -29,6 +31,7 @@ class Host {
   readonly count = signal<number | undefined>(undefined);
   readonly disabled = signal(false);
   readonly removable = signal(false);
+  readonly removeLabel = signal<((label: string) => string) | undefined>(undefined);
   removals = 0;
 }
 
@@ -48,6 +51,20 @@ async function render() {
 }
 
 describe('MudChip', () => {
+  it('remove label: default, pack, instance function', async () => {
+    TestBed.configureTestingModule({ providers: [provideMudLabels(MUD_LABELS_RO)] });
+    const { fixture, host, removeBtn } = await render();
+
+    host.type.set('input');
+    host.removable.set(true);
+    await fixture.whenStable();
+    expect(removeBtn()!.getAttribute('aria-label')).toBe('Elimină Acte');
+
+    host.removeLabel.set((label) => `Drop ${label}`);
+    await fixture.whenStable();
+    expect(removeBtn()!.getAttribute('aria-label')).toBe('Drop Acte');
+  });
+
   it('renders a filter chip as a toggle button with aria-pressed', async () => {
     const { fixture, host, el, control } = await render();
 

@@ -63,7 +63,7 @@ export class MudDialog {
       ...({
         size: config.size ?? 'md',
         showCloseButton: config.showCloseButton ?? true,
-        closeLabel: config.closeLabel?.trim() || 'Close',
+        closeLabel: config.closeLabel,
         mudRefFactory: () => mudRef,
       } as object),
     });

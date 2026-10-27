@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { MUD_LABELS_RO, provideMudLabels } from 'ngx-mud-ui/i18n';
 import { MudAvatar } from './mud-avatar.component';
 import type { MudAvatarSize } from './mud-avatar.component';
 
@@ -215,6 +216,22 @@ describe('MudAvatar initials derivation and photo fallback', () => {
     const el = fixture.nativeElement.querySelector('mud-avatar') as HTMLElement;
 
     expect(el.getAttribute('aria-label')).toBe('Avatar for OP');
+  });
+
+  it('initials and fallback names from labels', async () => {
+    TestBed.configureTestingModule({ providers: [provideMudLabels(MUD_LABELS_RO)] });
+    const fixture = TestBed.createComponent(NameHost);
+
+    fixture.componentInstance.name.set(undefined);
+    fixture.componentInstance.initials.set('OP');
+    await fixture.whenStable();
+    const el = fixture.nativeElement.querySelector('mud-avatar') as HTMLElement;
+
+    expect(el.getAttribute('aria-label')).toBe('Avatar pentru OP');
+
+    fixture.componentInstance.initials.set(undefined);
+    await fixture.whenStable();
+    expect(el.getAttribute('aria-label')).toBe(MUD_LABELS_RO.avatar!.fallback);
   });
 
   it('collapses a projected img that fails to load so initials can show', async () => {

@@ -23,6 +23,7 @@
     "dialog/src/**/*.spec.ts",
     "drawer/src/**/*.spec.ts",
     "file-input/src/**/*.spec.ts",
+    "i18n/src/**/*.spec.ts",
     "icons/src/**/*.spec.ts",
     "info-box/src/**/*.spec.ts",
     "inline-message/src/**/*.spec.ts",

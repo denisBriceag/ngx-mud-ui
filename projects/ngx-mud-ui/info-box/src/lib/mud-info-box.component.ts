@@ -1,9 +1,8 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, output, ViewEncapsulation } from '@angular/core';
+import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 
 export type MudInfoBoxVariant = 'neutral' | 'moderate' | 'warning' | 'error';
 export type MudInfoBoxEmphasis = 'subtle' | 'strong';
-
-const DEFAULT_CLOSE_LABEL = 'Close';
 
 /**
  * ```html
@@ -94,7 +93,7 @@ export class MudInfoBox {
   readonly hideIcon = input(false, { transform: booleanAttribute });
 
   /** @description Accessible name for the close button. */
-  readonly closeLabel = input(DEFAULT_CLOSE_LABEL);
+  readonly closeLabel = input<string | undefined>(undefined);
 
   /** @description Accessible name for the box itself. Gives the host a `region` role. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
@@ -102,7 +101,9 @@ export class MudInfoBox {
   /** Emitted when the close button is activated. The CONSUMER removes the box. */
   readonly closed = output<void>();
 
-  protected readonly _closeLabel = computed(() => this.closeLabel().trim() || DEFAULT_CLOSE_LABEL);
+  private readonly _labels = injectMudLabels();
+
+  protected readonly _closeLabel = computed(() => _mudText(this.closeLabel(), this._labels().infoBox.close));
 
   protected readonly _hostClasses = computed(
     () =>

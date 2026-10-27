@@ -18,6 +18,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Overlay } from '@angular/cdk/overlay';
 import type { OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
+import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 import { MudTooltipContainer } from './mud-tooltip-container.component';
 import { connectedPositionsFor } from './tooltip-positions';
 import type { MudTooltipPlacement, MudTooltipSize } from './tooltip-positions';
@@ -100,8 +101,8 @@ export class MudTooltip {
   readonly tooltipVariant = input<MudTooltipVariant>('default');
   /** @description Optional bold title line rendered above the message. */
   readonly tooltipTitle = input<string | undefined>(undefined);
-  /** @description Hint line shown by coach tooltips. Localize per app. */
-  readonly tooltipCoachHint = input('Press Esc to close');
+  /** @description Hint line shown by coach tooltips. Unset or blank follows the app labels (`tooltip.coachHint`). */
+  readonly tooltipCoachHint = input<string | undefined>(undefined);
   /**
    * @description Keeps the bubble open while the pointer is over it (so links inside
    * stay reachable). Off by default, matching the official tooltip.
@@ -114,7 +115,12 @@ export class MudTooltip {
   readonly tooltipMaxWidth = input('280px');
   readonly tooltipShowDelay = input(200, { transform: numberAttribute });
   readonly tooltipHideDelay = input(150, { transform: numberAttribute });
-  readonly tooltipCloseLabel = input('Close');
+  /** @description Accessible name of the close button; defaults to the app labels. */
+  readonly tooltipCloseLabel = input<string | undefined>(undefined);
+
+  private readonly _labels = injectMudLabels();
+  private readonly _closeText = computed(() => _mudText(this.tooltipCloseLabel(), this._labels().tooltip.close));
+  private readonly _coachHintText = computed(() => _mudText(this.tooltipCoachHint(), this._labels().tooltip.coachHint));
 
   /** Emitted when the tooltip closes for a user-initiated reason. */
   readonly tooltipClosed = output<MudTooltipCloseReason>();
@@ -163,11 +169,11 @@ export class MudTooltip {
       container.setInput('message', this.content());
       container.setInput('size', this.tooltipSize());
       container.setInput('closable', this.tooltipClosable() || this._isCoach);
-      container.setInput('closeLabel', this.tooltipCloseLabel());
+      container.setInput('closeLabel', this._closeText());
       container.setInput('maxWidth', this.tooltipMaxWidth());
       container.setInput('title', this.tooltipTitle());
       container.setInput('variant', this.tooltipVariant());
-      container.setInput('coachHint', this.tooltipCoachHint());
+      container.setInput('coachHint', this._coachHintText());
     });
   }
 
@@ -293,11 +299,11 @@ export class MudTooltip {
     containerRef.setInput('placement', this.tooltipPlacement());
     containerRef.setInput('size', this.tooltipSize());
     containerRef.setInput('closable', this.tooltipClosable() || this._isCoach);
-    containerRef.setInput('closeLabel', this.tooltipCloseLabel());
+    containerRef.setInput('closeLabel', this._closeText());
     containerRef.setInput('maxWidth', this.tooltipMaxWidth());
     containerRef.setInput('title', this.tooltipTitle());
     containerRef.setInput('variant', this.tooltipVariant());
-    containerRef.setInput('coachHint', this.tooltipCoachHint());
+    containerRef.setInput('coachHint', this._coachHintText());
     this._containerRef.set(containerRef);
 
     /**

@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideMudDateLabels } from './date-labels';
-import type { MudDateLabels } from './date-labels';
+import { provideMudLabels } from 'ngx-mud-ui/i18n';
+import type { MudLabelsPartial } from 'ngx-mud-ui/i18n';
 import { MudDatePicker } from './mud-date-picker.component';
 
 @Component({
@@ -149,13 +149,13 @@ describe('MudDatePicker views', () => {
     expect(nov.getAttribute('aria-label')).toBe('Noiembrie');
   });
 
-  it('renders consumer-provided month names from MUD_DATE_LABELS instead of Intl', async () => {
+  it('renders consumer-provided month names from the labels instead of Intl', async () => {
     TestBed.configureTestingModule({
       providers: [
-        provideMudDateLabels({
+        provideMudLabels({ datePicker: {
           monthNamesShort: ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Noi', 'Dec'],
           monthNamesLong: ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'],
-        }),
+        } }),
       ],
     });
 
@@ -175,9 +175,9 @@ describe('MudDatePicker views', () => {
   });
 
   it('re-renders live when the labels token holds a signal — a global language switch', async () => {
-    const lang = signal<Partial<MudDateLabels>>({});
+    const lang = signal<MudLabelsPartial>({});
 
-    TestBed.configureTestingModule({ providers: [provideMudDateLabels(lang)] });
+    TestBed.configureTestingModule({ providers: [provideMudLabels(lang)] });
 
     const view = await render();
     const today = () => view.el.querySelector<HTMLButtonElement>('.date-picker__today')!;
@@ -188,10 +188,10 @@ describe('MudDatePicker views', () => {
     expect(today().textContent!.trim()).toBe('Today');
     expect(view.title().textContent!.trim()).toBe('September 2026');
 
-    lang.set({
+    lang.set({ datePicker: {
       today: 'Astăzi',
       monthNamesLong: ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'],
-    });
+    } });
     await view.fixture.whenStable();
 
     expect(today().textContent!.trim()).toBe('Astăzi');

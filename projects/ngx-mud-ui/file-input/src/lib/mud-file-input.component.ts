@@ -27,6 +27,8 @@ import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { MudFileItem } from './mud-file-item.component';
 import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 import { _MudFileInputStyles } from './mud-file-input-styles.component';
+import { _mudText, injectMudFormatLocale, injectMudLabels } from 'ngx-mud-ui/i18n';
+import { formatFileSize } from './format-file-size';
 
 export type MudFileInputVariant = 'dropzone' | 'button';
 export type MudFileInputSize = 'medium' | 'large';
@@ -132,51 +134,45 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
 
   readonly name = input<string>('');
 
-  /** @description Lead-in text of the drop-area call to action, before the browse link. Localize per app. */
-  readonly ctaText = input('Drag and drop or ');
+  /** @description Lead-in text of the drop-area call to action, before the browse link. */
+  readonly ctaText = input<string | undefined>(undefined);
 
-  /** @description Label of the inline browse link and of the `button`-variant upload button. Localize per app. */
-  readonly chooseFilesText = input('Choose files');
+  /** @description Label of the inline browse link and of the `button`-variant upload button. */
+  readonly chooseFilesText = input<string | undefined>(undefined);
 
-  /** @description Drop-area text while a drag hovers it. Localize per app. */
-  readonly dropzoneActiveText = input('Release to upload');
+  /** @description Drop-area text while a drag hovers it. */
+  readonly dropzoneActiveText = input<string | undefined>(undefined);
 
-  /** @description Builds the left caption from the formats `accept` lists. Localize per app. */
-  readonly formatsCaption = input<(formats: string) => string>((formats) => `Accepted formats: ${formats}`);
+  /** @description Builds the left caption from the formats `accept` lists. */
+  readonly formatsCaption = input<((formats: readonly string[]) => string) | undefined>(undefined);
 
-  /** @description Builds the right caption from the formatted `maxSize`. Localize per app. */
-  readonly maxSizeCaption = input<(size: string) => string>((size) => `Max size: ${size}`);
+  /** @description Builds the right caption from the formatted `maxSize`. */
+  readonly maxSizeCaption = input<((size: string) => string) | undefined>(undefined);
 
-  /** @description Accessible-label prefix of each row's remove button. Localize per app. */
-  readonly removeLabel = input('Remove file');
+  /** @description Builds each row's remove-button accessible name from the filename. */
+  readonly removeLabel = input<((filename: string) => string) | undefined>(undefined);
 
   /**
-   * @description Accessible name of the built-in file list. Localize per app; set to an
-   * empty string to leave the list unnamed. Without it a screen-reader user
-   * navigating by list hears only "list, 2 items", with no clue which field
-   * owns it — which matters on forms carrying several file inputs.
+   * @description Accessible name of the built-in file list; set to an empty string to leave
+   * the list unnamed (an exception to blank-means-unset).
    */
-  readonly fileListLabel = input('Selected files');
+  readonly fileListLabel = input<string | undefined>(undefined);
 
   /**
    * @description Word appended to the label, for assistive tech only, while `required`
-   * is set. Localize per app. The visible asterisk stays `aria-hidden`, and
-   * `aria-required` cannot be used because the browse control is a button.
+   * is set. The visible asterisk stays `aria-hidden`, and `aria-required`
+   * cannot be used because the browse control is a button.
    */
-  readonly requiredLabel = input('required');
+  readonly requiredLabel = input<string | undefined>(undefined);
 
-  /** @description Builds the live-region announcement for added files. Localize per app. */
-  readonly announceAdded = input<(files: readonly File[]) => string>((files) =>
-    files.length === 1 ? `${files[0].name} added` : `${files.length} files added`,
-  );
+  /** @description Builds the live-region announcement for added files. */
+  readonly announceAdded = input<((files: readonly File[]) => string) | undefined>(undefined);
 
-  /** @description Builds the live-region announcement for a removed file. Localize per app. */
-  readonly announceRemoved = input<(file: File) => string>((file) => `${file.name} removed`);
+  /** @description Builds the live-region announcement for a removed file. */
+  readonly announceRemoved = input<((file: File) => string) | undefined>(undefined);
 
-  /** @description Builds the live-region announcement for a rejected file. Localize per app. */
-  readonly announceRejected = input<(rejection: MudFileInputRejection) => string>(
-    (rejection) => `${rejection.file.name} was rejected`,
-  );
+  /** @description Builds the live-region announcement for a rejected file. */
+  readonly announceRejected = input<((rejection: MudFileInputRejection) => string) | undefined>(undefined);
 
   /** @description Accessible name used when no `mud-label` is projected. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
@@ -192,6 +188,9 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
 
   /** Signal-forms touch contract: emitted when focus leaves the control. */
   readonly touch = output<void>();
+
+  private readonly _labels = injectMudLabels();
+  private readonly _formatLocale = injectMudFormatLocale();
 
   private readonly _native = viewChild.required<ElementRef<HTMLInputElement>>('native');
   private readonly _browse = viewChild<ElementRef<HTMLButtonElement>>('browse');
@@ -239,7 +238,7 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
 
     const formats = this._formatsFromAccept(accept);
 
-    return formats ? this.formatsCaption()(formats) : undefined;
+    return formats.length > 0 ? _mudText(this.formatsCaption(), this._labels().fileInput.formats)(formats) : undefined;
   });
 
   protected readonly _maxSizeCaption = computed<string | undefined>(() => {
@@ -247,7 +246,23 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
 
     if (maxSize === undefined) return undefined;
 
-    return this.maxSizeCaption()(this._formatBytes(maxSize));
+    const size = formatFileSize(maxSize, this._formatLocale(), this._labels().fileSize.units);
+
+    return _mudText(this.maxSizeCaption(), this._labels().fileInput.maxSize)(size);
+  });
+
+  protected readonly _ctaText = computed(() => _mudText(this.ctaText(), this._labels().fileInput.cta));
+  protected readonly _chooseFilesText = computed(() => _mudText(this.chooseFilesText(), this._labels().fileInput.chooseFiles));
+  protected readonly _dropzoneActiveText = computed(() =>
+    _mudText(this.dropzoneActiveText(), this._labels().fileInput.dropzoneActive),
+  );
+  protected readonly _requiredText = computed(() => _mudText(this.requiredLabel(), this._labels().fileInput.required));
+
+  /** @docs-private An explicit empty `fileListLabel` leaves the list unnamed. */
+  protected readonly _fileListLabel = computed(() => {
+    const own = this.fileListLabel();
+
+    return own === '' ? null : _mudText(own, this._labels().fileInput.fileList);
   });
 
   protected readonly _hasCaptions = computed(
@@ -399,11 +414,19 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
     // A mixed batch announces both halves — one live region, one message.
     const parts: string[] = [];
 
-    if (accepted.length > 0) parts.push(this.announceAdded()(accepted));
+    if (accepted.length > 0) parts.push(this._addedText(accepted));
 
-    if (lastRejection) parts.push(this.announceRejected()(lastRejection));
+    if (lastRejection) parts.push(this._rejectedText(lastRejection));
 
     if (parts.length > 0) this._announce(parts.join(' '));
+  }
+
+  private _addedText(files: readonly File[]): string {
+    return this.announceAdded()?.(files) ?? this._labels().fileInput.added(files.map((file) => file.name));
+  }
+
+  private _rejectedText(rejection: MudFileInputRejection): string {
+    return this.announceRejected()?.(rejection) ?? this._labels().fileInput.rejected(rejection.file.name);
   }
 
   private _removeAt(index: number): void {
@@ -416,7 +439,7 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
     this._dropStalePreviews(next);
     this.value.set(next);
     this._onChange(next);
-    this._announce(this.announceRemoved()(file));
+    this._announce(this.announceRemoved()?.(file) ?? this._labels().fileInput.removed(file.name));
     this.removed.emit({ file, index, files: next });
 
     // The button that was just pressed is gone; without this, focus falls back
@@ -542,7 +565,7 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
 
   // ----- derivations -----
 
-  private _formatsFromAccept(accept: string): string {
+  private _formatsFromAccept(accept: string): string[] {
     const seen = new Set<string>();
     const out: string[] = [];
 
@@ -564,23 +587,6 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
       }
     }
 
-    return out.join(', ');
-  }
-
-  private _formatBytes(bytes: number): string {
-    if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
-
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    let value = bytes;
-    let unit = 0;
-
-    while (value >= 1024 && unit < units.length - 1) {
-      value /= 1024;
-      unit += 1;
-    }
-
-    const rounded = value.toFixed(1).replace(/\.0$/, '');
-
-    return `${rounded} ${units[unit]}`;
+    return out;
   }
 }

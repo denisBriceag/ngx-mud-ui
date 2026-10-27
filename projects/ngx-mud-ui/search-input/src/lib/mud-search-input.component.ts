@@ -21,6 +21,7 @@ import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl } from '@angular/forms/signals';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudSearchInputVariant = 'default' | 'destructive';
@@ -80,11 +81,17 @@ export class MudSearchInput implements ControlValueAccessor, FormValueControl<st
   /** @description Renders the integrated brand submit button on the trailing edge. */
   readonly withButton = input(false, { transform: booleanAttribute });
 
-  /** @description Accessible label of the submit button. Localize per app. */
-  readonly submitLabel = input('Search');
+  /** @description Accessible label of the submit button. Unset or blank follows the app labels (`searchInput.submit`). */
+  readonly submitLabel = input<string | undefined>(undefined);
 
-  /** @description Accessible label of the clear affordance. Localize per app. */
-  readonly clearLabel = input('Clear');
+  /** @description Accessible label of the clear affordance. Unset or blank follows the app labels (`searchInput.clear`). */
+  readonly clearLabel = input<string | undefined>(undefined);
+
+  private readonly _labels = injectMudLabels();
+
+  protected readonly _submitLabel = computed(() => _mudText(this.submitLabel(), this._labels().searchInput.submit));
+
+  protected readonly _clearLabel = computed(() => _mudText(this.clearLabel(), this._labels().searchInput.clear));
 
   /** @description Current value. Two-way bindable; also driven by both forms systems. */
   readonly value = model('');

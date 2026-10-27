@@ -92,7 +92,10 @@ assistive text — *you* decide when they render:
 - **`separators` adds to Enter rather than replacing it**, and newlines always
   split a paste, so pasting a column of addresses works regardless of the
   setting.
-- **Localize the three announcer inputs.** `announceAdded`, `announceRemoved`
-  and `announceRejected` build the live-region text and default to English.
+- **Override the announcer and remove texts with functions.** `announceAdded`,
+  `announceRemoved` and `announceRejected` build the live-region text, and
+  `removeLabel` takes the chip's text and returns the remove button's name.
+  Unset, the `inputChip` labels apply, so a language pack from
+  `provideMudLabels` translates them. See the [Localization guide](?path=/docs/foundations-localization--docs).
 - **`placeholder` only shows while the list is empty**, so it cannot be used as
   a persistent hint.

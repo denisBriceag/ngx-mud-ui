@@ -4,8 +4,10 @@ import { Component, computed, signal } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
-import { MudTimeInput, MudTimePicker, provideMudTimeLabels } from 'ngx-mud-ui/time-picker';
-import type { MudTimeFilter, MudTimeLabels } from 'ngx-mud-ui/time-picker';
+import { MudTimeInput, MudTimePicker } from 'ngx-mud-ui/time-picker';
+import type { MudTimeFilter } from 'ngx-mud-ui/time-picker';
+import { provideMudLabels } from 'ngx-mud-ui/i18n';
+import type { MudLabelsPartial } from 'ngx-mud-ui/i18n';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { MudButton } from 'ngx-mud-ui/button';
@@ -255,20 +257,22 @@ export const ReactiveForms: Story = {
   render: () => ({ template: `<mud-time-reactive-forms-demo />` }),
 };
 
-const RO_TIME_LABELS: Partial<MudTimeLabels> = {
-  picker: 'Selectează ora',
-  openPicker: 'Deschide selectorul de oră',
-  hours: 'Ore',
-  minutes: 'Minute',
-  clear: 'Șterge',
-  formatHint: (pattern) => `Format oră: ${pattern}`,
+const RO_TIME_LABELS: MudLabelsPartial = {
+  timePicker: {
+    picker: 'Selectează ora',
+    openPicker: 'Deschide selectorul de oră',
+    hours: 'Ore',
+    minutes: 'Minute',
+    clear: 'Șterge',
+    formatHint: (pattern) => `Format oră: ${pattern}`,
+  },
 };
 
 // Module-level so the provider (applicationConfig) and the demo's button read
 // the same signal: flipping it re-renders every open picker's strings live.
 const TIME_LANG = signal<'en' | 'ro'>('ro');
 
-/** Every string comes from `MUD_TIME_LABELS`; a signal keeps a language switch live. */
+/** Every string comes from the `timePicker` labels; a signal keeps a language switch live. */
 @Component({
   selector: 'mud-time-labels-demo',
   imports: [MudTimeInput, MudLabel, MudButton],
@@ -297,13 +301,13 @@ export const Labels: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: 'provideMudTimeLabels(() => computed(() => lang() === "ro" ? RO_TIME_LABELS : {}))',
+        code: 'provideMudLabels(computed(() => (lang() === "ro" ? RO_TIME_LABELS : {})))',
       },
     },
   },
   decorators: [
     applicationConfig({
-      providers: [provideMudTimeLabels(computed(() => (TIME_LANG() === 'ro' ? RO_TIME_LABELS : {})))],
+      providers: [provideMudLabels(computed(() => (TIME_LANG() === 'ro' ? RO_TIME_LABELS : {})))],
     }),
     moduleMetadata({ imports: [TimeLabelsDemo] }),
   ],

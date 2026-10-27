@@ -45,7 +45,7 @@ type Story = StoryObj<MudFileInput>;
 
 /**
  * The captions under the drop zone are derived from `accept` and `maxSize`;
- * localize their wording via the `formatsCaption` / `maxSizeCaption` functions.
+ * change their wording via the `formatsCaption` / `maxSizeCaption` functions.
  */
 export const Playground: Story = {
   render: (args) => ({
@@ -460,8 +460,6 @@ function fakeUpload(file: File): Observable<HttpEvent<unknown>> {
           [state]="row.state"
           [progress]="row.progress"
           [errorText]="row.error"
-          cancelLabel="Anulați încărcarea"
-          removeLabel="Eliminați fișierul"
           (removed)="remove(row.file)"
         />
       }

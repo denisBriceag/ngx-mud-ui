@@ -130,15 +130,16 @@ is for a banner that is already there and whose text moves.
 
 ## Localization
 
-The banner owns exactly one string — the dismiss button's accessible name.
-Override it per instance:
+The banner owns exactly one string, the dismiss button's accessible name. It
+comes from the `banner.close` label (English `Close`), so a language pack from
+`provideMudLabels` translates it. To override one banner:
 
 ```html
 <mud-banner closable closeLabel="Închide">…</mud-banner>
 ```
 
-It defaults to `Close`, and a blank or whitespace value falls back to that
-default rather than leaving the button unnamed. Everything else the banner
+A blank or whitespace `closeLabel` falls back to the label rather than leaving
+the button unnamed. See the [Localization guide](?path=/docs/foundations-localization--docs). Everything else the banner
 renders is your projected content, so it is already in your language.
 
 ## Links

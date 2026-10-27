@@ -1,6 +1,7 @@
 import { computed, Directive, effect, ElementRef, inject, input, PLATFORM_ID, Renderer2 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { injectMudFormatLocale } from 'ngx-mud-ui/i18n';
 import { _MudBadgeStyles } from './mud-badge-styles.component';
 import type { MudBadgeSize, MudBadgeType, MudBadgeVariant } from './mud-badge.types';
 
@@ -76,6 +77,9 @@ export class MudCornerBadge {
     return this.badgeType();
   });
 
+  private readonly _formatLocale = injectMudFormatLocale();
+  private readonly _numberFormat = computed(() => new Intl.NumberFormat(this._formatLocale(), { useGrouping: false }));
+
   private readonly _content = computed<string | null>(() => {
     if (this._effectiveType() === 'dot') return '';
 
@@ -86,7 +90,14 @@ export class MudCornerBadge {
     const max = this.badgeMax();
     const count = typeof value === 'number' ? value : Number(value);
 
-    if (max != null && Number.isFinite(count) && count > max) return `${max}+`;
+    const format = this._numberFormat();
+
+    if (max != null && Number.isFinite(count) && count > max) return `${format.format(max)}+`;
+
+    // Integers (numbers or canonical integer strings) get locale digits; anything else is shown as given.
+    if ((typeof value === 'number' && Number.isInteger(value)) || /^(0|[1-9]\d*)$/.test(`${value}`)) {
+      return format.format(Number(value));
+    }
 
     return `${value}`;
   });

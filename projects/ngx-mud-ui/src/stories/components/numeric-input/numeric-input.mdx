@@ -80,8 +80,10 @@ assistive text — *you* decide when they render:
   conflating it with zero is the usual source of bugs with required amount
   fields.
 - **`locale` changes parsing as well as display.** With `ro-MD`, `1250.5`
-  renders as `1.250,5` and grouped input is parsed leniently. Leave it unset for
-  plain digits with a dot separator.
+  renders as `1.250,5` and grouped input is parsed leniently. Leave it unset and
+  the number follows `provideMudFormatLocale` (then `LOCALE_ID`) for its decimal
+  separator and digits, such as `1234,5` in `ro-MD`, but is never grouped. The
+  field parses the format locale's own digits as well as ASCII ones.
 - **Clamping happens on commit, not on keystroke**, so a user can type past
   `max` and see it corrected on blur rather than having characters swallowed.
   `errored` fires when that happens.
@@ -90,5 +92,8 @@ assistive text — *you* decide when they render:
   clamp accordingly.
 - **`precision` rounds on commit** and controls the displayed fraction digits —
   it does not merely format.
-- **Localize the four label inputs** — `incrementLabel`, `decrementLabel`,
-  `clearLabel` and `counterLabel` all default to English.
+- **The button names come from the labels.** `incrementLabel`, `decrementLabel`
+  and `clearLabel` are optional per-field overrides; leave them unset (or blank)
+  and the `numericInput` labels apply. `counterLabel` is an optional sentence
+  you write yourself for screen readers. The visible `n / max` counter uses the
+  format locale's digits. See the [Localization guide](?path=/docs/foundations-localization--docs).

@@ -5,6 +5,7 @@ import type { OnDestroy, TemplateRef } from '@angular/core';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   ElementRef,
   inject,
   input,
@@ -15,6 +16,7 @@ import {
 import { forwardCrumbClick } from './forward-crumb-click';
 import type { MudBreadcrumbItem } from './mud-breadcrumb-item.directive';
 import { _MudMenuStyles, MudStyleLoader } from 'ngx-mud-ui/core';
+import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 import { _MudBreadcrumbStyles } from './mud-breadcrumb-styles.component';
 
 let nextUniqueId = 0;
@@ -28,7 +30,7 @@ let nextUniqueId = 0;
     <button
       type="button"
       class="mud-breadcrumb__overflow-trigger"
-      [attr.aria-label]="label()"
+      [attr.aria-label]="_label()"
       [attr.aria-expanded]="_open()"
       [attr.aria-controls]="_open() ? panelId : null"
       (click)="toggle()"
@@ -75,7 +77,11 @@ export class MudBreadcrumbOverflow implements OnDestroy {
   /** @description Crumbs the container collapsed out of the trail. */
   readonly items = input<readonly MudBreadcrumbItem[]>([]);
   /** @description Accessible name for the trigger. */
-  readonly label = input('Show collapsed pages');
+  readonly label = input<string | undefined>(undefined);
+
+  private readonly _labels = injectMudLabels();
+
+  protected readonly _label = computed(() => _mudText(this.label(), this._labels().breadcrumb.overflow));
 
   readonly panelId = `mud-breadcrumb-panel-${String(nextUniqueId++)}`;
 

@@ -93,7 +93,10 @@ spinner. Values outside 0–100 are clamped.
 
 An uploading row also keeps its remove button, which then cancels the upload.
 It fires the same `removed` event, so stop the request there. Its label reads
-"Cancel upload" + the file name; localize it with `cancelLabel`.
+"Cancel upload" + the file name by default. `cancelLabel` and `removeLabel` are
+functions that take the file name and return the button's accessible name. Unset,
+the `fileItem` labels apply, so a language pack from `provideMudLabels`
+translates them.
 
 <Canvas of={FileInputStories.FileItemStates} />
 
@@ -164,9 +167,11 @@ assistive text — *you* decide when they render:
   `type` / `size` / `count` code, so surface your own message from that event;
   the built-in announcement only tells screen-reader users something was
   refused.
-- **Captions derive from `accept` and `maxSize`.** Their wording defaults to
-  English — localize it per app via the `formatsCaption` / `maxSizeCaption`
-  function inputs, e.g. `[formatsCaption]="f => 'Formate acceptate: ' + f"`.
+- **Captions derive from `accept` and `maxSize`.** Their wording comes from
+  the `fileInput` labels. To change it for one field, pass the `formatsCaption`
+  function (it receives the list of formats as a `readonly string[]`) or the
+  `maxSizeCaption` function (it receives the formatted size). File sizes use the
+  format locale's number format and the `fileSize.units` labels.
 - **`accept` is a filter, not a guarantee.** It is applied to the picker and
   re-checked on drop, but it matches on MIME type and extension — validate
   file contents server-side.
@@ -183,13 +188,15 @@ assistive text — *you* decide when they render:
   memory. If your thumbnails come from a server instead, project your own
   `<img ngSrc width height>` through the `[icon]` slot, keeping the loader
   configuration in your app.
-- **All user-facing copy is an input.** `ctaText`, `chooseFilesText`,
-  `dropzoneActiveText`, `removeLabel`, `requiredLabel`, `fileListLabel` and the
-  three `announce*` functions default to English — pass your own for other
-  locales.
+- **Every built-in text has a per-field override.** `ctaText`, `chooseFilesText`,
+  `dropzoneActiveText`, `requiredLabel`, `fileListLabel`, the `removeLabel`
+  function and the three `announce*` functions replace the `fileInput` labels
+  for that field. Unset or blank, the labels apply, so a language pack from
+  `provideMudLabels` translates them all. See the [Localization guide](?path=/docs/foundations-localization--docs).
 - **`fileListLabel` names the file list** for assistive tech. It is worth
   setting on forms with several file fields, where an unnamed list announces
-  only "list, 2 items". Pass an empty string to leave it unnamed.
+  only "list, 2 items". This is the one text where a blank value keeps a
+  meaning: pass an empty string to leave the list unnamed.
 - **`required` is announced through the label, not `aria-required`.** The only
   interactive control here is a button, and `aria-required` is a prohibited
   attribute on it, so the `requiredLabel` word is appended to the label for

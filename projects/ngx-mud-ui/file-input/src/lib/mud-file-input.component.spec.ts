@@ -4,6 +4,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form } from '@angular/forms/signals';
 import { MudFileInput } from './mud-file-input.component';
 import { MudFileItem } from './mud-file-item.component';
+import { MUD_LABELS_RO, MUD_LABELS_RU, provideMudFormatLocale, provideMudLabels } from 'ngx-mud-ui/i18n';
 import { MudLabel } from '../../../label/src/public-api';
 import { MudInlineMessage } from '../../../inline-message/src/public-api';
 import type {
@@ -41,6 +42,7 @@ function dragEvent(type: string, files: File[] = []): Event {
       [invalid]="invalid()"
       [showFileList]="showFileList()"
       [fileListLabel]="fileListLabel()"
+      [removeLabel]="removeLabel()"
       (rejected)="rejections.push($event)"
       (removed)="removals.push($event)"
     >
@@ -60,8 +62,9 @@ class Host {
   readonly files = signal<File[]>([]);
   readonly variant = signal<MudFileInputVariant>('dropzone');
   readonly accept = signal<string | undefined>(undefined);
-  readonly formatsCaption = signal((formats: string) => `Accepted formats: ${formats}`);
-  readonly maxSizeCaption = signal((size: string) => `Max size: ${size}`);
+  readonly formatsCaption = signal<((formats: readonly string[]) => string) | undefined>(undefined);
+  readonly maxSizeCaption = signal<((size: string) => string) | undefined>(undefined);
+  readonly removeLabel = signal<((filename: string) => string) | undefined>(undefined);
   readonly multiple = signal(true);
   readonly maxFiles = signal<number | undefined>(undefined);
   readonly maxSize = signal<number | undefined>(undefined);
@@ -69,7 +72,7 @@ class Host {
   readonly required = signal(false);
   readonly invalid = signal(false);
   readonly showFileList = signal(true);
-  readonly fileListLabel = signal('Selected files');
+  readonly fileListLabel = signal<string | undefined>(undefined);
   readonly withLabel = signal(true);
   readonly showHelper = signal(false);
   readonly showError = signal(false);
@@ -107,6 +110,19 @@ async function pick(fixture: { whenStable(): Promise<unknown> }, native: HTMLInp
 }
 
 describe('MudFileInput', () => {
+  it('baseline: renders max sizes in English exactly as before the localization', async () => {
+    const { fixture, host, captions } = await render();
+    const out: string[] = [];
+
+    for (const bytes of [0, 1023, 1024, 1572864, 5 * 1024 ** 3]) {
+      host.maxSize.set(bytes);
+      await fixture.whenStable();
+      out.push(captions()!.textContent!.trim());
+    }
+
+    expect(out).toEqual(['Max size: 0 B', 'Max size: 1023 B', 'Max size: 1 KB', 'Max size: 1.5 MB', 'Max size: 5 GB']);
+  });
+
   it('renders the label, required mark and the dropzone with its call to action', async () => {
     const { fixture, host, label, dropzone, chooseBtn } = await render();
 
@@ -210,7 +226,7 @@ describe('MudFileInput', () => {
 
     host.accept.set('.pdf');
     host.maxSize.set(1024 * 1024);
-    host.formatsCaption.set((formats: string) => `Formate acceptate: ${formats}`);
+    host.formatsCaption.set((formats) => `Formate acceptate: ${formats.join(' | ')}`);
     host.maxSizeCaption.set((size: string) => `Dimensiune maximă: ${size}`);
     await fixture.whenStable();
 
@@ -359,6 +375,50 @@ describe('MudFileInput', () => {
     expect(host.files()).toEqual([kept]);
     expect(host.removals).toEqual([{ file: dropped, index: 1, files: [kept] }]);
     expect(live().textContent).toContain('drop.pdf removed');
+  });
+
+  it('texts and captions come from the labels and the format locale', async () => {
+    TestBed.configureTestingModule({ providers: [provideMudLabels(MUD_LABELS_RO), provideMudFormatLocale('ro-MD')] });
+    const { fixture, host, el, captions, chooseBtn } = await render();
+
+    host.accept.set('.pdf,.png');
+    host.maxSize.set(1572864);
+    host.required.set(true);
+    host.files.set([makeFile('a.pdf')]);
+    await fixture.whenStable();
+
+    expect(chooseBtn()!.textContent!.trim()).toBe(MUD_LABELS_RO.fileInput!.chooseFiles);
+    expect(el.querySelector('.file-field__dropzone-cta-body')!.textContent).toBe(MUD_LABELS_RO.fileInput!.cta);
+    expect(el.querySelector('.file-field__required-text')!.textContent).toBe(MUD_LABELS_RO.fileInput!.required);
+    expect(el.querySelector('.file-field__list')!.getAttribute('aria-label')).toBe(MUD_LABELS_RO.fileInput!.fileList);
+    expect(captions()!.textContent).toContain('Formate acceptate: pdf, png');
+    expect(captions()!.textContent).toContain('Mărime maximă: 1,5 MB');
+    expect(el.querySelector('mud-file-item .file-item__remove')!.getAttribute('aria-label')).toBe('Elimină fișierul a.pdf');
+  });
+
+  it('instance function inputs win over the labels, removeLabel reaching every row', async () => {
+    TestBed.configureTestingModule({ providers: [provideMudLabels(MUD_LABELS_RO)] });
+    const { fixture, host, el, captions } = await render();
+
+    host.accept.set('.pdf');
+    host.formatsCaption.set((formats) => `Only ${formats.join('/')}`);
+    host.removeLabel.set((name) => `Drop ${name}`);
+    host.files.set([makeFile('a.pdf'), makeFile('b.pdf')]);
+    await fixture.whenStable();
+
+    expect(captions()!.textContent).toContain('Only pdf');
+    const labels = Array.from(el.querySelectorAll('.file-item__remove')).map((b) => b.getAttribute('aria-label'));
+
+    expect(labels).toEqual(['Drop a.pdf', 'Drop b.pdf']);
+  });
+
+  it('announcements use the pack, with Russian plurals through the component', async () => {
+    TestBed.configureTestingModule({ providers: [provideMudLabels(MUD_LABELS_RU)] });
+    const { fixture, native, live } = await render();
+
+    await pick(fixture, native(), [makeFile('a.pdf'), makeFile('b.pdf')]);
+    expect(live().textContent).toContain('файла');
+    expect(live().textContent).toContain('Добавлено 2 файла');
   });
 
   it('names the file list with the localizable fileListLabel', async () => {

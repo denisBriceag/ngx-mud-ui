@@ -5,7 +5,8 @@ import { JsonPipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { expect, userEvent, within } from 'storybook/test';
-import { MudDateInput, MudDatePicker, mudAddDays, mudDateToDate, mudToday, provideMudDateLabels } from 'ngx-mud-ui/date-picker';
+import { MudDateInput, MudDatePicker, mudAddDays, mudDateToDate, mudToday } from 'ngx-mud-ui/date-picker';
+import { MUD_LABELS_RO, provideMudLabels } from 'ngx-mud-ui/i18n';
 import type { MudDateRange } from 'ngx-mud-ui/date-picker';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
@@ -170,10 +171,8 @@ export const Range: Story = {
 };
 
 /**
- * Month/weekday names come from `Intl` via `locale`; every UI string — and,
- * when Intl's month forms don't match the design ("ian." vs "Ian"), the month
- * names themselves — comes from the `MUD_DATE_LABELS` token, overridden
- * app-wide with one `provideMudDateLabels` call.
+ * Month/weekday names come from `Intl` via `locale`; every UI string comes from
+ * the Romanian pack, with the short month names overridden to drop `Intl`'s dots.
  */
 export const LocalizedRomanian: Story = {
   name: 'Localized (Romanian)',
@@ -181,26 +180,10 @@ export const LocalizedRomanian: Story = {
   decorators: [
     applicationConfig({
       providers: [
-        provideMudDateLabels({
-          calendar: 'Calendar',
-          previousMonth: 'Luna precedentă',
-          nextMonth: 'Luna următoare',
-          previousYear: 'Anul precedent',
-          nextYear: 'Anul următor',
-          chooseMonth: 'Alegeți luna',
-          chooseYear: 'Alegeți anul',
-          today: 'Astăzi',
-          clear: 'Șterge',
-          rangeStart: 'Data de început',
-          rangeEnd: 'Data de sfârșit',
-          monthNamesShort: ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Noi', 'Dec'],
-          monthNamesLong: [
-            'Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie',
-            'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie',
-          ],
-          formatHint: (pattern) => `Format: ${pattern}`,
-          rangeStartSelected: (start) => `${start} selectat, alegeți data de sfârșit`,
-          rangeSelected: (start, end) => `${start} – ${end} selectate`,
+        provideMudLabels(MUD_LABELS_RO, {
+          datePicker: {
+            monthNamesShort: ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Noi', 'Dec'],
+          },
         }),
       ],
     }),

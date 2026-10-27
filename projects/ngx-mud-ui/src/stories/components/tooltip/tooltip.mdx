@@ -86,7 +86,9 @@ Selector: `[mudTooltip]` · `exportAs: 'mudTooltip'`
   contains a link, so moving the pointer onto it doesn't dismiss it first.
 - **`manual` responds only to `show()` and `hide()`**, reachable through the
   `mudTooltip` template reference variable.
-- **Localize `tooltipCoachHint` and `tooltipCloseLabel`** — they default to
-  the English `'Press Esc to close'` and `'Close'`.
+- **`tooltipCoachHint` and `tooltipCloseLabel` are optional overrides.** Unset or
+  blank, the `tooltip` labels apply (English 'Press Esc to close' and 'Close'), so a
+  language pack from `provideMudLabels` translates them. A `provideMudLabels` in a
+  component's `providers` also reaches that component's tooltips.
 - **`tooltipClosed` reports why the tooltip closed**, which is what you record
   when tracking whether an onboarding hint was actually read or brushed aside.

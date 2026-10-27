@@ -27,6 +27,7 @@ import type { FormValueControl } from '@angular/forms/signals';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
+import { _mudText, injectMudLabels } from 'ngx-mud-ui/i18n';
 
 export type MudInputChipVariant = 'default' | 'destructive';
 export type MudInputChipSize = 'medium' | 'large';
@@ -113,26 +114,17 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
   /** @description Shown only while no chips exist. */
   readonly placeholder = input<string | undefined>(undefined);
 
-  /** @description Accessible-label prefix of each chip's remove button. Localize per app. */
-  readonly removeLabel = input('Remove');
+  /** @description Builds each chip's remove-button accessible name. */
+  readonly removeLabel = input<((chip: string) => string) | undefined>(undefined);
 
-  /** @description Builds the live-region announcement for an added chip. Localize per app. */
-  readonly announceAdded = input<(chip: string) => string>((chip) => `${chip} added`);
+  /** @description Builds the live-region announcement for an added chip. */
+  readonly announceAdded = input<((chip: string) => string) | undefined>(undefined);
 
-  /** @description Builds the live-region announcement for a removed chip. Localize per app. */
-  readonly announceRemoved = input<(chip: string) => string>((chip) => `${chip} removed`);
+  /** @description Builds the live-region announcement for a removed chip. */
+  readonly announceRemoved = input<((chip: string) => string) | undefined>(undefined);
 
-  /** @description Builds the live-region announcement for a rejected value. Localize per app. */
-  readonly announceRejected = input<(error: MudInputChipError) => string>((error) => {
-    switch (error.code) {
-      case 'pattern':
-        return `${error.value} is not in the expected format`;
-      case 'duplicate':
-        return `${error.value} is already added`;
-      case 'max':
-        return 'Maximum number of values reached';
-    }
-  });
+  /** @description Builds the live-region announcement for a rejected value. */
+  readonly announceRejected = input<((error: MudInputChipError) => string) | undefined>(undefined);
 
   /** @description Accessible name used when no visible `label` is set. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
@@ -151,6 +143,11 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
 
   /** Signal-forms touch contract: emitted when focus leaves the inline input. */
   readonly touch = output<void>();
+
+  private readonly _labels = injectMudLabels();
+
+  /** @docs-private Remove-button name builder, called per chip by the template. */
+  protected readonly _removeName = computed(() => _mudText(this.removeLabel(), this._labels().inputChip.remove));
 
   private readonly _native = viewChild.required<ElementRef<HTMLInputElement>>('native');
   private readonly _removeButtons = viewChildren<ElementRef<HTMLButtonElement>>('removeBtn');
@@ -290,6 +287,23 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
 
   // ----- chip mutations -----
 
+  private _rejectedText(error: MudInputChipError): string {
+    const custom = this.announceRejected();
+
+    if (custom) return custom(error);
+
+    const text = this._labels().inputChip;
+
+    switch (error.code) {
+      case 'pattern':
+        return text.rejectedPattern(error.value);
+      case 'duplicate':
+        return text.rejectedDuplicate(error.value);
+      case 'max':
+        return text.rejectedMax;
+    }
+  }
+
   private _validateChip(value: string): MudInputChipErrorCode | null {
     if (this._maxReached()) return 'max';
 
@@ -319,7 +333,7 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
       const error: MudInputChipError = { code, value: trimmed };
 
       this.errored.emit(error);
-      this._announce(this.announceRejected()(error));
+      this._announce(this._rejectedText(error));
 
       return false;
     }
@@ -329,7 +343,7 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
     this.value.set(next);
     this._onChange(next);
     this.draft.set('');
-    this._announce(this.announceAdded()(trimmed));
+    this._announce(_mudText(this.announceAdded(), this._labels().inputChip.added)(trimmed));
     this.chipAdded.emit({ chip: trimmed, chips: next });
 
     return true;
@@ -344,7 +358,7 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
 
     this.value.set(next);
     this._onChange(next);
-    this._announce(this.announceRemoved()(chip));
+    this._announce(_mudText(this.announceRemoved(), this._labels().inputChip.removed)(chip));
     this.chipRemoved.emit({ chip, index, chips: next });
 
     // Keyboard removals need focus to land somewhere predictable: the chip

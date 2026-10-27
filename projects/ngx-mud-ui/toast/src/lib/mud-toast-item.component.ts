@@ -10,6 +10,7 @@ import {
   viewChild,
 } from '@angular/core';
 import type { OnDestroy, TemplateRef } from '@angular/core';
+import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 import type { MudToastVariant } from './mud-toast-config';
 import type { MudToastEntry } from './mud-toast-entry';
 import { MudToastTimer } from './mud-toast-timer';
@@ -106,7 +107,7 @@ const ANIMATION_TIMEOUT_MS = 600;
       <button
         type="button"
         class="mud-toast__close"
-        [attr.aria-label]="entry().config.closeLabel"
+        [attr.aria-label]="_closeLabel()"
         (click)="close()"
       >
         <span class="mud-toast__close-icon" aria-hidden="true">
@@ -135,6 +136,9 @@ const ANIMATION_TIMEOUT_MS = 600;
 })
 export class MudToastItem implements OnDestroy {
   private readonly _host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly _labels = injectMudLabels();
+
+  protected readonly _closeLabel = computed(() => _mudText(this.entry().config.closeLabel, this._labels().toast.close));
 
   readonly entry = input.required<MudToastEntry>();
 

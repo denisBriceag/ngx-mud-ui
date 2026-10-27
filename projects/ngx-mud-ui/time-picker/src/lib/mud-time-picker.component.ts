@@ -16,8 +16,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { formatTime, isSelectable, minutesForStep, minuteStepTransform, parseTime, toValidTimeOrUndefined } from './time-core';
 import type { MudMinuteStep, MudTimeValue } from './time-core';
-import { MUD_TIME_LABELS } from './time-labels';
-import { _injectMudLabels } from 'ngx-mud-ui/core';
+import { injectMudLabels } from 'ngx-mud-ui/i18n';
 
 export type MudTimePickerAppearance = 'elevated' | 'flat';
 export type MudTimePickerColumn = 'hours' | 'minutes';
@@ -63,7 +62,8 @@ export class MudTimePicker {
   /** @description Return `true` for a SELECTABLE time. Runs after min/max and minuteStep. */
   readonly timeFilter = input<((time: string) => boolean) | undefined>(undefined);
 
-  protected readonly _labels = _injectMudLabels(MUD_TIME_LABELS);
+  private readonly _allLabels = injectMudLabels();
+  protected readonly _labels = computed(() => this._allLabels().timePicker);
 
   private readonly _host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly _injector = inject(Injector);

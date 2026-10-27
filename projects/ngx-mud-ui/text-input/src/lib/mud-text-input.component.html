@@ -41,7 +41,7 @@
     <button
       type="button"
       class="input-field__clear"
-      [attr.aria-label]="clearLabel()"
+      [attr.aria-label]="_clearLabel()"
       tabindex="-1"
       (mousedown)="$event.preventDefault()"
       (click)="_onClear()"

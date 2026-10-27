@@ -124,16 +124,13 @@ signal forms and `[formControl]` / `formControlName` from reactive forms.
 
 ## Labels and localisation
 
-Every string the components render comes from the `MUD_TIME_LABELS` token,
-overridden app-wide with one `provideMudTimeLabels` call. Pass a signal (or a
-factory returning one) and a language switch re-renders live.
+Every string the components render lives in the `timePicker` namespace of the
+library's labels. Choose a language pack or override single keys with
+`provideMudLabels`, and pass a signal to switch language live. The
+[Localization guide](?path=/docs/foundations-localization--docs) explains each option.
 
 ```ts
-provideMudTimeLabels(() => {
-  const i18n = inject(I18nService);
-
-  return computed(() => (i18n.lang() === 'ro' ? RO_TIME_LABELS : {}));
-});
+provideMudLabels(MUD_LABELS_RO, { timePicker: { hours: 'Ore' } });
 ```
 
 <Canvas of={TimeStories.Labels} />

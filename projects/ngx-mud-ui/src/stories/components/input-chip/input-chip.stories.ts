@@ -23,7 +23,6 @@ const meta: Meta<MudInputChip> = {
     invalid: { control: 'boolean' },
     required: { control: 'boolean' },
     placeholder: { control: 'text' },
-    removeLabel: { control: 'text' },
   },
   args: {
     variant: 'default',
@@ -34,7 +33,6 @@ const meta: Meta<MudInputChip> = {
     invalid: false,
     required: false,
     placeholder: 'nume@exemplu.md',
-    removeLabel: 'Elimină',
   },
 };
 
@@ -57,7 +55,6 @@ export const Playground: Story = {
           [invalid]="invalid"
           [required]="required"
           [placeholder]="placeholder"
-          [removeLabel]="removeLabel"
           [value]="chips"
         >
           <mud-label>Destinatari</mud-label>

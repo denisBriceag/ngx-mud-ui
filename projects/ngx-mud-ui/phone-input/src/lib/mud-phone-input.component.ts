@@ -12,7 +12,6 @@ import {
   model,
   output,
   PLATFORM_ID,
-  LOCALE_ID,
   signal,
   untracked,
   viewChild,
@@ -31,6 +30,7 @@ import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl } from '@angular/forms/signals';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+import { injectMudFormatLocale, injectMudLabels, _mudText, _safeLocale } from 'ngx-mud-ui/i18n';
 import {
   MUD_PHONE_COUNTRIES,
   MUD_PHONE_DEFAULT_ISO,
@@ -124,7 +124,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
 
   /**
    * @description BCP 47 locale the country names are rendered in. Defaults to the app's
-   * `LOCALE_ID`. Names come from `Intl.DisplayNames`, so no per-language data
+   * format locale (`provideMudFormatLocale`, else `LOCALE_ID`). Names come from `Intl.DisplayNames`, so no per-language data
    * ships with the component.
    */
   readonly locale = input<string | undefined>(undefined);
@@ -153,17 +153,39 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   /** @description Placeholder for the national segment. Defaults to the country's mask. */
   readonly placeholder = input<string | undefined>(undefined);
 
-  /** @description Accessible label of the clear button. Localize per app. */
-  readonly clearLabel = input('Clear');
+  /** @description Accessible label of the clear button. Unset or blank follows the app labels (`phoneInput.clear`). */
+  readonly clearLabel = input<string | undefined>(undefined);
 
-  /** @description Accessible name of the country combobox. Localize per app. */
-  readonly countryLabel = input('Country');
+  /** @description Accessible name of the country trigger from the country name and dial code, e.g. `(n, d) => d + ' ' + n`. */
+  readonly countryLabel = input<((name: string, dialCode: string) => string) | undefined>(undefined);
 
-  /** @description Placeholder and accessible name of the country search field. Localize per app. */
-  readonly countrySearchLabel = input('Search country');
+  /** @description Accessible name of the country list. Unset or blank follows the app labels (`phoneInput.countryList`). */
+  readonly countryListLabel = input<string | undefined>(undefined);
 
-  /** @description Shown in the country list when the search matches nothing. Localize per app. */
-  readonly countryEmptyText = input('No countries found');
+  /** @description Placeholder and accessible name of the country search field. Unset or blank follows the app labels (`phoneInput.countrySearch`). */
+  readonly countrySearchLabel = input<string | undefined>(undefined);
+
+  /** @description Shown in the country list when the search matches nothing. Unset or blank follows the app labels (`phoneInput.countryEmpty`). */
+  readonly countryEmptyText = input<string | undefined>(undefined);
+
+  private readonly _labels = injectMudLabels();
+
+  protected readonly _clearLabel = computed(() => _mudText(this.clearLabel(), this._labels().phoneInput.clear));
+
+  protected readonly _countryLabelFn = computed(() => _mudText(this.countryLabel(), this._labels().phoneInput.country));
+
+  protected readonly _countryListLabel = computed(() => _mudText(this.countryListLabel(), this._labels().phoneInput.countryList));
+
+  protected readonly _countrySearchLabel = computed(() => _mudText(this.countrySearchLabel(), this._labels().phoneInput.countrySearch));
+
+  protected readonly _countryEmptyText = computed(() => _mudText(this.countryEmptyText(), this._labels().phoneInput.countryEmpty));
+
+  /** @docs-private Accessible name of the country trigger, from the label function. */
+  protected readonly _triggerLabel = computed(() => {
+    const country = this._country();
+
+    return this._countryLabelFn()(this._countryName(country), country.dialCode);
+  });
 
   /** @description Accessible name used when no `mud-label` is projected. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
@@ -188,7 +210,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   private readonly _viewContainerRef = inject(ViewContainerRef);
   /** App-wide list from `provideMudPhoneCountries`; the input outranks it. */
   private readonly _configuredCountries = inject(MUD_PHONE_COUNTRIES_CONFIG, { optional: true });
-  private readonly _appLocale = inject(LOCALE_ID);
+  private readonly _formatLocale = injectMudFormatLocale();
 
   /** @docs-private Projected label element (ngx-mud-ui/label). */
   protected readonly _label = contentChild(MudLabel);
@@ -282,7 +304,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   protected readonly _flagSrc = computed<SafeUrl | null>(() => this._flagFor(this._country()));
 
   /** @docs-private The offered countries, narrowed and ordered by `countries`. */
-  protected readonly _activeLocale = computed(() => this.locale() ?? this._appLocale);
+  protected readonly _activeLocale = computed(() => _safeLocale(this.locale(), this._formatLocale()));
 
   /** `Intl.DisplayNames` is not cheap to construct; one per locale is plenty. */
   private readonly _displayNamesCache = new Map<string, Intl.DisplayNames | null>();

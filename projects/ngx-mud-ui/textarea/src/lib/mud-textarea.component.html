@@ -43,10 +43,10 @@
     @if (_showCounter()) {
       <span class="input-field__counter" [id]="_counterId">
         @if (counterLabel(); as srText) {
-          <span aria-hidden="true">{{ value().length }} / {{ maxLength() }}</span>
+          <span aria-hidden="true">{{ _formatCount(value().length) }} / {{ _maxLengthText() }}</span>
           <span class="input-field__sr-only">{{ srText }}</span>
         } @else {
-          {{ value().length }} / {{ maxLength() }}
+          {{ _formatCount(value().length) }} / {{ _maxLengthText() }}
         }
       </span>
     }

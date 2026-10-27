@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, ViewEncapsulation } from '@angular/core';
+import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 
 export type MudSpinnerSize = 'extra-small' | 'small' | 'medium' | 'large';
 export type MudSpinnerVariant = 'brand' | 'dark' | 'light' | 'light-on-color';
@@ -11,7 +12,7 @@ export type MudSpinnerVariant = 'brand' | 'dark' | 'light' | 'light-on-color';
  */
 @Component({
   selector: 'mud-spinner',
-  template: '<span class="mud-spinner-label">{{ ariaLabel() }}</span>',
+  template: '<span class="mud-spinner-label">{{ _label() }}</span>',
   styleUrl: './mud-spinner.component.scss',
   encapsulation: ViewEncapsulation.None,
   host: {
@@ -24,11 +25,12 @@ export type MudSpinnerVariant = 'brand' | 'dark' | 'light' | 'light-on-color';
 export class MudSpinner {
   readonly size = input<MudSpinnerSize>('medium');
   readonly variant = input<MudSpinnerVariant>('brand');
-  /**
-   * Override with a localized label; "Loading" is only a safety default.
-   * Rendered as visually-hidden text inside the status region.
-   * */
-  readonly ariaLabel = input('Loading', { alias: 'aria-label' });
+  /** @description Visually-hidden status text; defaults to the app labels (`spinner.loading`). */
+  readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
+
+  private readonly _labels = injectMudLabels();
+
+  protected readonly _label = computed(() => _mudText(this.ariaLabel(), this._labels().spinner.loading));
 
   protected readonly _hostClasses = computed(
     () => `spinner spinner--${this.size()} spinner--${this.variant()}`,

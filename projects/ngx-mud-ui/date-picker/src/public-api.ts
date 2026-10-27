@@ -10,8 +10,6 @@ export type {
   MudDateRange,
   MudDateValue,
 } from './lib/date-value';
-export { MUD_DATE_LABELS, MUD_DATE_LABELS_DEFAULT, provideMudDateLabels } from './lib/date-labels';
-export type { MudDateLabels } from './lib/date-labels';
 export { MudDateInput } from './lib/mud-date-input.component';
 export type { MudDateInputSize, MudDateInputVariant } from './lib/mud-date-input.component';
 export type { MudDateFormat } from './lib/date-mask';

@@ -6,7 +6,7 @@ import { MudStepper } from './mud-stepper.component';
 import type { MudStepperStepClick } from './mud-stepper.component';
 import { MudStep } from './mud-step.component';
 import { MudStepHeader } from './mud-step-header.component';
-import { provideMudStepperLabels } from './stepper-labels';
+import { MUD_LABELS_RO, provideMudLabels } from 'ngx-mud-ui/i18n';
 
 describe('MudStepHeader', () => {
   async function renderHeader(state: string) {
@@ -347,7 +347,7 @@ describe('MudStepper', () => {
 
   it('announces completed and blocked through the header text, with the labels token', async () => {
     TestBed.configureTestingModule({
-      providers: [provideMudStepperLabels({ completed: 'finalizat' })],
+      providers: [provideMudLabels({ stepper: { completed: 'finalizat' } })],
     });
     const t = await renderStepper((host) => host.identity.controls.name.setValue('Ana'));
 
@@ -362,6 +362,21 @@ describe('MudStepper', () => {
     expect(stateOf(1)).toBe(', has errors'); // untouched default
     expect(stateOf(2)).toBeUndefined(); // current: aria-current already says so
     expect(t.headers()[2].getAttribute('aria-current')).toBe('step');
+  });
+
+  it('completed/blocked suffix from the Romanian pack', async () => {
+    TestBed.configureTestingModule({ providers: [provideMudLabels(MUD_LABELS_RO)] });
+    const t = await renderStepper((host) => host.identity.controls.name.setValue('Ana'));
+
+    t.headers()[1].click();
+    await t.fixture.whenStable();
+    t.headers()[2].click();
+    await t.fixture.whenStable();
+
+    const stateOf = (i: number) => t.headers()[i].querySelector('.stepper-step__state')?.textContent;
+
+    expect(stateOf(0)).toBe(`, ${MUD_LABELS_RO.stepper!.completed}`);
+    expect(stateOf(1)).toBe(`, ${MUD_LABELS_RO.stepper!.blocked}`);
   });
 
   it('keyboard Enter/Space go through the cancelable stepClick, like a click', async () => {

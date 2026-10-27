@@ -1,9 +1,8 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, output, ViewEncapsulation } from '@angular/core';
+import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 
 export type MudBannerVariant = 'info' | 'warning' | 'error';
 export type MudBannerType = 'subtle' | 'strong';
-
-const DEFAULT_CLOSE_LABEL = 'Close';
 
 /**
  * Full-width, top-of-page system message bar - maintenance, outages,
@@ -110,7 +109,7 @@ export class MudBanner {
   readonly live = input(false, { transform: booleanAttribute });
 
   /** @description Accessible name for the close button. */
-  readonly closeLabel = input(DEFAULT_CLOSE_LABEL);
+  readonly closeLabel = input<string | undefined>(undefined);
 
   /** @description Accessible name for the banner itself. Gives the host a `region` role. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
@@ -118,7 +117,9 @@ export class MudBanner {
   /** Emitted when the close button is activated. The CONSUMER removes the banner. */
   readonly closed = output<void>();
 
-  protected readonly _closeLabel = computed(() => this.closeLabel().trim() || DEFAULT_CLOSE_LABEL);
+  private readonly _labels = injectMudLabels();
+
+  protected readonly _closeLabel = computed(() => _mudText(this.closeLabel(), this._labels().banner.close));
 
   protected readonly _hostClasses = computed(() =>
     ['banner', `banner--${this.variant()}`, `banner--${this.type()}`].join(' '),

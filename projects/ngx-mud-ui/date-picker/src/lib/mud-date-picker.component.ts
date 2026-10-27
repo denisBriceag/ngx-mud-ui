@@ -10,7 +10,6 @@ import {
   inject,
   Injector,
   input,
-  LOCALE_ID,
   linkedSignal,
   model,
   output,
@@ -35,7 +34,6 @@ import {
   toValidIsoOrUndefined,
 } from './date-core';
 import { buildDayGrid, buildYearPage, weekdayOrder, YEAR_PAGE, yearPageStart } from './date-grid';
-import { MUD_DATE_LABELS } from './date-labels';
 import type {
   MudDateMonthChange,
   MudDatePickerAppearance,
@@ -45,7 +43,8 @@ import type {
   MudDateRange,
   MudDateValue,
 } from './date-value';
-import { _MudInputFieldStyles, _injectMudLabels, MudStyleLoader } from 'ngx-mud-ui/core';
+import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
+import { _safeLocale, injectMudFormatLocale, injectMudLabels } from 'ngx-mud-ui/i18n';
 
 declare const ngDevMode: boolean | undefined;
 
@@ -124,7 +123,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   /** @description Week start: 0 = Sunday, 1 = Monday (the RO/EU convention). */
   readonly firstDayOfWeek = input(1);
 
-  /** @description BCP 47 locale for weekday and month names. Defaults to the app's `LOCALE_ID`. */
+  /** @description BCP 47 locale for weekday and month names. Defaults to the format locale. */
   readonly locale = input<string | undefined>(undefined);
 
   /** @description Month to show initially, without selecting anything. */
@@ -148,8 +147,9 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   /** Signal-forms touch contract. */
   readonly touch = output<void>();
 
-  protected readonly _labels = _injectMudLabels(MUD_DATE_LABELS);
-  private readonly _appLocale = inject(LOCALE_ID);
+  private readonly _allLabels = injectMudLabels();
+  private readonly _formatLocale = injectMudFormatLocale();
+  protected readonly _labels = computed(() => this._allLabels().datePicker);
 
   protected readonly _id = `mud-date-picker-${nextUniqueId++}`;
   protected readonly _titleId = `${this._id}-title`;
@@ -160,10 +160,15 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
 
   protected readonly _today = mudToday();
 
-  /** Input first, then the (possibly live) labels config, then the app locale. */
-  protected readonly _activeLocale = computed(
-    () => this.locale() ?? this._labels().locale ?? this._appLocale,
-  );
+  /** The `locale` input when valid, else the live format locale. */
+  protected readonly _activeLocale = computed(() => _safeLocale(this.locale(), this._formatLocale()));
+
+  /** Day and year digits in the active locale, never grouped ("2026", not "2,026"). */
+  private readonly _digits = computed(() => new Intl.NumberFormat(this._activeLocale(), { useGrouping: false }));
+
+  protected _formatNumber(value: number): string {
+    return this._digits().format(value);
+  }
 
   protected readonly _effectiveDisabled = computed(() => this.disabled() || this._cvaDisabled());
   protected readonly _effectiveInvalid = computed(() => this.invalid());
@@ -250,6 +255,8 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   });
 
   protected readonly _viewYear = computed(() => Number(this._viewIso().slice(0, 4)));
+
+  protected readonly _viewYearText = computed(() => this._formatNumber(this._viewYear()));
   protected readonly _viewMonth = computed(() => Number(this._viewIso().slice(5, 7)));
 
   private readonly _host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -287,7 +294,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   protected readonly _monthLabel = computed(() => {
     const override = this._labels().monthNamesLong;
 
-    if (override?.length === 12) return `${override[this._viewMonth() - 1]} ${this._viewYear()}`;
+    if (override?.length === 12) return `${override[this._viewMonth() - 1]} ${this._viewYearText()}`;
 
     const formatter = new Intl.DateTimeFormat(this._activeLocale(), {
       month: 'long',
@@ -344,11 +351,11 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   protected readonly _headerLabel = computed(() => {
     if (this._view() === 'days') return this._monthLabel();
 
-    if (this._view() === 'months') return String(this._viewYear());
+    if (this._view() === 'months') return this._viewYearText();
 
     const start = yearPageStart(this._viewYear());
 
-    return `${start} – ${start + YEAR_PAGE - 1}`;
+    return `${this._formatNumber(start)} – ${this._formatNumber(start + YEAR_PAGE - 1)}`;
   });
 
   /** Only the month segment, for the dropdown header style. */
@@ -421,7 +428,7 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
 
           if (names && names.length !== 12) {
             console.warn(
-              `[mud-date-picker] MUD_DATE_LABELS.${key} has ${names.length} entries; ` +
+              `[mud-date-picker] labels.datePicker.${key} has ${names.length} entries; ` +
                 `expected 12 (January first). Falling back to Intl names.`,
             );
           }

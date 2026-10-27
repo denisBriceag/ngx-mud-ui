@@ -18,6 +18,8 @@ import { isPlatformBrowser } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FILE_GLYPH_SRC } from './file-glyph';
 import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _mudText, injectMudFormatLocale, injectMudLabels } from 'ngx-mud-ui/i18n';
+import { formatFileSize } from './format-file-size';
 import { _MudFileInputStyles } from './mud-file-input-styles.component';
 
 export type MudFileItemState = 'uploaded' | 'uploading' | 'success' | 'error';
@@ -103,11 +105,11 @@ export class MudFileItem {
   /** @description Set false to hide the remove button entirely (read-only summary lists). */
   readonly removable = input(true, { transform: booleanAttribute });
 
-  /** @description Accessible-label prefix of the remove button; the filename is appended. Localize per app. */
-  readonly removeLabel = input('Remove file');
+  /** @description Builds the remove button's accessible name from the filename. */
+  readonly removeLabel = input<((filename: string) => string) | undefined>(undefined);
 
-  /** @description The remove button's label prefix while `uploading`, where it cancels. Localize per app. */
-  readonly cancelLabel = input('Cancel upload');
+  /** @description Builds the button's accessible name from the filename while `uploading`, where it cancels. */
+  readonly cancelLabel = input<((filename: string) => string) | undefined>(undefined);
 
   /** Fired when the remove button is pressed (also to cancel an upload). The owner splices the file out of its list. */
 
@@ -141,9 +143,16 @@ export class MudFileItem {
 
   protected readonly _showRemove = computed(() => this.removable() && this.state() !== 'success');
 
-  protected readonly _removeAriaLabel = computed(
-    () => `${this.state() === 'uploading' ? this.cancelLabel() : this.removeLabel()} ${this.filename()}`,
-  );
+  private readonly _labels = injectMudLabels();
+  private readonly _formatLocale = injectMudFormatLocale();
+
+  protected readonly _removeAriaLabel = computed(() => {
+    const text = this._labels().fileItem;
+    const build =
+      this.state() === 'uploading' ? _mudText(this.cancelLabel(), text.cancel) : _mudText(this.removeLabel(), text.remove);
+
+    return build(this.filename());
+  });
 
   protected readonly _isSystem = computed(() => this.variant() === 'system');
 
@@ -171,15 +180,7 @@ export class MudFileItem {
   protected readonly _sizeText = computed(() => {
     const bytes = this.size();
 
-    if (bytes === undefined) return '';
-
-    if (bytes < 1024) return `${bytes} B`;
-
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-
-    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-
-    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+    return bytes === undefined ? '' : formatFileSize(bytes, this._formatLocale(), this._labels().fileSize.units, 'item');
   });
 
   protected readonly _hostClasses = computed(() => {

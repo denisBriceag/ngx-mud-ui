@@ -23,7 +23,7 @@
         type="button"
         class="chip-field__chip-remove"
         [attr.data-chip-index]="$index"
-        [attr.aria-label]="removeLabel() + ' ' + chip"
+        [attr.aria-label]="_removeName()(chip)"
         [disabled]="_effectiveDisabled()"
         (click)="_onRemoveClick($event, $index)"
         (keydown)="_onChipKeydown($event, $index)"

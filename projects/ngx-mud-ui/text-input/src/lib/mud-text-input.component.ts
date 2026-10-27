@@ -21,6 +21,7 @@ import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl } from '@angular/forms/signals';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudTextInputVariant = 'default' | 'warning' | 'destructive' | 'success';
@@ -120,8 +121,12 @@ export class MudTextInput implements ControlValueAccessor, FormValueControl<stri
   /** @docs-private First pattern as the native attribute (it holds a single regex). */
   protected readonly _patternAttr = computed(() => this.pattern()[0]?.source ?? null);
 
-  /** @description Accessible label for the clear button. Localize per app. */
-  readonly clearLabel = input('Clear field');
+  /** @description Accessible label for the clear button. Unset or blank follows the app labels (`textInput.clear`). */
+  readonly clearLabel = input<string | undefined>(undefined);
+
+  private readonly _labels = injectMudLabels();
+
+  protected readonly _clearLabel = computed(() => _mudText(this.clearLabel(), this._labels().textInput.clear));
 
   /** @description Accessible name used when no `mud-label` is projected. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });

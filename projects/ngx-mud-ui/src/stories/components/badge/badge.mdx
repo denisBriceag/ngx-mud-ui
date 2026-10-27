@@ -95,7 +95,9 @@ Selector: `[mudBadge]` · `exportAs: 'mudBadge'`
 ## Usage tips
 
 - **`<mud-badge>` is a named image by default.** It is named by its visible count, or by
-  `notificationLabel` when it shows a dot. Set `aria-label` when the number alone
+  `notificationLabel` when it shows a dot. Without `notificationLabel` the dot uses the
+  `badge.notification` label (English 'Notification'). This is one place where a blank value keeps a meaning:
+  `notificationLabel=""` makes the dot decorative, with no role and no name. Set `aria-label` when the number alone
   is ambiguous ("3 unread"). Add `live` on the one badge whose changes should be
   announced (`role="status"`); a sidebar full of counts stays quiet otherwise.
 - **Nudge a corner badge with `--mud-badge-offset-top/right/bottom/left`** on the

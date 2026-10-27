@@ -42,6 +42,7 @@ import type {
   MudSelectRowOption,
 } from './mud-select-options';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 import { _MudInputFieldStyles, _MudMenuPanelStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudSelectInputVariant = 'default' | 'destructive';
@@ -126,8 +127,8 @@ export class MudSelectInput<T = unknown>
   /** @description Shown in the trigger while nothing is selected. */
   readonly placeholder = input<string | undefined>(undefined);
 
-  /** @description Shown inside the panel when `options` is empty. Localize per app. */
-  readonly emptyText = input('No options');
+  /** @description Shown inside the panel when `options` is empty. Unset or blank follows the app labels (`selectInput.empty`). */
+  readonly emptyText = input<string | undefined>(undefined);
 
   /** @description Renders a text field that filters the options as the user types. */
   readonly searchable = input(false, { transform: booleanAttribute });
@@ -138,14 +139,24 @@ export class MudSelectInput<T = unknown>
   /** @description Decides which options match `query`; `null` leaves filtering to the consumer. */
   readonly filterWith = input<MudSelectFilter<T> | null>(mudSelectDefaultFilter);
 
-  /** @description Shown inside the panel when a query matches no option. Localize per app. */
-  readonly noResultsText = input('No results');
+  /** @description Shown inside the panel when a query matches no option. Unset or blank follows the app labels (`selectInput.noResults`). */
+  readonly noResultsText = input<string | undefined>(undefined);
 
   /** @description Shows a loading row instead of the options, e.g. while server results are fetched. */
   readonly loading = input(false, { transform: booleanAttribute });
 
-  /** @description Shown inside the panel and announced while `loading`. Localize per app. */
-  readonly loadingText = input('Loading…');
+  /** @description Shown inside the panel and announced while `loading`. Unset or blank follows the app labels (`selectInput.loading`). */
+  readonly loadingText = input<string | undefined>(undefined);
+
+  private readonly _labels = injectMudLabels();
+
+  protected readonly _optionsLabel = computed(() => this._labels().selectInput.options);
+
+  protected readonly _emptyText = computed(() => _mudText(this.emptyText(), this._labels().selectInput.empty));
+
+  protected readonly _noResultsText = computed(() => _mudText(this.noResultsText(), this._labels().selectInput.noResults));
+
+  protected readonly _loadingText = computed(() => _mudText(this.loadingText(), this._labels().selectInput.loading));
 
   /** @description Accessible name used when no `mud-label` is projected. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
@@ -272,9 +283,9 @@ export class MudSelectInput<T = unknown>
   protected readonly _status = computed(() => {
     if (!this.open()) return '';
 
-    if (this.loading()) return this.loadingText();
+    if (this.loading()) return this._loadingText();
 
-    return this._noResults() ? this.noResultsText() : '';
+    return this._noResults() ? this._noResultsText() : '';
   });
 
   protected readonly _describedBy = computed<string | null>(() => {

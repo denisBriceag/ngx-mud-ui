@@ -9,7 +9,7 @@
         is a button, where `aria-required` is a prohibited attribute, so the
         word rides the label, which is also the button's accessible name.
       -->
-      <span class="input-field__sr-only file-field__required-text">{{ requiredLabel() }}</span>
+      <span class="input-field__sr-only file-field__required-text">{{ _requiredText() }}</span>
     }
   </label>
 }
@@ -40,7 +40,7 @@
     [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
     (click)="_onBrowseClick($event)"
   >
-    {{ chooseFilesText() }}
+    {{ _chooseFilesText() }}
   </button>
 } @else {
   <!--
@@ -70,7 +70,7 @@
       </span>
       <span class="file-field__dropzone-body">
         <span class="file-field__dropzone-cta">
-          <span class="file-field__dropzone-cta-body">{{ ctaText() }}</span>
+          <span class="file-field__dropzone-cta-body">{{ _ctaText() }}</span>
           <button
             #browse
             type="button"
@@ -83,13 +83,13 @@
             [attr.aria-invalid]="_effectiveInvalid() ? 'true' : null"
             (click)="_onBrowseClick($event)"
           >
-            {{ chooseFilesText() }}
+            {{ _chooseFilesText() }}
           </button>
         </span>
       </span>
     } @else {
       <span class="file-field__dropzone-body">
-        <span class="file-field__dropzone-text">{{ dropzoneActiveText() }}</span>
+        <span class="file-field__dropzone-text">{{ _dropzoneActiveText() }}</span>
       </span>
     }
   </div>
@@ -123,7 +123,7 @@
   <ul
     class="file-field__list"
     role="list"
-    [attr.aria-label]="fileListLabel() || null"
+    [attr.aria-label]="_fileListLabel()"
   >
     @for (file of value(); track $index) {
       <li class="file-field__list-item">

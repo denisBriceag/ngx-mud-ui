@@ -24,6 +24,7 @@ import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl } from '@angular/forms/signals';
 import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+import { injectMudFormatLocale, injectMudLabels, _mudText, _safeLocale } from 'ngx-mud-ui/i18n';
 import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudNumericInputVariant = 'default' | 'warning' | 'destructive' | 'success';
@@ -107,8 +108,8 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
 
   /**
    * @description BCP 47 locale for display formatting and lenient parsing of grouped
-   * input (e.g. ro-MD renders 1250.5 as "1.250,5"). Unset = plain digits with
-   * a dot decimal separator.
+   * input (e.g. ro-MD renders 1250.5 as "1.250,5"). Unset = ungrouped digits with
+   * the decimal separator of the format locale ("1234.5" in en-US).
    */
   readonly locale = input<string | undefined>(undefined);
 
@@ -125,14 +126,41 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
   /** @description Optional consumer-owned screen-reader sentence for the counter. */
   readonly counterLabel = input<string | undefined>(undefined);
 
-  /** @description Accessible label of the increment stepper. Localize per app. */
-  readonly incrementLabel = input('Increase');
+  /** @description Accessible label of the increment stepper. Unset or blank follows the app labels (`numericInput.increment`). */
+  readonly incrementLabel = input<string | undefined>(undefined);
 
-  /** @description Accessible label of the decrement stepper. Localize per app. */
-  readonly decrementLabel = input('Decrease');
+  /** @description Accessible label of the decrement stepper. Unset or blank follows the app labels (`numericInput.decrement`). */
+  readonly decrementLabel = input<string | undefined>(undefined);
 
-  /** @description Accessible label of the clear button. Localize per app. */
-  readonly clearLabel = input('Clear');
+  /** @description Accessible label of the clear button. Unset or blank follows the app labels (`numericInput.clear`). */
+  readonly clearLabel = input<string | undefined>(undefined);
+
+  private readonly _labels = injectMudLabels();
+
+  private readonly _formatLocale = injectMudFormatLocale();
+
+  protected readonly _incrementLabel = computed(() => _mudText(this.incrementLabel(), this._labels().numericInput.increment));
+
+  protected readonly _decrementLabel = computed(() => _mudText(this.decrementLabel(), this._labels().numericInput.decrement));
+
+  protected readonly _clearLabel = computed(() => _mudText(this.clearLabel(), this._labels().numericInput.clear));
+
+  // Explicit `locale` wins; else the format locale.
+  private readonly _numberLocale = computed(() => _safeLocale(this.locale(), this._formatLocale()));
+
+  /** Counter digits follow the locale, never grouped (an unconfigured app keeps "1234"). */
+  private readonly _counterFormat = computed(() => new Intl.NumberFormat(this._numberLocale(), { useGrouping: false }));
+
+  /** The locale's native digits paired with their ASCII twins, empty when they already are ASCII. */
+  private readonly _nativeDigits = computed(() => {
+    const format = this._counterFormat();
+
+    return Array.from({ length: 10 }, (_, digit) => [format.format(digit), String(digit)] as const).filter(([native, ascii]) => native !== ascii);
+  });
+
+  protected _formatCount(value: number): string {
+    return this._counterFormat().format(value);
+  }
 
   /** @description Accessible name used when no `mud-label` is projected. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
@@ -212,6 +240,9 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
 
   protected readonly _showCounter = computed(() => this.showCounter() && this.maxLength() != null);
 
+  /** The counter's limit, formatted; only read while `_showCounter()` guarantees a limit. */
+  protected readonly _maxLengthText = computed(() => this._formatCount(this.maxLength() ?? 0));
+
   protected readonly _showClear = computed(
     () => this.clearable() && !this._inert() && this._display().length > 0,
   );
@@ -264,6 +295,10 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
     effect(() => {
       const value = this.value();
 
+      // Tracked so a locale switch reformats the display.
+      this._numberLocale();
+      this.locale();
+
       // Untracked: the display must not re-trigger this effect (typing a
       // partial like "abc" or "1," would otherwise be clobbered instantly).
       const typedValue = untracked(() => this._parse(this._display()));
@@ -304,16 +339,22 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
   // ----- parsing / formatting -----
 
   private _separators(): { group: string; decimal: string } {
-    const locale = this.locale();
-
-    if (!locale) return { group: '', decimal: '.' };
-
-    const parts = new Intl.NumberFormat(locale).formatToParts(12345.6);
+    const parts = new Intl.NumberFormat(this._numberLocale()).formatToParts(12345.6);
 
     return {
-      group: parts.find((part) => part.type === 'group')?.value ?? '',
+      // Only an explicit `locale` groups; otherwise grouping marks are not accepted.
+      group: this.locale() ? (parts.find((part) => part.type === 'group')?.value ?? '') : '',
       decimal: parts.find((part) => part.type === 'decimal')?.value ?? '.',
     };
+  }
+
+  // Maps the locale's native digits (e.g. Arabic-Indic) to ASCII so display output parses back.
+  private _toAsciiDigits(text: string): string {
+    let out = text;
+
+    for (const [native, ascii] of this._nativeDigits()) out = out.split(native).join(ascii);
+
+    return out;
   }
 
   private _parse(raw: string): number | null {
@@ -322,7 +363,7 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
     if (!trimmed) return null;
 
     const { group, decimal } = this._separators();
-    let normalized = trimmed;
+    let normalized = this._toAsciiDigits(trimmed);
 
     if (group) normalized = normalized.split(group).join('');
 
@@ -336,18 +377,14 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
   private _format(value: number | null): string {
     if (value === null) return '';
 
-    const locale = this.locale();
     const precision = this.precision();
 
-    if (!locale) {
-      return precision !== undefined ? value.toFixed(precision) : String(value);
-    }
-
-    return new Intl.NumberFormat(locale, {
+    // Intl prints -0 as "-0"; the field must show "0".
+    return new Intl.NumberFormat(this._numberLocale(), {
       minimumFractionDigits: precision ?? 0,
       maximumFractionDigits: precision ?? (this.allowDecimal() ? 20 : 0),
-      useGrouping: true,
-    }).format(value);
+      useGrouping: !!this.locale(),
+    }).format(value === 0 ? 0 : value);
   }
 
   private _clampAndRound(value: number): number {

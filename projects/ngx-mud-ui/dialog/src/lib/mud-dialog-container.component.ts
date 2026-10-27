@@ -1,14 +1,15 @@
-import { ChangeDetectionStrategy, Component, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CdkDialogContainer } from '@angular/cdk/dialog';
 import type { DialogConfig } from '@angular/cdk/dialog';
 import { CdkPortalOutlet, PortalModule } from '@angular/cdk/portal';
+import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 import type { MudDialogRef } from './mud-dialog-ref';
 
 /** @docs-private CDK config carrying our extra fields (attached by MudDialog.open). */
 export type MudResolvedDialogConfig = DialogConfig & {
   size: 'sm' | 'md' | 'lg';
   showCloseButton: boolean;
-  closeLabel: string;
+  closeLabel?: string;
   mudRefFactory: () => MudDialogRef;
 };
 
@@ -23,7 +24,7 @@ export type MudResolvedDialogConfig = DialogConfig & {
       <button
         type="button"
         class="dialog__close"
-        [attr.aria-label]="_mudConfig.closeLabel"
+        [attr.aria-label]="_closeLabel()"
         (click)="_closeFromButton()"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" focusable="false" aria-hidden="true">
@@ -53,6 +54,10 @@ export type MudResolvedDialogConfig = DialogConfig & {
 })
 export class MudDialogContainer extends CdkDialogContainer {
   @ViewChild(CdkPortalOutlet, { static: true }) declare _portalOutlet: CdkPortalOutlet;
+
+  private readonly _labels = injectMudLabels();
+
+  protected readonly _closeLabel = computed(() => _mudText(this._mudConfig.closeLabel, this._labels().dialog.close));
 
   /** @docs-private Resolved config incl. our fields (defaults applied by the service). */
   protected get _mudConfig(): MudResolvedDialogConfig {

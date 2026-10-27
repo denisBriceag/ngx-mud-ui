@@ -8,6 +8,7 @@ import {
   input,
 } from '@angular/core';
 import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { injectMudFormatLocale } from 'ngx-mud-ui/i18n';
 import { _MudStepperStyles } from './mud-stepper-styles.component';
 
 declare const ngDevMode: boolean | undefined;
@@ -20,7 +21,7 @@ declare const ngDevMode: boolean | undefined;
   selector: 'mud-indicator-step',
   template: `
     <span class="indicator-step__connector" aria-hidden="true"></span>
-    <span class="indicator-step__circle" aria-hidden="true">{{ _number() }}</span>
+    <span class="indicator-step__circle" aria-hidden="true">{{ _numberText() }}</span>
     <div class="indicator-step__body">
       <span class="indicator-step__heading">{{ heading() }}</span>
       <div class="indicator-step__content"><ng-content /></div>
@@ -36,6 +37,8 @@ export class MudIndicatorStep {
   private readonly _indicator = inject<MudStepIndicator>(forwardRef(() => MudStepIndicator));
 
   readonly heading = input.required<string>();
+
+  private readonly _formatLocale = injectMudFormatLocale();
 
   private _warnedNotFound = false;
 
@@ -55,6 +58,12 @@ export class MudIndicatorStep {
     }
 
     return index + 1;
+  });
+
+  protected readonly _numberText = computed(() => {
+    const number = this._number();
+
+    return number === null ? '' : new Intl.NumberFormat(this._formatLocale(), { useGrouping: false }).format(number);
   });
 
   constructor() {

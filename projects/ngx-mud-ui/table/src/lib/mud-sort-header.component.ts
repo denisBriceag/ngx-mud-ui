@@ -1,6 +1,7 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import type { OnDestroy, OnInit } from '@angular/core';
 import { CdkColumnDef } from '@angular/cdk/table';
+import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 import { MudSort } from './mud-sort.directive';
 import type { MudSortable } from './mud-sort.directive';
 import { MudStyleLoader } from 'ngx-mud-ui/core';
@@ -52,7 +53,7 @@ const missingSort = (): never => {
       }
     </button>
     @if (!_effectiveDisabled()) {
-      <span class="mud-sort-header__description" [id]="_descriptionId">{{ sortActionDescription() }}</span>
+      <span class="mud-sort-header__description" [id]="_descriptionId">{{ _sortDescription() }}</span>
     }
   `,
   host: {
@@ -80,8 +81,12 @@ export class MudSortHeader implements MudSortable, OnInit, OnDestroy {
   });
   /** @description Makes this header non-sortable: the button renders disabled, without chevron or aria-sort. The container's `disabled` disables it too. */
   readonly disabled = input(false, { transform: booleanAttribute });
-  /** @description Visually hidden text screen readers announce after the header label (default 'Sort'); translate it, e.g. 'Sortează'. */
-  readonly sortActionDescription = input('Sort');
+  /** @description Visually hidden text screen readers announce after the header label; defaults to the localized 'Sort'. */
+  readonly sortActionDescription = input<string | undefined>(undefined);
+
+  private readonly _labels = injectMudLabels();
+
+  protected readonly _sortDescription = computed(() => _mudText(this.sortActionDescription(), this._labels().table.sort));
 
   /** The id this header is registered under. */
   readonly sortId = this._sortId.asReadonly();

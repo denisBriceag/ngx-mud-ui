@@ -40,7 +40,7 @@ const meta: Meta<BadgeArgs> = {
     size: 'md',
     disabled: false,
     live: false,
-    notificationLabel: 'Notificare',
+    notificationLabel: 'Notification',
     'aria-label': '',
   },
 };

@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { _mudText, injectMudLabels } from 'ngx-mud-ui/i18n';
 import { _MudChipStyles } from './mud-chip-styles.component';
 
 export type MudChipType = 'filter' | 'input';
@@ -73,8 +74,8 @@ export class MudChip {
    */
   readonly label = input<string | undefined>(undefined);
 
-  /** @description Accessible-label prefix of the remove button. Localize per app. */
-  readonly removeLabel = input('Remove');
+  /** @description Builds the remove button's accessible name from the chip's `label`. */
+  readonly removeLabel = input<((label: string) => string) | undefined>(undefined);
 
   /** Fired when the remove button of a removable `input` chip is activated. */
   readonly removed = output<void>();
@@ -96,11 +97,11 @@ export class MudChip {
 
   protected readonly _showCount = computed(() => Number.isFinite(this.count()));
 
-  protected readonly _removeAriaLabel = computed(() => {
-    const label = this.label()?.trim();
+  private readonly _labels = injectMudLabels();
 
-    return label ? `${this.removeLabel()} ${label}` : this.removeLabel();
-  });
+  protected readonly _removeAriaLabel = computed(() =>
+    _mudText(this.removeLabel(), this._labels().chip.remove)(this.label()?.trim() ?? '').trim(),
+  );
 
   protected readonly _hostClasses = computed(() => {
     const classes = ['chip', `chip--${this.type()}`];

@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormField, form } from '@angular/forms/signals';
+import { MUD_LABELS_RO, provideMudLabels } from 'ngx-mud-ui/i18n';
 import { MudInputChip } from './mud-input-chip.component';
 import { MudLabel } from '../../../label/src/public-api';
 import { MudInlineMessage } from '../../../inline-message/src/public-api';
@@ -18,6 +19,8 @@ import type { MudInputChipError } from './mud-input-chip.component';
       [validatePattern]="validatePattern()"
       [separators]="separators()"
       [disabled]="disabled()"
+      [removeLabel]="removeLabel()"
+      [announceAdded]="announceAdded()"
       [readonly]="readonly()"
       [invalid]="invalid()"
       (chipAdded)="added.push($event.chip)"
@@ -43,6 +46,8 @@ class Host {
   readonly validatePattern = signal<RegExp | undefined>(undefined);
   readonly separators = signal(',');
   readonly disabled = signal(false);
+  readonly removeLabel = signal<((chip: string) => string) | undefined>(undefined);
+  readonly announceAdded = signal<((chip: string) => string) | undefined>(undefined);
   readonly readonly = signal(false);
   readonly invalid = signal(false);
   readonly withLabel = signal(true);
@@ -91,6 +96,49 @@ async function paste(fixture: { whenStable(): Promise<unknown> }, native: HTMLIn
 }
 
 describe('MudInputChip', () => {
+  it('remove label and announcements: default English, pack, instance function', async () => {
+    const { fixture, host, native, removeBtns, live } = await render();
+
+    host.chips.set(['ana']);
+    await fixture.whenStable();
+    expect(removeBtns()[0].getAttribute('aria-label')).toBe('Remove ana');
+
+    host.removeLabel.set((chip) => `Șterge ${chip}`);
+    host.announceAdded.set((chip) => `+${chip}`);
+    await fixture.whenStable();
+    expect(removeBtns()[0].getAttribute('aria-label')).toBe('Șterge ana');
+
+    await type(fixture, native, 'bob');
+    native.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    await fixture.whenStable();
+    expect(live().textContent).toBe('+bob');
+  });
+
+  it('takes the remove label and the announcements from the pack', async () => {
+    TestBed.configureTestingModule({ providers: [provideMudLabels(MUD_LABELS_RO)] });
+    const { fixture, host, native, removeBtns, live } = await render();
+
+    host.chips.set(['ana']);
+    host.validatePattern.set(/^[a-z]+$/);
+    await fixture.whenStable();
+    expect(removeBtns()[0].getAttribute('aria-label')).toBe('Elimină ana');
+
+    await type(fixture, native, 'bob');
+    native.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    await fixture.whenStable();
+    expect(live().textContent).toBe('Valoarea bob a fost adăugată.');
+
+    await type(fixture, native, 'ana');
+    native.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    await fixture.whenStable();
+    expect(live().textContent).toBe(MUD_LABELS_RO.inputChip!.rejectedDuplicate!('ana'));
+
+    await type(fixture, native, 'A1');
+    native.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    await fixture.whenStable();
+    expect(live().textContent).toBe(MUD_LABELS_RO.inputChip!.rejectedPattern!('A1'));
+  });
+
   it('renders the labelled group with a placeholder only while empty', async () => {
     const { fixture, host, el, native, chipEls } = await render();
     const group = el.querySelector('.chip-field__control')!;

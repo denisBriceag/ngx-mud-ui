@@ -18,9 +18,7 @@
       [id]="_triggerId"
       [attr.aria-expanded]="_open() ? 'true' : 'false'"
       [attr.aria-controls]="_open() ? _listBoxId : null"
-      [attr.aria-label]="
-        countryLabel() + ': ' + _countryName(_country()) + ' ' + _country().dialCode
-      "
+      [attr.aria-label]="_triggerLabel()"
       [disabled]="_locked()"
       (click)="_toggleList()"
       (keydown)="_onTriggerKeydown($event)"
@@ -79,7 +77,7 @@
     <button
       type="button"
       class="input-field__clear phone-field__clear"
-      [attr.aria-label]="clearLabel()"
+      [attr.aria-label]="_clearLabel()"
       (click)="_onClear()"
     >
       <svg
@@ -121,8 +119,8 @@
         autocomplete="off"
         spellcheck="false"
         [value]="_query()"
-        [attr.placeholder]="countrySearchLabel()"
-        [attr.aria-label]="countrySearchLabel()"
+        [attr.placeholder]="_countrySearchLabel()"
+        [attr.aria-label]="_countrySearchLabel()"
         [attr.aria-controls]="_listBoxId"
         [attr.aria-activedescendant]="_activeDescendant()"
         (input)="_onSearchInput($event)"
@@ -139,13 +137,13 @@
       class="phone-field__listbox"
       role="listbox"
       [id]="_listBoxId"
-      [attr.aria-label]="countryLabel()"
+      [attr.aria-label]="_countryListLabel()"
     >
       @if (_filtered().length === 0) {
         <!-- A listbox must contain options (axe aria-required-children); the
              empty state is a disabled option so it is announced too. -->
         <div class="menu-panel__empty" role="option" aria-disabled="true" aria-selected="false">
-          {{ countryEmptyText() }}
+          {{ _countryEmptyText() }}
         </div>
       } @else {
         @for (country of _filtered(); track country.iso) {

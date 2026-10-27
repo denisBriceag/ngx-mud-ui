@@ -1,8 +1,9 @@
 import { afterNextRender, Component, viewChild } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
-import { MudPagination, provideMudPaginationLabels } from 'ngx-mud-ui/pagination';
-import type { MudPaginationLabels, MudPaginationSize } from 'ngx-mud-ui/pagination';
+import { MudPagination } from 'ngx-mud-ui/pagination';
+import { provideMudLabels } from 'ngx-mud-ui/i18n';
+import type { MudPaginationSize } from 'ngx-mud-ui/pagination';
 import {
   MudCell,
   MudCellDef,
@@ -161,20 +162,22 @@ export const NarrowContainer: Story = {
   }),
 };
 
-const RO_LABELS: Partial<MudPaginationLabels> = {
-  navigation: 'Navigare pagini',
-  previous: 'Anterior',
-  next: 'Următor',
-  previousAria: (page) => `Pagina anterioară, mergi la pagina ${page}`,
-  nextAria: (page) => `Pagina următoare, mergi la pagina ${page}`,
-  pageAria: (page, total) => `Pagina ${page} din ${total}`,
-  overflowAria: (from, to) => `Arată paginile de la ${from} la ${to}`,
+const RO_LABELS = {
+  pagination: {
+    navigation: 'Navigare pagini',
+    previous: 'Anterior',
+    next: 'Următor',
+    previousAria: (page: number) => `Pagina anterioară, mergi la pagina ${page}`,
+    nextAria: (page: number) => `Pagina următoare, mergi la pagina ${page}`,
+    pageAria: (page: number, total: number) => `Pagina ${page} din ${total}`,
+    overflowAria: (from: number, to: number) => `Arată paginile de la ${from} la ${to}`,
+  },
 };
 
-/** Romanian strings through provideMudPaginationLabels — one call localizes every paginator. */
+/** Romanian strings through provideMudLabels — one call localizes every paginator. */
 export const LocalizedLabels: Story = {
   parameters: { controls: { disable: true } },
-  decorators: [applicationConfig({ providers: [provideMudPaginationLabels(RO_LABELS)] })],
+  decorators: [applicationConfig({ providers: [provideMudLabels(RO_LABELS)] })],
   render: () => ({ template: `<mud-pagination [length]="200" [pageIndex]="9" />` }),
 };
 

@@ -18,7 +18,7 @@
         type="button"
         class="date-picker__chip"
         data-header="month"
-        [attr.aria-label]="_monthOnlyLabel() + ', ' + _labels().chooseMonth"
+        [attr.aria-label]="_labels().chooseMonth(_monthOnlyLabel())"
         [disabled]="_effectiveDisabled()"
         (click)="_openView('months')"
       >{{ _monthOnlyLabel() }}</button>
@@ -26,10 +26,10 @@
         type="button"
         class="date-picker__chip"
         data-header="year"
-        [attr.aria-label]="_viewYear() + ', ' + _labels().chooseYear"
+        [attr.aria-label]="_labels().chooseYear(_viewYearText())"
         [disabled]="_effectiveDisabled()"
         (click)="_openView('years')"
-      >{{ _viewYear() }}</button>
+      >{{ _viewYearText() }}</button>
     </span>
   } @else {
     <button
@@ -121,7 +121,7 @@
                 (click)="_select(cell.iso)"
                 (focus)="_onCellFocus(cell.iso)"
               >
-                {{ cell.day }}
+                {{ _formatNumber(cell.day) }}
               </button>
             </td>
           }
@@ -132,7 +132,7 @@
 }
 
 @if (_view() === 'months') {
-  <div class="date-picker__month-grid" role="group" [attr.aria-label]="_monthOnlyLabel() + ', ' + _labels().chooseMonth">
+  <div class="date-picker__month-grid" role="group" [attr.aria-label]="_labels().chooseMonth(_monthOnlyLabel())">
     @for (cell of _monthCells(); track cell.month) {
       <div class="date-picker__month" [attr.data-month]="cell.month" [class.is-selected]="cell.selected">
         <!-- The visible text is the SHORT name; the full month is the
@@ -154,7 +154,7 @@
 }
 
 @if (_view() === 'years') {
-  <div class="date-picker__year-grid" role="group" [attr.aria-label]="_viewYear() + ', ' + _labels().chooseYear">
+  <div class="date-picker__year-grid" role="group" [attr.aria-label]="_labels().chooseYear(_viewYearText())">
     @for (cell of _yearCells(); track cell.year) {
       <div class="date-picker__year" [attr.data-year]="cell.year" [class.is-selected]="cell.selected">
         <button
@@ -163,7 +163,7 @@
           [attr.aria-current]="cell.selected ? 'true' : null"
           (click)="_selectYear(cell.year)"
         >
-          {{ cell.year }}
+          {{ _formatNumber(cell.year) }}
         </button>
       </div>
     }

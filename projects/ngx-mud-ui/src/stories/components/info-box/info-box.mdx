@@ -188,15 +188,16 @@ the default rather than sitting alongside it:
 
 ## Localization
 
-The box owns one string — the close button's accessible name. Override it per
-instance:
+The box owns one string, the close button's accessible name. It comes from the
+`infoBox.close` label (English `Close`), so a language pack from
+`provideMudLabels` translates it. To override one box:
 
 ```html
 <mud-info-box closable closeLabel="Închide">…</mud-info-box>
 ```
 
-It defaults to `Close`, and a blank or whitespace value falls back to that
-default rather than leaving the button unnamed. Everything else is your
+A blank or whitespace `closeLabel` falls back to the label rather than leaving
+the button unnamed. See the [Localization guide](?path=/docs/foundations-localization--docs). Everything else is your
 projected content, so it is already in your language.
 
 ## API

@@ -24,7 +24,7 @@ export interface MudDialogConfig<D = unknown> {
   size?: MudDialogSize;
   /** @description Renders the container-owned close (×) button. */
   showCloseButton?: boolean;
-  /** @description Accessible name of the close button. Localize per app. */
+  /** @description Accessible name of the close button; unset follows the app labels (`dialog.close`). */
   closeLabel?: string;
   /** @description Closes on a backdrop click; default true. */
   closeOnBackdrop?: boolean;

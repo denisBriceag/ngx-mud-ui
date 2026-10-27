@@ -84,5 +84,6 @@ assistive text — *you* decide when they render:
   the field sits in a form beside other inputs, so the rhythm matches.
 - **Label it even when the placeholder seems enough.** A placeholder disappears
   on focus and is not a substitute for a `<mud-label>` or `aria-label`.
-- **Localize `submitLabel` and `clearLabel`** — they default to the English
-  `'Search'` and `'Clear'` and are the accessible names of those two buttons.
+- **`submitLabel` and `clearLabel` are optional overrides.** They name the two
+  buttons. Unset or blank, the `searchInput` labels apply (English 'Search' and
+  'Clear'), so a language pack from `provideMudLabels` translates them.

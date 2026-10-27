@@ -177,10 +177,18 @@ assistive text — *you* decide when they render:
   masks or digit windows yourself, and extend via `countries` as above.
 - **Country names are localised by the platform, not by data we ship.** The
   visible name comes from `Intl.DisplayNames` keyed on the ISO code, in the
-  app's `LOCALE_ID` (override per field with `locale`). So the list reads
+  format locale (override per field with `locale`; otherwise
+  `provideMudFormatLocale`, then `LOCALE_ID`). So the list reads
   "Germania" in a Romanian app and "Германия" in a Russian one without any
   per-language table. `MudPhoneCountry.name` is only the English fallback for
   runtimes without `Intl.DisplayNames` — and it stays searchable, so typing the
   English name works in any locale. Add regional spellings via `aliases`.
+- **The country button's name is a function of the country.** `countryLabel`
+  takes the country name and dial code and returns the accessible name, such as
+  `countryLabel = (name: string, code: string) => 'Țara: ' + name + ' ' + code`, bound with `[countryLabel]="countryLabel"`. Unset, the
+  `phoneInput.country` label applies (English "Country: Moldova +373"). The other
+  texts (`clearLabel`, `countryListLabel`, `countrySearchLabel`, `countryEmptyText`) are optional
+  overrides of the same namespace. The country list has its own name,
+  `countryListLabel` (English "Country"); it doesn't change with the selected country.
 - **Use `aria-label` only when no `mud-label` is projected**; with both set
   the accessible name silently replaces the visible one.

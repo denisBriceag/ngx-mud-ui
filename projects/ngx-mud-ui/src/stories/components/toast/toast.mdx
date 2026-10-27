@@ -151,7 +151,7 @@ export const appConfig: ApplicationConfig = {
         maxVisible: 5,
         duration: 6000,
         verticalPosition: 'bottom',
-        closeLabel: 'Închide',
+        closeLabel: 'Închide',  // optional: unset, the app's toast.close label applies
       },
     },
   ],
@@ -160,6 +160,8 @@ export const appConfig: ApplicationConfig = {
 
 Precedence is explicit `open()` config → these app defaults → the library
 fallbacks. Nothing changes at the call site; the service reads the token itself.
+
+The close button's name also follows the app's `toast.close` label. Toasts open from the service, so they read the app-level `provideMudLabels`; a `provideMudLabels` in one component's `providers` does not reach them.
 
 <Canvas of={ToastStories.AppWideDefaults} />
 

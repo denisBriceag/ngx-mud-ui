@@ -37,7 +37,7 @@ export interface MudToastBaseConfig {
   verticalPosition?: MudToastVerticalPosition;
   /** @description Renders the trailing close button. */
   showCloseButton?: boolean;
-  /** @description Accessible name of the close button. Localize per app. */
+  /** @description Accessible name of the close button; unset follows the app labels (`toast.close`). */
   closeLabel?: string;
 }
 
@@ -57,8 +57,10 @@ export interface MudToastDefaultOptions extends MudToastBaseConfig {
 }
 
 /** Fully-resolved config the stack and item components consume. */
-export interface ResolvedToastConfig extends Required<Omit<MudToastBaseConfig, 'announcementMessage'>> {
+export interface ResolvedToastConfig extends Required<Omit<MudToastBaseConfig, 'announcementMessage' | 'closeLabel'>> {
   announcementMessage?: string;
+  /** Unset means the item falls back to the app labels (`toast.close`). */
+  closeLabel?: string;
 }
 
 /** Injection token delivering config.data to a component opened via openFromComponent. */
@@ -68,7 +70,7 @@ export const MUD_TOAST_DATA = new InjectionToken<unknown>('MUD_TOAST_DATA');
 export const MUD_TOAST_DEFAULT_OPTIONS = new InjectionToken<MudToastDefaultOptions>('MUD_TOAST_DEFAULT_OPTIONS');
 
 /** Library defaults, used for any field the app does not override. */
-export const MUD_TOAST_FALLBACK_OPTIONS: Required<ResolvedToastConfig> & { maxVisible: number } = {
+export const MUD_TOAST_FALLBACK_OPTIONS: Required<Omit<ResolvedToastConfig, 'closeLabel'>> & { maxVisible: number } = {
   variant: 'info',
   duration: 4000,
   pauseOnHover: true,
@@ -76,7 +78,6 @@ export const MUD_TOAST_FALLBACK_OPTIONS: Required<ResolvedToastConfig> & { maxVi
   horizontalPosition: 'end',
   verticalPosition: 'top',
   showCloseButton: true,
-  closeLabel: 'Close',
   maxVisible: 3,
 };
 
@@ -85,7 +86,7 @@ export function resolveToastConfig(
   config: MudToastConfig | MudToastComponentConfig,
   defaults?: MudToastDefaultOptions | null,
 ): ResolvedToastConfig {
-  const pick = <K extends keyof MudToastBaseConfig>(key: K): NonNullable<MudToastBaseConfig[K]> =>
+  const pick = <K extends Exclude<keyof MudToastBaseConfig, 'closeLabel'>>(key: K): NonNullable<MudToastBaseConfig[K]> =>
     (config[key] ?? defaults?.[key] ?? MUD_TOAST_FALLBACK_OPTIONS[key]) as NonNullable<MudToastBaseConfig[K]>;
 
   const closeLabel = (config.closeLabel ?? defaults?.closeLabel)?.trim();
@@ -98,7 +99,7 @@ export function resolveToastConfig(
     horizontalPosition: pick('horizontalPosition'),
     verticalPosition: pick('verticalPosition'),
     showCloseButton: pick('showCloseButton'),
-    closeLabel: closeLabel || MUD_TOAST_FALLBACK_OPTIONS.closeLabel,
+    closeLabel: closeLabel || undefined,
     announcementMessage: announcementMessage || undefined,
   };
 }

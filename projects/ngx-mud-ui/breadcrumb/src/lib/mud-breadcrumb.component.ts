@@ -15,6 +15,7 @@ import { forwardCrumbClick } from './forward-crumb-click';
 import { MudBreadcrumbItem } from './mud-breadcrumb-item.directive';
 import { MudBreadcrumbOverflow } from './mud-breadcrumb-overflow.component';
 import { MudStyleLoader } from 'ngx-mud-ui/core';
+import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 import { _MudBreadcrumbStyles } from './mud-breadcrumb-styles.component';
 
 /** Below two crumbs there is no "first plus last two" to collapse into. */
@@ -83,9 +84,9 @@ export class MudBreadcrumb {
   /** @description Crumbs shown before the middle collapses into the overflow menu. */
   readonly maxVisible = input<number, unknown>(4, { transform: coerceMaxVisible });
   /** @description Accessible name for the navigation landmark. A consumer aria-label wins. */
-  readonly label = input('Breadcrumb');
+  readonly label = input<string | undefined>(undefined);
   /** @description Accessible name for the overflow trigger. */
-  readonly overflowLabel = input('Show collapsed pages');
+  readonly overflowLabel = input<string | undefined>(undefined);
   /** @description When false, the trail never collapses to the mobile back link. */
   readonly responsive = input(true, { transform: booleanAttribute });
 
@@ -94,7 +95,9 @@ export class MudBreadcrumb {
   // consumer's <ol>, so the query would silently come back empty.
   protected readonly _items = contentChildren(MudBreadcrumbItem, { descendants: true });
 
-  protected readonly _ariaLabel = computed(() => this._authoredAriaLabel ?? this.label());
+  private readonly _labels = injectMudLabels();
+
+  protected readonly _ariaLabel = computed(() => this._authoredAriaLabel ?? _mudText(this.label(), this._labels().breadcrumb.navigation));
 
   /** Crumbs that live in the overflow panel: everything but the first and the last two. */
   protected readonly _collapsedItems = computed(() => {

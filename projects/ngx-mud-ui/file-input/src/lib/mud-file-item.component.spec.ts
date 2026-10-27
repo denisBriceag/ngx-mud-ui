@@ -1,5 +1,6 @@
 import { Component, PLATFORM_ID, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { MUD_LABELS_RO, provideMudFormatLocale, provideMudLabels } from 'ngx-mud-ui/i18n';
 import { MudFileItem } from './mud-file-item.component';
 import type { MudFileItemRemove, MudFileItemState } from './mud-file-item.component';
 
@@ -15,6 +16,8 @@ import type { MudFileItemRemove, MudFileItemState } from './mud-file-item.compon
       [disabled]="disabled()"
       [removable]="removable()"
       [progress]="progress()"
+      [removeLabel]="removeLabel()"
+      [cancelLabel]="cancelLabel()"
       (removed)="removals.push($event)"
     />
   `,
@@ -28,6 +31,8 @@ class Host {
   readonly disabled = signal(false);
   readonly removable = signal(true);
   readonly progress = signal<number | undefined>(undefined);
+  readonly removeLabel = signal<((filename: string) => string) | undefined>(undefined);
+  readonly cancelLabel = signal<((filename: string) => string) | undefined>(undefined);
   readonly removals: MudFileItemRemove[] = [];
 }
 
@@ -124,6 +129,48 @@ describe('MudFileItem leading-icon projection', () => {
 });
 
 describe('MudFileItem', () => {
+  it('remove label is one function: default, pack, instance', async () => {
+    const { fixture, host, removeBtn } = await render();
+
+    expect(removeBtn()!.getAttribute('aria-label')).toBe('Remove file raport.pdf');
+
+    host.removeLabel.set((name) => `Șterge ${name}`);
+    await fixture.whenStable();
+    expect(removeBtn()!.getAttribute('aria-label')).toBe('Șterge raport.pdf');
+
+    host.state.set('uploading');
+    host.cancelLabel.set((name) => `Stop ${name}`);
+    await fixture.whenStable();
+    expect(removeBtn()!.getAttribute('aria-label')).toBe('Stop raport.pdf');
+  });
+
+  it('takes the remove and cancel labels and the size units from the pack and locale', async () => {
+    TestBed.configureTestingModule({ providers: [provideMudLabels(MUD_LABELS_RO), provideMudFormatLocale('ro-MD')] });
+    const { fixture, host, removeBtn, meta } = await render();
+
+    host.size.set(1572864);
+    await fixture.whenStable();
+    expect(removeBtn()!.getAttribute('aria-label')).toBe('Elimină fișierul raport.pdf');
+    expect(meta()!.textContent!.trim()).toBe('1,5 MB');
+
+    host.state.set('uploading');
+    await fixture.whenStable();
+    expect(removeBtn()!.getAttribute('aria-label')).toBe('Anulează încărcarea raport.pdf');
+  });
+
+  it('baseline: renders sizes in English exactly as before the localization', async () => {
+    const { fixture, host, meta } = await render();
+    const out: (string | undefined)[] = [];
+
+    for (const bytes of [512, 1536, 2048, 2.5 * 1024 ** 2, 1.25 * 1024 ** 3]) {
+      host.size.set(bytes);
+      await fixture.whenStable();
+      out.push(meta()?.textContent?.trim());
+    }
+
+    expect(out).toEqual(['512 B', '1.5 KB', '2.0 KB', '2.5 MB', '1.25 GB']);
+  });
+
   it('renders the filename', async () => {
     const { filenameEl } = await render();
 

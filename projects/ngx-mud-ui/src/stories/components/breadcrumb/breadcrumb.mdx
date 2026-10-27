@@ -202,7 +202,7 @@ breadcrumb, so a screen reader announces it as a list with a known number of
 items and reads each crumb as a link.
 
 **The landmark** is your `<nav>`, named by the `label` input, which defaults to
-`"Breadcrumb"`. If you write a static `aria-label` on the element yourself, it
+the `breadcrumb.navigation` label (English "Breadcrumb"). If you write a static `aria-label` on the element yourself, it
 wins. Your `<ol>` is left alone apart from its styling.
 
 **State goes on the crumb's inner control, not on the list item.** The current
@@ -239,7 +239,8 @@ opens on hover *and* on keyboard focus of the inner link, which it describes.
   with a console warning — there is no meaningful "first + last two" collapse
   below it.
 - **The overflow trigger's accessible name comes from `overflowLabel`**, not
-  from the `…` glyph — translate it alongside your other UI strings.
+  from the `…` glyph. Unset, it uses the `breadcrumb.overflow` label, so a
+  language pack from `provideMudLabels` translates it.
 - **`label` on `mudBreadcrumbItem` is a text override**, used by the overflow
   panel and the mobile back link when a crumb's projected content isn't plain
   text (an icon-only crumb, for example).
