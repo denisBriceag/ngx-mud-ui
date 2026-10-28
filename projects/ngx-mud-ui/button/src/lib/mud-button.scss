@@ -1,5 +1,5 @@
-@use '../../../src/lib/styles/abstracts/mixins/buttons' as buttons;
-@use '../../../src/lib/styles/abstracts/mud-prefix' as mud;
+@use '../../../styles/abstracts/mixins/buttons' as buttons;
+@use '../../../styles/abstracts/mud-prefix' as mud;
 @use 'sass:map' as map;
 
 @include buttons.button-variant(

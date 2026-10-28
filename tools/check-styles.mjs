@@ -98,7 +98,7 @@ export function checkTokenReferences({ prebuiltCss, darkCss = '', sources }) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const root = 'projects/ngx-mud-ui';
-  const styles = `${root}/src/lib/styles`;
+  const styles = `${root}/styles`;
   const prebuiltCss = readFileSync('dist/ngx-mud-ui/prebuilt/mud.css', 'utf8');
   const darkCss = readFileSync('dist/ngx-mud-ui/prebuilt/mud-dark.css', 'utf8');
   const compiled = new Map();

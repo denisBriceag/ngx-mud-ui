@@ -1,5 +1,5 @@
 @use 'sass:map';
-@use '../../../src/lib/styles/abstracts/mixins/host';
+@use '../../../styles/abstracts/mixins/host';
 
 @include host.typography('mud-tag');
 

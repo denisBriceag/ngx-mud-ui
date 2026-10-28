@@ -5,7 +5,7 @@ import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const STYLES = 'projects/ngx-mud-ui/src/lib/styles';
+const STYLES = 'projects/ngx-mud-ui/styles';
 const LEGAL_FILES = ['LICENSE', 'THIRD_PARTY_NOTICES.md'];
 
 export async function buildPrebuilt({ outDir = 'dist/ngx-mud-ui' } = {}) {

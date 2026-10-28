@@ -1,5 +1,5 @@
-@use '../../../src/lib/styles/abstracts/mixins/host';
-@use '../../../src/lib/styles/abstracts/mixins/menu-section';
+@use '../../../styles/abstracts/mixins/host';
+@use '../../../styles/abstracts/mixins/menu-section';
 
 @include host.typography('mud-menu-item');
 

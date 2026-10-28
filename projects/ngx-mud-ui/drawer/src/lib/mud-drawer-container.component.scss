@@ -1,5 +1,5 @@
-@use '../../../src/lib/styles/abstracts/mixins/host';
-@use '../../../src/lib/styles/abstracts/mixins/overlay-backdrop';
+@use '../../../styles/abstracts/mixins/host';
+@use '../../../styles/abstracts/mixins/overlay-backdrop';
 
 @include host.typography('mud-drawer-container');
 

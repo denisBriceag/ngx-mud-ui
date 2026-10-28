@@ -1,4 +1,4 @@
-@use '../../../src/lib/styles/abstracts/mixins/host';
+@use '../../../styles/abstracts/mixins/host';
 
 @include host.typography('mud-tree, a[mud-tree-item], button[mud-tree-item], a[mud-tree-node], button[mud-tree-node], div[mud-tree-node]');
 

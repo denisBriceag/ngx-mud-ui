@@ -1,4 +1,4 @@
-@use '../../../src/lib/styles/abstracts/mixins/host';
+@use '../../../styles/abstracts/mixins/host';
 
 @include host.typography('mud-input-chip, mud-numeric-input, mud-search-input, mud-select-input, mud-text-input, mud-textarea');
 

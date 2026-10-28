@@ -1,14 +1,14 @@
 import { addons } from 'storybook/manager-api';
 import { create } from 'storybook/theming';
 
-// Storybook UI branding: title + eGov logo shown in the sidebar header.
+// Storybook UI branding: title + library logo shown in the sidebar header.
 // `brandImage` is served from `.storybook/public` via `staticDirs` in main.ts.
 addons.setConfig({
   theme: create({
     base: 'light',
     brandTitle: 'ngx-mud-ui',
-    brandUrl: 'https://github.com/egov-moldova/design-system',
-    brandImage: '/age-badge.svg',
+    brandUrl: 'https://github.com/denisBriceag/ngx-mud-ui',
+    brandImage: '/logo.svg',
     brandTarget: '_self',
   }),
 });

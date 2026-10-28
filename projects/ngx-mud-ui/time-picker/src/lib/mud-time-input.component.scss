@@ -1,5 +1,5 @@
-@use '../../../src/lib/styles/abstracts/mixins/field-panel';
-@use '../../../src/lib/styles/abstracts/mixins/host';
+@use '../../../styles/abstracts/mixins/field-panel';
+@use '../../../styles/abstracts/mixins/host';
 
 @include host.typography('mud-time-input');
 
