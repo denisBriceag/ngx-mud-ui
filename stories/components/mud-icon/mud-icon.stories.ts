@@ -5,7 +5,7 @@ import type { MudIcon } from 'ngx-mud-ui/icons';
 // Deep import on purpose: the data barrel contains only icon objects, so
 // Object.values() enumerates icons without sweeping in the component/provider
 // exports of the public API.
-import * as iconData from '../../../../icons/src/lib/data';
+import * as iconData from '../../../projects/ngx-mud-ui/icons/src/lib/data';
 import { IconGalleryComponent } from './icon-gallery.component';
 
 const ALL_ICONS = Object.values(iconData) as MudIcon[];

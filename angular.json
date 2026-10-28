@@ -84,7 +84,7 @@
         "storybook": {
           "builder": "@storybook/angular-vite:start-storybook",
           "options": {
-            "configDir": "projects/ngx-mud-ui/.storybook",
+            "configDir": ".storybook",
             "browserTarget": "ngx-mud-ui:build",
             "port": 6006
           }
@@ -92,7 +92,7 @@
         "build-storybook": {
           "builder": "@storybook/angular-vite:build-storybook",
           "options": {
-            "configDir": "projects/ngx-mud-ui/.storybook",
+            "configDir": ".storybook",
             "browserTarget": "ngx-mud-ui:build",
             "outputDir": "storybook-static"
           }
@@ -103,7 +103,9 @@
             "lintFilePatterns": [
               "projects/ngx-mud-ui/**/*.ts",
               "projects/ngx-mud-ui/**/*.html",
-              "schematics/**/*.ts"
+              "schematics/**/*.ts",
+              "stories/**/*.ts",
+              ".storybook/**/*.ts"
             ],
             "eslintConfig": "projects/ngx-mud-ui/eslint.config.mjs",
             "cache": true,

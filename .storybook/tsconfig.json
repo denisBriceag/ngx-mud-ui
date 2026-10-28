@@ -1,0 +1,20 @@
+{
+  "extends": "../projects/ngx-mud-ui/tsconfig.lib.json",
+  "compilerOptions": {
+    "types": ["node", "vite/client"],
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "rootDir": ".."
+  },
+  // Compodoc reads this config to build the ArgTypes tables, so the library
+  // entry-point sources must be included.
+  "exclude": ["../**/*.spec.ts", "../projects/ngx-mud-ui/icons/src/lib/data/**"],
+  "include": [
+    "../projects/ngx-mud-ui/src/**/*.ts",
+    "../projects/ngx-mud-ui/*/src/**/*.ts",
+    "../stories/**/*.ts",
+    "./preview.ts",
+    "./compodoc-argtypes.ts"
+  ],
+  "files": ["./typings.d.ts"]
+}

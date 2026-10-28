@@ -74,6 +74,17 @@ export default defineConfig({
           }]
         }
       }
+    }, {
+      // Node-side suites for the build tools and the ng-add schematic (`pnpm test:tools`, `pnpm test:schematics`).
+      test: {
+        name: 'tools',
+        include: ['tools/**/*.spec.mjs']
+      }
+    }, {
+      test: {
+        name: 'schematics',
+        include: ['schematics/**/*.spec.ts']
+      }
     }]
   }
 });

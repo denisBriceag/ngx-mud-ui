@@ -109,7 +109,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       .filter((f) => !f.endsWith('.spec.ts'))
       .map((f) => ({ entry: entryOf(f), text: readFileSync(f, 'utf8'), source: true })),
   );
-  const docs = globSync(['README.md', `${root}/**/*.{md,mdx}`, `${root}/src/stories/**/*.ts`])
+  const docs = globSync(['README.md', `${root}/**/*.{md,mdx}`, 'stories/**/*.{ts,mdx}'])
     .filter((f) => !f.includes('node_modules'))
     .map((file) => ({ file, text: readFileSync(file, 'utf8') }));
 

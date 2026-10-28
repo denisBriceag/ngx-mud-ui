@@ -29,7 +29,7 @@ const SHARED: { title: string; kind: Group['kind']; match: RegExp }[] = [
 const COLOR_LITERAL = /^#[0-9a-f]{3,8}$|^(rgb|hsl)a?\(/i;
 // Anything else outside the shared scales is a component token, grouped by the entry point it belongs
 // to. Entry names come from the repo at build time (longest match first: `tree-item` before `tree`).
-const ENTRIES = Object.keys(import.meta.glob('../../../../*/ng-package.json'))
+const ENTRIES = Object.keys(import.meta.glob('../../../projects/ngx-mud-ui/*/ng-package.json'))
   .map((path) => path.split('/').at(-2) ?? '')
   .sort((a, b) => b.length - a.length);
 const ownerOf = (name: string): string | undefined =>

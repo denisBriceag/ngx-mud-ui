@@ -7,9 +7,9 @@ import docJson from '../documentation.json';
 
 // Structural styles for CDK overlays.
 import '@angular/cdk/overlay-prebuilt.css';
-import '../src/lib/styles/prebuilt/mud.scss';
+import '../projects/ngx-mud-ui/src/lib/styles/prebuilt/mud.scss';
 // The dark theme is opt-in for apps; Storybook always loads it so every story works with the Theme toolbar.
-import '../src/lib/styles/prebuilt/mud-dark.scss';
+import '../projects/ngx-mud-ui/src/lib/styles/prebuilt/mud-dark.scss';
 import './docs-chrome.scss';
 
 setCompodocJson(docJson);

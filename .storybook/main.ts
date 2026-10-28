@@ -14,7 +14,7 @@ const config: StorybookConfig = {
 
     const entryAlias = {
       find: /^ngx-mud-ui\/(?!prebuilt\/|fonts\/)([^/]+)$/,
-      replacement: resolve(configDir, '../$1/src/public-api.ts'),
+      replacement: resolve(configDir, '../projects/ngx-mud-ui/$1/src/public-api.ts'),
     };
     const alias = viteConfig.resolve.alias;
 
@@ -62,7 +62,6 @@ const config: StorybookConfig = {
       '@angular/platform-browser',
       '@angular/platform-browser/animations',
       '@angular/router',
-      '@mdx-js/react',
       '@storybook/addon-docs',
       '@storybook/addon-docs > @mdx-js/react',
       '@storybook/addon-docs > @storybook/react-dom-shim',
@@ -71,12 +70,11 @@ const config: StorybookConfig = {
       '@storybook/angular-vite',
       '@storybook/angular-vite/client',
       '@storybook/angular-vite/client/config',
-      '@storybook/global',
-      '@storybook/react-dom-shim',
+      '@storybook/angular-vite > @storybook/global',
       'axe-core',
-      'react',
-      'react-dom/client',
-      'react/jsx-runtime',
+      '@storybook/addon-docs > react',
+      '@storybook/addon-docs > react-dom/client',
+      '@storybook/addon-docs > react/jsx-runtime',
       'rxjs',
       'rxjs/operators',
       'storybook/highlight',
@@ -87,14 +85,14 @@ const config: StorybookConfig = {
       'storybook/internal/preview/runtime',
       'storybook/preview-api',
       'storybook/test',
-      'telejson',
-      'ts-dedent',
+      '@storybook/angular-vite > telejson',
+      '@storybook/angular-vite > ts-dedent',
       'tslib',
     ];
 
     return viteConfig;
   },
-  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+  stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   staticDirs: ['./public'],
   addons: [
     '@chromatic-com/storybook',
