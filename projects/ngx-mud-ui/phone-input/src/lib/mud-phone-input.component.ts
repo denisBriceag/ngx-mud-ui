@@ -46,7 +46,7 @@ import { _MudInputFieldStyles, _MudMenuPanelStyles, MudStyleLoader } from 'ngx-m
 
 declare const ngDevMode: boolean | undefined;
 
-export type MudPhoneInputSize = 'medium' | 'large';
+export type MudPhoneInputSize = 'md' | 'lg';
 export type MudPhoneInputVariant = 'default' | 'warning' | 'destructive' | 'success';
 
 export type MudPhoneInputMode = 'local' | 'international';
@@ -106,8 +106,8 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   /** @description BCP 47 locale for country names (via `Intl.DisplayNames`). Defaults to the format locale. */
   readonly locale = input<string | undefined>(undefined);
 
-  /** @description Size rung: medium (40px) or large (48px). */
-  readonly size = input<MudPhoneInputSize>('medium');
+  /** @description Size rung: `md` (40px) or `lg` (48px). */
+  readonly size = input<MudPhoneInputSize>('md');
 
   /** @description Colour treatment. `destructive` is forced when `invalid` is set. */
   readonly variant = input<MudPhoneInputVariant>('default');
@@ -426,7 +426,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   protected readonly _hostClasses = computed(() => {
     const classes = ['input-field', 'phone-field', `input-field--${this._effectiveVariant()}`];
 
-    if (this.size() === 'large') classes.push('input-field--lg');
+    if (this.size() === 'lg') classes.push('input-field--lg');
 
     if (this._effectiveDisabled()) classes.push('is-disabled');
 

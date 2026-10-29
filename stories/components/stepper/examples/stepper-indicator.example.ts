@@ -9,7 +9,7 @@ import { MudIndicatorStep, MudStepIndicator } from 'ngx-mud-ui/stepper';
     <mud-step-indicator>
       <mud-indicator-step heading="Creați un cont">
         Înregistrați-vă cu actul de identitate.
-        <button type="button" mudButton size="small">Începe</button>
+        <button type="button" mudButton size="sm">Începe</button>
       </mud-indicator-step>
       <mud-indicator-step heading="Confirmați identitatea"
         >Încărcați documentele cerute.</mud-indicator-step

@@ -20,7 +20,7 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ControlValueAccessor } from '@angular/forms';
 import type { FormValueControl } from '@angular/forms/signals';
 
-export type MudSegmentedControlSize = 'medium' | 'small';
+export type MudSegmentedControlSize = 'sm' | 'md';
 
 /** A @for segment's [value] lands one CD pass after the content query sees it (NG0950); this sentinel covers that window. */
 const VALUE_UNSET = Symbol('mud-segment-value-unset');
@@ -109,7 +109,7 @@ export class MudSegment<T = unknown> {
     class: 'segmented-control',
     role: 'radiogroup',
     '[class.segmented-control--full-width]': 'fullWidth()',
-    '[class.segmented-control--sm]': "size() === 'small'",
+    '[class.segmented-control--sm]': "size() === 'sm'",
     '[class.segmented-control--disabled]': '_effectiveDisabled()',
     '[attr.aria-disabled]': '_effectiveDisabled() ? "true" : null',
     '[attr.aria-label]': 'ariaLabel()',
@@ -142,7 +142,7 @@ export class MudSegmentedControl<T = unknown>
   /** @description Stretches the control and its segments to the container width, for phones. */
   readonly fullWidth = input(false, { transform: booleanAttribute });
   /** @description Height and text size. */
-  readonly size = input<MudSegmentedControlSize>('medium');
+  readonly size = input<MudSegmentedControlSize>('md');
   /** @description The selected segment's value. Two-way bindable; also driven by both forms systems. */
   readonly value = model<T | undefined>(undefined);
 

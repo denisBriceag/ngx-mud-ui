@@ -30,7 +30,7 @@ import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 import { _mudText, injectMudLabels } from 'ngx-mud-ui/i18n';
 
 export type MudInputChipVariant = 'default' | 'destructive';
-export type MudInputChipSize = 'medium' | 'large';
+export type MudInputChipSize = 'md' | 'lg';
 export type MudInputChipErrorCode = 'pattern' | 'duplicate' | 'max';
 
 export interface MudInputChipAdd {
@@ -80,8 +80,8 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
   /** @description Color treatment. `destructive` is forced when `invalid` is set. */
   readonly variant = input<MudInputChipVariant>('default');
 
-  /** @description Size rung: medium (40px min-height) or large (48px). */
-  readonly size = input<MudInputChipSize>('medium');
+  /** @description Size rung: `md` (40px min-height) or `lg` (48px). */
+  readonly size = input<MudInputChipSize>('md');
 
   /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
@@ -217,7 +217,7 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
   protected readonly _hostClasses = computed(() => {
     const classes = ['input-field', 'chip-field', `input-field--${this._effectiveVariant()}`];
 
-    if (this.size() === 'large') classes.push('input-field--lg');
+    if (this.size() === 'lg') classes.push('input-field--lg');
 
     if (this._effectiveDisabled()) classes.push('is-disabled');
 

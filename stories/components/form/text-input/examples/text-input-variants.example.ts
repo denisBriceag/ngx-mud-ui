@@ -31,8 +31,8 @@ import { MudTextInput } from 'ngx-mud-ui/text-input';
     <mud-text-input loading value="Se verifică…">
       <mud-label>Se încarcă</mud-label>
     </mud-text-input>
-    <mud-text-input size="large" placeholder="48px">
-      <mud-label>Mare (large)</mud-label>
+    <mud-text-input size="lg" placeholder="48px">
+      <mud-label>Mare (lg)</mud-label>
     </mud-text-input>
   `,
   styles: `

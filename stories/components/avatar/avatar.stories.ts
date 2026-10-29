@@ -23,10 +23,10 @@ const meta: Meta<MudAvatar> = {
   argTypes: {
     size: {
       control: 'select',
-      options: ['extra-small', 'small', 'medium', 'large', 'extra-large'],
+      options: ['xs', 'sm', 'md', 'lg', 'xl'],
     },
   },
-  args: { size: 'medium', name: 'Olga Popescu', initials: undefined, label: undefined },
+  args: { size: 'md', name: 'Olga Popescu', initials: undefined, label: undefined },
 };
 
 export default meta;

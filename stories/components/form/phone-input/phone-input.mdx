@@ -55,7 +55,7 @@ skipped and malformed countries warn in development; `validateCountry()` checks 
 `variant`, `invalid`, `required`, `readonly` and `disabled` work as in a
 [Text input](?path=/docs/components-form-text-input--docs). `loading`, for example while the number
 loads from the user's profile, shows a spinner, blocks editing and closes the country list.
-`clearable` adds a × button. `size` is `medium` (default) or `large`.
+`clearable` adds a × button. `size` is `md` (default) or `lg`.
 
 <Canvas of={PhoneInputStories.States} />
 
@@ -98,5 +98,5 @@ Method: `focus(options?)`. Content slots: `mud-label` and `mud-inline-message`.
   `mask`, `X` is a digit and anything else is shown as is.
 - `MudPhoneInputChange`: `{ value: string; country: string; complete: boolean }`
 - `MudPhoneInputMode`: `'local' | 'international'`
-- `MudPhoneInputSize`: `'medium' | 'large'`
+- `MudPhoneInputSize`: `'md' | 'lg'`
 - `MudPhoneInputVariant`: `'default' | 'warning' | 'destructive' | 'success'`

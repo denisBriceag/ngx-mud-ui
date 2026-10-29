@@ -53,7 +53,7 @@ import { injectMudLabels } from 'ngx-mud-ui/i18n';
 
 declare const ngDevMode: boolean | undefined;
 
-export type MudTimeInputSize = 'medium' | 'large';
+export type MudTimeInputSize = 'md' | 'lg';
 export type MudTimeInputVariant = 'default' | 'warning' | 'destructive' | 'success';
 
 let nextUniqueId = 0;
@@ -101,8 +101,8 @@ export class MudTimeInput implements ControlValueAccessor, FormValueControl<MudT
 
   /** @description Color treatment. `destructive` is forced when `invalid` is set. */
   readonly variant = input<MudTimeInputVariant>('default');
-  /** @description Height and text size: medium (40px) or large (48px). */
-  readonly size = input<MudTimeInputSize>('medium');
+  /** @description Height and text size: `md` (40px) or `lg` (48px). */
+  readonly size = input<MudTimeInputSize>('md');
   /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
   /** @description Adds the red asterisk to the label and the native `required` attribute. */
@@ -236,7 +236,7 @@ export class MudTimeInput implements ControlValueAccessor, FormValueControl<MudT
   protected readonly _hostClasses = computed(() => {
     const classes = ['input-field', 'time-field', `input-field--${this._effectiveVariant()}`];
 
-    if (this.size() === 'large') classes.push('input-field--lg');
+    if (this.size() === 'lg') classes.push('input-field--lg');
 
     if (this.open()) classes.push('is-open');
 

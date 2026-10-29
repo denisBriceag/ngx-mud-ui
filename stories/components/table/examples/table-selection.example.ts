@@ -87,7 +87,7 @@ const CERERI: Cerere[] = [
       <ng-container mudColumnDef="select">
         <th mud-header-cell *mudHeaderCellDef class="mud-data-table__selection-cell">
           <mud-checkbox
-            size="small"
+            size="sm"
             [checked]="allSelected()"
             [indeterminate]="someSelected()"
             (checkedChange)="toggleAll()"
@@ -96,7 +96,7 @@ const CERERI: Cerere[] = [
         </th>
         <td mud-cell *mudCellDef="let row" class="mud-data-table__selection-cell">
           <mud-checkbox
-            size="small"
+            size="sm"
             [checked]="selection.isSelected(row)"
             (checkedChange)="toggle(row)"
             [aria-label]="'Selectează ' + row.nume"

@@ -13,7 +13,7 @@ import type { MudInlineMessageSize, MudInlineMessageVariant } from '../mud-inlin
 })
 class Host {
   readonly variant = signal<MudInlineMessageVariant>('info');
-  readonly size = signal<MudInlineMessageSize>('medium');
+  readonly size = signal<MudInlineMessageSize>('md');
   readonly hideIcon = signal(false);
 }
 
@@ -56,7 +56,7 @@ describe('MudInlineMessage', () => {
   it('adds the small modifier for size small', async () => {
     const { fixture, host, el } = await render();
 
-    host.size.set('small');
+    host.size.set('sm');
     await fixture.whenStable();
     expect(el.classList.contains('inline-message--small')).toBe(true);
   });

@@ -8,16 +8,11 @@ import { MudToast } from 'ngx-mud-ui/toast';
   imports: [MudButton],
   template: `
     @for (position of positions; track $index) {
-      <button
-        type="button"
-        mudButton="outlined"
-        size="small"
-        (click)="show(position.v, position.h)"
-      >
+      <button type="button" mudButton="outlined" size="sm" (click)="show(position.v, position.h)">
         {{ position.v }} · {{ position.h }}
       </button>
     }
-    <button type="button" mudButton="text" size="small" (click)="dismissAll()">Dismiss all</button>
+    <button type="button" mudButton="text" size="sm" (click)="dismissAll()">Dismiss all</button>
   `,
   styles: `
     :host {

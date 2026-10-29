@@ -25,11 +25,11 @@ const meta: Meta<MudFileInput> = {
   ],
   argTypes: {
     variant: { control: 'inline-radio', options: ['dropzone', 'button'] },
-    size: { control: 'inline-radio', options: ['medium', 'large'] },
+    size: { control: 'inline-radio', options: ['md', 'lg'] },
   },
   args: {
     variant: 'dropzone',
-    size: 'medium',
+    size: 'md',
     multiple: true,
     accept: '.pdf,image/*',
     maxSize: 5242880,

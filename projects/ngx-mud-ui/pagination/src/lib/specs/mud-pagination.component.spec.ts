@@ -24,7 +24,7 @@ class Host {
   readonly pageSize = signal(10);
   readonly pageIndex = signal(0);
   readonly disabled = signal(false);
-  readonly size = signal<MudPaginationSize>('medium');
+  readonly size = signal<MudPaginationSize>('md');
   readonly label = signal<string | undefined>(undefined);
   readonly events: MudPageEvent[] = [];
 }
@@ -254,7 +254,7 @@ describe('MudPagination', () => {
   });
 
   it('size small adds the modifier class', async () => {
-    const { root } = await render((h) => h.size.set('small'));
+    const { root } = await render((h) => h.size.set('sm'));
 
     expect(root.querySelector('mud-pagination')!.classList.contains('mud-pagination--small')).toBe(true);
   });

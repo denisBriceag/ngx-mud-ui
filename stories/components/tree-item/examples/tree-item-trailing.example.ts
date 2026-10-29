@@ -21,7 +21,7 @@ import { MudTreeItem } from 'ngx-mud-ui/tree-item';
     </a>
     <a mud-tree-item href="#signature">
       Electronic signature
-      <mud-tag trailing color="brand" size="small">New</mud-tag>
+      <mud-tag trailing color="brand" size="sm">New</mud-tag>
     </a>
   `,
   styles: `

@@ -17,8 +17,8 @@ import { MudNumericInput } from 'ngx-mud-ui/numeric-input';
     <mud-numeric-input disabled [value]="42" showSteppers>
       <mud-label>Dezactivat</mud-label>
     </mud-numeric-input>
-    <mud-numeric-input size="large" [maxLength]="6" [counterLabel]="'Cel mult 6 cifre'">
-      <mud-label>Cod poștal (large, cu contor)</mud-label>
+    <mud-numeric-input size="lg" [maxLength]="6" [counterLabel]="'Cel mult 6 cifre'">
+      <mud-label>Cod poștal (lg, cu contor)</mud-label>
     </mud-numeric-input>
   `,
   styles: `

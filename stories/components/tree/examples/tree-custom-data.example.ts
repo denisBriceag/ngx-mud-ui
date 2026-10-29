@@ -46,7 +46,7 @@ const ADMIN_NAV: NavNode<PageInfo>[] = [
       >
         {{ node.label }}
         @if (node.data?.permission === 'admin') {
-          <mud-tag trailing size="small" color="brand">Admin</mud-tag>
+          <mud-tag trailing size="sm" color="brand">Admin</mud-tag>
         }
       </a>
       <button

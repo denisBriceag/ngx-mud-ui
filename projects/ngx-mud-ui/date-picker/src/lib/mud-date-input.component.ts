@@ -52,7 +52,7 @@ import { injectMudLabels } from 'ngx-mud-ui/i18n';
 
 declare const ngDevMode: boolean | undefined;
 
-export type MudDateInputSize = 'medium' | 'large';
+export type MudDateInputSize = 'md' | 'lg';
 export type MudDateInputVariant = 'default' | 'warning' | 'destructive' | 'success';
 
 let nextUniqueId = 0;
@@ -121,8 +121,8 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
 
   /** @description Color treatment. `destructive` is forced when `invalid` is set. */
   readonly variant = input<MudDateInputVariant>('default');
-  /** @description Height and text size: medium (40px) or large (48px). */
-  readonly size = input<MudDateInputSize>('medium');
+  /** @description Height and text size: `md` (40px) or `lg` (48px). */
+  readonly size = input<MudDateInputSize>('md');
   /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
   /** @description Adds the red asterisk to the label and the native `required` attribute. */
@@ -328,7 +328,7 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   protected readonly _hostClasses = computed(() => {
     const classes = ['input-field', 'date-field', `input-field--${this._effectiveVariant()}`];
 
-    if (this.size() === 'large') classes.push('input-field--lg');
+    if (this.size() === 'lg') classes.push('input-field--lg');
 
     if (this.open()) classes.push('is-open');
 

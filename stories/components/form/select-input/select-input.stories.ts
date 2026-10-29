@@ -19,9 +19,9 @@ const meta: Meta<MudSelectInput<string>> = {
   title: 'Components/Form/Select input',
   component: MudSelectInput,
   decorators: [moduleMetadata({ imports: [MudSelectInput, MudLabel] })],
-  argTypes: { size: { control: 'inline-radio', options: ['medium', 'large'] } },
+  argTypes: { size: { control: 'inline-radio', options: ['md', 'lg'] } },
   args: {
-    size: 'medium',
+    size: 'md',
     searchable: false,
     loading: false,
     disabled: false,

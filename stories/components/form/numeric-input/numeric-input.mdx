@@ -44,8 +44,8 @@ Put text before or after the number with `prefix` or `suffix` (such as a currenc
 ## States
 
 `variant`, `invalid`, `required`, `readonly`, `disabled` and `loading` work as in a
-[Text input](?path=/docs/components-form-text-input--docs). `size` is `medium` (40px, default) or
-`large` (48px). With `maxLength`, a character counter shows; describe it with `counterLabel`.
+[Text input](?path=/docs/components-form-text-input--docs). `size` is `md` (40px, default) or
+`lg` (48px). With `maxLength`, a character counter shows; describe it with `counterLabel`.
 
 <Canvas of={NumericInputStories.States} />
 
@@ -76,6 +76,6 @@ Method: `focus(options?)`. Content slots: `mud-label`, `[icon-start]`, `[prefix]
 ### Types
 
 - `MudNumericInputVariant`: `'default' | 'warning' | 'destructive' | 'success'`
-- `MudNumericInputSize`: `'medium' | 'large'`
+- `MudNumericInputSize`: `'md' | 'lg'`
 - `MudNumericInputErrorKind`: `'not-a-number' | 'out-of-range'`
 - `MudNumericInputStep`: `{ value: number; direction: 1 | -1 }`

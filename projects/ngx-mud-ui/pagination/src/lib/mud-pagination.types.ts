@@ -1,4 +1,4 @@
-export type MudPaginationSize = 'small' | 'medium';
+export type MudPaginationSize = 'sm' | 'md';
 
 /** Emitted by `(page)`; indexes are 0-based. */
 export interface MudPageEvent {

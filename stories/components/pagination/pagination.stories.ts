@@ -18,8 +18,8 @@ const meta: Meta<MudPagination> = {
   title: 'Components/Pagination',
   component: MudPagination,
   decorators: [moduleMetadata({ imports: [MudPagination] })],
-  argTypes: { size: { control: 'inline-radio', options: ['medium', 'small'] } },
-  args: { length: 200, pageSize: 10, pageIndex: 0, size: 'medium', disabled: false },
+  argTypes: { size: { control: 'inline-radio', options: ['sm', 'md'] } },
+  args: { length: 200, pageSize: 10, pageIndex: 0, size: 'md', disabled: false },
 };
 
 export default meta;

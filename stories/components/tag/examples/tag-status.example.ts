@@ -10,7 +10,7 @@ import { MudTag } from 'ngx-mud-ui/tag';
     <span>Plata:</span>
     <!-- aria-label makes the tag a live region, so the change is announced. -->
     <mud-tag [color]="status().color" aria-label="Payment status">{{ status().text }}</mud-tag>
-    <button type="button" mudButton="outlined" size="small" (click)="next()">Next status</button>
+    <button type="button" mudButton="outlined" size="sm" (click)="next()">Next status</button>
   `,
   styles: `
     :host {

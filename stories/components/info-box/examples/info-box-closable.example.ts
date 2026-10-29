@@ -13,13 +13,7 @@ import { MudInfoBox } from 'ngx-mud-ui/info-box';
         You can now sign documents with MSign from your phone.
       </mud-info-box>
     } @else {
-      <button
-        #showAgain
-        type="button"
-        mudButton="outlined"
-        size="small"
-        (click)="visible.set(true)"
-      >
+      <button #showAgain type="button" mudButton="outlined" size="sm" (click)="visible.set(true)">
         Show the tip again
       </button>
     }

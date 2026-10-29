@@ -11,7 +11,7 @@ import { MudButton } from 'ngx-mud-ui/button';
         You can now sign documents with MSign from your phone.
       </mud-banner>
     } @else {
-      <button type="button" mudButton="outlined" size="small" (click)="visible.set(true)">
+      <button type="button" mudButton="outlined" size="sm" (click)="visible.set(true)">
         Show the banner again
       </button>
     }

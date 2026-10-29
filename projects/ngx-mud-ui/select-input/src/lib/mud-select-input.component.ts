@@ -46,7 +46,7 @@ import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 import { _MudInputFieldStyles, _MudMenuPanelStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudSelectInputVariant = 'default' | 'destructive';
-export type MudSelectInputSize = 'medium' | 'large';
+export type MudSelectInputSize = 'md' | 'lg';
 
 let nextUniqueId = 0;
 
@@ -98,8 +98,8 @@ export class MudSelectInput<T = unknown>
   /** @description Color treatment. `destructive` is forced when `invalid` is set. */
   readonly variant = input<MudSelectInputVariant>('default');
 
-  /** @description Size rung: medium (40px) or large (48px). */
-  readonly size = input<MudSelectInputSize>('medium');
+  /** @description Size rung: `md` (40px) or `lg` (48px). */
+  readonly size = input<MudSelectInputSize>('md');
 
   /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
@@ -319,7 +319,7 @@ export class MudSelectInput<T = unknown>
   protected readonly _hostClasses = computed(() => {
     const classes = ['input-field', 'select-field', `input-field--${this._effectiveVariant()}`];
 
-    if (this.size() === 'large') classes.push('input-field--lg');
+    if (this.size() === 'lg') classes.push('input-field--lg');
 
     if (this.open()) classes.push('is-open');
 

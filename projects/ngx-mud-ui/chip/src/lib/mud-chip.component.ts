@@ -14,7 +14,7 @@ import { _mudText, injectMudLabels } from 'ngx-mud-ui/i18n';
 import { _MudChipStyles } from './mud-chip-styles.component';
 
 export type MudChipType = 'filter' | 'input';
-export type MudChipSize = 'small' | 'medium';
+export type MudChipSize = 'sm' | 'md';
 
 /** `mono` is radio-like; `multi` is checkbox-like with a leading check. */
 export type MudChipSelectionMode = 'mono' | 'multi';
@@ -38,8 +38,8 @@ export class MudChip {
   /** @description Behavioral mode: `filter` toggles on click, `input` is a static token. */
   readonly type = input<MudChipType>('filter');
 
-  /** @description Size rung: medium (36px) or small (28px). */
-  readonly size = input<MudChipSize>('medium');
+  /** @description Size rung: `md` (36px) or `sm` (28px). */
+  readonly size = input<MudChipSize>('md');
 
   /** @description Selected state for `type="filter"`. Two-way bindable; ignored for `input`. */
   readonly selected = model(false);
@@ -87,7 +87,7 @@ export class MudChip {
   protected readonly _hostClasses = computed(() => {
     const classes = ['chip', `chip--${this.type()}`];
 
-    if (this.size() === 'small') classes.push('chip--sm');
+    if (this.size() === 'sm') classes.push('chip--sm');
 
     if (this._isFilter() && this._selected()) classes.push('is-selected');
 

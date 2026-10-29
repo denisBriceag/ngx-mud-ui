@@ -12,7 +12,7 @@ import type { MudTagColor, MudTagSize, MudTagType } from '../mud-tag.component';
 class Host {
   readonly color = signal<MudTagColor>('neutral');
   readonly type = signal<MudTagType>('subtle');
-  readonly size = signal<MudTagSize>('medium');
+  readonly size = signal<MudTagSize>('md');
   readonly disabled = signal(false);
 }
 
@@ -75,7 +75,7 @@ describe('MudTag', () => {
   it('adds the small modifier for size small', async () => {
     const { fixture, host, el } = await render();
 
-    host.size.set('small');
+    host.size.set('sm');
     await fixture.whenStable();
     expect(el.classList.contains('status-tag--small')).toBe(true);
   });

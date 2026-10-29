@@ -19,9 +19,9 @@ const meta: Meta<MudCheckbox> = {
   title: 'Components/Form/Checkbox',
   component: MudCheckbox,
   decorators: [moduleMetadata({ imports: [MudCheckbox, MudLabel] })],
-  argTypes: { size: { control: 'inline-radio', options: ['medium', 'small'] } },
+  argTypes: { size: { control: 'inline-radio', options: ['sm', 'md'] } },
   args: {
-    size: 'medium',
+    size: 'md',
     checked: false,
     indeterminate: false,
     disabled: false,

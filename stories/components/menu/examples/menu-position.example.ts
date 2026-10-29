@@ -8,7 +8,7 @@ import { MudMenu, MudMenuItem, MudMenuTrigger } from 'ngx-mud-ui/menu';
   imports: [MudButton, MudMenu, MudMenuItem, MudMenuTrigger],
   template: `
     @for (position of positions; track $index) {
-      <button type="button" mudButton="outlined" size="small" [mudMenuTriggerFor]="menu">
+      <button type="button" mudButton="outlined" size="sm" [mudMenuTriggerFor]="menu">
         {{ position.y }} · {{ position.x }}
       </button>
       <mud-menu #menu [yPosition]="position.y" [xPosition]="position.x" aria-label="Actions">

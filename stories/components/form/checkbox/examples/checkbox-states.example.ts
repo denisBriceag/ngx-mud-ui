@@ -19,7 +19,7 @@ import { MudLabel } from 'ngx-mud-ui/label';
       <mud-inline-message hideIcon>Focusabil, dar nu se poate schimba.</mud-inline-message>
     </mud-checkbox>
     <mud-checkbox disabled><mud-label>Dezactivat</mud-label></mud-checkbox>
-    <mud-checkbox size="small" [checked]="true"><mud-label>Mic (small)</mud-label></mud-checkbox>
+    <mud-checkbox size="sm" [checked]="true"><mud-label>Mic (sm)</mud-label></mud-checkbox>
   `,
   styles: `
     :host {

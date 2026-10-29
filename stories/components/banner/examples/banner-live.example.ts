@@ -8,7 +8,7 @@ import { MudButton } from 'ngx-mud-ui/button';
   template: `
     <!-- On the page from the start; only its text changes, so screen readers announce each change. -->
     <mud-banner [variant]="minutes() > 2 ? 'info' : 'warning'" live>{{ message() }}</mud-banner>
-    <button type="button" mudButton="outlined" size="small" (click)="minutes.set(5)">
+    <button type="button" mudButton="outlined" size="sm" (click)="minutes.set(5)">
       Extend session
     </button>
   `,

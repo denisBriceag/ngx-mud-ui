@@ -5,7 +5,7 @@ declare const ngDevMode: boolean | undefined;
 
 export type MudButtonVariant = 'filled' | 'outlined' | 'text';
 export type MudButtonColor = 'primary' | 'secondary' | 'strict' | 'neutral' | 'destructive';
-export type MudButtonSize = 'large' | 'medium' | 'small';
+export type MudButtonSize = 'sm' | 'md' | 'lg';
 export type MudButtonShape = 'rectangular' | 'circular';
 
 const VARIANT_CLASS_INFIX: Record<MudButtonVariant, string> = {
@@ -15,9 +15,9 @@ const VARIANT_CLASS_INFIX: Record<MudButtonVariant, string> = {
 };
 
 const SIZE_CLASSES: Record<MudButtonSize, string> = {
-  large: '',
-  medium: 'mud-btn-md',
-  small: 'mud-btn-sm',
+  lg: '',
+  md: 'mud-btn-md',
+  sm: 'mud-btn-sm',
 };
 
 const SUPPORTED_COLORS: Record<MudButtonVariant, readonly MudButtonColor[]> = {
@@ -29,7 +29,7 @@ const SUPPORTED_COLORS: Record<MudButtonVariant, readonly MudButtonColor[]> = {
 /**
  * ```html
  * <button mudButton>Save</button>
- * <button mudButton="outlined" color="destructive" size="small">Delete</button>
+ * <button mudButton="outlined" color="destructive" size="sm">Delete</button>
  * <a mudButton="text" color="strict" shape="circular" href="/back">Back</a>
  * ```
  */
@@ -45,7 +45,7 @@ export class MudButton extends MudButtonBase {
   /** @description Color; `secondary` and `neutral` exist for the `filled` variant only. */
   readonly color = input<MudButtonColor>('primary');
   /** @description Height and padding. */
-  readonly size = input<MudButtonSize>('large');
+  readonly size = input<MudButtonSize>('lg');
   /** @description Corner style; `circular` rounds the ends fully. */
   readonly shape = input<MudButtonShape>('rectangular');
   /** @description Stretches the button to fill its container's width. */

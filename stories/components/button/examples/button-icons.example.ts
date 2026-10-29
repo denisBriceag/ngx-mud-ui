@@ -19,7 +19,7 @@ import { MudIconComponent } from 'ngx-mud-ui/icons';
       <button type="button" mudIconButton aria-label="Add">
         <mud-icon name="plus-large" [scale]="20" />
       </button>
-      <button type="button" mudIconButton size="small" aria-label="Add">
+      <button type="button" mudIconButton size="sm" aria-label="Add">
         <mud-icon name="plus-small" [scale]="16" />
       </button>
       <button type="button" mudIconButton aria-label="Add" disabled>

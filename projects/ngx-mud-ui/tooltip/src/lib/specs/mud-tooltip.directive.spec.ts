@@ -31,7 +31,7 @@ class Host {
   readonly trigger = signal<'hover' | 'click' | 'focus' | 'manual'>('hover');
   readonly interactive = signal(true);
   readonly placement = signal<MudTooltipPlacement>('top-center');
-  readonly size = signal<MudTooltipSize>('small');
+  readonly size = signal<MudTooltipSize>('sm');
   readonly closable = signal(false);
   readonly disabled = signal(false);
   readonly maxWidth = signal('240px');
@@ -194,20 +194,20 @@ describe('MudTooltip', () => {
 
     expect(tooltip()!.classList).toContain('tooltip');
     expect(tooltip()!.classList).toContain('tooltip--top-center');
-    expect(tooltip()!.classList).toContain('tooltip--small');
+    expect(tooltip()!.classList).toContain('tooltip--sm');
   });
 
   it('applies the configured placement and size classes', async () => {
     const { fixture, host, trigger, tooltip } = await render();
 
     host.placement.set('bottom-right');
-    host.size.set('large');
+    host.size.set('lg');
     await fixture.whenStable();
 
     await dispatch(fixture, trigger, mouseenter());
 
     expect(tooltip()!.classList).toContain('tooltip--bottom-right');
-    expect(tooltip()!.classList).toContain('tooltip--large');
+    expect(tooltip()!.classList).toContain('tooltip--lg');
   });
 
   it('exposes tooltipMaxWidth as a CSS custom property on the bubble', async () => {

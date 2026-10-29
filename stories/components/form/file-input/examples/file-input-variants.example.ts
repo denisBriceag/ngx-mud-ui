@@ -10,8 +10,8 @@ import { MudLabel } from 'ngx-mud-ui/label';
     <mud-file-input variant="button" accept=".pdf">
       <mud-label>Buton (button)</mud-label>
     </mud-file-input>
-    <mud-file-input size="large" accept="image/*">
-      <mud-label>Zonă mare (large)</mud-label>
+    <mud-file-input size="lg" accept="image/*">
+      <mud-label>Zonă mare (lg)</mud-label>
     </mud-file-input>
     <mud-file-input required invalid>
       <mud-label>Obligatoriu, cu eroare</mud-label>

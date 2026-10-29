@@ -7,10 +7,8 @@ import { MudAccordion, MudAccordionHeader, MudAccordionTitle } from 'ngx-mud-ui/
   imports: [MudAccordion, MudAccordionHeader, MudAccordionTitle, MudButton],
   template: `
     <div class="actions">
-      <button type="button" mudButton="outlined" size="small" (click)="item.toggle()">
-        Toggle
-      </button>
-      <button type="button" mudButton="outlined" size="small" (click)="disabled.set(!disabled())">
+      <button type="button" mudButton="outlined" size="sm" (click)="item.toggle()">Toggle</button>
+      <button type="button" mudButton="outlined" size="sm" (click)="disabled.set(!disabled())">
         {{ disabled() ? 'Enable' : 'Disable' }}
       </button>
     </div>

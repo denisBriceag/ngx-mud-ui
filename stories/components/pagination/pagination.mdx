@@ -29,9 +29,9 @@ never hides just one page; that page's number shows instead.
 
 ## Sizes and narrow spaces
 
-`size` is `medium` (40px, default) or `small` (32px, Prev and Next as icons only). When seven slots
+`size` is `md` (40px, default) or `sm` (32px, Prev and Next as icons only). When seven slots
 don't fit its container, the paginator drops to five (`1 … 5 … 20`). It measures its own container,
-so it adapts in a narrow card on a wide screen too. Use `small` below about 520px; it needs about
+so it adapts in a narrow card on a wide screen too. Use `sm` below about 520px; it needs about
 270px.
 
 The paginator is a block-level flex container, so align it with `justify-content`. `disabled`
@@ -80,5 +80,5 @@ Methods: `nextPage()`, `previousPage()`, `firstPage()`, `lastPage()`, `hasNextPa
 
 ### Types
 
-- `MudPaginationSize`: `'small' | 'medium'`
+- `MudPaginationSize`: `'sm' | 'md'`
 - `MudPageEvent`: `{ pageIndex: number; previousPageIndex: number; pageSize: number; length: number }`

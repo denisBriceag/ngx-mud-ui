@@ -18,13 +18,13 @@ const meta: Meta<MudLink> = {
   decorators: [moduleMetadata({ imports: [MudLink] })],
   argTypes: {
     mudLink: { control: 'inline-radio', options: ['primary', 'strict'] },
-    size: { control: 'inline-radio', options: ['large', 'medium', 'small', 'extra-small'] },
+    size: { control: 'inline-radio', options: ['xs', 'sm', 'md', 'lg'] },
     underline: { control: 'inline-radio', options: ['always', 'hover', 'none'] },
     touchTarget: { control: 'inline-radio', options: ['auto', 'pointer', 'touch', 'none'] },
   },
   args: {
     mudLink: 'primary',
-    size: 'medium',
+    size: 'md',
     underline: 'always',
     touchTarget: 'auto',
     disabled: false,

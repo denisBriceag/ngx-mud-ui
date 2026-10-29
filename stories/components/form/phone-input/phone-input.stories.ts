@@ -21,11 +21,11 @@ const meta: Meta<MudPhoneInput> = {
   decorators: [moduleMetadata({ imports: [MudPhoneInput, MudLabel] })],
   argTypes: {
     mode: { control: 'inline-radio', options: ['local', 'international'] },
-    size: { control: 'inline-radio', options: ['medium', 'large'] },
+    size: { control: 'inline-radio', options: ['md', 'lg'] },
   },
   args: {
     mode: 'local',
-    size: 'medium',
+    size: 'md',
     clearable: false,
     loading: false,
     disabled: false,

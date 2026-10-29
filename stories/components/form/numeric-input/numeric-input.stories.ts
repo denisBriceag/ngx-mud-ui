@@ -19,11 +19,11 @@ const meta: Meta<MudNumericInput> = {
   decorators: [moduleMetadata({ imports: [MudNumericInput, MudLabel] })],
   argTypes: {
     variant: { control: 'inline-radio', options: ['default', 'warning', 'destructive', 'success'] },
-    size: { control: 'inline-radio', options: ['medium', 'large'] },
+    size: { control: 'inline-radio', options: ['md', 'lg'] },
   },
   args: {
     variant: 'default',
-    size: 'medium',
+    size: 'md',
     showSteppers: true,
     clearable: false,
     step: 1,

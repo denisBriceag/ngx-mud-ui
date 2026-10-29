@@ -1,11 +1,11 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, ViewEncapsulation } from '@angular/core';
 
 export type MudInlineMessageVariant = 'info' | 'warning' | 'success' | 'error';
-export type MudInlineMessageSize = 'small' | 'medium';
+export type MudInlineMessageSize = 'sm' | 'md';
 
 /**
  * ```html
- * <mud-inline-message variant="error" size="small" id="cnp-error">
+ * <mud-inline-message variant="error" size="sm" id="cnp-error">
  *   Introduceți un IDNP valid.
  * </mud-inline-message>
  * ```
@@ -70,8 +70,8 @@ export class MudInlineMessage {
   /** @description Semantic variant; `info` colours only the icon, the others colour icon and text. */
   readonly variant = input<MudInlineMessageVariant>('info');
 
-  /** @description Size rung: `small` (12/16, 16px icon) or `medium` (14/20, 20px icon). */
-  readonly size = input<MudInlineMessageSize>('medium');
+  /** @description Size rung: `sm` (12/16, 16px icon) or `md` (14/20, 20px icon). */
+  readonly size = input<MudInlineMessageSize>('md');
 
   /** @description Suppresses the leading icon (the icon-none variation). */
   readonly hideIcon = input(false, { transform: booleanAttribute });
@@ -79,7 +79,7 @@ export class MudInlineMessage {
   protected readonly _hostClasses = computed(() => {
     const classes = ['inline-message', `inline-message--${this.variant()}`];
 
-    if (this.size() === 'small') classes.push('inline-message--small');
+    if (this.size() === 'sm') classes.push('inline-message--small');
 
     return classes.join(' ');
   });

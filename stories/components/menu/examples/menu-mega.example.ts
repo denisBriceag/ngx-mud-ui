@@ -25,7 +25,7 @@ import {
         <button [mudMegaMenuTriggerFor]="services">Servicii</button>
         <button [mudMegaMenuTriggerFor]="about">Despre</button>
       </nav>
-      <button type="button" mudButton shape="circular" size="medium">Autentifică-te</button>
+      <button type="button" mudButton shape="circular" size="md">Autentifică-te</button>
     </header>
 
     <mud-mega-menu #services>

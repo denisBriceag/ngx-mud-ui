@@ -20,10 +20,10 @@ const meta: Meta<MudTimeInput> = {
   component: MudTimeInput,
   decorators: [moduleMetadata({ imports: [MudTimeInput, MudLabel] })],
   argTypes: {
-    size: { control: 'inline-radio', options: ['medium', 'large'] },
+    size: { control: 'inline-radio', options: ['md', 'lg'] },
     minuteStep: { control: 'inline-radio', options: [1, 5, 10, 15, 30] },
   },
-  args: { size: 'medium', minuteStep: 1, clearable: true, disabled: false, invalid: false },
+  args: { size: 'md', minuteStep: 1, clearable: true, disabled: false, invalid: false },
 };
 
 export default meta;

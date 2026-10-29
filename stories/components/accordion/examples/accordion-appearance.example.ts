@@ -27,7 +27,7 @@ import {
     </mud-accordion-group>
 
     <h4>Small, toggle on the left</h4>
-    <mud-accordion-group size="small" iconPosition="left">
+    <mud-accordion-group size="sm" iconPosition="left">
       <mud-accordion>
         <mud-accordion-header>
           <mud-accordion-title>Acte necesare</mud-accordion-title>

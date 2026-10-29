@@ -15,13 +15,13 @@ import { MudTab, MudTabGroup } from 'ngx-mud-ui/tabs';
       <button
         type="button"
         mudButton="outlined"
-        size="small"
+        size="sm"
         [disabled]="step() === 0"
         (click)="go(-1)"
       >
         Înapoi
       </button>
-      <button type="button" mudButton size="small" [disabled]="step() === 2" (click)="go(1)">
+      <button type="button" mudButton size="sm" [disabled]="step() === 2" (click)="go(1)">
         Continuă
       </button>
     </div>

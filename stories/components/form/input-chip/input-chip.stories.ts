@@ -17,8 +17,8 @@ const meta: Meta<MudInputChip> = {
   title: 'Components/Form/Input chip',
   component: MudInputChip,
   decorators: [moduleMetadata({ imports: [MudInputChip, MudLabel] })],
-  argTypes: { size: { control: 'inline-radio', options: ['medium', 'large'] } },
-  args: { size: 'medium', separators: ',', disabled: false, readonly: false, invalid: false },
+  argTypes: { size: { control: 'inline-radio', options: ['md', 'lg'] } },
+  args: { size: 'md', separators: ',', disabled: false, readonly: false, invalid: false },
 };
 
 export default meta;

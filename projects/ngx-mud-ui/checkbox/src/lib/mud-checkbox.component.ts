@@ -24,7 +24,7 @@ import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { _MudSelectionControlStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
-export type MudCheckboxSize = 'medium' | 'small';
+export type MudCheckboxSize = 'sm' | 'md';
 
 let nextUniqueId = 0;
 
@@ -54,8 +54,8 @@ let nextUniqueId = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MudCheckbox implements ControlValueAccessor, FormCheckboxControl {
-  /** @description Size rung: medium (24px box) or small (20px). */
-  readonly size = input<MudCheckboxSize>('medium');
+  /** @description Size rung: `md` (24px box) or `sm` (20px). */
+  readonly size = input<MudCheckboxSize>('md');
 
   /** @description Checked state. Two-way bindable; also driven by both forms systems. */
   readonly checked = model(false);
@@ -138,7 +138,7 @@ export class MudCheckbox implements ControlValueAccessor, FormCheckboxControl {
   protected readonly _hostClasses = computed(() => {
     const classes = ['selection-control'];
 
-    if (this.size() === 'small') classes.push('selection-control--sm');
+    if (this.size() === 'sm') classes.push('selection-control--sm');
 
     if (this.checked()) classes.push('is-checked');
 

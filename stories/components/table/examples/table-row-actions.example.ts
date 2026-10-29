@@ -111,7 +111,7 @@ const CERERI: Cerere[] = [
           <button
             type="button"
             mudIconButton
-            size="small"
+            size="sm"
             [attr.aria-label]="'Editează ' + row.nume"
             (click)="edit(row)"
           >

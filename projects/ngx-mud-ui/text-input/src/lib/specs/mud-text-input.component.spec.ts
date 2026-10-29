@@ -37,7 +37,7 @@ import type { MudTextInputSize, MudTextInputVariant } from '../mud-text-input.co
 class Host {
   readonly value = signal('');
   readonly variant = signal<MudTextInputVariant>('default');
-  readonly size = signal<MudTextInputSize>('medium');
+  readonly size = signal<MudTextInputSize>('md');
   readonly invalid = signal(false);
   readonly disabled = signal(false);
   readonly readonly = signal(false);
@@ -105,7 +105,7 @@ describe('MudTextInput', () => {
     const { fixture, host, el } = await render();
 
     host.variant.set('success');
-    host.size.set('large');
+    host.size.set('lg');
     await fixture.whenStable();
     expect(el.classList.contains('input-field--success')).toBe(true);
     expect(el.classList.contains('input-field--lg')).toBe(true);

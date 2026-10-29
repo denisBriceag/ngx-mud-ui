@@ -24,9 +24,9 @@ const meta: Meta<MudTag> = {
       options: ['muted', 'neutral', 'accent', 'success', 'brand', 'danger', 'info'],
     },
     type: { control: 'inline-radio', options: ['subtle', 'strong', 'outlined'] },
-    size: { control: 'inline-radio', options: ['medium', 'small'] },
+    size: { control: 'inline-radio', options: ['sm', 'md'] },
   },
-  args: { color: 'success', type: 'subtle', size: 'medium', disabled: false },
+  args: { color: 'success', type: 'subtle', size: 'md', disabled: false },
 };
 
 export default meta;

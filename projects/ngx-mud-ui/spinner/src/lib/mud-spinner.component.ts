@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, input, ViewEncapsulation } from '@angular/core';
 import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 
-export type MudSpinnerSize = 'extra-small' | 'small' | 'medium' | 'large';
+export type MudSpinnerSize = 'xs' | 'sm' | 'md' | 'lg';
 export type MudSpinnerVariant = 'brand' | 'dark' | 'light' | 'light-on-color';
 
 /**
  * ```html
  * <mud-spinner />
- * <mud-spinner size="small" variant="light-on-color" aria-label="Se încarcă" />
+ * <mud-spinner size="sm" variant="light-on-color" aria-label="Se încarcă" />
  * ```
  */
 @Component({
@@ -24,7 +24,7 @@ export type MudSpinnerVariant = 'brand' | 'dark' | 'light' | 'light-on-color';
 })
 export class MudSpinner {
   /** @description Diameter: 16, 20, 32 or 40px. */
-  readonly size = input<MudSpinnerSize>('medium');
+  readonly size = input<MudSpinnerSize>('md');
   /** @description Color; `light-on-color` is for saturated backgrounds. */
   readonly variant = input<MudSpinnerVariant>('brand');
   /** @description Visually-hidden status text; defaults to the app labels (`spinner.loading`). */

@@ -33,14 +33,14 @@ any other unsupported pair falls back to `primary` with a dev-mode warning.
 
 ## Sizes and shapes
 
-`size` is `large` (default), `medium` or `small`. `shape="circular"` rounds the corners fully.
+`size` is `lg` (default), `md` or `sm`. `shape="circular"` rounds the corners fully.
 
 <Canvas of={ButtonStories.Sizes} />
 
 ## Icons
 
 Icons are projected content: put a `<mud-icon>` before or after the text. For an icon-only action
-use `mudIconButton`, a transparent circle in `medium` (40px, default) or `small` (32px) size. It
+use `mudIconButton`, a transparent circle in `md` (40px, default) or `sm` (32px) size. It
 needs an `aria-label`, `aria-labelledby` or `title`, and warns in dev mode without one.
 
 <Canvas of={ButtonStories.Icons} />
@@ -95,6 +95,6 @@ Selector: `button[mudIconButton], a[mudIconButton]` · Exported as: `mudIconButt
 
 - `MudButtonVariant`: `'filled' | 'outlined' | 'text'`
 - `MudButtonColor`: `'primary' | 'secondary' | 'strict' | 'neutral' | 'destructive'`
-- `MudButtonSize`: `'large' | 'medium' | 'small'`
+- `MudButtonSize`: `'sm' | 'md' | 'lg'`
 - `MudButtonShape`: `'rectangular' | 'circular'`
-- `MudIconButtonSize`: `'medium' | 'small'`
+- `MudIconButtonSize`: `'sm' | 'md'`

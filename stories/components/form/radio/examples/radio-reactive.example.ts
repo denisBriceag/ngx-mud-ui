@@ -20,7 +20,7 @@ import { MudRadio, MudRadioGroup } from 'ngx-mud-ui/radio';
         <mud-inline-message variant="error">Alegeți o metodă de plată.</mud-inline-message>
       }
     </mud-radio-group>
-    <button type="button" mudButton size="small" (click)="method.markAsTouched()">Continuă</button>
+    <button type="button" mudButton size="sm" (click)="method.markAsTouched()">Continuă</button>
   `,
   styles: `
     :host {

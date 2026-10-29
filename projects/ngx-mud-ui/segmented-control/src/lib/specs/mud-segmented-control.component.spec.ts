@@ -418,7 +418,7 @@ describe('MudSegmentedControl size and forms integration', () => {
 @Component({
   imports: [MudSegmentedControl, MudSegment],
   template: `
-    <mud-segmented-control value="list" size="small" aria-label="View">
+    <mud-segmented-control value="list" size="sm" aria-label="View">
       <button mud-segment value="list">List</button>
       <button mud-segment value="grid">Grid</button>
     </mud-segmented-control>

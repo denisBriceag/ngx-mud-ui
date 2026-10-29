@@ -28,7 +28,7 @@ import { injectMudFormatLocale, injectMudLabels, _mudText, _safeLocale } from 'n
 import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudNumericInputVariant = 'default' | 'warning' | 'destructive' | 'success';
-export type MudNumericInputSize = 'medium' | 'large';
+export type MudNumericInputSize = 'md' | 'lg';
 export type MudNumericInputErrorKind = 'not-a-number' | 'out-of-range';
 
 export interface MudNumericInputStep {
@@ -69,8 +69,8 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
   /** @description Color treatment. `destructive` is forced when `invalid` is set. */
   readonly variant = input<MudNumericInputVariant>('default');
 
-  /** @description Size rung: medium (40px) or large (48px). */
-  readonly size = input<MudNumericInputSize>('medium');
+  /** @description Size rung: `md` (40px) or `lg` (48px). */
+  readonly size = input<MudNumericInputSize>('md');
 
   /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
@@ -271,7 +271,7 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
   protected readonly _hostClasses = computed(() => {
     const classes = ['input-field', 'numeric-field', `input-field--${this._effectiveVariant()}`];
 
-    if (this.size() === 'large') classes.push('input-field--lg');
+    if (this.size() === 'lg') classes.push('input-field--lg');
 
     if (this._effectiveDisabled()) classes.push('is-disabled');
 

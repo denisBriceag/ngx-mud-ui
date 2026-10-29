@@ -76,8 +76,12 @@ and call `theme.set(...)` from that query's `change` event to keep following it.
 canvas behind your page — matches:
 
 ```css
-:root { color-scheme: light; }
-[data-theme='dark'] { color-scheme: dark; }
+:root {
+  color-scheme: light;
+}
+[data-theme='dark'] {
+  color-scheme: dark;
+}
 ```
 
 **4. Paint your own surfaces with tokens.** The theme recolours tokens, not your

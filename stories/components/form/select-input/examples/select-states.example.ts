@@ -19,8 +19,8 @@ import { MudSelectInput } from 'ngx-mud-ui/select-input';
       ><mud-label>Dezactivat</mud-label></mud-select-input
     >
     <mud-select-input [options]="[]"><mud-label>Fără opțiuni</mud-label></mud-select-input>
-    <mud-select-input [options]="raions" size="large"
-      ><mud-label>Mare (large)</mud-label></mud-select-input
+    <mud-select-input [options]="raions" size="lg"
+      ><mud-label>Mare (lg)</mud-label></mud-select-input
     >
     <mud-select-input [options]="raions" placeholder="Alegeți orașul">
       <!-- A start icon: mark it aria-hidden; a click on it opens the list. -->

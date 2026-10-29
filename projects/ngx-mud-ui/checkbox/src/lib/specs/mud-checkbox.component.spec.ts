@@ -38,7 +38,7 @@ class Host {
   readonly disabled = signal(false);
   readonly readonly = signal(false);
   readonly requiredField = signal(false);
-  readonly size = signal<MudCheckboxSize>('medium');
+  readonly size = signal<MudCheckboxSize>('md');
   readonly withLabel = signal(true);
   readonly showHelper = signal(false);
   readonly showError = signal(false);
@@ -95,7 +95,7 @@ describe('MudCheckbox', () => {
   it('maps size small and required to their affordances', async () => {
     const { fixture, host, el, native } = await render();
 
-    host.size.set('small');
+    host.size.set('sm');
     host.requiredField.set(true);
     await fixture.whenStable();
 

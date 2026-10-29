@@ -13,7 +13,7 @@ import { MudSegment, MudSegmentedControl } from 'ngx-mud-ui/segmented-control';
       <button mud-segment value="month">Lună</button>
     </mud-segmented-control>
 
-    <mud-segmented-control aria-label="Perioadă (small)" size="small" value="week">
+    <mud-segmented-control aria-label="Perioadă (sm)" size="sm" value="week">
       <button mud-segment value="day">Zi</button>
       <button mud-segment value="week">Săptămână</button>
       <button mud-segment value="month">Lună</button>

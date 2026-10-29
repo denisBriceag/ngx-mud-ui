@@ -20,8 +20,8 @@ import { MudPhoneInput } from 'ngx-mud-ui/phone-input';
     <mud-phone-input disabled mode="international" value="+37362123456">
       <mud-label>Dezactivat</mud-label>
     </mud-phone-input>
-    <mud-phone-input size="large">
-      <mud-label>Mare (large)</mud-label>
+    <mud-phone-input size="lg">
+      <mud-label>Mare (lg)</mud-label>
     </mud-phone-input>
   `,
   styles: `

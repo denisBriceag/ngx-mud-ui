@@ -31,12 +31,12 @@ const meta: Meta<MudDateInput<'single'>> = {
   argTypes: {
     format: { control: 'inline-radio', options: ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'] },
     headerStyle: { control: 'inline-radio', options: ['title', 'dropdown'] },
-    size: { control: 'inline-radio', options: ['medium', 'large'] },
+    size: { control: 'inline-radio', options: ['md', 'lg'] },
   },
   args: {
     format: 'DD/MM/YYYY',
     headerStyle: 'title',
-    size: 'medium',
+    size: 'md',
     clearable: true,
     touchUi: false,
     disabled: false,

@@ -26,8 +26,8 @@ import { MudRadio, MudRadioGroup } from 'ngx-mud-ui/radio';
       <mud-radio value="b"><mud-label>Opțiunea B</mud-label></mud-radio>
     </mud-radio-group>
 
-    <mud-radio-group value="a" size="small">
-      <mud-label>Mic (small)</mud-label>
+    <mud-radio-group value="a" size="sm">
+      <mud-label>Mic (sm)</mud-label>
       <mud-radio value="a"><mud-label>Opțiunea A</mud-label></mud-radio>
       <mud-radio value="b"><mud-label>Opțiunea B</mud-label></mud-radio>
     </mud-radio-group>

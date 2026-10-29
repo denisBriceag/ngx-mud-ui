@@ -31,7 +31,7 @@ import { _mudText, injectMudFormatLocale, injectMudLabels } from 'ngx-mud-ui/i18
 import { formatFileSize } from './format-file-size';
 
 export type MudFileInputVariant = 'dropzone' | 'button';
-export type MudFileInputSize = 'medium' | 'large';
+export type MudFileInputSize = 'md' | 'lg';
 export type MudFileInputRejectionCode = 'type' | 'size' | 'count';
 
 export interface MudFileInputRejection {
@@ -98,7 +98,7 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
   readonly variant = input<MudFileInputVariant>('dropzone');
 
   /** @description Visual size rung. Drives drop-zone height and button scale. */
-  readonly size = input<MudFileInputSize>('medium');
+  readonly size = input<MudFileInputSize>('md');
 
   /** @description Accepted files — the form value. Two-way bindable; driven by both forms systems. */
   readonly value = model<File[]>([]);
@@ -278,7 +278,7 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
   protected readonly _hostClasses = computed(() => {
     const classes = ['input-field', 'file-field', `file-field--${this.variant()}`];
 
-    if (this.size() === 'large') classes.push('file-field--lg');
+    if (this.size() === 'lg') classes.push('file-field--lg');
 
     if (this._effectiveDisabled()) classes.push('is-disabled');
 

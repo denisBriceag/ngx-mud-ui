@@ -24,7 +24,7 @@ import { MudIconButton } from '../mud-icon-button.directive';
 class ButtonHost {
   readonly variant = signal<MudButtonVariant | ''>('');
   readonly color = signal<MudButtonColor>('primary');
-  readonly size = signal<MudButtonSize>('large');
+  readonly size = signal<MudButtonSize>('lg');
   readonly shape = signal<MudButtonShape>('rectangular');
   readonly fullWidth = signal(false);
   readonly disabled = signal(false);
@@ -50,7 +50,7 @@ class AnchorHost {
   `,
 })
 class IconButtonHost {
-  readonly size = signal<'medium' | 'small'>('medium');
+  readonly size = signal<'md' | 'sm'>('md');
   readonly disabled = signal(false);
   readonly loading = signal(false);
   clicks = 0;
@@ -106,16 +106,16 @@ describe('MudButton', () => {
   it('maps sizes to mud-btn-md / mud-btn-sm with large as the unsuffixed default', async () => {
     const { fixture, host, el } = await render(ButtonHost, 'button');
 
-    host.size.set('medium');
+    host.size.set('md');
     await fixture.whenStable();
     expect(el.classList.contains('mud-btn-md')).toBe(true);
 
-    host.size.set('small');
+    host.size.set('sm');
     await fixture.whenStable();
     expect(el.classList.contains('mud-btn-sm')).toBe(true);
     expect(el.classList.contains('mud-btn-md')).toBe(false);
 
-    host.size.set('large');
+    host.size.set('lg');
     await fixture.whenStable();
     expect(el.classList.contains('mud-btn-sm')).toBe(false);
   });
@@ -221,12 +221,12 @@ describe('MudIconButton', () => {
     expect(el.classList.contains('mud-btn-icon')).toBe(true);
   });
 
-  it('adds the sm size class only for size="small"', async () => {
+  it('adds the sm size class only for size="sm"', async () => {
     const { fixture, host, el } = await render(IconButtonHost, 'button');
 
     expect(el.classList.contains('mud-btn-sm')).toBe(false);
 
-    host.size.set('small');
+    host.size.set('sm');
     await fixture.whenStable();
 
     expect(el.classList.contains('mud-btn-sm')).toBe(true);

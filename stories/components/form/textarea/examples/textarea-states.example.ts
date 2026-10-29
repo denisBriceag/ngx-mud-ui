@@ -20,7 +20,7 @@ import { MudTextarea } from 'ngx-mud-ui/textarea';
     <mud-textarea disabled>
       <mud-label>Dezactivat</mud-label>
     </mud-textarea>
-    <mud-textarea size="large" resize="none">
+    <mud-textarea size="lg" resize="none">
       <mud-label>Mare, fără redimensionare</mud-label>
     </mud-textarea>
   `,

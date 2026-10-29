@@ -38,11 +38,11 @@
   box-shadow: 0 4px 10px rgb(0 0 0 / 15%);
 }
 
-:host(.tooltip--small) .tooltip-inner {
+:host(.tooltip--sm) .tooltip-inner {
   padding: var(--mud-spacing-8, 8px) var(--mud-spacing-12, 12px);
 }
 
-:host(.tooltip--large) .tooltip-inner {
+:host(.tooltip--lg) .tooltip-inner {
   border-radius: var(--mud-border-radius-6, 6px);
   padding: var(--mud-spacing-12, 12px) var(--mud-spacing-16, 16px);
 }
@@ -124,7 +124,7 @@ $arrow-inset: 2px + math.div($arrow-size * (math.sqrt(2) - 1), 2);
   transform: rotate(45deg);
 }
 
-:host(.tooltip--large) .tooltip-arrow {
+:host(.tooltip--lg) .tooltip-arrow {
   width: $arrow-size-lg;
   height: $arrow-size-lg;
 }

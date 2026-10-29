@@ -33,5 +33,5 @@ import { MudSpinner } from 'ngx-mud-ui/spinner';
   `,
 })
 export class SpinnerBasicExample {
-  readonly sizes: MudSpinnerSize[] = ['extra-small', 'small', 'medium', 'large'];
+  readonly sizes: MudSpinnerSize[] = ['xs', 'sm', 'md', 'lg'];
 }

@@ -20,11 +20,11 @@ const meta: Meta<MudRadioGroup<string>> = {
   component: MudRadioGroup,
   decorators: [moduleMetadata({ imports: [MudRadioGroup, MudRadio, MudLabel] })],
   argTypes: {
-    size: { control: 'inline-radio', options: ['medium', 'small'] },
+    size: { control: 'inline-radio', options: ['sm', 'md'] },
     orientation: { control: 'inline-radio', options: ['vertical', 'horizontal'] },
   },
   args: {
-    size: 'medium',
+    size: 'md',
     orientation: 'vertical',
     disabled: false,
     required: false,

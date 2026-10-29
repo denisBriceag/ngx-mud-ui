@@ -13,7 +13,7 @@ import { MudTooltip } from 'ngx-mud-ui/tooltip';
       type="button"
       mudButton="outlined"
       mudTooltip="The draft is saved every minute."
-      tooltipSize="large"
+      tooltipSize="lg"
     >
       Large
     </button>
@@ -22,7 +22,7 @@ import { MudTooltip } from 'ngx-mud-ui/tooltip';
       mudButton="outlined"
       mudTooltip="Signed documents can't be edited."
       tooltipTitle="Signing"
-      tooltipSize="large"
+      tooltipSize="lg"
     >
       With a title
     </button>

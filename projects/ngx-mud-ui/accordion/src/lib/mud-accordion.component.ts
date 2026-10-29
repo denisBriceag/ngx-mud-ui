@@ -41,7 +41,7 @@ const NARROW_BELOW = 600;
   host: {
     class: 'accordion__item',
     '[class.accordion__item--open]': '_expandedState()',
-    '[class.accordion__item--sm]': "_size() === 'small'",
+    '[class.accordion__item--sm]': "_size() === 'sm'",
     '[class.accordion__item--icon-left]': "_iconPosition() === 'left'",
     '[class.accordion__item--no-toggle]': 'hideToggle()',
     '[class.accordion__item--narrow]': '_narrow()',
@@ -93,7 +93,7 @@ export class MudAccordion extends CdkAccordionItem {
   /** @docs-private Appearance/size/iconPosition come from the owning group. */
   readonly _appearance = computed(() => this._group?.appearance() ?? 'default');
   /** @docs-private */
-  readonly _size = computed(() => this._group?.size() ?? 'medium');
+  readonly _size = computed(() => this._group?.size() ?? 'md');
   /** @docs-private */
   readonly _iconPosition = computed(() => this._group?.iconPosition() ?? 'right');
 

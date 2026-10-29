@@ -51,7 +51,7 @@ const BANDS: readonly Band[] = entries.map(([key, min], i) => ({
         <span class="pill pill--active">{{ active().name }}</span>
         <span class="readout__devices">{{ active().devices }}</span>
       </div>
-      <button type="button" mudButton color="secondary" size="small" (click)="fit()">
+      <button type="button" mudButton color="secondary" size="sm" (click)="fit()">
         Use this window's width
       </button>
     </div>

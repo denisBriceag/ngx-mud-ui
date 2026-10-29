@@ -22,10 +22,10 @@ import { MudTextInput } from 'ngx-mud-ui/text-input';
       </mud-step>
     </mud-stepper>
     <div class="actions">
-      <button type="button" mudButton="outlined" size="small" (click)="stepper.previous()">
+      <button type="button" mudButton="outlined" size="sm" (click)="stepper.previous()">
         Înapoi
       </button>
-      <button type="button" mudButton size="small" (click)="stepper.next()">Continuă</button>
+      <button type="button" mudButton size="sm" (click)="stepper.next()">Continuă</button>
     </div>
   `,
   styles: `

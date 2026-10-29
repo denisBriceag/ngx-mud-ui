@@ -2,14 +2,14 @@ import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, 
 
 export type MudTagColor = 'muted' | 'neutral' | 'accent' | 'success' | 'brand' | 'danger' | 'info';
 export type MudTagType = 'subtle' | 'strong' | 'outlined';
-export type MudTagSize = 'medium' | 'small';
+export type MudTagSize = 'sm' | 'md';
 
 declare const ngDevMode: boolean | undefined;
 
 /**
  * ```html
  * <mud-tag color="success">Approved</mud-tag>
- * <mud-tag color="danger" type="strong" size="small">
+ * <mud-tag color="danger" type="strong" size="sm">
  *   <mud-icon icon-start name="alert-small" [scale]="16" /> Rejected
  * </mud-tag>
  * <mud-tag color="brand">Details <mud-icon icon-end name="chevron-right-small" [scale]="16" /></mud-tag>
@@ -34,7 +34,7 @@ export class MudTag {
   /** @description `subtle` (tinted), `strong` (filled) or `outlined`. */
   readonly type = input<MudTagType>('subtle');
   /** @description Height and text size. */
-  readonly size = input<MudTagSize>('medium');
+  readonly size = input<MudTagSize>('md');
   /** @description Greys the tag out (visual only); the owning row or control announces the state. */
   readonly disabled = input(false, { transform: booleanAttribute });
   /** @description Accessible name; when set the tag becomes a polite live region (`role="status"`). */
@@ -58,7 +58,7 @@ export class MudTag {
   protected readonly _hostClasses = computed(() => {
     const classes = ['status-tag', `status-tag--${this.color()}`, `is-${this._effectiveType()}`];
 
-    if (this.size() === 'small') classes.push('status-tag--small');
+    if (this.size() === 'sm') classes.push('status-tag--small');
 
     if (this.disabled()) classes.push('is-disabled');
 

@@ -20,11 +20,11 @@ const meta: Meta<MudSearchInput> = {
     moduleMetadata({ imports: [MudSearchInput, MudLabel] }),
   ],
   argTypes: {
-    size: { control: 'inline-radio', options: ['medium', 'large'] },
+    size: { control: 'inline-radio', options: ['md', 'lg'] },
     shape: { control: 'inline-radio', options: ['rectangular', 'circular'] },
   },
   args: {
-    size: 'medium',
+    size: 'md',
     shape: 'rectangular',
     withButton: false,
     clearable: true,

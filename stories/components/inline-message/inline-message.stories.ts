@@ -20,9 +20,9 @@ const meta: Meta<MudInlineMessage> = {
   ],
   argTypes: {
     variant: { control: 'inline-radio', options: ['info', 'warning', 'success', 'error'] },
-    size: { control: 'inline-radio', options: ['small', 'medium'] },
+    size: { control: 'inline-radio', options: ['sm', 'md'] },
   },
-  args: { variant: 'info', size: 'medium', hideIcon: false },
+  args: { variant: 'info', size: 'md', hideIcon: false },
 };
 
 export default meta;

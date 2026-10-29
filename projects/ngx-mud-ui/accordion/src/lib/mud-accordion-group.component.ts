@@ -4,7 +4,7 @@ import { MudStyleLoader } from 'ngx-mud-ui/core';
 import { _MudAccordionStyles } from './mud-accordion-styles.component';
 
 export type MudAccordionAppearance = 'default' | 'trail-sites';
-export type MudAccordionSize = 'medium' | 'small';
+export type MudAccordionSize = 'sm' | 'md';
 export type MudAccordionIconPosition = 'right' | 'left';
 
 /**
@@ -29,8 +29,8 @@ export class MudAccordionGroup extends CdkAccordion {
   /** @description `trail-sites` tints open items with the brand-secondary surface. */
   readonly appearance = input<MudAccordionAppearance>('default');
 
-  /** @description `small` uses the compact mobile header at every viewport. */
-  readonly size = input<MudAccordionSize>('medium');
+  /** @description `sm` uses the compact mobile header at every viewport. */
+  readonly size = input<MudAccordionSize>('md');
 
   /** @description `left` places the +/- trigger before the text. */
   readonly iconPosition = input<MudAccordionIconPosition>('right');

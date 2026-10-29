@@ -143,7 +143,7 @@ export class MudTabGroup {
   /** @description Stretches the tabs to fill the header width. */
   readonly stretchTabs = input(false, { transform: booleanAttribute });
   /** @description Tab height and text size. */
-  readonly size = input<'md' | 'sm'>('md');
+  readonly size = input<'sm' | 'md'>('md');
   /** @description Index of the selected tab. Two-way bindable. */
   readonly selectedIndex = model(0);
 

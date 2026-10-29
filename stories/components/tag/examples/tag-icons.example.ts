@@ -16,11 +16,11 @@ import { MudTag } from 'ngx-mud-ui/tag';
       /></mud-tag>
     </div>
     <div class="row">
-      <mud-tag size="small" color="success"
+      <mud-tag size="sm" color="success"
         ><mud-icon icon-start name="checkmark-small" [scale]="12" />Aprobat</mud-tag
       >
-      <mud-tag size="small" color="danger" type="strong">Respins</mud-tag>
-      <mud-tag size="small" color="success" disabled>Aprobat</mud-tag>
+      <mud-tag size="sm" color="danger" type="strong">Respins</mud-tag>
+      <mud-tag size="sm" color="success" disabled>Aprobat</mud-tag>
     </div>
   `,
   styles: `

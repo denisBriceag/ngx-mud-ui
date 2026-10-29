@@ -10,14 +10,14 @@ import {
 } from '@angular/core';
 import { injectMudLabels } from 'ngx-mud-ui/i18n';
 
-export type MudAvatarSize = 'extra-small' | 'small' | 'medium' | 'large' | 'extra-large';
+export type MudAvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 const SIZE_CLASSES: Record<MudAvatarSize, string> = {
-  'extra-small': 'avatar--xs',
-  small: 'avatar--sm',
-  medium: 'avatar--md',
-  large: 'avatar--lg',
-  'extra-large': 'avatar--xl',
+  xs: 'avatar--xs',
+  sm: 'avatar--sm',
+  md: 'avatar--md',
+  lg: 'avatar--lg',
+  xl: 'avatar--xl',
 };
 
 declare const ngDevMode: boolean | undefined;
@@ -42,7 +42,7 @@ export function deriveInitials(name: string | undefined): string {
  * ```html
  * <mud-avatar name="Olga Popescu" />
  * <mud-avatar label="Olga Popescu">OP</mud-avatar>
- * <mud-avatar size="large"><mud-icon name="person" scale="24" /></mud-avatar>
+ * <mud-avatar size="lg"><mud-icon name="person" scale="24" /></mud-avatar>
  * <mud-avatar name="Olga Popescu"><img src="…" alt="Olga Popescu" /></mud-avatar>
  * ```
  */
@@ -60,7 +60,7 @@ export function deriveInitials(name: string | undefined): string {
 })
 export class MudAvatar {
   /** @description Diameter: 24, 32, 40, 48 or 72px. */
-  readonly size = input<MudAvatarSize>('medium');
+  readonly size = input<MudAvatarSize>('md');
 
   /** @description Accessible name; wins over `name`. */
   readonly label = input<string | undefined>(undefined);

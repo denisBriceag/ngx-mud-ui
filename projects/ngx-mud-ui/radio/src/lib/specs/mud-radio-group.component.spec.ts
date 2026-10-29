@@ -55,7 +55,7 @@ class Host {
   readonly readonly = signal(false);
   readonly invalid = signal(false);
   readonly requiredGroup = signal(false);
-  readonly size = signal<'medium' | 'small'>('medium');
+  readonly size = signal<'md' | 'sm'>('md');
   readonly orientation = signal<'vertical' | 'horizontal'>('vertical');
   readonly cashDisabled = signal(false);
   readonly withLabel = signal(true);
@@ -112,7 +112,7 @@ describe('MudRadioGroup', () => {
     const { fixture, host, radios, natives } = await render();
 
     host.disabled.set(true);
-    host.size.set('small');
+    host.size.set('sm');
     host.invalid.set(true);
     await fixture.whenStable();
 

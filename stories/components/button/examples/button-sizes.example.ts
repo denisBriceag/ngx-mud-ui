@@ -6,14 +6,14 @@ import { MudButton } from 'ngx-mud-ui/button';
   imports: [MudButton],
   template: `
     <div class="row">
-      <button type="button" mudButton size="large">Large</button>
-      <button type="button" mudButton size="medium">Medium</button>
-      <button type="button" mudButton size="small">Small</button>
+      <button type="button" mudButton size="lg">Large</button>
+      <button type="button" mudButton size="md">Medium</button>
+      <button type="button" mudButton size="sm">Small</button>
     </div>
     <div class="row">
-      <button type="button" mudButton shape="circular" size="large">Large</button>
-      <button type="button" mudButton shape="circular" size="medium">Medium</button>
-      <button type="button" mudButton shape="circular" size="small">Small</button>
+      <button type="button" mudButton shape="circular" size="lg">Large</button>
+      <button type="button" mudButton shape="circular" size="md">Medium</button>
+      <button type="button" mudButton shape="circular" size="sm">Small</button>
     </div>
   `,
   styles: `

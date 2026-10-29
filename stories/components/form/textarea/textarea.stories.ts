@@ -17,12 +17,12 @@ const meta: Meta<MudTextarea> = {
   decorators: [moduleMetadata({ imports: [MudTextarea, MudLabel] })],
   argTypes: {
     variant: { control: 'inline-radio', options: ['default', 'warning', 'destructive', 'success'] },
-    size: { control: 'inline-radio', options: ['medium', 'large'] },
+    size: { control: 'inline-radio', options: ['md', 'lg'] },
     resize: { control: 'inline-radio', options: ['vertical', 'none'] },
   },
   args: {
     variant: 'default',
-    size: 'medium',
+    size: 'md',
     resize: 'vertical',
     rows: 4,
     maxLength: 200,

@@ -20,8 +20,8 @@ const meta: Meta<MudSegmentedControl<string>> = {
     applicationConfig({ providers: [provideMudIcons([bulletList, dotGrid])] }),
     moduleMetadata({ imports: [MudSegmentedControl, MudSegment] }),
   ],
-  argTypes: { size: { control: 'inline-radio', options: ['medium', 'small'] } },
-  args: { size: 'medium', fullWidth: false, disabled: false },
+  argTypes: { size: { control: 'inline-radio', options: ['sm', 'md'] } },
+  args: { size: 'md', fullWidth: false, disabled: false },
 };
 
 export default meta;

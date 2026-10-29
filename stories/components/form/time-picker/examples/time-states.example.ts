@@ -15,7 +15,7 @@ import { MudTimeInput } from 'ngx-mud-ui/time-picker';
     <mud-time-input required><mud-label>Obligatoriu</mud-label></mud-time-input>
     <mud-time-input readonly value="09:30"><mud-label>Doar citire</mud-label></mud-time-input>
     <mud-time-input disabled value="09:30"><mud-label>Dezactivat</mud-label></mud-time-input>
-    <mud-time-input size="large" value="09:30"><mud-label>Mare (large)</mud-label></mud-time-input>
+    <mud-time-input size="lg" value="09:30"><mud-label>Mare (lg)</mud-label></mud-time-input>
   `,
   styles: `
     :host {

@@ -15,10 +15,10 @@ const meta: Meta<MudSpinner> = {
   component: MudSpinner,
   decorators: [moduleMetadata({ imports: [MudSpinner] })],
   argTypes: {
-    size: { control: 'inline-radio', options: ['extra-small', 'small', 'medium', 'large'] },
+    size: { control: 'inline-radio', options: ['xs', 'sm', 'md', 'lg'] },
     variant: { control: 'inline-radio', options: ['brand', 'dark', 'light', 'light-on-color'] },
   },
-  args: { size: 'medium', variant: 'brand' },
+  args: { size: 'md', variant: 'brand' },
 };
 
 export default meta;

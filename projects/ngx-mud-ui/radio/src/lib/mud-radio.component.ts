@@ -93,7 +93,7 @@ export class MudRadio<T = unknown> {
   protected readonly _hostClasses = computed(() => {
     const classes = ['selection-control', 'selection-control--radio'];
 
-    if (this._group.size() === 'small') classes.push('selection-control--sm');
+    if (this._group.size() === 'sm') classes.push('selection-control--sm');
 
     if (this._checked()) classes.push('is-checked');
 

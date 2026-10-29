@@ -166,7 +166,7 @@ export const fakeCereriApi: HttpInterceptorFn = (req, next) => {
       <tr *mudNoDataRow>
         <td [attr.colspan]="columns.length">
           @if (rows.isLoading()) {
-            <mud-spinner size="small" aria-label="Se încarcă cererile" />
+            <mud-spinner size="sm" aria-label="Se încarcă cererile" />
           } @else if (rows.error()) {
             Nu am putut încărca cererile. Încearcă din nou.
           } @else {

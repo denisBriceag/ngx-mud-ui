@@ -22,7 +22,7 @@ const meta: Meta<MudTabGroup> = {
     applicationConfig({ providers: [provideMudIcons([notification, documentIcon, lock])] }),
     moduleMetadata({ imports: [MudTabGroup, MudTab] }),
   ],
-  argTypes: { size: { control: 'inline-radio', options: ['md', 'sm'] } },
+  argTypes: { size: { control: 'inline-radio', options: ['sm', 'md'] } },
   args: { size: 'md', stretchTabs: false },
 };
 

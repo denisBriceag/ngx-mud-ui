@@ -27,7 +27,7 @@ import { injectMudFormatLocale } from 'ngx-mud-ui/i18n';
 import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudTextareaVariant = 'default' | 'warning' | 'destructive' | 'success';
-export type MudTextareaSize = 'medium' | 'large';
+export type MudTextareaSize = 'md' | 'lg';
 export type MudTextareaResize = 'vertical' | 'none';
 
 let nextUniqueId = 0;
@@ -61,8 +61,8 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
   /** @description Color treatment. `destructive` is forced when `invalid` is set. */
   readonly variant = input<MudTextareaVariant>('default');
 
-  /** @description Size rung: medium (120px min-height) or large (150px). */
-  readonly size = input<MudTextareaSize>('medium');
+  /** @description Size rung: `md` (120px min-height) or `lg` (150px). */
+  readonly size = input<MudTextareaSize>('md');
 
   /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
@@ -177,7 +177,7 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
   protected readonly _hostClasses = computed(() => {
     const classes = ['input-field', `input-field--${this._effectiveVariant()}`];
 
-    if (this.size() === 'large') classes.push('input-field--lg');
+    if (this.size() === 'lg') classes.push('input-field--lg');
 
     if (this.resize() === 'none') classes.push('input-field--no-resize');
 

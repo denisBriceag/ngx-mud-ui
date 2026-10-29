@@ -68,14 +68,14 @@ interface Filter {
             <button
               mudButton
               shape="circular"
-              size="medium"
+              size="md"
               class="mpower-new"
               aria-label="Împuternicire nouă"
             >
               <mud-icon name="plus-large" [scale]="20" />
             </button>
           } @else {
-            <button mudButton size="medium" fullWidth>Împuternicire nouă</button>
+            <button mudButton size="md" fullWidth>Împuternicire nouă</button>
           }
         </div>
         <!-- Swap on sb.compact(), not collapsed(): below 768px the rail is always drawn extended. -->
@@ -106,26 +106,26 @@ interface Filter {
                 <mud-icon name="search" [scale]="20" />
               </button>
               <div class="avatar-stack">
-                <mud-avatar name="Vladimir Odobescu" size="small" /><mud-avatar
+                <mud-avatar name="Vladimir Odobescu" size="sm" /><mud-avatar
                   name="Andrei Codreanu"
-                  size="small"
+                  size="sm"
                 />
               </div>
             </div>
           } @else {
             <div class="mpower-chips">
-              <mud-chip size="small" [selected]="true">Toți</mud-chip>
-              <mud-chip size="small">Fizice</mud-chip>
-              <mud-chip size="small">Juridice</mud-chip>
-              <button mudIconButton size="small" aria-label="Caută contacte">
+              <mud-chip size="sm" [selected]="true">Toți</mud-chip>
+              <mud-chip size="sm">Fizice</mud-chip>
+              <mud-chip size="sm">Juridice</mud-chip>
+              <button mudIconButton size="sm" aria-label="Caută contacte">
                 <mud-icon name="search" [scale]="16" />
               </button>
             </div>
             @for (c of contacts; track c) {
               <div class="mpower-contact">
-                <mud-avatar [name]="c" size="small" />
+                <mud-avatar [name]="c" size="sm" />
                 <span class="mpower-contact__name">{{ c }}</span>
-                <button mudIconButton size="small" [attr.aria-label]="'Acțiuni pentru ' + c">
+                <button mudIconButton size="sm" [attr.aria-label]="'Acțiuni pentru ' + c">
                   <mud-icon name="more-vertical" [scale]="20" />
                 </button>
               </div>

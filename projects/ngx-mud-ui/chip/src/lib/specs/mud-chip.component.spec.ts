@@ -25,7 +25,7 @@ import type { MudChipSelectionMode, MudChipSize, MudChipType } from '../mud-chip
 })
 class Host {
   readonly type = signal<MudChipType>('filter');
-  readonly size = signal<MudChipSize>('medium');
+  readonly size = signal<MudChipSize>('md');
   readonly selected = signal(false);
   readonly selectionMode = signal<MudChipSelectionMode>('mono');
   readonly count = signal<number | undefined>(undefined);
@@ -217,7 +217,7 @@ class StaticSelectedHost {}
 @Component({
   imports: [MudChip],
   template: `
-    <mud-chip type="input" size="small">
+    <mud-chip type="input" size="sm">
       <img avatar src="data:," alt="" />
       <svg icon-start viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8" /></svg>
       Ana Popescu

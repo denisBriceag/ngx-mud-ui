@@ -26,7 +26,7 @@ import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudTextInputVariant = 'default' | 'warning' | 'destructive' | 'success';
-export type MudTextInputSize = 'medium' | 'large';
+export type MudTextInputSize = 'md' | 'lg';
 export type MudTextInputType = 'text' | 'email' | 'password' | 'tel' | 'url' | 'search';
 
 let nextUniqueId = 0;
@@ -73,8 +73,8 @@ export class MudTextInput implements ControlValueAccessor, FormValueControl<stri
   /** @description Color treatment. `destructive` is forced when `invalid` is set. */
   readonly variant = input<MudTextInputVariant>('default');
 
-  /** @description Visual size rung: medium (40px, 14/20) or large (48px, 16/24). */
-  readonly size = input<MudTextInputSize>('medium');
+  /** @description Visual size rung: `md` (40px, 14/20) or `lg` (48px, 16/24). */
+  readonly size = input<MudTextInputSize>('md');
 
   /** @description Native input `type`. */
   readonly type = input<MudTextInputType>('text');
@@ -197,7 +197,7 @@ export class MudTextInput implements ControlValueAccessor, FormValueControl<stri
   protected readonly _hostClasses = computed(() => {
     const classes = ['input-field', `input-field--${this._effectiveVariant()}`];
 
-    if (this.size() === 'large') classes.push('input-field--lg');
+    if (this.size() === 'lg') classes.push('input-field--lg');
 
     if (this._effectiveDisabled()) classes.push('is-disabled');
 

@@ -15,7 +15,7 @@ import type { MudPaginationSize } from '../mud-pagination.types';
 class Host {
   readonly pageIndex = signal(0);
   readonly disabled = signal(false);
-  readonly size = signal<MudPaginationSize>('medium');
+  readonly size = signal<MudPaginationSize>('md');
 }
 
 // jsdom has no canvas and no stylesheet is loaded; contrast is covered by pagination.contrast.spec.ts.
@@ -57,7 +57,7 @@ describe('MudPagination accessibility', () => {
   it('has no axe violations when disabled and small', async () => {
     const fixture = await render((h) => {
       h.disabled.set(true);
-      h.size.set('small');
+      h.size.set('sm');
     });
 
     expect(await violations(fixture.nativeElement)).toEqual([]);

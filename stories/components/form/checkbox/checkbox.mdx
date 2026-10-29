@@ -31,7 +31,7 @@ The checkbox links them to the input for screen readers. `checked` is two-way bi
 - `invalid` shows the error style and sets `aria-invalid`. The checkbox shows no message by itself;
   add a `<mud-inline-message variant="error">` when you want one.
 - `readonly` keeps the checkbox focusable but unchangeable; `disabled` takes it out entirely.
-- `required` adds a red asterisk. `size` is `medium` (24px, default) or `small` (20px).
+- `required` adds a red asterisk. `size` is `md` (24px, default) or `sm` (20px).
 
 <Canvas of={CheckboxStories.States} />
 
@@ -73,4 +73,4 @@ Content slots: `mud-label` and `mud-inline-message`.
 
 ### Types
 
-- `MudCheckboxSize`: `'medium' | 'small'`
+- `MudCheckboxSize`: `'sm' | 'md'`

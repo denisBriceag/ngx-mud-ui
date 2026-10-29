@@ -25,12 +25,12 @@ const meta: Meta<MudTextInput> = {
   ],
   argTypes: {
     variant: { control: 'inline-radio', options: ['default', 'warning', 'destructive', 'success'] },
-    size: { control: 'inline-radio', options: ['medium', 'large'] },
+    size: { control: 'inline-radio', options: ['md', 'lg'] },
     type: { control: 'select', options: ['text', 'email', 'password', 'tel', 'url', 'search'] },
   },
   args: {
     variant: 'default',
-    size: 'medium',
+    size: 'md',
     type: 'text',
     disabled: false,
     required: false,

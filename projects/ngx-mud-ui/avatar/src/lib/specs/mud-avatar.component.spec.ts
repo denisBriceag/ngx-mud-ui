@@ -11,7 +11,7 @@ import type { MudAvatarSize } from '../mud-avatar.component';
   `,
 })
 class Host {
-  readonly size = signal<MudAvatarSize>('medium');
+  readonly size = signal<MudAvatarSize>('md');
 }
 
 async function render() {
@@ -36,11 +36,11 @@ describe('MudAvatar', () => {
     const { fixture, host, el } = await render();
 
     const sizes: [MudAvatarSize, string][] = [
-      ['extra-small', 'avatar--xs'],
-      ['small', 'avatar--sm'],
-      ['medium', 'avatar--md'],
-      ['large', 'avatar--lg'],
-      ['extra-large', 'avatar--xl'],
+      ['xs', 'avatar--xs'],
+      ['sm', 'avatar--sm'],
+      ['md', 'avatar--md'],
+      ['lg', 'avatar--lg'],
+      ['xl', 'avatar--xl'],
     ];
 
     for (const [size, className] of sizes) {
@@ -53,7 +53,7 @@ describe('MudAvatar', () => {
   it('removes the previous size class when the size changes', async () => {
     const { fixture, host, el } = await render();
 
-    host.size.set('extra-large');
+    host.size.set('xl');
     await fixture.whenStable();
 
     expect(el.classList.contains('avatar--xl')).toBe(true);

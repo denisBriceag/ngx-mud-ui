@@ -466,7 +466,7 @@ describe('MudAccordionGroup appearance / size / iconPosition', () => {
 @Component({
   imports: [MudAccordionGroup, MudAccordion, MudAccordionHeader, MudAccordionTitle],
   template: `
-    <mud-accordion-group appearance="trail-sites" size="small" iconPosition="left">
+    <mud-accordion-group appearance="trail-sites" size="sm" iconPosition="left">
       <mud-accordion>
         <mud-accordion-header>
           <mud-accordion-title>First</mud-accordion-title>

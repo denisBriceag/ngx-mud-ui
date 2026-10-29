@@ -10,7 +10,7 @@ import { MudLink } from 'ngx-mud-ui/link';
     <mud-info-box variant="moderate" emphasis="strong">
       <p heading>Your session is about to expire</p>
       You will be signed out in two minutes.
-      <button actions type="button" mudButton size="small">Stay signed in</button>
+      <button actions type="button" mudButton size="sm">Stay signed in</button>
       <a actions mudLink href="#help">What does this mean?</a>
     </mud-info-box>
   `,

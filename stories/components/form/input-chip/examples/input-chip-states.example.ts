@@ -8,7 +8,7 @@ import { MudLabel } from 'ngx-mud-ui/label';
   template: `
     <mud-input-chip [value]="tags" readonly><mud-label>Doar citire</mud-label></mud-input-chip>
     <mud-input-chip [value]="tags" disabled><mud-label>Dezactivat</mud-label></mud-input-chip>
-    <mud-input-chip [value]="tags" size="large"><mud-label>Mare (large)</mud-label></mud-input-chip>
+    <mud-input-chip [value]="tags" size="lg"><mud-label>Mare (lg)</mud-label></mud-input-chip>
   `,
   styles: `
     :host {

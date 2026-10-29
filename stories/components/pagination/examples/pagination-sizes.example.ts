@@ -6,10 +6,10 @@ import { MudPagination } from 'ngx-mud-ui/pagination';
   imports: [MudPagination],
   template: `
     <mud-pagination [length]="70" [pageIndex]="3" />
-    <mud-pagination [length]="70" [pageIndex]="3" size="small" />
+    <mud-pagination [length]="70" [pageIndex]="3" size="sm" />
     <mud-pagination [length]="70" [pageIndex]="3" disabled />
     <div class="card">
-      <mud-pagination [length]="200" [pageIndex]="4" size="small" />
+      <mud-pagination [length]="200" [pageIndex]="4" size="sm" />
     </div>
   `,
   styles: `

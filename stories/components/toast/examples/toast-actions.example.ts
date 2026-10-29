@@ -19,7 +19,7 @@ import { MudToast } from 'ngx-mud-ui/toast';
         type="button"
         mudButton
         color="neutral"
-        size="small"
+        size="sm"
         (click)="undo(); ref.dismiss('action')"
       >
         Anulează

@@ -3,14 +3,14 @@ import { MudButtonBase } from './mud-button-base';
 
 declare const ngDevMode: boolean | undefined;
 
-export type MudIconButtonSize = 'medium' | 'small';
+export type MudIconButtonSize = 'sm' | 'md';
 
 /**
  * ```html
  * <button mudIconButton aria-label="Add">
  *   <svg>...</svg>
  * </button>
- * <button mudIconButton size="small" aria-label="Edit"><mud-icon name="edit" [scale]="16" /></button>
+ * <button mudIconButton size="sm" aria-label="Edit"><mud-icon name="edit" [scale]="16" /></button>
  * ```
  */
 @Directive({
@@ -18,13 +18,13 @@ export type MudIconButtonSize = 'medium' | 'small';
   exportAs: 'mudIconButton',
 })
 export class MudIconButton extends MudButtonBase {
-  /** @description Circle size: 'medium' 40px or 'small' 32px. */
-  readonly size = input<MudIconButtonSize>('medium');
+  /** @description Circle size: `md` (40px) or `sm` (32px). */
+  readonly size = input<MudIconButtonSize>('md');
 
   protected override readonly _hostClasses = computed(() => {
     const classes = ['mud-btn', 'mud-btn-icon'];
 
-    if (this.size() === 'small') classes.push('mud-btn-sm');
+    if (this.size() === 'sm') classes.push('mud-btn-sm');
 
     if (this.loading()) classes.push('mud-btn-loading');
 

@@ -22,12 +22,12 @@ const meta: Meta<MudChip> = {
   ],
   argTypes: {
     type: { control: 'inline-radio', options: ['filter', 'input'] },
-    size: { control: 'inline-radio', options: ['medium', 'small'] },
+    size: { control: 'inline-radio', options: ['sm', 'md'] },
     selectionMode: { control: 'inline-radio', options: ['mono', 'multi'] },
   },
   args: {
     type: 'filter',
-    size: 'medium',
+    size: 'md',
     selectionMode: 'mono',
     selected: false,
     disabled: false,

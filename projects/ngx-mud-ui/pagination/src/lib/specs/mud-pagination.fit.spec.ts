@@ -29,7 +29,7 @@ class FakeResizeObserver {
   template: `<mud-pagination [length]="200" [pageIndex]="pageIndex()" [size]="size()" />`,
 })
 class Host {
-  readonly size = signal<MudPaginationSize>('medium');
+  readonly size = signal<MudPaginationSize>('md');
   // Default 9 keeps every pre-existing test unchanged (both nav buttons rendered).
   readonly pageIndex = signal(9);
 }
@@ -132,7 +132,7 @@ describe('MudPagination fitting', () => {
   it('uses the small rung metrics', async () => {
     const { fixture, slots, resize } = await render();
 
-    fixture.componentInstance.size.set('small');
+    fixture.componentInstance.size.set('sm');
     await fixture.whenStable();
 
     // Small: item 32, gap 4, inner gap 8 → 2·100 + 224 + 48 + 8 = 480.

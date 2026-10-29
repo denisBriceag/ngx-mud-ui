@@ -15,7 +15,7 @@ Drag the slider or click a band to see which breakpoint is active and which mixi
 
 ## At a glance
 
-- **Mobile first.** Every breakpoint is a *minimum* width. Write the small-screen style first,
+- **Mobile first.** Every breakpoint is a _minimum_ width. Write the small-screen style first,
   then add to it with `bp.up()`.
 - **`md` (768px) is the main edge.** The library itself switches there: the type scale is smaller
   below it, `mud-sidebar-layout` stacks, and accordions use their compact layout. Use the same
@@ -61,13 +61,15 @@ import { MudBreakpoints, MudBreakpointValues } from 'ngx-mud-ui/breakpoints';
 
 export class Shell {
   readonly isDesktop = toSignal(
-    inject(BreakpointObserver).observe(MudBreakpoints.Md).pipe(map((state) => state.matches)),
+    inject(BreakpointObserver)
+      .observe(MudBreakpoints.Md)
+      .pipe(map((state) => state.matches)),
   );
 }
 
-MudBreakpoints.Md;      // '(min-width: 768px)'
+MudBreakpoints.Md; // '(min-width: 768px)'
 MudBreakpointValues.Md; // 768
 ```
 
-Reach for TypeScript only when the *behavior* changes, such as rendering a different component or
+Reach for TypeScript only when the _behavior_ changes, such as rendering a different component or
 closing a drawer. If only the look changes, a mixin is simpler and works before JavaScript runs.

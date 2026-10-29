@@ -33,7 +33,7 @@ and `pattern` are inputs.
 - `required` adds a red asterisk; `readonly` keeps the value focusable and copyable; `disabled`
   turns it off.
 - `loading` shows a spinner, blocks input and sets `aria-busy`.
-- `size` is `medium` (40px, default) or `large` (48px).
+- `size` is `md` (40px, default) or `lg` (48px).
 
 The field shows no message by itself: add a `<mud-inline-message>` when you want one.
 
@@ -81,5 +81,5 @@ Method: `focus(options?)`. Content slots: `mud-label`, `[icon-start]`, `[icon-en
 ### Types
 
 - `MudTextInputVariant`: `'default' | 'warning' | 'destructive' | 'success'`
-- `MudTextInputSize`: `'medium' | 'large'`
+- `MudTextInputSize`: `'md' | 'lg'`
 - `MudTextInputType`: `'text' | 'email' | 'password' | 'tel' | 'url' | 'search'`

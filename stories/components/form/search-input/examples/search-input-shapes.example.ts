@@ -6,14 +6,14 @@ import { MudSearchInput } from 'ngx-mud-ui/search-input';
   selector: 'app-search-input-shapes',
   imports: [MudSearchInput, MudLabel],
   template: `
-    <mud-search-input placeholder="Rectangular, medium">
+    <mud-search-input placeholder="Rectangular, md">
       <mud-label>Căutare</mud-label>
     </mud-search-input>
     <mud-search-input
       shape="circular"
-      size="large"
+      size="lg"
       withButton
-      placeholder="Circular, large, with a button"
+      placeholder="Circular, lg, with a button"
     >
       <mud-label>Căutare</mud-label>
     </mud-search-input>

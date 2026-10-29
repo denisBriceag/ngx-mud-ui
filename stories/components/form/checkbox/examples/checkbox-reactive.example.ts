@@ -15,7 +15,7 @@ import { MudLabel } from 'ngx-mud-ui/label';
         <mud-inline-message variant="error">Trebuie să acceptați termenii.</mud-inline-message>
       }
     </mud-checkbox>
-    <button type="button" mudButton size="small" (click)="terms.markAsTouched()">Continuă</button>
+    <button type="button" mudButton size="sm" (click)="terms.markAsTouched()">Continuă</button>
   `,
   styles: `
     :host {

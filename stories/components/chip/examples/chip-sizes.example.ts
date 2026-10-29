@@ -12,10 +12,10 @@ import { MudChip } from 'ngx-mud-ui/chip';
       <mud-chip type="input" removable>Input</mud-chip>
     </div>
     <div class="row">
-      <mud-chip size="small">Small</mud-chip>
-      <mud-chip size="small" [selected]="true">Selected</mud-chip>
-      <mud-chip size="small" disabled>Disabled</mud-chip>
-      <mud-chip size="small" type="input" removable>Input</mud-chip>
+      <mud-chip size="sm">Small</mud-chip>
+      <mud-chip size="sm" [selected]="true">Selected</mud-chip>
+      <mud-chip size="sm" disabled>Disabled</mud-chip>
+      <mud-chip size="sm" type="input" removable>Input</mud-chip>
     </div>
   `,
   styles: `

@@ -21,7 +21,7 @@ import type { MudLinkSize, MudLinkStyle, MudLinkTouchTarget, MudLinkUnderline } 
 })
 class Host {
   readonly style = signal<MudLinkStyle | ''>('');
-  readonly size = signal<MudLinkSize>('medium');
+  readonly size = signal<MudLinkSize>('md');
   readonly underline = signal<MudLinkUnderline>('always');
   readonly touchTarget = signal<MudLinkTouchTarget>('auto');
   readonly disabled = signal(false);
@@ -60,10 +60,10 @@ describe('MudLink', () => {
     const { fixture, host, el } = await render();
 
     const expected: [MudLinkSize, string][] = [
-      ['large', 'link-lg'],
-      ['medium', 'link-md'],
-      ['small', 'link-sm'],
-      ['extra-small', 'link-xs'],
+      ['lg', 'link-lg'],
+      ['md', 'link-md'],
+      ['sm', 'link-sm'],
+      ['xs', 'link-xs'],
     ];
 
     for (const [size, cls] of expected) {

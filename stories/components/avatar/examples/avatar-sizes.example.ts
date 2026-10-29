@@ -38,10 +38,10 @@ import { MudIconComponent } from 'ngx-mud-ui/icons';
 export class AvatarSizesExample {
   // Match the icon scale to the avatar: 16px for extra-small, 20px for small and medium, 24px above.
   readonly sizes: { size: MudAvatarSize; icon: MudIconScale }[] = [
-    { size: 'extra-small', icon: 16 },
-    { size: 'small', icon: 20 },
-    { size: 'medium', icon: 20 },
-    { size: 'large', icon: 24 },
-    { size: 'extra-large', icon: 24 },
+    { size: 'xs', icon: 16 },
+    { size: 'sm', icon: 20 },
+    { size: 'md', icon: 20 },
+    { size: 'lg', icon: 24 },
+    { size: 'xl', icon: 24 },
   ];
 }

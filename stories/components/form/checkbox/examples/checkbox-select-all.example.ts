@@ -15,7 +15,7 @@ import { MudLabel } from 'ngx-mud-ui/label';
     </mud-checkbox>
     <div class="children">
       @for (service of services(); track service.name; let i = $index) {
-        <mud-checkbox size="small" [checked]="service.on" (checkedChange)="toggle(i, $event)">
+        <mud-checkbox size="sm" [checked]="service.on" (checkedChange)="toggle(i, $event)">
           <mud-label>{{ service.name }}</mud-label>
         </mud-checkbox>
       }

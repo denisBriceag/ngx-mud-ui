@@ -5,10 +5,10 @@ import { MudLink } from 'ngx-mud-ui/link';
   selector: 'app-link-sizes',
   imports: [MudLink],
   template: `
-    <a mudLink size="large" href="#">Large</a>
-    <a mudLink size="medium" href="#">Medium</a>
-    <a mudLink size="small" href="#">Small</a>
-    <a mudLink size="extra-small" href="#">Extra small</a>
+    <a mudLink size="lg" href="#">Large</a>
+    <a mudLink size="md" href="#">Medium</a>
+    <a mudLink size="sm" href="#">Small</a>
+    <a mudLink size="xs" href="#">Extra small</a>
   `,
   styles: `
     :host {

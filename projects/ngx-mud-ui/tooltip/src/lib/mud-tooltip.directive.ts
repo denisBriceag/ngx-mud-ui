@@ -36,7 +36,7 @@ export type MudTooltipCloseReason =
 
 /**
  * ```html
- * <button mudTooltip="Saved successfully!" tooltipPlacement="top-center" tooltipSize="large">
+ * <button mudTooltip="Saved successfully!" tooltipPlacement="top-center" tooltipSize="lg">
  *   Save
  * </button>
  * <button mudTooltip="Try the new filters here." tooltipVariant="coach" tooltipTitle="New!">
@@ -86,7 +86,7 @@ export class MudTooltip {
   /** @description Preferred side and alignment; flips when there isn't room. */
   readonly tooltipPlacement = input<MudTooltipPlacement>('top-center');
   /** @description Text size and padding. */
-  readonly tooltipSize = input<MudTooltipSize>('small');
+  readonly tooltipSize = input<MudTooltipSize>('sm');
   /** @description What opens the tooltip; `hover` also opens on focus, `manual` only reacts to `show()`/`hide()`. */
   readonly tooltipTrigger = input<MudTooltipTrigger>('hover');
   /** @description `coach` stays open until Escape, the close button or an outside click, and shows a hint line. */

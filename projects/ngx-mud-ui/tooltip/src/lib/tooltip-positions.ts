@@ -17,7 +17,7 @@ export const MUD_TOOLTIP_PLACEMENTS = [
 
 export type MudTooltipPlacement = (typeof MUD_TOOLTIP_PLACEMENTS)[number];
 
-export type MudTooltipSize = 'small' | 'large';
+export type MudTooltipSize = 'sm' | 'lg';
 
 const CONNECTED_POSITIONS: Record<MudTooltipPlacement, ConnectedPosition> = {
   'top-left': { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' },

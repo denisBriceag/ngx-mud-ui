@@ -26,7 +26,7 @@ import { injectMudLabels, _mudText } from 'ngx-mud-ui/i18n';
 import { _MudInputFieldStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
 export type MudSearchInputVariant = 'default' | 'destructive';
-export type MudSearchInputSize = 'medium' | 'large';
+export type MudSearchInputSize = 'md' | 'lg';
 export type MudSearchInputShape = 'rectangular' | 'circular';
 
 let nextUniqueId = 0;
@@ -59,8 +59,8 @@ export class MudSearchInput implements ControlValueAccessor, FormValueControl<st
   /** @description Color treatment. `destructive` is forced when `invalid` is set. */
   readonly variant = input<MudSearchInputVariant>('default');
 
-  /** @description Size rung: medium (40px) or large (48px). */
-  readonly size = input<MudSearchInputSize>('medium');
+  /** @description Size rung: `md` (40px) or `lg` (48px). */
+  readonly size = input<MudSearchInputSize>('md');
 
   /** @description Silhouette: rectangular (8px radius) or circular (pill). */
   readonly shape = input<MudSearchInputShape>('rectangular');
@@ -186,7 +186,7 @@ export class MudSearchInput implements ControlValueAccessor, FormValueControl<st
   protected readonly _hostClasses = computed(() => {
     const classes = ['input-field', `input-field--${this._effectiveVariant()}`];
 
-    if (this.size() === 'large') classes.push('input-field--lg');
+    if (this.size() === 'lg') classes.push('input-field--lg');
 
     if (this.shape() === 'circular') classes.push('input-field--circular');
 

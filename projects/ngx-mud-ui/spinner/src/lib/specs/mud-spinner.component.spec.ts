@@ -9,7 +9,7 @@ import type { MudSpinnerSize, MudSpinnerVariant } from '../mud-spinner.component
   template: `<mud-spinner [size]="size()" [variant]="variant()" />`,
 })
 class Host {
-  readonly size = signal<MudSpinnerSize>('medium');
+  readonly size = signal<MudSpinnerSize>('md');
   readonly variant = signal<MudSpinnerVariant>('brand');
 }
 
@@ -27,7 +27,7 @@ describe('MudSpinner', () => {
     const { el } = await render();
 
     expect(el.classList.contains('spinner')).toBe(true);
-    expect(el.classList.contains('spinner--medium')).toBe(true);
+    expect(el.classList.contains('spinner--md')).toBe(true);
     expect(el.classList.contains('spinner--brand')).toBe(true);
     expect(el.getAttribute('role')).toBe('status');
   });
@@ -46,7 +46,7 @@ describe('MudSpinner', () => {
   it('maps all four sizes to the design-system classes', async () => {
     const { fixture, host, el } = await render();
 
-    for (const size of ['extra-small', 'small', 'medium', 'large'] as const) {
+    for (const size of ['xs', 'sm', 'md', 'lg'] as const) {
       host.size.set(size);
       await fixture.whenStable();
       expect(el.classList.contains(`spinner--${size}`)).toBe(true);

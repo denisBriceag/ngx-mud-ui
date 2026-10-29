@@ -99,7 +99,7 @@ const CERERI: Cerere[] = [
       <ng-container mudColumnDef="stare">
         <th mud-header-cell *mudHeaderCellDef>Stare</th>
         <td mud-cell *mudCellDef="let row">
-          <mud-tag size="small" [color]="stateColor[row.stare]">{{ row.stare }}</mud-tag>
+          <mud-tag size="sm" [color]="stateColor[row.stare]">{{ row.stare }}</mud-tag>
         </td>
       </ng-container>
       <tr mud-header-row *mudHeaderRowDef="columns"></tr>

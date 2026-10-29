@@ -23,7 +23,7 @@ import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { _MudSelectionControlStyles, MudStyleLoader } from 'ngx-mud-ui/core';
 
-export type MudRadioGroupSize = 'medium' | 'small';
+export type MudRadioGroupSize = 'sm' | 'md';
 
 export type MudRadioGroupOrientation = 'vertical' | 'horizontal';
 
@@ -73,7 +73,7 @@ export class MudRadioGroup<T = unknown> implements ControlValueAccessor, FormVal
   readonly name = input<string>('');
 
   /** @description Size rung applied to every child radio. */
-  readonly size = input<MudRadioGroupSize>('medium');
+  readonly size = input<MudRadioGroupSize>('md');
 
   /** @description Stacks the options (default) or lays them in a wrapping row. */
   readonly orientation = input<MudRadioGroupOrientation>('vertical');

@@ -29,7 +29,7 @@ import { MudTextInput } from 'ngx-mud-ui/text-input';
       <mud-text-input value="12345" aria-describedby="phone-error" invalid>
         <mud-label>Telefon</mud-label>
       </mud-text-input>
-      <mud-inline-message id="phone-error" variant="error" size="small"
+      <mud-inline-message id="phone-error" variant="error" size="sm"
         >Numărul este incomplet.</mud-inline-message
       >
     </div>

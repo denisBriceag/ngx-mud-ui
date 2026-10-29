@@ -12,16 +12,12 @@ import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
       <mud-inline-message variant="error">Introduceți un IDNP valid.</mud-inline-message>
     </div>
     <div class="column">
-      <mud-inline-message variant="info" size="small">Câmpul este opțional.</mud-inline-message>
-      <mud-inline-message variant="success" size="small"
-        >Adresa a fost verificată.</mud-inline-message
-      >
-      <mud-inline-message variant="warning" size="small"
+      <mud-inline-message variant="info" size="sm">Câmpul este opțional.</mud-inline-message>
+      <mud-inline-message variant="success" size="sm">Adresa a fost verificată.</mud-inline-message>
+      <mud-inline-message variant="warning" size="sm"
         >Documentul expiră în 30 de zile.</mud-inline-message
       >
-      <mud-inline-message variant="error" size="small"
-        >Introduceți un IDNP valid.</mud-inline-message
-      >
+      <mud-inline-message variant="error" size="sm">Introduceți un IDNP valid.</mud-inline-message>
     </div>
   `,
   styles: `

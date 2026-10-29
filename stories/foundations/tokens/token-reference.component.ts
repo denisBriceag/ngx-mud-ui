@@ -33,7 +33,8 @@ const ENTRIES = Object.keys(import.meta.glob('../../../projects/ngx-mud-ui/*/ng-
   .map((path) => path.split('/').at(-2) ?? '')
   .sort((a, b) => b.length - a.length);
 const ownerOf = (name: string): string | undefined =>
-  ENTRIES.find((entry) => name.startsWith(`--mud-${entry}-`)) ?? name.match(/^--mud-([a-z]+)-/)?.[1];
+  ENTRIES.find((entry) => name.startsWith(`--mud-${entry}-`)) ??
+  name.match(/^--mud-([a-z]+)-/)?.[1];
 
 /**
  * Storybook-only Foundations page: every non-colour `--mud-*` token declared by the base CSS,
@@ -45,7 +46,8 @@ const ownerOf = (name: string): string | undefined =>
     <section class="intro">
       <h2>Shared scales — public</h2>
       <p>
-        Use these in your own CSS to match the library, e.g. <code>gap: var(--mud-spacing-16)</code>,
+        Use these in your own CSS to match the library, e.g.
+        <code>gap: var(--mud-spacing-16)</code>,
         <code>border-radius: var(--mud-border-radius-8)</code>,
         <code>box-shadow: var(--mud-drop-shadow-300)</code>.
       </p>
@@ -60,13 +62,22 @@ const ownerOf = (name: string): string | undefined =>
             <span class="value">{{ token.value }}</span>
             @switch (group.kind) {
               @case ('spacing') {
-                <span class="swatch swatch--spacing" [style.width]="'var(' + token.name + ')'"></span>
+                <span
+                  class="swatch swatch--spacing"
+                  [style.width]="'var(' + token.name + ')'"
+                ></span>
               }
               @case ('radius') {
-                <span class="swatch swatch--box" [style.border-radius]="'var(' + token.name + ')'"></span>
+                <span
+                  class="swatch swatch--box"
+                  [style.border-radius]="'var(' + token.name + ')'"
+                ></span>
               }
               @case ('shadow') {
-                <span class="swatch swatch--box" [style.box-shadow]="'var(' + token.name + ')'"></span>
+                <span
+                  class="swatch swatch--box"
+                  [style.box-shadow]="'var(' + token.name + ')'"
+                ></span>
               }
               @default {
                 <span></span>
@@ -192,7 +203,9 @@ export class TokenReferenceComponent {
 
       if (owner) byComponent.set(owner, [...(byComponent.get(owner) ?? []), token]);
     }
-    this.component.set([...byComponent].map(([title, list]) => ({ title, kind: 'plain', tokens: list })));
+    this.component.set(
+      [...byComponent].map(([title, list]) => ({ title, kind: 'plain', tokens: list })),
+    );
   }
 
   private _rootTokens(): Token[] {
@@ -210,11 +223,14 @@ export class TokenReferenceComponent {
         if (!(rule instanceof CSSStyleRule) || rule.selectorText.trim() !== ':root') continue;
 
         for (const name of Array.from(rule.style)) {
-          if (name.startsWith('--mud-') && !name.startsWith('--mud-color-')) found.set(name, rule.style.getPropertyValue(name).trim());
+          if (name.startsWith('--mud-') && !name.startsWith('--mud-color-'))
+            found.set(name, rule.style.getPropertyValue(name).trim());
         }
       }
     }
 
-    return [...found].map(([name, value]) => ({ name, value })).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+    return [...found]
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
   }
 }

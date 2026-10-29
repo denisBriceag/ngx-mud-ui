@@ -11,7 +11,7 @@ import { MudTooltip } from 'ngx-mud-ui/tooltip';
       <button
         type="button"
         mudButton="outlined"
-        size="small"
+        size="sm"
         [mudTooltip]="placement"
         [tooltipPlacement]="placement"
       >

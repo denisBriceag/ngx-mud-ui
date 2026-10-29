@@ -4,15 +4,15 @@ import { MudStyleLoader } from 'ngx-mud-ui/core';
 import { _MudLinkStyles } from './mud-link-styles.component';
 
 export type MudLinkStyle = 'primary' | 'strict';
-export type MudLinkSize = 'large' | 'medium' | 'small' | 'extra-small';
+export type MudLinkSize = 'xs' | 'sm' | 'md' | 'lg';
 export type MudLinkUnderline = 'always' | 'hover' | 'none';
 export type MudLinkTouchTarget = 'auto' | 'pointer' | 'touch' | 'none';
 
 const SIZE_CLASSES: Record<MudLinkSize, string> = {
-  large: 'link-lg',
-  medium: 'link-md',
-  small: 'link-sm',
-  'extra-small': 'link-xs',
+  lg: 'link-lg',
+  md: 'link-md',
+  sm: 'link-sm',
+  xs: 'link-xs',
 };
 
 const UNDERLINE_CLASSES: Record<MudLinkUnderline, string> = {
@@ -24,7 +24,7 @@ const UNDERLINE_CLASSES: Record<MudLinkUnderline, string> = {
 /**
  * ```html
  * <a mudLink href="/services">Services</a>
- * <a mudLink="strict" size="small" underline="none" href="/terms">Terms</a>
+ * <a mudLink="strict" size="sm" underline="none" href="/terms">Terms</a>
  * <a mudLink href="https://gov.md" target="_blank">Portal</a> <!-- auto external icon + rel -->
  * ```
  */
@@ -46,7 +46,7 @@ export class MudLink {
     transform: (value) => value || 'primary',
   });
   /** @description Text size. */
-  readonly size = input<MudLinkSize>('medium');
+  readonly size = input<MudLinkSize>('md');
   /** @description When the underline shows. */
   readonly underline = input<MudLinkUnderline>('always');
   /** @description Invisible hit area: `pointer` 32px, `touch` 40px, `auto` picks by device, `none` keeps the text box (for links in running text). */

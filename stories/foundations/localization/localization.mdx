@@ -127,7 +127,9 @@ bootstrapApplication(App, {
     provideMudLabels(() => {
       const { lang } = inject(LanguageService);
 
-      return computed(() => (lang() === 'ro' ? MUD_LABELS_RO : lang() === 'ru' ? MUD_LABELS_RU : {}));
+      return computed(() =>
+        lang() === 'ro' ? MUD_LABELS_RO : lang() === 'ru' ? MUD_LABELS_RU : {},
+      );
     }),
     provideMudFormatLocale(() => {
       const { lang } = inject(LanguageService);

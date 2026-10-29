@@ -31,8 +31,8 @@ import { injectMudFormatLocale, injectMudLabels } from 'ngx-mud-ui/i18n';
 type OverflowSlot = Extract<MudPaginationSlot, { kind: 'overflow' }>;
 
 const FALLBACK_METRICS: Record<MudPaginationSize, { item: number; gap: number; innerGap: number }> = {
-  medium: { item: 40, gap: 24, innerGap: 16 },
-  small: { item: 32, gap: 4, innerGap: 8 },
+  md: { item: 40, gap: 24, innerGap: 16 },
+  sm: { item: 32, gap: 4, innerGap: 8 },
 };
 
 /**
@@ -48,7 +48,7 @@ const FALLBACK_METRICS: Record<MudPaginationSize, { item: number; gap: number; i
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'mud-pagination',
-    '[class.mud-pagination--small]': "size() === 'small'",
+    '[class.mud-pagination--small]': "size() === 'sm'",
     '[attr.aria-label]': 'null',
   },
   template: `
@@ -157,8 +157,8 @@ export class MudPagination implements OnInit, OnDestroy {
   /** @description Disables every control. */
   readonly disabled = input(false, { transform: booleanAttribute });
 
-  /** @description Size rung: 32px (`small`, no Prev/Next text) or 40px (`medium`). */
-  readonly size = input<MudPaginationSize>('medium');
+  /** @description Size rung: 32px (`sm`, no Prev/Next text) or 40px (`md`). */
+  readonly size = input<MudPaginationSize>('md');
 
   /** @description Accessible name for the navigation landmark. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
