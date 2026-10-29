@@ -1,199 +1,117 @@
-import { Meta, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import { Meta, Canvas } from '@storybook/addon-docs/blocks';
 import * as DrawerStories from './drawer.stories';
 
 <Meta of={DrawerStories} />
 
 # Drawer
 
-`MudDrawer` opens a panel that slides in from one edge of the screen, such as a filter panel or a
-cookie banner. The page behind it is dimmed with the same backdrop as the
-[Dialog](?path=/docs/components-dialog--docs).
-
-The drawer is only a surface. You supply everything inside it, including the close button.
-
-<Canvas of={DrawerStories.Playground} />
-<Controls of={DrawerStories.Playground} />
-
-## Import
+A panel that slides in from an edge of the screen, such as filters or a cookie banner, over the
+same backdrop as the [Dialog](?path=/docs/components-dialog--docs). There is no `<mud-drawer>`
+element: inject the `MudDrawer` service and open a component or a template. The drawer is only a
+surface; you supply everything inside it, including the close button.
 
 ```ts
-import { MudDrawer, MudDrawerRef, MUD_DRAWER_DATA, MudDrawerTitle, MudDrawerClose } from 'ngx-mud-ui/drawer';
-```
-
-Add the base stylesheet to your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
+import {
+  MUD_DRAWER_DATA,
+  MudDrawer,
+  MudDrawerClose,
+  MudDrawerRef,
+  MudDrawerTitle,
+} from 'ngx-mud-ui/drawer';
 ```
 
 ## Opening a drawer
 
-There is no `<mud-drawer>` element. Inject `MudDrawer` and call `open()` with a component or a
-`TemplateRef`. It returns a `MudDrawerRef`.
+`open()` returns a `MudDrawerRef`. Pass `data` and read it with `inject(MUD_DRAWER_DATA)` (or
+`let-data` in a template). Close with a result from a button with `[mudDrawerClose]="value"`, or
+from code with `MudDrawerRef.close(value)`. `closed` emits `{ result, reason }` once and completes.
 
-```ts
-export class CatalogComponent {
-  private readonly drawer = inject(MudDrawer);
+Name the drawer with `mudDrawerTitle` on its heading, and give your close button an `aria-label`.
 
-  filter(): void {
-    const ref = this.drawer.open<string>(FiltersDrawer, { data: { category: 'taxes' } });
+<Canvas of={DrawerStories.Filters} />
 
-    ref.closed.subscribe(({ result, reason }) => console.log(result, reason));
-  }
-}
-```
+## Position and size
 
-Read `data` in the opened component with `inject(MUD_DRAWER_DATA)`. A template receives it as
-`let-data`.
+`position` is `'right'` (default), `'left'`, `'top'` or `'bottom'`. The drawer slides in over 225ms,
+or instantly when the user prefers reduced motion.
 
-## Choosing an edge
+- Left and right drawers fill the screen height. `width` sets their width (default `382px`); on
+  screens up to 480px they take the full width.
+- Top and bottom drawers fill the screen width. `height` sets their height (default `auto`, the
+  height of the content).
 
-Set `position` to `'top'`, `'right'`, `'bottom'` or `'left'`. The default is `'right'`.
-
-```ts
-this.drawer.open(FiltersDrawer, { position: 'left' });
-```
-
-The drawer slides in from that edge in 225ms. The slide is skipped when the user prefers reduced
-motion.
+Any CSS length works, and a percentage is a share of the screen.
 
 <Canvas of={DrawerStories.Positions} />
 
-## Setting the size
-
-A left or right drawer is as tall as the screen. Its width is `width`, 382px by default.
-
-A top or bottom drawer is as wide as the screen. Its height is `height`, which defaults to `auto`:
-the drawer is as tall as its content, up to the screen height.
-
-```ts
-this.drawer.open(FiltersDrawer, { position: 'right', width: '480px' });
-this.drawer.open(NoticeDrawer, { position: 'bottom', height: '240px' });
-```
-
-Any CSS length works. A percentage is a share of the screen: `width: '50%'` is half the screen
-width.
-
-Each option applies to its own edges only. `width` is ignored for top and bottom drawers, and
-`height` for left and right ones.
-
-On screens 480px wide or less, a left or right drawer always takes the full width.
-
-When the content is taller than the drawer, the drawer scrolls. The page behind it does not.
-
 ## Scrolling content
 
-When the content is taller than the drawer, the whole drawer scrolls by default, header included.
+By default the whole drawer scrolls. To keep a header and footer in view, make only the middle
+block scroll with `flex: 1 1 auto; min-height: 0; overflow-y: auto` and set `display: contents` on
+the drawer component's host. If that block holds only text, give it `tabindex="0"`,
+`role="region"` and a name so keyboard users can scroll it.
 
-To keep a header and an action row in view, make only the middle block scroll. The drawer lays
-out its children in a column, so this takes three CSS lines on that block:
-
-```css
-:host { display: contents; } /* your blocks become the drawer's children */
-
-.body {
-  flex: 1 1 auto;
-  min-height: 0; /* lets the block shrink below its content */
-  overflow-y: auto;
-}
-```
-
-The header and the actions keep their natural height. The block between them takes the rest and
-scrolls.
-
-Make the scrolling block reachable by keyboard. When it holds only text, nothing inside it can take
-focus, so arrow keys can't scroll it. Give it `tabindex="0"`, `role="region"` and a name, plus a
-visible focus style:
-
-```html
-<div class="body" tabindex="0" role="region" aria-label="Textul termenilor">…</div>
-```
-
-```css
-.body:focus-visible {
-  outline: 3px solid var(--mud-focus-ring-outer-color);
-  outline-offset: -3px;
-}
-```
-
-<Canvas of={DrawerStories.ScrollableContent} />
-
-## Adding a close button
-
-The drawer has no close button of its own. Add one where your design needs it, with
-`mudDrawerClose`:
-
-```html
-<header>
-  <h2 mudDrawerTitle>Filtre</h2>
-  <button mudIconButton aria-label="Închide" mudDrawerClose><svg>…</svg></button>
-</header>
-```
-
-A bare `mudDrawerClose` closes with no result. Bind a value to close with a result:
-`[mudDrawerClose]="'applied'"`. The directive sets `type="button"`, so it never submits a form.
-
-You can also close from code with `ref.close(result)`. Inject `MudDrawerRef` in the opened
-component to do that.
-
-<Canvas of={DrawerStories.WithCloseButton} />
-
-## Reacting to the close
-
-`ref.closed` emits once, with the result and the reason, then completes. You don't need to
-unsubscribe.
-
-- `'backdrop'`: the user clicked outside the drawer.
-- `'escape'`: the user pressed Escape.
-- `'action'`: a `mudDrawerClose` button or `ref.close()` closed it.
-
-The drawer has no exit animation. It disappears as soon as it closes.
+<Canvas of={DrawerStories.Scrolling} />
 
 ## Requiring a choice
 
-By default a click on the backdrop or Escape closes the drawer. Set `closeOnBackdrop: false` to
-ignore backdrop clicks, and `closeOnEscape: false` to ignore Escape. With both off, the drawer
-closes only from your own buttons. Use that when the user must decide, as in a cookie banner.
+With `closeOnBackdrop: false` and `closeOnEscape: false`, only your own buttons close the drawer.
+Turn off only `closeOnBackdrop` for a form, so a stray click outside can't discard input.
 
-Turning off only `closeOnBackdrop` suits a drawer holding a form: a stray click outside can't
-throw away what was typed, while Escape still closes it for keyboard users.
+The drawer has square corners. To round the corners facing the page, set `--mud-drawer-radius` on
+`.drawer` inside your `panelClass`, in a global stylesheet. To show a drawer on page load, open it
+in `afterNextRender()`, so it never renders on the server.
 
-To show a drawer as soon as the page loads, open it inside `afterNextRender()` in the constructor.
-That code runs only in the browser, so server-side rendering never outputs the drawer.
-
-## Rounding the corners
-
-The drawer has square corners. To round the corners that face the page, set
-`--mud-drawer-radius` through `panelClass`:
-
-```ts
-this.drawer.open(CookieBanner, { position: 'bottom', panelClass: 'cookie-drawer' });
-```
-
-```scss
-.cookie-drawer .drawer {
-  --mud-drawer-radius: 16px;
-}
-```
-
-A bottom drawer rounds its top corners, and a right drawer its left corners. `panelClass` also
-lets you change anything else about the drawer's look.
-
-<Canvas of={DrawerStories.CookieBanner} />
+<Canvas of={DrawerStories.Cookie} />
 
 ## Accessibility
 
-**Name it.** Put `mudDrawerTitle` on the drawer's heading, and the drawer is labelled by it. If
-there is no visible heading, pass `ariaLabel` instead. `ariaLabel` wins when both are present.
+- The drawer is named by `mudDrawerTitle`, or by `ariaLabel` when there's no heading (`ariaLabel`
+  wins when both are set).
+- On open, focus moves to the first focusable element (change it with `autoFocus`) and stays in the
+  drawer. On close it returns to where it was, unless `restoreFocus: false`.
+- <kbd>Tab</kbd> and <kbd>Shift</kbd>+<kbd>Tab</kbd> cycle inside the drawer; <kbd>Esc</kbd> closes
+  it unless `closeOnEscape: false`.
 
-**Focus.** Opening the drawer moves focus to its first element you can Tab to. If there is none,
-focus goes to the drawer itself. Change the target with `autoFocus`. Focus stays inside the drawer while it is open. When it closes, focus returns to
-the element that had it before, unless you set `restoreFocus: false`.
+## API
 
-**Keyboard.**
+### MudDrawer
 
-- **Tab / Shift+Tab** move between the drawer's controls and wrap around inside it.
-- **Escape** closes the drawer, unless `closeOnEscape` is `false`.
+`open<R, D>(componentOrTemplate, config?: MudDrawerConfig<D>): MudDrawerRef<R>` opens a drawer.
+The service is provided in root.
 
-**What you must do.** Give your close button an `aria-label`, because the × alone has no name.
-Keep a visible way to close the drawer, especially with `closeOnEscape: false`.
+### MudDrawerConfig
+
+- `data` (`D`): passed through `MUD_DRAWER_DATA`, or as the template's implicit variable.
+- `position` (`'top' | 'right' | 'bottom' | 'left'`, default `'right'`): the edge.
+- `width` (`string`, default `'382px'`): width of a left or right drawer.
+- `height` (`string`, default `'auto'`): height of a top or bottom drawer.
+- `closeOnBackdrop` (`boolean`, default `true`): closes on a backdrop click.
+- `closeOnEscape` (`boolean`, default `true`): closes on <kbd>Esc</kbd>.
+- `ariaLabel` (`string`): accessible name when there's no `mudDrawerTitle`.
+- `autoFocus` (`'first-tabbable' | 'first-heading' | 'dialog' | string | boolean`): where focus goes on
+  open.
+- `restoreFocus` (`boolean`, default `true`): returns focus on close.
+- `panelClass` (`string | string[]`): extra classes on the overlay panel.
+
+### MudDrawerRef&lt;R&gt;
+
+- `closed` (`Observable<MudDrawerCloseResult<R>>`): emits `{ result, reason }` once, then completes.
+- `backdropClick` (`Observable<MouseEvent>`): backdrop clicks, also when they don't close the drawer.
+- `close(result?: R, reason?: MudDrawerCloseReason)`: closes the drawer; the reason defaults to
+  `'action'`.
+
+`MudDrawerCloseReason` is `'action'` (your buttons or `close()`), `'backdrop'` or `'escape'`. The
+drawer has no exit animation.
+
+### Directives
+
+- `[mudDrawerTitle]`: the heading; names the drawer.
+- `[mudDrawerClose]`: closes the drawer with the bound value (no value: `undefined`). Input `type`
+  sets the button type (default `'button'`).
+
+### Types
+
+- `MudDrawerPosition`: `'top' | 'right' | 'bottom' | 'left'`
+- `MudDrawerCloseReason`: `'backdrop' | 'escape' | 'action'`
+- `MudDrawerCloseResult<R>`: `{ result: R | undefined; reason: MudDrawerCloseReason }`

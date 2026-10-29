@@ -6,252 +6,82 @@ import { MudBreadcrumbItem } from 'ngx-mud-ui/breadcrumb';
 
 # Breadcrumb
 
-Breadcrumbs show people where they are in a service and let them step back up
-without hunting for the back button — *Acasă › Servicii › Acte de identitate ›
-Cerere nouă*. They are most useful in deep, form-heavy flows, which is most of
-what we build.
-
-You write the markup; the component takes care of the fiddly parts. It adds the
-separators, keeps the trail on one line by folding the middle into a `…` menu
-when it gets long, swaps to a single "back" link on narrow screens, shortens
-labels that run away with a tooltip for the full title, and handles the
-accessibility plumbing.
-
-Your own `<a>` stays exactly where you put it, so `routerLink` keeps working
-and the library never needs to know about your router.
-
-```html
-<nav mudBreadcrumb>
-  <ol>
-    <li mudBreadcrumbItem><a routerLink="/">Acasă</a></li>
-    <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
-  </ol>
-</nav>
-```
-
-Mark the page the user is currently on with `active`. That crumb is rendered as
-plain text rather than a link, since it goes nowhere.
-
-## Import
+Shows where the user is in a service and lets them step back up: _Acasă › Servicii › Cerere nouă_.
+You write the `<nav>`, `<ol>`, `<li>` and links; the directives add the separators, fold long
+trails into a `…` menu, shorten long labels and switch to a back link in narrow spaces. Your own
+`<a>` stays in place, so `routerLink` and click handlers work as usual.
 
 ```ts
 import { MudBreadcrumb, MudBreadcrumbItem } from 'ngx-mud-ui/breadcrumb';
-
-@Component({
-  imports: [MudBreadcrumb, MudBreadcrumbItem],
-  template: `
-    <nav mudBreadcrumb>
-      <ol>
-        <li mudBreadcrumbItem><a routerLink="/">Acasă</a></li>
-        <li mudBreadcrumbItem><a routerLink="/servicii">Servicii</a></li>
-        <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
-      </ol>
-    </nav>
-  `,
-})
-export class Demo {}
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-### The four elements you write
-
-You write all four — the library never generates markup of its own inside the
-trail. It only attaches behaviour and styling to what you have written.
-
-**`<nav mudBreadcrumb>`** becomes the labelled landmark and the container-query
-container, and it renders the mobile back link.
-
-**`<ol>`** is styled as a child of the host, via `.mud-breadcrumb > ol`. Its
-browser-default margin, padding and list markers are reset and it becomes the
-flex row. No class of ours is put on it.
-
-**`<li mudBreadcrumbItem>`** is the crumb's box, so truncation, the separator
-and the state colours all live here. It is deliberately *not* the click target.
-
-**The `<a>` or `<button>` inside** is both the click target and the focus
-target, so `aria-current="page"`, `aria-disabled` and the truncation tooltip's
-`aria-describedby` are applied to it rather than to the `<li>`. The exception is
-a crumb with no control inside — a plain `<span>`, which is what most people use
-for the current page — where `aria-current` falls back to the `<li>`.
-
-The `<ol>` is required. A `mudBreadcrumbItem` that is not an `<li>` inside a
-list still renders correctly, which is exactly why it is easy to miss — so the
-directive logs a one-off `console.warn` in development builds when it finds
-itself somewhere else. The warning is compiled out of production builds.
-
-Because your own anchor stays inside the `<li>`, `routerLink`,
-`routerLinkActive`, or any click handler you already have on it keeps working
-untouched — the directive only adds state classes to the `<li>`, ARIA state to
-the anchor, and a click-forwarding contract on top.
-
-## Playground
 
 <Canvas of={BreadcrumbStories.Playground} />
 <Controls of={BreadcrumbStories.Playground} />
 
-## Collapsed
+## Basic
 
-With more crumbs than `maxVisible` (default 4), the trail keeps the **first**
-crumb and the **last two**, and folds everything between them into a single
-`…` disclosure — four horizontal slots in total: first, `…`, second-to-last,
-last. Opening the disclosure reveals the collapsed crumbs in a popup list, in
-original order.
+Put `mudBreadcrumb` on a `<nav>` containing an `<ol>`, and `mudBreadcrumbItem` on each `<li>`. Each
+crumb holds one link or button. Mark the current page with `active`; a plain `<span>` suits it,
+since it goes nowhere.
 
-The disclosure is created inside your `<ol>`, immediately after the first
-crumb. Its host element is `<mud-breadcrumb-overflow>` rather than an `<li>`,
-so it carries `role="listitem"` and the accessibility tree still reads the
-whole thing as one list.
+<Canvas of={BreadcrumbStories.Basic} />
+
+## Collapsing
+
+With more crumbs than `maxVisible` (default 4, minimum 2), the trail keeps the first crumb and the
+last two, and folds the rest into a `…` menu in their original order.
 
 <Canvas of={BreadcrumbStories.Collapsed} />
 
-## Truncated
+## Long labels
 
-A crumb's visible label caps at 30 characters; anything longer truncates with
-an ellipsis and grows a tooltip carrying the full text (from
-`ngx-mud-ui/tooltip`, applied as a host directive — no separate import
-needed). The tooltip opens on hover *and* on keyboard focus of the crumb's
-inner link, and describes that link.
+A label longer than 30 characters is cut with "…", and a tooltip shows the full text on hover and
+on keyboard focus.
 
-The ellipsis needs the `<li>` to be a block box with inline content, so leave
-the inner anchor's `display` alone — an `inline-block` or `flex` anchor would
-become an atomic inline that `text-overflow` cannot clip.
+<Canvas of={BreadcrumbStories.LongLabel} />
 
-<Canvas of={BreadcrumbStories.Truncated} />
+## Icons
 
-## Leading icon
+Put a 16px icon inside the link with the `icon-start` attribute. For an icon-only crumb, name the
+link with `aria-label` and give the crumb a `label`, which the `…` menu and the back link show.
 
-To show an icon before a crumb's text, such as a house on "Acasă", put it
-inside the crumb's link with the `icon-start` attribute. It renders at 16×16,
-4px before the text, in the crumb's text colour, so hover, the current page and
-disabled tint it too. Hover underlines only the text. Use a `mud-icon` with
-`[scale]="16"`, or an inline `<svg>` drawn with `currentColor`.
-
-```html
-<li mudBreadcrumbItem>
-  <a routerLink="/"><mud-icon icon-start name="home-line" [scale]="16" />Acasă</a>
-</li>
-```
-
-For an icon with no text, name the link with `aria-label` and give the crumb a
-`label`. The label is what the `…` menu and the back link on narrow screens
-show, because the icon itself has no text.
-
-```html
-<li mudBreadcrumbItem label="Acasă">
-  <a routerLink="/" aria-label="Acasă"><mud-icon icon-start name="home-line" [scale]="16" /></a>
-</li>
-```
-
-<Canvas of={BreadcrumbStories.LeadingIcon} />
+<Canvas of={BreadcrumbStories.Icon} />
 
 ## States
 
-`active` and `disabled` on `mudBreadcrumbItem`.
+`disabled` greys a crumb out and blocks it, but keeps it focusable so keyboard users hear its state.
 
 <Canvas of={BreadcrumbStories.States} />
 
 ## Narrow containers
 
+When the breadcrumb's container is narrower than 640px, the trail becomes a single back link to the
+nearest crumb that isn't disabled. It's a container query, so it reacts to the space the breadcrumb
+has, not the window size. Set `[responsive]="false"` to always show the full trail.
+
 <Canvas of={BreadcrumbStories.Narrow} />
-
-Below 640px the trail swaps for a single "back" link pointing at the nearest
-*reachable* crumb above the current page — `disabled` ancestors are skipped,
-because a mirrored crumb that blocks its own activation would be the only,
-and dead, control on screen. **This is a container query
-(`@container (max-width: 640px)`), not a viewport media query** — it responds
-to the width of the `mud-breadcrumb` element's own containing box, not the
-browser window. That means:
-
-- A 360px-wide card sitting inside an otherwise-wide desktop page collapses to
-  the back link, because its *container* is narrow, regardless of viewport.
-- The Storybook viewport toolbar changes the iframe's width, which does
-  nothing here unless it also happens to shrink the breadcrumb's actual
-  container below 640px — resizing the *page* is not the same as resizing the
-  *element*. The `Narrow` story above demonstrates the real trigger: a fixed
-  360px wrapper `div`.
-- Set `[responsive]="false"` to opt an instance out of this behavior entirely
-  and always render the full trail.
-- The swap only happens when there *is* a back link to swap to. With
-  `[responsive]="false"`, a single-crumb trail, a current page that is already
-  the root, or no reachable ancestor, the trail stays visible at every width
-  rather than collapsing to nothing.
-
-## API
-
-### `MudBreadcrumb`
-
-Selector: `nav[mudBreadcrumb]`
-
-<ArgTypes of={BreadcrumbStories} />
-
-### `MudBreadcrumbItem`
-
-Selector: `[mudBreadcrumbItem]`. Put it on an `<li>` inside your `<ol>`.
-
-<ArgTypes of={MudBreadcrumbItem} />
 
 ## Accessibility
 
-The trail is a `<nav><ol><li><a>` structure, the conventional markup for a
-breadcrumb, so a screen reader announces it as a list with a known number of
-items and reads each crumb as a link.
+- The `<nav>` is a landmark named "Breadcrumb" (translatable), or by `label`. An `aria-label` you
+  write on it wins.
+- The current page gets `aria-current="page"` and a disabled crumb `aria-disabled="true"`, on the
+  link inside the crumb (or on the `<li>` when there's no link).
+- Separators are drawn with CSS, so they are never read aloud.
+- The `…` button is a disclosure (`aria-expanded`); <kbd>Esc</kbd> closes it and returns focus. Its
+  name is "Show collapsed pages", or `overflowLabel`.
+- A `mudBreadcrumbItem` outside an `<li>` in a list logs a warning in development.
 
-**The landmark** is your `<nav>`, named by the `label` input, which defaults to
-the `breadcrumb.navigation` label (English "Breadcrumb"). If you write a static `aria-label` on the element yourself, it
-wins. Your `<ol>` is left alone apart from its styling.
+## API
 
-**State goes on the crumb's inner control, not on the list item.** The current
-page gets `aria-current="page"` and a disabled crumb gets
-`aria-disabled="true"`, both applied to the `<a>` or `<button>` inside the
-`<li>` — that is where the WAI-ARIA breadcrumb pattern puts them, and the
-`<li>` is never focused. The one exception is a crumb with no control at all,
-such as the plain `<span>` most people use for the current page: there is
-nothing inside to carry the attribute, so it lands on the `<li>` instead, where
-it is still announced. A disabled crumb keeps its focus; only activation is
-blocked, so keyboard users can still reach it and hear its state.
+### MudBreadcrumb
 
-**Separators are CSS pseudo-elements**, so they never enter the accessibility
-tree and are never read aloud between crumbs.
+Selector: `nav[mudBreadcrumb]` · Exported as: `mudBreadcrumb`
 
-**The overflow menu is a disclosure, not a menu.** Its trigger carries
-`aria-expanded` and `aria-controls`, and focus returns to it when you press
-Escape. Each entry mirrors its crumb: a crumb with an `href` becomes a real
-link, one without becomes a `<button>` — so they are announced as
-places you can go rather than as commands. The trigger also carries
-`role="listitem"`: its host element cannot literally be an `<li>`, but the
-surrounding list has to stay coherent.
+<ArgTypes of={BreadcrumbStories} />
 
-**Long labels stay complete for assistive technology.** Only the visible text
-is truncated — the full label remains in the DOM, and the tooltip carrying it
-opens on hover *and* on keyboard focus of the inner link, which it describes.
+### MudBreadcrumbItem
 
-## Usage tips
+Selector: `[mudBreadcrumbItem]`, on an `<li>` · Exported as: `mudBreadcrumbItem`
 
-- **Set `[label]`** to override the `<nav>`'s accessible name; a static
-  `aria-label` you write yourself on the same element always wins over the
-  input.
-- **`maxVisible` has a floor of 2.** Values below that are coerced back to 2
-  with a console warning — there is no meaningful "first + last two" collapse
-  below it.
-- **The overflow trigger's accessible name comes from `overflowLabel`**, not
-  from the `…` glyph. Unset, it uses the `breadcrumb.overflow` label, so a
-  language pack from `provideMudLabels` translates it.
-- **`label` on `mudBreadcrumbItem` is a text override**, used by the overflow
-  panel and the mobile back link when a crumb's projected content isn't plain
-  text (an icon-only crumb, for example).
-- **A `disabled` crumb stays focusable.** Focus is never removed — only
-  activation is blocked — so keyboard users still reach the crumb and hear
-  its state.
-- **One interactive element per crumb.** The directive resolves the first
-  `<a>` or `<button>` inside the `<li>` as the crumb's target; that is the
-  element it clicks when the overflow panel or the back link forwards a
-  navigation, and the element it reads `href` from. A crumb with no
-  interactive child (a plain `<span>`, the usual current page) falls back to
-  the `<li>` itself, and reports no `href`.
-- **The back link sits outside the `<ol>`**, because an `<ol>` may only
-  contain `<li>`. It replaces the whole trail rather than joining it.
+<ArgTypes of={MudBreadcrumbItem} />

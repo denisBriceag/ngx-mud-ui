@@ -5,55 +5,44 @@ import * as InlineMessageStories from './inline-message.stories';
 
 # Inline message
 
-A short contextual message with a semantic icon — used on its own, or projected
-into a form field's assistive-message region.
-
-## Import
+A short message with an icon, on its own or under a form field as its hint or error.
 
 ```ts
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
-
-@Component({
-  imports: [MudInlineMessage],
-  template: `
-    <mud-inline-message variant="error" size="small" id="cnp-error">
-      Introduceți un IDNP valid.
-    </mud-inline-message>
-  `,
-})
-export class Demo {}
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={InlineMessageStories.Playground} />
 <Controls of={InlineMessageStories.Playground} />
 
-## Variants
+## Variants and sizes
+
+`variant` is `info` (default), `success`, `warning` or `error`. `info` colors only the icon, so it
+reads as neutral help text; the others color the text too. `size` is `medium` (14px text, 20px
+icon, default) or `small` (12px text, 16px icon).
 
 <Canvas of={InlineMessageStories.Variants} />
 
-## Sizes
+## Icon and wrapping
 
-<Canvas of={InlineMessageStories.Sizes} />
+Project a `<mud-icon>` or `<svg>` to replace the icon, or set `hideIcon` to remove it, for example
+in a stack of messages. A long message wraps, and the icon stays on the first line.
 
-## Icon variations
+<Canvas of={InlineMessageStories.Icon} />
 
-<Canvas of={InlineMessageStories.IconVariations} />
+## With a form field
 
-## Wrapping
+Inside a field, the message is linked to the input with `aria-describedby` and wrapped in a
+`role="alert"` region, so a new error is announced. When and whether to show it is up to you; here
+the error appears after the user leaves the field.
 
-<Canvas of={InlineMessageStories.Wrapping} />
+Outside a field, give the message an `id` and point the control's `aria-describedby` at it.
 
-## As a field error
+<Canvas of={InlineMessageStories.Field} />
 
-<Canvas of={InlineMessageStories.AsFieldError} />
+## Accessibility
+
+The message on its own is not a live region and announces nothing. The field it's placed in does
+the announcing.
 
 ## API
 
@@ -61,15 +50,7 @@ Selector: `mud-inline-message`
 
 <ArgTypes of={InlineMessageStories} />
 
-## Usage tips
+### Types
 
-- **`info` colors only the icon.** The other three variants color both icon and
-  text, which is why `info` reads as neutral supporting text rather than an
-  alert.
-- **The component is not a live region.** It announces nothing on its own; when
-  projected into a field, the field's own `role="alert"` wrapper does the
-  announcing.
-- **Give it an `id` when it describes a control** rendered outside the field, and
-  point the control's `aria-describedby` at it.
-- **`hideIcon` is the icon-none variation** for dense layouts and for stacks of
-  messages where a column of repeated icons adds noise.
+- `MudInlineMessageVariant`: `'info' | 'warning' | 'success' | 'error'`
+- `MudInlineMessageSize`: `'small' | 'medium'`

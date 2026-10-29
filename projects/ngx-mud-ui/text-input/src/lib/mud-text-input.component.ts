@@ -5,6 +5,7 @@ import {
   computed,
   contentChild,
   contentChildren,
+  effect,
   forwardRef,
   inject,
   input,
@@ -78,6 +79,7 @@ export class MudTextInput implements ControlValueAccessor, FormValueControl<stri
   /** @description Native input `type`. */
   readonly type = input<MudTextInputType>('text');
 
+  /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
 
   /** @description Adds the red asterisk to the label and the native `required` attribute. */
@@ -98,11 +100,17 @@ export class MudTextInput implements ControlValueAccessor, FormValueControl<stri
   /** @description Current value. Two-way bindable; also driven by both forms systems. */
   readonly value = model('');
 
+  /** @description Native `name` attribute. */
   readonly name = input<string>('');
+  /** @description Native `placeholder`. Don't use it in place of a label. */
   readonly placeholder = input<string | undefined>(undefined);
+  /** @description Native `autocomplete`, such as `email` or `tel`. */
   readonly autocomplete = input<string | undefined>(undefined);
+  /** @description Native `inputmode`: which on-screen keyboard to show, such as `numeric`. */
   readonly inputMode = input<string | undefined>(undefined);
+  /** @description Native `minlength`. */
   readonly minLength = input<number | undefined>(undefined);
+  /** @description Native `maxlength`. */
   readonly maxLength = input<number | undefined>(undefined);
 
   /** @description Accepts a string/RegExp (native semantics) or the RegExp[] signal forms push. */
@@ -124,6 +132,7 @@ export class MudTextInput implements ControlValueAccessor, FormValueControl<stri
   /** @description Extra id(s) merged into the native control's aria-describedby. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
+  /** @description Fires when focus leaves the field; signal forms use it to mark the field touched. */
   readonly touch = output<void>();
 
   private readonly _native = viewChild.required<ElementRef<HTMLInputElement>>('native');
@@ -207,6 +216,14 @@ export class MudTextInput implements ControlValueAccessor, FormValueControl<stri
 
   constructor() {
     inject(MudStyleLoader).load(_MudInputFieldStyles);
+
+    // Writes only on a real change: Chrome moves the caret to the end even when the value is unchanged.
+    effect(() => {
+      const value = this.value();
+      const native = this._native().nativeElement;
+
+      if (native.value !== value) native.value = value;
+    });
   }
 
   writeValue(value: string | null | undefined): void {

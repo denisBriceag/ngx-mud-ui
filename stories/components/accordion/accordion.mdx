@@ -6,11 +6,9 @@ import { MudAccordionGroup, MudAccordionHeader } from 'ngx-mud-ui/accordion';
 
 # Accordion
 
-A disclosure panel built on the CDK accordion. `mud-accordion` is one expandable
-item; wrap several in `mud-accordion-group` to coordinate them. The header is
-composed from `mud-accordion-title` and an optional `mud-accordion-description`.
-
-## Import
+An expandable section built on the CDK accordion. `mud-accordion` is one section; wrap several in
+`mud-accordion-group` to separate and coordinate them. The header holds a `mud-accordion-title`
+and an optional `mud-accordion-description`.
 
 ```ts
 import {
@@ -20,179 +18,121 @@ import {
   MudAccordionHeader,
   MudAccordionTitle,
 } from 'ngx-mud-ui/accordion';
-
-@Component({
-  imports: [MudAccordion, MudAccordionHeader, MudAccordionTitle, MudAccordionDescription],
-  template: `
-    <mud-accordion [expanded]="true" (afterExpand)="onShown()">
-      <mud-accordion-header>
-        <mud-accordion-title>Heading</mud-accordion-title>
-        <mud-accordion-description>Supporting text</mud-accordion-description>
-      </mud-accordion-header>
-      Expandable content
-    </mud-accordion>
-  `,
-})
-export class Demo {}
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={AccordionStories.Playground} />
 <Controls of={AccordionStories.Playground} />
 
+## Basic
+
+<Canvas of={AccordionStories.Basic} />
+
 ## Group
+
+A group draws the separators between sections and moves focus between headers with
+
+<kbd>↑</kbd> <kbd>↓</kbd> <kbd>Home</kbd> <kbd>End</kbd>. Several sections can be open at once by
+default; set `[multi]="false"` so opening one closes the others.
 
 <Canvas of={AccordionStories.Group} />
 
-## One open at a time
+## Controlling the state
 
-<Canvas of={AccordionStories.SingleOpen} />
+`expanded` is two-way bindable. Through a template reference you can call `toggle()`, `open()` and
+`close()`. `afterExpand` and `afterCollapse` fire once the animation has finished, which is the
+moment to measure, scroll or move focus. (`expandedChange`, `opened` and `closed` fire as the state
+flips.)
+
+<Canvas of={AccordionStories.Controlled} />
 
 ## Disabled
 
+A disabled section can't be opened. It stays in the tab order with `aria-disabled="true"`, so
+keyboard and screen-reader users still find it.
+
 <Canvas of={AccordionStories.Disabled} />
 
-## Trail sites
+## Appearance, size and toggle position
 
-<Canvas of={AccordionStories.TrailSites} />
+Set on the group:
 
-## Small, icon on the left
+- `appearance="trail-sites"` tints open sections with the brand-secondary surface, for the eGov
+  trail-sites pattern.
+- `size="small"` uses the compact header at every screen width, for dense surfaces.
+- `iconPosition="left"` puts the toggle before the heading.
 
-<Canvas of={AccordionStories.SmallIconLeft} />
+`hideToggle` on a section hides the toggle; the header still opens it on click.
+
+<Canvas of={AccordionStories.Appearance} />
 
 ## Leading icon
 
-To show an icon before a section's heading, put it in the header with the
-`icon-start` attribute. It renders at 20×20, the same size as the toggle's
-glyph, 12px before the text (8px in the small size). With `mud-icon`, set
-`[scale]="20"`. It takes the toggle's colour: brand while the section is open,
-grey while it is disabled. The icon sits inside the header button, so a click
-on it opens the section like the rest of the header.
+Put an icon in the header with the `icon-start` attribute. Use 20px (`[scale]="20"`). It takes the
+toggle's color and is part of the header button.
 
-```html
-<mud-accordion-header>
-  <mud-icon icon-start name="document" [scale]="20" />
-  <mud-accordion-title>Acte necesare</mud-accordion-title>
-</mud-accordion-header>
-```
-
-<Canvas of={AccordionStories.LeadingIcon} />
+<Canvas of={AccordionStories.Icon} />
 
 ## Trailing content
 
-To put a tag, a count or an edit link on the right of a header, add it with
-the `trailing` attribute. It sits between the heading and the toggle, which
-suits the "check your answers" page at the end of a form: each section shows
-its status and links back to its step. You can add several elements; they sit
-8px apart.
+Elements with the `trailing` attribute (tags, counts, edit links) sit between the heading and the
+toggle, which suits a "check your answers" page. They are outside the header button:
 
-```html
-<mud-accordion-header>
-  <mud-accordion-title>Date personale</mud-accordion-title>
-  <mud-tag trailing color="success">Completat</mud-tag>
-  <a trailing mudLink routerLink="/cerere/pas-1">Editează</a>
-</mud-accordion-header>
-```
+- A link or button there is its own tab stop, and clicking it doesn't toggle the section. A click
+  on plain content, such as a tag, does.
+- It isn't part of the section's accessible name.
+- In a disabled section, its links and buttons can't be focused or clicked. Bind `disabled` on your
+  own buttons there.
 
-Trailing content stays outside the header button and outside the heading:
-
-- A link or button there is its own tab stop, after the header, and a click on
-  it does not open or close the section.
-- A click on plain content, such as a tag, still toggles the section.
-- Screen readers don't read it as part of the section's name.
-- While the section is disabled, its trailing content is disabled too: links
-  and buttons there can't be focused or clicked, and plain text and links turn
-  grey. Tags and buttons keep their own look, so bind `disabled` on a button
-  yourself.
-
-On a wide accordion, trailing content sits on the heading's row, and the
-heading always keeps at least half the row (or 280px). With the toggle on the
-left, or with `hideToggle`, the trailing content moves to the end of the row.
-
-Below 768px of screen width, or when the accordion itself is under 600px wide
-(in a sidebar, for example), trailing content moves to its own line under the
-heading and description. The heading then keeps the full width, and a click on
-that line's empty space still toggles the section.
+Below 768px of screen width, or when the accordion is narrower than 600px, trailing content moves
+to its own line under the heading.
 
 <Canvas of={AccordionStories.Trailing} />
 
 ## Long content
 
-- **A long heading** wraps onto as many lines as it needs. A long unbroken
-  word, such as a link or an IDNP, breaks anywhere rather than running past
-  the edge.
-- **A long description** stays on one line and ends in "…". Screen readers
-  still read the whole text. Keep the essentials in the heading or the panel.
-- **Long trailing content** wraps onto more lines. A tag too long for the
-  space ends in "…".
-
-The example shows a desktop version and a narrow version, a 320px column the
-width of the narrowest phone.
+A long heading wraps, and an unbroken word (a link, an IDNP) breaks anywhere. A long description
+stays on one line and ends in "…", though screen readers still read all of it. Long trailing
+content wraps.
 
 <Canvas of={AccordionStories.LongContent} />
 
 ## API
 
-### `MudAccordion`
+### MudAccordion
 
 Selector: `mud-accordion`
 
 <ArgTypes of={AccordionStories} />
 
-#### Inherited from `CdkAccordionItem`
+Inherited from the CDK's `CdkAccordionItem`:
 
-`MudAccordion` extends the CDK's accordion item, and those members are part of
-its usable API even though the table above cannot see across the package
-boundary.
+- `expanded` (input, `boolean`, default `false`): whether the section is open. Two-way bindable.
+- `disabled` (input, `boolean`, default `false`): blocks toggling.
+- `expandedChange` (output, `boolean`): fires when the open state changes, before the animation.
+- `opened` / `closed` (outputs): fire when the section opens or closes, before the animation.
+- `toggle()`, `open()`, `close()`: change the state from code.
 
-<table>
-  <thead>
-    <tr><th>Member</th><th>Kind</th><th>Notes</th></tr>
-  </thead>
-  <tbody>
-    <tr><td><code>expanded</code></td><td>input</td><td>Open state. Two-way bindable via <code>expandedChange</code>.</td></tr>
-    <tr><td><code>disabled</code></td><td>input</td><td>Blocks toggling.</td></tr>
-    <tr><td><code>expandedChange</code></td><td>output</td><td>Fires as the state flips, before the animation.</td></tr>
-    <tr><td><code>opened</code> / <code>closed</code></td><td>output</td><td>CDK-level open/close notifications.</td></tr>
-    <tr><td><code>toggle()</code> / <code>open()</code> / <code>close()</code></td><td>method</td><td>Imperative control.</td></tr>
-  </tbody>
-</table>
-
-### `MudAccordionGroup`
+### MudAccordionGroup
 
 Selector: `mud-accordion-group`
 
 <ArgTypes of={MudAccordionGroup} />
 
-`multi` is inherited from `CdkAccordion` and is missing from the table above:
-set it to `true` to let several items stay open at once. It defaults to `false`,
-so a group is single-open unless you opt in.
+Inherited from the CDK's `CdkAccordion`:
 
-### `MudAccordionHeader`
+- `multi` (input, `boolean`, default `true`): lets several sections stay open at once.
+- `openAll()`, `closeAll()`: open or close every section (`openAll()` needs `multi`).
+
+### MudAccordionHeader
 
 Selector: `mud-accordion-header`
 
 <ArgTypes of={MudAccordionHeader} />
 
-## Usage tips
+Content slots: `mud-accordion-title`, `mud-accordion-description`, `[icon-start]` and `[trailing]`.
 
-- **`afterExpand` / `afterCollapse` fire after the animation**, unlike the CDK's
-  `opened` / `closed` which fire as the state flips. Use them when you need the
-  panel to have finished moving — measuring, scrolling into view, focusing.
-- **Set `headingLevel` to match the surrounding document outline.** It defaults
-  to `3` and becomes the header's `aria-level`; a wrong level misreports the
-  page structure to screen readers.
-- **`appearance="trail-sites"` is a themed variant**, not a decoration — it
-  tints open items with the brand-secondary surface for the eGov trail-sites
-  pattern. Leave it `default` elsewhere.
-- **`size="small"` is for dense surfaces.** It pins the header to the mobile
-  type ramp and 24px block padding at every viewport, rather than adapting.
-- **`hideToggle` removes the affordance, not the behavior** — the header still
-  toggles on click, so only use it when something else signals interactivity.
+### Types
+
+- `MudAccordionAppearance`: `'default' | 'trail-sites'`
+- `MudAccordionSize`: `'medium' | 'small'`
+- `MudAccordionIconPosition`: `'right' | 'left'`

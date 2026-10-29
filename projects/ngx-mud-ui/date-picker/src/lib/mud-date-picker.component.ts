@@ -118,7 +118,9 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   /** @description Show the "Today" quick-jump shortcut. */
   readonly showTodayShortcut = input(true, { transform: booleanAttribute });
 
+  /** @description Disables the calendar. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
+  /** @description Marks a value as required (for forms). */
   readonly required = input(false, { transform: booleanAttribute });
 
   /** @description Destructive visuals + `aria-invalid`. Signal forms bind this automatically. */
@@ -127,10 +129,10 @@ export class MudDatePicker<M extends MudDatePickerMode = 'single'>
   /** @description Accessible name for the whole calendar. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
-  /** Emitted when the visible month changes. `month` is 0-indexed. */
+  /** @description Fires when the visible month changes; `month` is 0-based. */
   readonly monthChange = output<MudDateMonthChange>();
 
-  /** Signal-forms touch contract. */
+  /** @description Fires when focus leaves the field; signal forms use it to mark the field touched. */
   readonly touch = output<void>();
 
   private readonly _allLabels = injectMudLabels();

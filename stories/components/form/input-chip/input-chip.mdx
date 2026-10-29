@@ -5,57 +5,63 @@ import * as InputChipStories from './input-chip.stories';
 
 # Input chip
 
-A field whose value is a list of strings. The user types, confirms with Enter or
-a separator character, and each confirmed value becomes a removable chip.
-
-## Import
+A field where the user types several values, each shown as a removable chip, such as email
+recipients or keywords. It works on its own with `[(value)]`, with reactive and template-driven
+forms, and with signal forms.
 
 ```ts
+import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
 import { MudInputChip } from 'ngx-mud-ui/input-chip';
 import { MudLabel } from 'ngx-mud-ui/label';
-import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
-
-@Component({
-  imports: [MudInputChip, MudLabel, MudInlineMessage],
-  template: `
-    <mud-input-chip
-      [maxChips]="5"
-      [validatePattern]="emailPattern"
-      [formControl]="recipients"
-      [invalid]="recipients.touched && recipients.invalid"
-    >
-      <mud-label>Destinatari</mud-label>
-      @if (recipients.touched && recipients.invalid) {
-        <mud-inline-message variant="error">Adăugați cel puțin o adresă.</mud-inline-message>
-      }
-    </mud-input-chip>
-  `,
-})
-export class Demo {}
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={InputChipStories.Playground} />
 <Controls of={InputChipStories.Playground} />
 
-## States
+## Basic
 
-<Canvas of={InputChipStories.States} />
+`value` is the list of chips (`string[]`), two-way bindable. The text being typed is a separate
+`draft` model, so it never becomes part of the value until it's confirmed. <kbd>Enter</kbd> confirms
+a chip, as do the `separators` characters (default `,`). A pasted list is split on separators and
+new lines. <kbd>Backspace</kbd> in an empty input removes the last chip. `placeholder` shows only
+while there are no chips.
+
+<Canvas of={InputChipStories.Basic} />
 
 ## Validation and limits
 
-<Canvas of={InputChipStories.ValidationAndMax} />
+`validatePattern` rejects values that don't match (it isn't named `pattern`, which signal forms
+would bind). Duplicates and values past `maxChips` are rejected too. Each rejection emits `errored`
+with `{ code, value }`, where `code` is `'pattern'`, `'duplicate'` or `'max'`; the field only clears
+the draft, so show the reason yourself. `chipAdded` and `chipRemoved` fire for each change.
 
-## Reactive forms
+<Canvas of={InputChipStories.Validation} />
 
-<Canvas of={InputChipStories.ReactiveForms} />
+## States
+
+`invalid`, `required`, `readonly` and `disabled` work as in a
+[Text input](?path=/docs/components-form-text-input--docs). `size` is `medium` (default) or
+`large`.
+
+<Canvas of={InputChipStories.States} />
+
+## Forms
+
+Bind `formControl` (the value is `string[]`) and bind `invalid` yourself, or bind `[formField]` and
+let the field drive `invalid`.
+
+<Canvas of={InputChipStories.Forms} />
+
+## Accessibility
+
+- In an empty input, <kbd>←</kbd> moves focus onto the chips; <kbd>←</kbd> <kbd>→</kbd> move between
+  them, and <kbd>Delete</kbd>, <kbd>Backspace</kbd>, <kbd>Enter</kbd> or <kbd>Space</kbd> removes the focused chip.
+- Added, removed and rejected values are announced through a live region. The texts are
+  translatable, or set your own with the `announceAdded`, `announceRemoved` and `announceRejected`
+  functions.
+- Each chip's remove button is named "Remove" plus the chip, or by your `removeLabel` function.
+- Messages sit in a `role="alert"` region linked with `aria-describedby`. Call `focus()` to focus
+  the input.
 
 ## API
 
@@ -63,39 +69,13 @@ Selector: `mud-input-chip`
 
 <ArgTypes of={InputChipStories} />
 
-### Label and messages
+Method: `focus(options?)`. Content slots: `mud-label` and `mud-inline-message`.
 
-The field renders no message text of its own. Project a `<mud-label>` for
-the visible label and any number of `<mud-inline-message>` elements for
-assistive text — *you* decide when they render:
+### Types
 
-- Messages land in a field-owned `role="alert"` region wired into
-  `aria-describedby`; toggling one on announces it to screen readers.
-- Inside the field, `mud-inline-message` is always the small size — its
-  `size` input is ignored.
-- The field's `invalid` input drives the destructive border and
-  `aria-invalid`; with signal forms it is bound automatically, with
-  reactive forms bind `[invalid]="ctrl.touched && ctrl.invalid"`.
-
-## Usage tips
-
-- **`value` is the confirmed list; `draft` is the pending text.** They are
-  separate two-way models, so text the user has typed but not confirmed never
-  silently becomes part of the form value.
-- **The validation input is `validatePattern`, not `pattern`.** That name is
-  deliberate: signal forms auto-bind a member called `pattern` with an
-  incompatible protocol (the field's own `readonly RegExp[]`), so using it here
-  would collide.
-- **Every rejection emits `errored`** with a code of `pattern`, `duplicate` or
-  `max` — bind it to surface why a value was refused, since the field itself
-  only clears the draft.
-- **`separators` adds to Enter rather than replacing it**, and newlines always
-  split a paste, so pasting a column of addresses works regardless of the
-  setting.
-- **Override the announcer and remove texts with functions.** `announceAdded`,
-  `announceRemoved` and `announceRejected` build the live-region text, and
-  `removeLabel` takes the chip's text and returns the remove button's name.
-  Unset, the `inputChip` labels apply, so a language pack from
-  `provideMudLabels` translates them. See the [Localization guide](?path=/docs/foundations-localization--docs).
-- **`placeholder` only shows while the list is empty**, so it cannot be used as
-  a persistent hint.
+- `MudInputChipVariant`: `'default' | 'destructive'`
+- `MudInputChipSize`: `'medium' | 'large'`
+- `MudInputChipErrorCode`: `'pattern' | 'duplicate' | 'max'`
+- `MudInputChipAdd`: `{ chip: string; chips: readonly string[] }`
+- `MudInputChipRemove`: `{ chip: string; index: number; chips: readonly string[] }`
+- `MudInputChipError`: `{ code: MudInputChipErrorCode; value: string }`

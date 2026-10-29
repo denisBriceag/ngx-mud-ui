@@ -119,26 +119,41 @@ export class MudDateInput<M extends MudDateInputMode = 'single'>
   /** @description Trailing clear (×) button, shown only while the field holds a value. */
   readonly clearable = input(false, { transform: booleanAttribute });
 
+  /** @description Color treatment. `destructive` is forced when `invalid` is set. */
   readonly variant = input<MudDateInputVariant>('default');
+  /** @description Height and text size: medium (40px) or large (48px). */
   readonly size = input<MudDateInputSize>('medium');
+  /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
+  /** @description Adds the red asterisk to the label and the native `required` attribute. */
   readonly required = input(false, { transform: booleanAttribute });
+  /** @description Read-only: the date stays focusable and copyable; the calendar doesn't open. */
   readonly readonly = input(false, { transform: booleanAttribute });
+  /** @description Destructive visuals + `aria-invalid`. Signal forms bind this automatically. */
   readonly invalid = input(false, { transform: booleanAttribute });
+  /** @description Native `name` attribute. */
   readonly name = input<string>('');
   /** @description Empty-state and typing-ghost pattern matching the format's shape (e.g. `ZZ/LL/AAAA`). */
   readonly placeholder = input<string | undefined>(undefined);
+  /** @description Accessible name used when no `mud-label` is projected. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
+  /** @description Extra id(s) merged into the input's aria-describedby. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
-  // Forwarded to the popover calendar.
+  /** @description Inclusive lower bound, ISO `YYYY-MM-DD`; earlier dates are refused. */
   readonly min = input<string | undefined>(undefined);
+  /** @description Inclusive upper bound, ISO `YYYY-MM-DD`; later dates are refused. */
   readonly max = input<string | undefined>(undefined);
+  /** @description ISO dates that can't be picked, such as public holidays. */
   readonly disabledDates = input<readonly string[]>([]);
+  /** @description Returns `true` for a date that can be picked, such as weekdays only. */
   readonly dateFilter = input<((iso: string) => boolean) | undefined>(undefined);
+  /** @description Week start in the calendar: 0 = Sunday, 1 = Monday. */
   readonly firstDayOfWeek = input(1);
+  /** @description BCP 47 locale for month and weekday names. Defaults to the format locale. */
   readonly locale = input<string | undefined>(undefined);
 
+  /** @description Fires after the clear button empties the field. */
   readonly cleared = output<void>();
   readonly touch = output<void>();
 

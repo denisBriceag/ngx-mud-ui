@@ -99,9 +99,9 @@
   gap: var(--mud-toast-container-content-gap);
 }
 
-// Text-only toasts centre on the line; with a heading they top-align.
-.mud-toast:not(.mud-toast--has-title),
-.mud-toast:not(.mud-toast--has-title) .mud-toast__main {
+// A single row (title or message alone) centres icon and close on it; more rows top-align them.
+.mud-toast:not(.mud-toast--stacked),
+.mud-toast:not(.mud-toast--stacked) .mud-toast__main {
   align-items: center;
 }
 
@@ -194,7 +194,7 @@
   appearance: none;
 }
 
-.mud-toast:not(.mud-toast--has-title) .mud-toast__close {
+.mud-toast:not(.mud-toast--stacked) .mud-toast__close {
   align-self: center;
   margin-block: calc(-1 * var(--_close-bleed));
 }

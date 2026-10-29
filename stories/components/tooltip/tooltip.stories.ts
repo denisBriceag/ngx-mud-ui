@@ -1,32 +1,59 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
-import { moduleMetadata } from '@storybook/angular-vite';
-import { Component, signal } from '@angular/core';
-import { MudTooltip, MUD_TOOLTIP_PLACEMENTS } from 'ngx-mud-ui/tooltip';
+import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
+import { MudButton } from 'ngx-mud-ui/button';
+import { circleInfo, download, provideMudIcons } from 'ngx-mud-ui/icons';
+import { MudTooltip } from 'ngx-mud-ui/tooltip';
 
-const BTN_STYLE =
-  'padding:10px 16px;border:none;border-radius:6px;background:#20686f;color:var(--mud-white,#fff);font-size:14px;cursor:pointer';
+import { example } from '../../example';
+import { TooltipBasicExample } from './examples/tooltip-basic.example';
+import basicSource from './examples/tooltip-basic.example.ts?raw';
+import { TooltipCoachExample } from './examples/tooltip-coach.example';
+import coachSource from './examples/tooltip-coach.example.ts?raw';
+import { TooltipIconExample } from './examples/tooltip-icon.example';
+import iconSource from './examples/tooltip-icon.example.ts?raw';
+import { TooltipInteractiveExample } from './examples/tooltip-interactive.example';
+import interactiveSource from './examples/tooltip-interactive.example.ts?raw';
+import { TooltipPlacementsExample } from './examples/tooltip-placements.example';
+import placementsSource from './examples/tooltip-placements.example.ts?raw';
+import { TooltipTriggersExample } from './examples/tooltip-triggers.example';
+import triggersSource from './examples/tooltip-triggers.example.ts?raw';
 
 const meta: Meta<MudTooltip> = {
   title: 'Components/Tooltip',
   component: MudTooltip,
-  decorators: [moduleMetadata({ imports: [MudTooltip] })],
+  decorators: [
+    applicationConfig({ providers: [provideMudIcons([download, circleInfo])] }),
+    moduleMetadata({ imports: [MudButton, MudTooltip] }),
+  ],
   argTypes: {
-    mudTooltip: { control: 'text', description: 'Tooltip message' },
-    tooltipPlacement: { control: 'select', options: [...MUD_TOOLTIP_PLACEMENTS] },
+    tooltipPlacement: {
+      control: 'select',
+      options: [
+        'top-left',
+        'top-center',
+        'top-right',
+        'bottom-left',
+        'bottom-center',
+        'bottom-right',
+        'left-top',
+        'left-center',
+        'left-bottom',
+        'right-top',
+        'right-center',
+        'right-bottom',
+      ],
+    },
     tooltipSize: { control: 'inline-radio', options: ['small', 'large'] },
-    tooltipClosable: { control: 'boolean' },
-    tooltipDisabled: { control: 'boolean' },
-    tooltipShowDelay: { control: 'number' },
-    tooltipMaxWidth: { control: 'text' },
+    tooltipTrigger: { control: 'inline-radio', options: ['hover', 'click', 'focus'] },
+    tooltipVariant: { control: 'inline-radio', options: ['default', 'coach'] },
   },
   args: {
-    mudTooltip: 'Moldova’s digital evolution is at the heart of seamless public service delivery.',
+    mudTooltip: 'The draft is saved every minute.',
     tooltipPlacement: 'top-center',
     tooltipSize: 'small',
+    tooltipTrigger: 'hover',
+    tooltipVariant: 'default',
     tooltipClosable: false,
-    tooltipDisabled: false,
-    tooltipShowDelay: 200,
-    tooltipMaxWidth: '280px',
   },
 };
 
@@ -34,208 +61,31 @@ export default meta;
 
 type Story = StoryObj<MudTooltip>;
 
-/** Hover or focus the trigger; dismiss with Escape. All inputs are adjustable via controls. */
-export const Basic: Story = {
+export const Playground: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <div style="display:flex;justify-content:center;padding:120px 24px">
+      <div style="padding:72px 0;text-align:center">
         <button
           type="button"
-          style="${BTN_STYLE}"
+          mudButton="outlined"
           [mudTooltip]="mudTooltip"
           [tooltipPlacement]="tooltipPlacement"
           [tooltipSize]="tooltipSize"
+          [tooltipTrigger]="tooltipTrigger"
+          [tooltipVariant]="tooltipVariant"
           [tooltipClosable]="tooltipClosable"
-          [tooltipDisabled]="tooltipDisabled"
-          [tooltipShowDelay]="tooltipShowDelay"
-          [tooltipMaxWidth]="tooltipMaxWidth"
         >
-          Hover or focus me
+          Save draft
         </button>
       </div>
     `,
   }),
 };
 
-export const Sizes: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="display:flex;gap:48px;justify-content:center;padding:120px 24px">
-        <button type="button" style="${BTN_STYLE}" mudTooltip="Tooltip small." tooltipSize="small" [tooltipShowDelay]="0">
-          small
-        </button>
-        <button type="button" style="${BTN_STYLE}" mudTooltip="Tooltip displayed above the element." tooltipSize="large" [tooltipShowDelay]="0">
-          large
-        </button>
-      </div>
-    `,
-  }),
-};
-
-/**
- * All 12 placements: `{side}-{alignment}`. When a placement doesn't fit the
- * viewport, the tooltip flips to the opposite side and the arrow follows.
- */
-export const Placements: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="display:grid;grid-template-columns:repeat(3,max-content);gap:56px 48px;justify-content:center;padding:140px 24px">
-        ${MUD_TOOLTIP_PLACEMENTS.map(
-          (placement) => `
-          <button
-            type="button"
-            style="${BTN_STYLE}"
-            mudTooltip="Moldova’s digital evolution is at the heart of seamless public service delivery."
-            tooltipPlacement="${placement}"
-            [tooltipShowDelay]="0"
-          >
-            ${placement}
-          </button>`,
-        ).join('')}
-      </div>
-    `,
-  }),
-};
-
-/** Tooltips on inline/icon triggers. Triggers must be focusable so keyboard users can reach them. */
-export const OnIconTrigger: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="display:flex;gap:24px;align-items:center;justify-content:center;padding:120px 24px;font-size:14px">
-        <p style="margin:0">
-          Processing takes up to 5 working days
-          <button
-            type="button"
-            aria-label="More information"
-            style="border:none;background:none;cursor:pointer;font-size:16px;padding:4px"
-            mudTooltip="This is an informational tooltip attached to inline content."
-            [tooltipShowDelay]="0"
-          >ℹ️</button>
-        </p>
-      </div>
-    `,
-  }),
-};
-
-/**
- * Onboarding-style tooltip: `tooltipClosable` keeps it visible until the user
- * closes it (✕ button, Escape, or clicking outside) — hovering away does not
- * dismiss it. `show()`/`hide()` (via `#ref="mudTooltip"`) drive it from code,
- * e.g. for product tours.
- */
-@Component({
-  selector: 'mud-tooltip-onboarding-demo',
-  imports: [MudTooltip],
-  template: `
-    <div style="display:flex;gap:12px;align-items:center;justify-content:center;padding:140px 24px">
-      <button type="button" (click)="tooltip.show()">show()</button>
-      <button type="button" (click)="tooltip.hide()">hide()</button>
-      <code>tooltipClosed × {{ dismissals() }}</code>
-      <span style="width:48px"></span>
-      <button
-        #tooltip="mudTooltip"
-        type="button"
-        style="${BTN_STYLE}"
-        mudTooltip="New! You can now track your application status here."
-        tooltipPlacement="top-center"
-        tooltipSize="large"
-        tooltipClosable
-        [tooltipShowDelay]="0"
-        (tooltipClosed)="dismissals.set(dismissals() + 1)"
-      >
-        Application status
-      </button>
-    </div>
-  `,
-})
-class TooltipOnboardingDemo {
-  readonly dismissals = signal(0);
-}
-
-/**
- * Shown as this story's code sample: the story itself renders a demo
- * component, whose selector alone would tell a reader nothing.
- */
-const ONBOARDING_SOURCE = `
-@Component({
-  imports: [MudTooltip],
-  template: \`
-    <button
-      #tooltip="mudTooltip"
-      type="button"
-      mudTooltip="New! You can now track your application status here."
-      tooltipPlacement="top-center"
-      tooltipSize="large"
-      tooltipClosable
-      [tooltipShowDelay]="0"
-      (tooltipClosed)="onClosed($event)"
-    >
-      Application status
-    </button>
-
-    <!-- exportAs="mudTooltip" gives you imperative control -->
-    <button type="button" (click)="tooltip.show()">show()</button>
-    <button type="button" (click)="tooltip.hide()">hide()</button>
-  \`,
-})
-export class OnboardingHint {
-  // \`tooltipClosed\` reports WHY it closed — useful for tracking whether an
-  // onboarding hint was read or brushed aside.
-  onClosed(reason: MudTooltipCloseReason): void {
-    // record the dismissal
-  }
-}
-`;
-
-export const ClosableOnboarding: Story = {
-  parameters: {
-    controls: { disable: true },
-    docs: { source: { code: ONBOARDING_SOURCE, language: 'ts' } },
-  },
-  decorators: [moduleMetadata({ imports: [TooltipOnboardingDemo] })],
-  render: () => ({ template: `<mud-tooltip-onboarding-demo />` }),
-};
-
-
-/**
- * The coach variant is the persistent onboarding bubble: it opens on click,
- * ignores hover/blur, and closes only via Escape, the close button, or an
- * outside click. Localize the hint via `tooltipCoachHint`.
- */
-export const Coach: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="padding:96px;display:flex;justify-content:center">
-        <button
-          type="button"
-          mudTooltip="Filtrele noi te ajută să găsești serviciul potrivit."
-          tooltipVariant="coach"
-          tooltipTitle="Nou!"
-          tooltipCoachHint="Apasă Esc pentru a închide"
-          tooltipSize="large"
-        >
-          Click me (coach)
-        </button>
-      </div>
-    `,
-  }),
-};
-
-/** Explicit trigger modes: hover (default), click toggle, focus-only. */
-export const TriggerModes: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="padding:80px;display:flex;gap:24px;justify-content:center">
-        <button type="button" mudTooltip="Opens on hover/focus">Hover</button>
-        <button type="button" mudTooltip="Toggles on click" tooltipTrigger="click">Click</button>
-        <button type="button" mudTooltip="Opens on keyboard focus only" tooltipTrigger="focus">Focus</button>
-      </div>
-    `,
-  }),
-};
+export const Basic: Story = example(TooltipBasicExample, basicSource);
+export const Placements: Story = example(TooltipPlacementsExample, placementsSource);
+export const Icon: Story = example(TooltipIconExample, iconSource);
+export const Triggers: Story = example(TooltipTriggersExample, triggersSource);
+export const Interactive: Story = example(TooltipInteractiveExample, interactiveSource);
+export const Coach: Story = example(TooltipCoachExample, coachSource);

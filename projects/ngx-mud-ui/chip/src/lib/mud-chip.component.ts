@@ -50,6 +50,7 @@ export class MudChip {
   /** @description Optional numeric badge after the label. */
   readonly count = input<number | undefined>(undefined);
 
+  /** @description Blocks toggling and removing. */
   readonly disabled = input(false, { transform: booleanAttribute });
 
   /** @description For `type="input"`: renders the trailing close button that emits `removed`. */

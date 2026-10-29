@@ -1,294 +1,64 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
-import { moduleMetadata } from '@storybook/angular-vite';
-import {
-  MudMegaMenu,
-  MudMegaMenuColumn,
-  MudMegaMenuLink,
-  MudMegaMenuOrigin,
-  MudMegaMenuTrigger,
-  MudMenu,
-  MudMenuItem,
-  MudMenuTrigger,
-} from 'ngx-mud-ui/menu';
+import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
 import { MudButton } from 'ngx-mud-ui/button';
+import { download, eyeOpen, provideMudIcons } from 'ngx-mud-ui/icons';
+import { MudMenu, MudMenuItem, MudMenuTrigger } from 'ngx-mud-ui/menu';
 
-const WRAP = 'display:flex;gap:32px;align-items:flex-start;padding:24px;min-height:420px';
+import { example } from '../../example';
+import { MenuBasicExample } from './examples/menu-basic.example';
+import basicSource from './examples/menu-basic.example.ts?raw';
+import { MenuLeadingExample } from './examples/menu-leading.example';
+import leadingSource from './examples/menu-leading.example.ts?raw';
+import { MenuMegaExample } from './examples/menu-mega.example';
+import megaSource from './examples/menu-mega.example.ts?raw';
+import { MenuNestedExample } from './examples/menu-nested.example';
+import nestedSource from './examples/menu-nested.example.ts?raw';
+import { MenuPositionExample } from './examples/menu-position.example';
+import positionSource from './examples/menu-position.example.ts?raw';
+import { MenuSectionsExample } from './examples/menu-sections.example';
+import sectionsSource from './examples/menu-sections.example.ts?raw';
+import { MenuSelectionExample } from './examples/menu-selection.example';
+import selectionSource from './examples/menu-selection.example.ts?raw';
 
-// `ariaLabel` is aliased to `aria-label`; the Storybook arg key IS that string.
-type MenuArgs = MudMenu & { 'aria-label'?: string };
-
-const meta: Meta<MenuArgs> = {
+const meta: Meta<MudMenu> = {
   title: 'Components/Menu',
   component: MudMenu,
-  subcomponents: {
-    MudMenuItem,
-    MudMenuTrigger,
-  },
   decorators: [
-    moduleMetadata({
-      imports: [
-        MudMenu,
-        MudMenuItem,
-        MudMenuTrigger,
-        MudMegaMenu,
-        MudMegaMenuColumn,
-        MudMegaMenuLink,
-        MudMegaMenuOrigin,
-        MudMegaMenuTrigger,
-        MudButton,
-      ],
-    }),
+    applicationConfig({ providers: [provideMudIcons([eyeOpen, download])] }),
+    moduleMetadata({ imports: [MudButton, MudMenu, MudMenuItem, MudMenuTrigger] }),
   ],
-  args: {
-    type: 'contextual',
-    xPosition: 'after',
-    yPosition: 'below',
-    closeOnSelect: true,
+  argTypes: {
+    type: { control: 'inline-radio', options: ['contextual', 'selection'] },
+    xPosition: { control: 'inline-radio', options: ['after', 'before'] },
+    yPosition: { control: 'inline-radio', options: ['below', 'above'] },
   },
+  args: { type: 'contextual', xPosition: 'after', yPosition: 'below', closeOnSelect: true },
 };
 
 export default meta;
 
-type Story = StoryObj<MenuArgs>;
+type Story = StoryObj<MudMenu>;
 
 export const Playground: Story = {
-  args: {
-    // `open` demos the standalone inline mode: the panel renders IN PLACE, in
-    // the normal flow — it does NOT anchor to the button (anchoring is the
-    // trigger's job). The column layout below puts the element right under the
-    // button so inline rendering reads naturally. Opening via the button
-    // suspends the inline panel (a presented menu ignores `open`); closing
-    // the trigger brings it back.
-    open: false,
-    value: undefined,
-  },
-
-  render: ({ 'aria-label': ariaLabel, ...args }) => ({
-    props: { ...args, ariaLabelText: ariaLabel ?? 'Actions' },
+  render: (args) => ({
+    props: args,
     template: `
-      <div style="${WRAP};flex-direction:column;align-items:flex-start;gap:8px">
-        <button mudButton [mudMenuTriggerFor]="menu">Open menu</button>
-        <mud-menu
-          #menu
-          [type]="type"
-          [open]="open"
-          [value]="value"
-          [xPosition]="xPosition"
-          [yPosition]="yPosition"
-          [closeOnSelect]="closeOnSelect"
-          [aria-label]="ariaLabelText"
-        >
-          <mud-menu-item value="edit">Edit</mud-menu-item>
-          <mud-menu-item value="duplicate">Duplicate</mud-menu-item>
-          <mud-menu-item value="archive" disabled>Archive</mud-menu-item>
-          <mud-menu-item heading>Danger zone</mud-menu-item>
-          <mud-menu-item value="delete">Delete</mud-menu-item>
-        </mud-menu>
-      </div>
+      <button type="button" mudButton="outlined" [mudMenuTriggerFor]="menu">Open menu</button>
+      <mud-menu #menu aria-label="Playground" [type]="type" [xPosition]="xPosition" [yPosition]="yPosition" [closeOnSelect]="closeOnSelect">
+        <mud-menu-item value="one">Option 1</mud-menu-item>
+        <mud-menu-item value="two">Option 2</mud-menu-item>
+        <mud-menu-item value="three">Option 3</mud-menu-item>
+      </mud-menu>
     `,
   }),
 };
 
-/** The two semantics side by side, rendered inline via `open`. */
-export const Types: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="${WRAP}">
-        <mud-menu open aria-label="Actions">
-          <mud-menu-item value="edit">Edit</mud-menu-item>
-          <mud-menu-item value="duplicate">Duplicate</mud-menu-item>
-          <mud-menu-item value="delete" disabled>Delete</mud-menu-item>
-        </mud-menu>
-        <mud-menu open type="selection" value="date" aria-label="Sort by">
-          <mud-menu-item value="name">Name</mud-menu-item>
-          <mud-menu-item value="date">Date modified</mud-menu-item>
-          <mud-menu-item value="size">Size</mud-menu-item>
-        </mud-menu>
-      </div>
-    `,
-  }),
-};
-
-/** Leading icon, checkbox and radio items (pure-CSS inert visuals). */
-export const Leadings: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="${WRAP}">
-        <mud-menu open aria-label="View options" [closeOnSelect]="false">
-          <mud-menu-item value="preview" leading="icon">
-            <svg icon viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="7"/></svg>
-            Preview
-          </mud-menu-item>
-          <mud-menu-item heading>Layout</mud-menu-item>
-          <mud-menu-item value="compact" leading="radio" selected>Compact</mud-menu-item>
-          <mud-menu-item value="comfortable" leading="radio">Comfortable</mud-menu-item>
-          <mud-menu-item heading>Show</mud-menu-item>
-          <mud-menu-item value="hidden-files" leading="checkbox" selected>Hidden files</mud-menu-item>
-          <mud-menu-item value="extensions" leading="checkbox">File extensions</mud-menu-item>
-        </mud-menu>
-      </div>
-    `,
-  }),
-};
-
-/** Segmented menus: separator only, and separator + section heading. */
-export const Segmented: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="${WRAP}">
-        <mud-menu open aria-label="Segmented">
-          <mud-menu-item value="one">Option 1</mud-menu-item>
-          <mud-menu-item value="two">Option 2</mud-menu-item>
-          <mud-menu-item heading></mud-menu-item>
-          <mud-menu-item value="four">Option 4</mud-menu-item>
-          <mud-menu-item value="five">Option 5</mud-menu-item>
-        </mud-menu>
-        <mud-menu open aria-label="Segmented with heading">
-          <mud-menu-item value="one">Option 1</mud-menu-item>
-          <mud-menu-item value="two">Option 2</mud-menu-item>
-          <mud-menu-item heading>Section Heading</mud-menu-item>
-          <mud-menu-item value="four">Option 4</mud-menu-item>
-          <mud-menu-item value="five">Option 5</mud-menu-item>
-        </mud-menu>
-      </div>
-    `,
-  }),
-};
-
-/** Long labels clamp at two lines. */
-export const Truncation: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="${WRAP}">
-        <mud-menu open aria-label="Truncation" style="max-inline-size:270px">
-          <mud-menu-item value="short">Short label</mud-menu-item>
-          <mud-menu-item value="long">
-            A very long menu option label that wraps onto a second line and is then truncated with an ellipsis
-          </mud-menu-item>
-        </mud-menu>
-      </div>
-    `,
-  }),
-};
-
-/** Submenus on the first and third items (Export nests a third level), MatMenu-style. */
-export const Nested: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="${WRAP}">
-        <button mudButton [mudMenuTriggerFor]="root">Options</button>
-        <mud-menu #root aria-label="Options">
-          <mud-menu-item [mudMenuTriggerFor]="share">Share</mud-menu-item>
-          <mud-menu-item value="rename">Rename</mud-menu-item>
-          <mud-menu-item [mudMenuTriggerFor]="exportMenu">Export</mud-menu-item>
-          <mud-menu-item value="duplicate">Duplicate</mud-menu-item>
-          <mud-menu-item value="archive">Archive</mud-menu-item>
-          <mud-menu-item value="delete">Delete</mud-menu-item>
-        </mud-menu>
-        <mud-menu #share aria-label="Share">
-          <mud-menu-item value="email">Email</mud-menu-item>
-          <mud-menu-item value="copy">Copy link</mud-menu-item>
-          <mud-menu-item value="sms">SMS</mud-menu-item>
-          <mud-menu-item value="qr">QR code</mud-menu-item>
-          <mud-menu-item value="embed">Embed</mud-menu-item>
-        </mud-menu>
-        <mud-menu #exportMenu aria-label="Export">
-          <mud-menu-item value="pdf">PDF</mud-menu-item>
-          <mud-menu-item value="docx">Word</mud-menu-item>
-          <mud-menu-item [mudMenuTriggerFor]="excel">Excel</mud-menu-item>
-          <mud-menu-item value="csv">CSV</mud-menu-item>
-        </mud-menu>
-        <mud-menu #excel aria-label="Excel">
-          <mud-menu-item value="xlsx">Workbook (.xlsx)</mud-menu-item>
-          <mud-menu-item value="xls">Excel 97–2003 (.xls)</mud-menu-item>
-        </mud-menu>
-      </div>
-    `,
-  }),
-};
-
-// Fake header chrome for the full-width stories. The styles are scoped to the
-// story's template, which is fine: the trigger and bar live in the story, and
-// the panel is styled by the library partial, not by this block.
-const HEADER_STYLES = `
-  .demo-page { min-height: 560px; font-family: inherit; }
-  .demo-pre { display:flex; justify-content:space-between; align-items:center; height:32px; padding:0 24px;
-    background: var(--mud-color-background-base-secondary); color: var(--mud-color-text-base-default); font-size:12px; font-weight:500; }
-  .demo-pre span + span { font-weight: 400; letter-spacing: 0.4em; }
-  .demo-bar { display:flex; align-items:stretch; height:72px; padding:0 24px; gap:16px;
-    background: var(--mud-color-background-base-default); border-bottom: 1px solid var(--mud-color-border-base-default); }
-  .demo-logo { display:flex; align-items:center; gap:12px; font-weight:600; color: var(--mud-color-text-base-default); }
-  .demo-logo i { display:block; width:40px; height:40px; border-radius:8px; background: var(--mud-color-background-brand-default); }
-  .demo-logo small { display:block; font-size:11px; font-weight:400; color: var(--mud-color-text-base-secondary); }
-  .demo-nav { display:flex; align-items:stretch; gap:6px; }
-  .demo-plain { display:inline-flex; align-items:center; padding:0 16px; border:0; background:transparent;
-    color: var(--mud-color-text-base-default); font-size: 16px; line-height: 24px; font-weight: 500; font-family: inherit; cursor:pointer; }
-  .demo-plain:hover { background: var(--mud-color-background-base-default-hover); }
-  .demo-actions { display:flex; align-items:center; gap:12px; margin-left:auto; }
-`;
-
-const COLUMN = (heading: string, prefix: string) => `
-  <mud-mega-menu-column heading="${heading}">
-    ${[1, 2, 3, 4, 5, 6, 7].map((n) => `<a mudMegaMenuLink href="#${prefix}-${n}">Option</a>`).join('\n    ')}
-  </mud-mega-menu-column>`;
-
-/** A header bar marked with `mudMegaMenuOrigin`; the panel spans exactly that bar. Two expandable items share it. */
-export const FullWidth: Story = {
-  parameters: { controls: { disable: true }, layout: 'fullscreen' },
-  render: () => ({
-    styles: [HEADER_STYLES],
-    template: `
-      <div class="demo-page">
-        <div class="demo-pre"><span>Guvernul Republicii Moldova</span><span>Ro Ru En</span></div>
-        <header class="demo-bar" mudMegaMenuOrigin>
-          <div class="demo-logo"><i></i><div>mpay<small>serviciul guvernamental de plăți electronice</small></div></div>
-          <nav class="demo-nav" aria-label="Principal">
-            <button [mudMegaMenuTriggerFor]="services">Servicii</button>
-            <button [mudMegaMenuTriggerFor]="about">Despre</button>
-            <button class="demo-plain" type="button">Option</button>
-          </nav>
-          <div class="demo-actions">
-            <button mudButton shape="circular" size="medium">Autentifică-te</button>
-            <button mudButton color="secondary" shape="circular" size="medium">Obține semnătura</button>
-          </div>
-        </header>
-
-        <mud-mega-menu #services>
-          ${COLUMN('Heading', 'a')}
-          ${COLUMN('Heading', 'b')}
-          ${COLUMN('Heading', 'c')}
-        </mud-mega-menu>
-        <mud-mega-menu #about>
-          ${COLUMN('Despre noi', 'd')}
-          ${COLUMN('Contacte', 'e')}
-        </mud-mega-menu>
-      </div>
-    `,
-  }),
-};
-
-/** No `mudMegaMenuOrigin` anywhere: the panel falls back to the full viewport width under the button. */
-export const FullWidthNoOrigin: Story = {
-  parameters: { controls: { disable: true }, layout: 'fullscreen' },
-  render: () => ({
-    styles: [HEADER_STYLES],
-    template: `
-      <div class="demo-page">
-        <header class="demo-bar">
-          <nav class="demo-nav" aria-label="Principal">
-            <button [mudMegaMenuTriggerFor]="services">Servicii</button>
-          </nav>
-        </header>
-        <mud-mega-menu #services>
-          ${COLUMN('Heading', 'a')}
-          ${COLUMN('Heading', 'b')}
-        </mud-mega-menu>
-      </div>
-    `,
-  }),
-};
+export const Basic: Story = example(MenuBasicExample, basicSource);
+export const Selection: Story = example(MenuSelectionExample, selectionSource);
+export const Leading: Story = example(MenuLeadingExample, leadingSource);
+export const Sections: Story = example(MenuSectionsExample, sectionsSource);
+export const Nested: Story = example(MenuNestedExample, nestedSource);
+export const Position: Story = example(MenuPositionExample, positionSource);
+export const Mega: Story = example(MenuMegaExample, megaSource, {
+  parameters: { layout: 'fullscreen' },
+});

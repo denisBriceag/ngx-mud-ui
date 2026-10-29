@@ -14,8 +14,8 @@ export type MudToastDismissReason = 'timeout' | 'close-button' | 'action' | 'dis
 export interface MudToastData {
   /** @description Optional bold heading. A TemplateRef receives the MudToastRef as $implicit. */
   title?: string | TemplateRef<unknown>;
-  /** @description Message body. A TemplateRef receives the MudToastRef as $implicit. */
-  message: string | TemplateRef<unknown>;
+  /** @description Message body. Optional when a title is set. A TemplateRef receives the MudToastRef as $implicit. */
+  message?: string | TemplateRef<unknown>;
   /** @description Optional action row below the body. Receives the MudToastRef as $implicit. */
   actions?: TemplateRef<unknown>;
   /** @description Replaces the per-variant leading glyph. Render a 24x24 icon; receives the MudToastRef as $implicit. */

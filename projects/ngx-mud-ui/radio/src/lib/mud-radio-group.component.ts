@@ -78,6 +78,7 @@ export class MudRadioGroup<T = unknown> implements ControlValueAccessor, FormVal
   /** @description Stacks the options (default) or lays them in a wrapping row. */
   readonly orientation = input<MudRadioGroupOrientation>('vertical');
 
+  /** @description Disables every option. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
 
   /** @description Marks the group mandatory (asterisk + native required on the children). */
@@ -98,7 +99,7 @@ export class MudRadioGroup<T = unknown> implements ControlValueAccessor, FormVal
   /** @description Extra id(s) merged into the group's aria-describedby. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
-  /** Signal-forms touch contract: emitted when focus leaves the group. */
+  /** @description Fires when focus leaves the group; signal forms use it to mark the field touched. */
   readonly touch = output<void>();
 
   private readonly _host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;

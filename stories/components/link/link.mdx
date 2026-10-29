@@ -5,79 +5,59 @@ import * as LinkStories from './link.stories';
 
 # Link
 
-An attribute directive that styles a native `<a>`. The anchor keeps its own
-semantics, so `href`, `target`, `routerLink` and event bindings all work
-unchanged.
-
-## Import
+`mudLink` styles a native `<a>`. The anchor keeps its behavior, so `href`, `target`, `routerLink`
+and event bindings work as usual. Use a link to go somewhere; for an action, use a
+[Button](?path=/docs/components-button--docs).
 
 ```ts
 import { MudLink } from 'ngx-mud-ui/link';
-
-@Component({
-  imports: [MudLink],
-  template: `
-    <a mudLink href="/services">Services</a>
-    <a mudLink="strict" size="small" underline="none" href="/terms">Terms</a>
-  `,
-})
-export class Demo {}
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={LinkStories.Playground} />
 <Controls of={LinkStories.Playground} />
 
+## Color, underline and disabled
+
+The color is the directive's value: `primary` (default, also `mudLink` with no value) or `strict`
+(the text color). `underline` is `always` (default), `hover` or `none`. Without an underline, color
+is the only cue, so only drop it where the link is obviously interactive, such as in a menu.
+
+`disabled` sets `aria-disabled`, removes the link from the tab order and blocks activation. The
+`href` stays.
+
+<Canvas of={LinkStories.Basic} />
+
 ## Sizes
+
+`size` is `large`, `medium` (default), `small` or `extra-small`.
 
 <Canvas of={LinkStories.Sizes} />
 
-## Variations
+## New tab
 
-<Canvas of={LinkStories.Variations} />
-
-## Styles
-
-<Canvas of={LinkStories.Styles} />
-
-## Touch targets
-
-<Canvas of={LinkStories.TouchTargets} />
-
-## Disabled
-
-<Canvas of={LinkStories.Disabled} />
-
-## External
+A link with `target="_blank"` gets an external-link icon after its text (unless it already ends in
+an icon) and `rel="noopener noreferrer"` (unless you set `rel`). `[external]="false"` hides the
+icon.
 
 <Canvas of={LinkStories.External} />
 
+## Hit area
+
+The link's clickable area extends beyond its text: 32px high for a mouse (`pointer`), 40px for
+touch (`touch`). `auto` (default) picks by device. In running text, set `touchTarget="none"` so the
+link doesn't overlap the lines above and below.
+
+<Canvas of={LinkStories.TouchTarget} />
+
 ## API
 
-Selector: `a[mudLink]` · `exportAs: 'mudLink'`
+Selector: `a[mudLink]` · Exported as: `mudLink`
 
 <ArgTypes of={LinkStories} />
 
-## Usage tips
+### Types
 
-- **External links are handled for you.** With `external` left on (the default),
-  an anchor with `target="_blank"` and no trailing icon gets the external-link
-  glyph after its label. Set `external="false"` to suppress it.
-- **`underline="none"` needs another affordance.** Removing the underline leaves
-  color as the only signal, which fails for colorblind readers unless the link
-  sits somewhere unmistakably interactive, like a nav bar.
-- **`touchTarget="auto"` expands the hit area only where it is safe** — inline
-  links in a paragraph keep their natural box so the expansion doesn't overlap
-  neighbouring text.
-- **`disabled` on an anchor is advisory.** As with buttons, there is no native
-  disabled state for links; the directive maps it to `aria-disabled` and removes
-  the tab stop rather than removing the `href`.
-- **Use a button, not a link, for actions.** A link navigates; anything that
-  mutates state belongs on `mudButton`.
+- `MudLinkStyle`: `'primary' | 'strict'`
+- `MudLinkSize`: `'large' | 'medium' | 'small' | 'extra-small'`
+- `MudLinkUnderline`: `'always' | 'hover' | 'none'`
+- `MudLinkTouchTarget`: `'auto' | 'pointer' | 'touch' | 'none'`

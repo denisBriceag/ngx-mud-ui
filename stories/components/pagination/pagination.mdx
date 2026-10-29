@@ -1,99 +1,84 @@
-import { Meta, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
 import * as PaginationStories from './pagination.stories';
 
 <Meta of={PaginationStories} />
 
 # Pagination
 
-Pagination splits a long list into pages and lets people move between them — *1 … 4 5 6 … 20*.
-It shows at most seven slots, folds the pages it cannot show into `…` buttons that open a jump
-list, and hides itself when there is only one page.
-
-```html
-<mud-pagination [length]="200" [pageSize]="10" [(pageIndex)]="pageIndex" (page)="load($event)" />
-```
-
-The API follows Angular Material's paginator: `length`, `pageSize`, a **zero-based**
-`pageIndex`, `disabled`, and a `page` event carrying `{ pageIndex, previousPageIndex, pageSize,
-length }`. The buttons people see are numbered from 1.
-
-## Import
+Splits a long list into pages: _‹ 1 … 4 5 6 … 20 ›_. It shows at most seven slots, folds the rest
+into `…` buttons that open a list of the hidden pages, and hides itself when there's only one page.
+The API follows Angular Material's paginator.
 
 ```ts
 import { MudPagination } from 'ngx-mud-ui/pagination';
 ```
 
-## Playground
-
 <Canvas of={PaginationStories.Playground} />
 <Controls of={PaginationStories.Playground} />
 
-## How pages fold
+## Basic
 
-Up to seven pages, every page is shown. Past that, the first and last page always stay, the
-current page keeps one neighbour on each side, and the rest collapse into `…`. A `…` never hides
-a single page — that page's number is shown instead.
+Set `length` (total items) and `pageSize` (default 10). `pageIndex` is **zero-based** and two-way
+bindable; the buttons show it from 1. `page` emits `{ pageIndex, previousPageIndex, pageSize,
+length }` whenever the page changes.
 
-<Canvas of={PaginationStories.ManyPages} />
+The first and last pages always show, and the current page keeps one neighbor on each side. A `…`
+never hides just one page; that page's number shows instead.
 
-## Narrow containers
+<Canvas of={PaginationStories.Basic} />
 
-When seven slots no longer fit the space the paginator has, it drops to five (`1 … 5 … 20`).
-It measures its own container, so it works in a narrow card on a wide screen too. The host is a
-block-level flex container: align it with `justify-content`.
+## Sizes and narrow spaces
 
-Below about 520px even five slots don't fit at the default size. For narrow containers and
-phones, use `size="small"` — icon-only Prev/Next and 32px items — which needs about 270px for
-its five slots.
+`size` is `medium` (40px, default) or `small` (32px, Prev and Next as icons only). When seven slots
+don't fit its container, the paginator drops to five (`1 … 5 … 20`). It measures its own container,
+so it adapts in a narrow card on a wide screen too. Use `small` below about 520px; it needs about
+270px.
 
-<Canvas of={PaginationStories.NarrowContainer} />
-
-## Sizes
+The paginator is a block-level flex container, so align it with `justify-content`. `disabled`
+disables every button.
 
 <Canvas of={PaginationStories.Sizes} />
 
 ## With a table
 
-Assign the paginator to `MudTableDataSource.paginator`, the same way as `sort`. The data source
-slices the sorted rows, keeps `length` up to date, and moves back to the last page when the data
-shrinks.
+Assign the paginator to the table's `MudTableDataSource.paginator`, as with `sort`, after the first
+render. The data source shows one page of the sorted rows, keeps `length` up to date and moves back
+when the data shrinks. Re-sorting keeps the current page; call `firstPage()` from `(sortChange)` to
+go back to page 1, as here.
 
-```ts
-constructor() {
-  afterNextRender(() => {
-    this.source.sort = this.sort();
-    this.source.paginator = this.paginator();
-  });
-}
-```
+<Canvas of={PaginationStories.Table} />
 
-Re-sorting keeps the current page, like Material. To go back to page 1, call `firstPage()` from
-`(sortChange)`.
+## Server-side paging
 
-<Canvas of={PaginationStories.WithTable} />
+Bind `length` to the total from your server and load the page in `(page)`. No data source needed.
 
-### Server-side paging
-
-Bind `length` to the server's total and load the page in `(page)`; no data source needed.
+<Canvas of={PaginationStories.Server} />
 
 ## Labels
 
-Every string lives in the `pagination` namespace of the library's labels. Pick a language pack or
-override single keys with `provideMudLabels`; pass a signal to switch language at runtime. Page
-numbers follow the formatting locale. See the
-[Localization guide](?path=/docs/foundations-localization--docs).
+Texts come from the `pagination` labels and page numbers follow the formatting locale. Use a
+language pack or change single keys, see [Localization](?path=/docs/foundations-localization--docs).
 
-```ts
-providers: [provideMudLabels({ pagination: { previous: 'Anterior', next: 'Următor', pageAria: (p, t) => `Pagina ${p} din ${t}` } })]
-```
-
-<Canvas of={PaginationStories.LocalizedLabels} />
+<Canvas of={PaginationStories.Labels} />
 
 ## Accessibility
 
-- A `<nav>` landmark, named by `aria-label` (default from the labels).
-- The current page carries `aria-current="page"`.
-- Prev, Next and every page have a full accessible name ("Page 5 of 20").
-- Each `…` is a menu button; the jump list is the library menu, with arrow-key navigation.
-- When the button you used disappears (Prev on page 1, a `…` that no longer exists), focus
-  moves to the current page.
+- The paginator is a `<nav>` named "Pagination" (translatable), or by `aria-label`.
+- The current page has `aria-current="page"`. Each button has a full name, such as "Page 5 of 20".
+- Each `…` opens a [Menu](?path=/docs/components-menu--docs) with arrow-key navigation.
+- When the button you used disappears (Prev on page 1, a `…` that's gone), focus moves to the
+  current page.
+
+## API
+
+Selector: `mud-pagination`
+
+<ArgTypes of={PaginationStories} />
+
+Methods: `nextPage()`, `previousPage()`, `firstPage()`, `lastPage()`, `hasNextPage()`,
+`hasPreviousPage()`, `getNumberOfPages()`.
+
+### Types
+
+- `MudPaginationSize`: `'small' | 'medium'`
+- `MudPageEvent`: `{ pageIndex: number; previousPageIndex: number; pageSize: number; length: number }`

@@ -5,67 +5,47 @@ import * as SearchInputStories from './search-input.stories';
 
 # Search input
 
-A text field specialised for queries: a leading search glyph, a clear
-affordance, an optional integrated submit button, and a `searched` output that
-fires on Enter.
-
-## Import
+A search field with a search icon, a clear button and an optional submit button. It works on its
+own, with reactive and template-driven forms, and with signal forms.
 
 ```ts
-import { MudSearchInput } from 'ngx-mud-ui/search-input';
 import { MudLabel } from 'ngx-mud-ui/label';
-import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
-
-@Component({
-  imports: [MudSearchInput, MudLabel, MudInlineMessage],
-  template: `
-    <mud-search-input shape="circular" placeholder="Caută servicii" (searched)="find($event)">
-      <mud-label>Căutare</mud-label>
-    </mud-search-input>
-  `,
-})
-export class Demo {}
+import { MudSearchInput } from 'ngx-mud-ui/search-input';
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={SearchInputStories.Playground} />
 <Controls of={SearchInputStories.Playground} />
 
-## Shapes
+## Basic
+
+React to `searched`: it fires on <kbd>Enter</kbd> or the submit button, with the query. `value`
+(two-way bindable) changes on every keystroke. `clearable` is on by default; clearing emits
+`cleared`, the place to reset your results. Label the field even if the placeholder seems enough.
+
+<Canvas of={SearchInputStories.Basic} />
+
+## Shapes, sizes and the submit button
+
+`shape` is `rectangular` (default, for forms) or `circular` (for a prominent search, such as on a
+landing page). `size` is `medium` (40px, default) or `large` (48px). `withButton` adds a submit button
+at the end.
 
 <Canvas of={SearchInputStories.Shapes} />
 
-## Icons
+## Icons and states
 
-Put an icon with `icon-start` to replace the search glyph. Put one with `icon-end` to
-add a trailing icon. While `icon-end` holds something, it replaces the clear (×)
-button, so a field has one trailing affordance at a time.
-
-```html
-<mud-search-input placeholder="Caută...">
-  <mud-label>Căutare</mud-label>
-  <mud-icon icon-end name="filter" [scale]="20" />
-</mud-search-input>
-```
-
-The trailing icon hides while the field is loading, where the spinner takes its place.
-
-<Canvas of={SearchInputStories.Icons} />
-
-## States
+An icon with `icon-start` replaces the search icon; one with `icon-end` adds a trailing icon and
+replaces the clear button. While `loading`, a spinner takes the trailing place. `invalid`,
+`readonly` and `disabled` work as in a [Text input](?path=/docs/components-form-text-input--docs).
 
 <Canvas of={SearchInputStories.States} />
 
-## Interactive
+## Accessibility
 
-<Canvas of={SearchInputStories.Interactive} />
+- The clear and submit buttons are named "Clear" and "Search" (translatable), or by `clearLabel`
+  and `submitLabel`.
+- Messages sit in a `role="alert"` region linked with `aria-describedby`.
+- Use `aria-label` only when there's no `<mud-label>`. Call `focus()` to focus the field.
 
 ## API
 
@@ -73,34 +53,11 @@ Selector: `mud-search-input`
 
 <ArgTypes of={SearchInputStories} />
 
-### Label and messages
+Method: `focus(options?)`. Content slots: `mud-label`, `[icon-start]`, `[icon-end]` and
+`mud-inline-message`.
 
-The field renders no message text of its own. Project a `<mud-label>` for
-the visible label and any number of `<mud-inline-message>` elements for
-assistive text — *you* decide when they render:
+### Types
 
-- Messages land in a field-owned `role="alert"` region wired into
-  `aria-describedby`; toggling one on announces it to screen readers.
-- Inside a field, `mud-inline-message` is always the small size — its
-  `size` input is ignored.
-- The field's `invalid` input drives the red border and `aria-invalid`;
-  with signal forms it is bound automatically, with reactive forms bind
-  `[invalid]="ctrl.invalid && ctrl.touched"`.
-
-## Usage tips
-
-- **`searched` is the one to bind**, not `valueChange`. It fires on Enter and on
-  the submit button with the current query, which is the "user asked for
-  results" moment; `value` changes on every keystroke.
-- **`clearable` is on by default here**, unlike the plain input. Clearing emits
-  `cleared` — reset your results there rather than debouncing an empty query.
-- **`withButton` is for prominent search surfaces**, such as a portal landing
-  page. Inline filters usually read better without it, since Enter already
-  submits.
-- **`shape="circular"` is the hero-search silhouette.** Keep `rectangular` when
-  the field sits in a form beside other inputs, so the rhythm matches.
-- **Label it even when the placeholder seems enough.** A placeholder disappears
-  on focus and is not a substitute for a `<mud-label>` or `aria-label`.
-- **`submitLabel` and `clearLabel` are optional overrides.** They name the two
-  buttons. Unset or blank, the `searchInput` labels apply (English 'Search' and
-  'Clear'), so a language pack from `provideMudLabels` translates them.
+- `MudSearchInputVariant`: `'default' | 'destructive'`
+- `MudSearchInputSize`: `'medium' | 'large'`
+- `MudSearchInputShape`: `'rectangular' | 'circular'`

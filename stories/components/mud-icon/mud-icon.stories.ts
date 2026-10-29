@@ -1,15 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
-import { MudIconComponent, provideMudIcons } from 'ngx-mud-ui/icons';
 import type { MudIcon } from 'ngx-mud-ui/icons';
-// Deep import on purpose: the data barrel contains only icon objects, so
-// Object.values() enumerates icons without sweeping in the component/provider
-// exports of the public API.
+import { MudIconComponent, provideMudIcons } from 'ngx-mud-ui/icons';
+// Deep import on purpose: the data barrel holds only icon objects, so Object.values() lists every icon.
 import * as iconData from '../../../projects/ngx-mud-ui/icons/src/lib/data';
+
+import { example } from '../../example';
+import { IconBasicExample } from './examples/icon-basic.example';
+import basicSource from './examples/icon-basic.example.ts?raw';
+import { IconColorExample } from './examples/icon-color.example';
+import colorSource from './examples/icon-color.example.ts?raw';
 import { IconGalleryComponent } from './icon-gallery.component';
 
 const ALL_ICONS = Object.values(iconData) as MudIcon[];
-const ICON_NAMES = ALL_ICONS.map((icon) => icon.name).sort();
 
 const meta: Meta<MudIconComponent> = {
   title: 'Components/Icons',
@@ -19,55 +22,30 @@ const meta: Meta<MudIconComponent> = {
     moduleMetadata({ imports: [MudIconComponent] }),
   ],
   argTypes: {
-    name: {
-      control: 'select',
-      options: ICON_NAMES,
-      description: 'Icon name (kebab-case). All icons are registered in this playground.',
-    },
+    name: { control: 'select', options: ALL_ICONS.map((icon) => icon.name).sort() },
     variant: { control: 'inline-radio', options: ['outlined', 'filled'] },
     scale: { control: 'inline-radio', options: [12, 16, 20, 24, 32] },
-    ariaLabel: {
-      name: 'aria-label',
-      control: 'text',
-      description: 'Accessible label. Leave empty for a decorative icon (aria-hidden).',
-    },
   },
-  args: {
-    name: 'alarm',
-    variant: 'outlined',
-    scale: 24,
-    ariaLabel: '',
-  },
-  // The `ariaLabel` arg is renamed to `ariaLabelText` before it reaches the
-  // template props: Storybook's Angular wrapper assigns any prop whose key is
-  // not an input TEMPLATE name (here the alias "aria-label") directly onto
-  // the component instance, and `instance.ariaLabel = '...'` would overwrite
-  // the input signal and crash the host bindings ("ctx.ariaLabel is not a
-  // function").
-  render: ({ ariaLabel, ...args }) => ({
-    props: { ...args, ariaLabelText: ariaLabel },
-    template: `
-      <div style="display:inline-flex;align-items:center;gap:1rem;padding:1.5rem;color:var(--mud-color-icon-base-default, #121212)">
-        <mud-icon [name]="name" [variant]="variant" [scale]="scale" [aria-label]="ariaLabelText" />
-        <span>&lt;mud-icon name="{{ name }}" variant="{{ variant }}" scale="{{ scale }}" /&gt;</span>
-      </div>
-    `,
-  }),
+  args: { name: 'alarm', variant: 'outlined', scale: 24 },
 };
 
 export default meta;
 
 type Story = StoryObj<MudIconComponent>;
 
-export const Playground: Story = {};
+export const Playground: Story = {
+  render: (args) => ({
+    props: args,
+    template: `<mud-icon [name]="name" [variant]="variant" [scale]="scale" />`,
+  }),
+};
 
-// Every registered icon, grouped by variant. Only `scale` is live: icons not
-// drawn at that rung show at their nearest drawn size, flagged on the tile.
+export const Basic: Story = example(IconBasicExample, basicSource);
+export const Color: Story = example(IconColorExample, colorSource);
+
+// Every icon, grouped by variant. Only `scale` is live: icons not drawn at that size show their nearest drawing.
 export const Gallery: Story = {
-  parameters: {
-    layout: 'fullscreen',
-    controls: { include: ['scale'] },
-  },
+  parameters: { layout: 'fullscreen', controls: { include: ['scale'] } },
   decorators: [moduleMetadata({ imports: [IconGalleryComponent] })],
   render: ({ scale }) => ({
     props: { icons: ALL_ICONS, scale },

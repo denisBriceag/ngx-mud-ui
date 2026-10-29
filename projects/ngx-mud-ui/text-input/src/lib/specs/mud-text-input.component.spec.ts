@@ -84,6 +84,23 @@ describe('MudTextInput', () => {
     expect(native.value).toBe('xyz');
   });
 
+  it('does not write typed text back to the native input (Chrome would move the caret to the end)', async () => {
+    const { fixture, native } = await render();
+    const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!;
+    const writes: string[] = [];
+
+    Object.defineProperty(native, 'value', {
+      get: () => descriptor.get!.call(native),
+      set: (value: string) => {
+        writes.push(value);
+        descriptor.set!.call(native, value);
+      },
+    });
+
+    await type(fixture, native, 'ab c');
+    expect(writes).toEqual(['ab c']);
+  });
+
   it('maps variants and sizes to classes; invalid forces destructive', async () => {
     const { fixture, host, el } = await render();
 

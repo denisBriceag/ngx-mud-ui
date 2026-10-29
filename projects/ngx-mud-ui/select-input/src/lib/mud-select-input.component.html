@@ -20,6 +20,7 @@
   @if (searchable()) {
     <input
       #trigger
+      #searchInput
       type="text"
       class="select-field__trigger select-field__input"
       role="combobox"
@@ -27,7 +28,6 @@
       aria-autocomplete="list"
       autocomplete="off"
       [id]="_id"
-      [value]="_inputText()"
       [attr.placeholder]="_inputPlaceholder()"
       [attr.aria-expanded]="open() ? 'true' : 'false'"
       [attr.aria-controls]="open() ? _listBoxId : null"

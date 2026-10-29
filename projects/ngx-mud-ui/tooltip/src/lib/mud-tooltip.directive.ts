@@ -83,7 +83,9 @@ export class MudTooltip {
   }
 
   readonly content = computed(() => this.mudTooltip() || this._pushedContent() || '');
+  /** @description Preferred side and alignment; flips when there isn't room. */
   readonly tooltipPlacement = input<MudTooltipPlacement>('top-center');
+  /** @description Text size and padding. */
   readonly tooltipSize = input<MudTooltipSize>('small');
   /** @description What opens the tooltip; `hover` also opens on focus, `manual` only reacts to `show()`/`hide()`. */
   readonly tooltipTrigger = input<MudTooltipTrigger>('hover');
@@ -95,12 +97,17 @@ export class MudTooltip {
   readonly tooltipCoachHint = input<string | undefined>(undefined);
   /** @description Keeps the bubble open while the pointer is over it. */
   readonly tooltipInteractive = input(false, { transform: booleanAttribute });
+  /** @description Shows a close button in the bubble. */
   readonly tooltipClosable = input(false, { transform: booleanAttribute });
+  /** @description Never opens the tooltip. */
   readonly tooltipDisabled = input(false, { transform: booleanAttribute });
   /** @description Off when the tooltip only repeats the trigger's accessible name (it would be read twice). */
   readonly tooltipDescribesTrigger = input(true, { transform: booleanAttribute });
+  /** @description Maximum bubble width, any CSS length. */
   readonly tooltipMaxWidth = input('280px');
+  /** @description Delay in ms before a hover opens the tooltip. */
   readonly tooltipShowDelay = input(200, { transform: numberAttribute });
+  /** @description Delay in ms before the tooltip hides after the pointer leaves. */
   readonly tooltipHideDelay = input(150, { transform: numberAttribute });
   /** @description Accessible name of the close button; defaults to the app labels. */
   readonly tooltipCloseLabel = input<string | undefined>(undefined);
@@ -109,7 +116,7 @@ export class MudTooltip {
   private readonly _closeText = computed(() => _mudText(this.tooltipCloseLabel(), this._labels().tooltip.close));
   private readonly _coachHintText = computed(() => _mudText(this.tooltipCoachHint(), this._labels().tooltip.coachHint));
 
-  /** Emitted when the tooltip closes for a user-initiated reason. */
+  /** @description Fires when the user closes the tooltip, with the reason. */
   readonly tooltipClosed = output<MudTooltipCloseReason>();
 
   private readonly _id = `mud-tooltip-${nextUniqueId++}`;

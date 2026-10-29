@@ -1,186 +1,137 @@
-import { Meta, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
 import * as StepperStories from './stepper.stories';
+import { MudStep, MudIndicatorStep } from 'ngx-mud-ui/stepper';
 
 <Meta of={StepperStories} />
 
 # Stepper
 
-`<mud-stepper>` guides a user through a multi-step flow, such as an application form split into
-pages. The rail shows every step and its state; the selected step's content shows below it or
-inline under its header.
+Guides the user through a flow in steps, such as a long application form. The rail shows every step
+and its state; the selected step's content shows below it. Built on the CDK stepper.
+`mud-step-indicator` is a static list of stages, without navigation.
 
-The stepper is built on the Angular CDK stepper, so `linear`, `selectedIndex`, `next()` and
-`previous()` all come from there.
+```ts
+import { MudIndicatorStep, MudStep, MudStepIndicator, MudStepper } from 'ngx-mud-ui/stepper';
+```
 
 <Canvas of={StepperStories.Playground} />
 <Controls of={StepperStories.Playground} />
 
-## Import
+## Basic
 
-```ts
-import { MudStepper, MudStep } from 'ngx-mud-ui/stepper';
-```
+Put a `<mud-step>` per step in `<mud-stepper>`, each with a `label` and optional `supportingText`.
+Its content is the step's content. `selectedIndex` is two-way bindable, and `selectionChange` emits
+the previous and new step. Through a template reference, call `next()`, `previous()` and `reset()`.
 
-Add the base stylesheet to your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Creating a stepper
-
-Put one `<mud-step>` per step inside `<mud-stepper>`. Give each step a `label`, and optionally a
-`supportingText` line under it. Whatever you put inside a step is its content.
-
-```html
-<mud-stepper>
-  <mud-step label="Identity" supportingText="Who you are">…</mud-step>
-  <mud-step label="Address">…</mud-step>
-  <mud-step label="Review">…</mud-step>
-</mud-stepper>
-```
-
-Read or set the selected step with `selectedIndex`, or two-way bind it with
-`[(selectedIndex)]`. `selectionChange` fires with the previous and the new step. Move
-programmatically with `next()`, `previous()` and `reset()` on the stepper instance.
+<Canvas of={StepperStories.Basic} />
 
 ## Step states
 
-Each step derives one of five states, and the rail draws it:
+Each step shows one of five states, worked out by the stepper:
 
 - **current**: the selected step.
-- **completed**: a step the user visited whose control is valid. The circle fills with a check.
-- **blocked**: a visited step whose control is invalid. The circle shows an exclamation mark, and the
-  step's `errorMessage` replaces its supporting text.
-- **available**: a step the user may jump to (only in non-linear mode).
-- **incomplete**: a step the user cannot reach yet (only in linear mode).
+- **completed**: a visited step whose `stepControl` is valid, with a check mark.
+- **blocked**: a visited step whose `stepControl` is invalid, with an exclamation mark. Its
+  `errorMessage` replaces the supporting text.
+- **available**: a step the user can jump to (without `linear`).
+- **incomplete**: a step the user can't reach yet (with `linear`).
 
-Override the derived state with `state="completed"` and friends, or with the CDK's `completed` and
-`hasError` inputs. A `state` value that is not one of the five is ignored.
+Set `state` on a step to choose the state yourself, or use the CDK's `completed` and `hasError`.
 
 <Canvas of={StepperStories.States} />
 
-## Validating with forms
+## With reactive forms
 
-Give a step a `stepControl` to make its state follow a form: a `FormGroup`, a `FormControl` or a
-signal-forms field. The step becomes *completed* when the user leaves it valid, and *blocked* when
-they leave it invalid. A control that turns valid later, for instance after an async check, updates
-the rail without any further wiring.
+Give each step a `stepControl` (a `FormGroup` or `FormControl`) and its state follows the form. Add
+`linear` to stop the user moving past an invalid step: `next()` and clicks on later headers are
+refused until the current step is valid. `linear` has no effect on steps without a `stepControl`.
 
-Add `linear` to stop the user moving forward past an invalid step. `next()` and clicks on a later
-header are refused until the current step's control is valid. `linear` only does something when
-steps carry a `stepControl`.
+<Canvas of={StepperStories.ReactiveForms} />
 
-```html
-<mud-stepper #stepper [linear]="true">
-  <mud-step label="Identity" errorMessage="Complete your identity" [stepControl]="identity">
-    <form [formGroup]="identity">…</form>
-  </mud-step>
-  <mud-step label="Review">…</mud-step>
-</mud-stepper>
-<button type="button" (click)="stepper.next()">Next</button>
-```
+## With signal forms
 
-<Canvas of={StepperStories.LinearReactiveForms} />
+`stepControl` also takes a signal-forms field, the value returned by `form()`.
 
-The same works with signal forms: pass the field returned by `form()`.
+<Canvas of={StepperStories.SignalForms} />
 
-<Canvas of={StepperStories.LinearSignalForms} />
+## Confirming a step change
 
-## Reacting to a step click
+`stepClick` fires when the user activates a header (click, <kbd>Enter</kbd> or <kbd>Space</kbd>),
+before the step changes. Call `preventDefault()` on it to stay, for example when there are unsaved
+changes. Headers the user can't reach don't fire it.
 
-`stepClick` fires when the user activates a header by click, Enter or Space, before the selection
-changes. Call `preventDefault()` on the event to keep the current step, for example to ask about
-unsaved changes first. Headers the user cannot reach do not fire it.
+<Canvas of={StepperStories.StepClick} />
 
-```html
-<mud-stepper (stepClick)="confirmLeave($event)">…</mud-stepper>
-```
+## Vertical and compact
 
-```ts
-confirmLeave(event: MudStepperStepClick): void {
-  if (this.form.dirty && !confirm('Discard your changes?')) event.preventDefault();
-}
-```
+`orientation="vertical"` stacks the steps, with each step's content right under its header. A
+horizontal stepper narrower than 600px switches to a dot rail without numbers; labels are hidden
+but still read by screen readers. It measures its own width, not the window. `compact` forces the
+dot rail at any width.
 
-## Vertical layout
-
-Add `orientation="vertical"` to stack the steps. Each step's content then renders inline under its
-header, which suits long forms on narrow pages.
-
-<Canvas of={StepperStories.Vertical} />
-
-## Compact rail
-
-A horizontal stepper narrower than 600px switches by itself to a number-less dot rail. The
-threshold is the stepper's own width, measured live, not the viewport. Labels stay in the page for
-screen readers but are hidden visually.
-
-<Canvas of={StepperStories.Mobile} />
-
-Add `compact` to force the dot rail at every width and in both orientations.
-
-<Canvas of={StepperStories.Compact} />
+<Canvas of={StepperStories.Layout} />
 
 ## Step indicator
 
-`<mud-step-indicator>` lists the stages of a process without any navigation, for a landing or
-information page. Each `<mud-indicator-step>` takes a `heading`; anything you put inside it renders
-under the heading as supporting text or an action. Steps are numbered in order, so put them
-directly inside the indicator with no wrapper element.
+`<mud-step-indicator>` lists the stages of a process on an information page. Each
+`<mud-indicator-step>` takes a `heading`, and its content (text or a button) goes under it. Steps are
+numbered in order, so put them directly in the indicator, without a wrapper.
 
-```ts
-import { MudStepIndicator, MudIndicatorStep } from 'ngx-mud-ui/stepper';
-```
-
-```html
-<mud-step-indicator>
-  <mud-indicator-step heading="Create account">
-    Register using your government ID.
-    <button mudButton type="button">Start</button>
-  </mud-indicator-step>
-  <mud-indicator-step heading="Verify identity">Upload the requested documents.</mud-indicator-step>
-</mud-step-indicator>
-```
-
-<Canvas of={StepperStories.StepIndicator} />
-
-## Translating the state suffixes
-
-Screen readers hear a completed step as "Identity, completed" and a blocked one as "Address, has
-errors". Translate those two words in the `stepper` namespace of the library's labels with
-`provideMudLabels`. The [Localization guide](?path=/docs/foundations-localization--docs) shows how
-to switch language at runtime.
-
-```ts
-import { provideMudLabels } from 'ngx-mud-ui/i18n';
-
-bootstrapApplication(App, {
-  providers: [provideMudLabels({ stepper: { completed: 'finalizat', blocked: 'conține erori' } })],
-});
-```
+<Canvas of={StepperStories.Indicator} />
 
 ## Accessibility
 
-**Name it.** Each header is named by its `label` and `supportingText`. To announce something else,
-set `aria-label` or `aria-labelledby` on the `<mud-step>`; `aria-label` wins when both are set. The
-rail is a plain list, so screen readers announce "step 2 of 4" on their own.
+- Each header is named by its `label` and `supportingText`; `aria-label` or `aria-labelledby` on the
+  step replace that. The rail is a list, so screen readers announce "step 2 of 4".
+- The selected header has `aria-current="step"`. Completed and blocked steps add ", completed" or
+  ", has errors" to their name (translatable in the `stepper` labels, see
+  [Localization](?path=/docs/foundations-localization--docs)).
+- Steps the user can't reach with `linear` are `aria-disabled`.
+- The rail is one <kbd>Tab</kbd> stop. <kbd>←</kbd> <kbd>→</kbd> (or <kbd>↑</kbd> <kbd>↓</kbd>),
+  <kbd>Home</kbd> and <kbd>End</kbd> move between headers; <kbd>Enter</kbd> or <kbd>Space</kbd>
+  selects one.
+- Each step's content is a region named by its header. Keep labels short: on the horizontal rail
+  they don't wrap.
 
-**Keyboard.** The rail is a single Tab stop on the selected step. Inside it:
+## API
 
-- **→ / ↓** and **← / ↑** move between headers, wrapping at the ends. Arrows only move focus.
-- **Home / End** jump to the first or last header.
-- **Enter / Space** select the focused header, through the same `stepClick` as a click.
-- **Tab** leaves the rail into the selected step's content.
+### MudStepper
 
-**States.** The selected header carries `aria-current="step"`. Completed and blocked headers add a
-visually hidden ", completed" or ", has errors" to their name (see *Translating the state
-suffixes*). A blocked step's `errorMessage` is read as its supporting text. Headers the user cannot
-reach in linear mode are `aria-disabled`; they stay reachable with the arrow keys but do not take
-focus on click.
+Selector: `mud-stepper`
 
-**Content.** Each step's content is a region labelled by its header, and the inactive ones are
-hidden. The rail's circles and connectors are decorative and hidden from assistive technology.
+<ArgTypes of={StepperStories} />
 
-**What you must do.** Label the form fields inside each step as usual, and keep the `label` short:
-on the horizontal rail it is a single line that does not wrap.
+Inherited from the CDK's `CdkStepper`:
+
+- `linear` (input, `boolean`, default `false`): requires each step to be valid before moving on.
+- `selectedIndex` (input, `number`): the selected step. Two-way bindable.
+- `orientation` (input, `'horizontal' | 'vertical'`, default `'horizontal'`)
+- `selectionChange` (output, `StepperSelectionEvent`): `{ selectedIndex, previouslySelectedIndex,
+selectedStep, previouslySelectedStep }`.
+- `next()`, `previous()`, `reset()`: move between steps from code.
+
+### MudStep
+
+Selector: `mud-step`
+
+<ArgTypes of={MudStep} />
+
+Inherited from the CDK's `CdkStep`:
+
+- `label` (`string`): the step's name.
+- `stepControl` (`AbstractControl` or signal-forms field): the step's state follows its validity.
+- `errorMessage` (`string`): shown when the step is blocked.
+- `state` (`MudStepState`): sets the state yourself.
+- `completed`, `hasError`, `editable`, `optional` (`boolean`)
+- `aria-label`, `aria-labelledby` (`string`)
+
+### MudStepIndicator and MudIndicatorStep
+
+Selectors: `mud-step-indicator`, `mud-indicator-step`
+
+<ArgTypes of={MudIndicatorStep} />
+
+### Types
+
+- `MudStepState`: `'current' | 'completed' | 'blocked' | 'available' | 'incomplete'`
+- `MudStepperStepClick`: `{ index: number; step: MudStep; defaultPrevented: boolean; preventDefault(): void }`

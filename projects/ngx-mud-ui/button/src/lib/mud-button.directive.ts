@@ -38,11 +38,15 @@ const SUPPORTED_COLORS: Record<MudButtonVariant, readonly MudButtonColor[]> = {
   exportAs: 'mudButton',
 })
 export class MudButton extends MudButtonBase {
+  /** @description Visual variant; an empty attribute (`<button mudButton>`) means `filled`. */
   readonly mudButton = input.required<MudButtonVariant, MudButtonVariant | ''>({
     transform: (value) => value || 'filled',
   });
+  /** @description Color; `secondary` and `neutral` exist for the `filled` variant only. */
   readonly color = input<MudButtonColor>('primary');
+  /** @description Height and padding. */
   readonly size = input<MudButtonSize>('large');
+  /** @description Corner style; `circular` rounds the ends fully. */
   readonly shape = input<MudButtonShape>('rectangular');
   /** @description Stretches the button to fill its container's width. */
   readonly fullWidth = input(false, { transform: booleanAttribute });

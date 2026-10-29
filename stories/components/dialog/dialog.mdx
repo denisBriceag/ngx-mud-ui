@@ -1,257 +1,138 @@
-import { Meta, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import { Meta, Canvas } from '@storybook/addon-docs/blocks';
 import * as DialogStories from './dialog.stories';
 
 <Meta of={DialogStories} />
 
 # Dialog
 
-A modal dialog opened imperatively over `@angular/cdk/dialog`: focus-trapped,
-scroll-blocking, dismissible via backdrop/Escape/close button, with the MUD
-card chrome and a five-directive content vocabulary.
-
-## Import
+A modal dialog built on the CDK dialog. It traps focus, blocks page scroll and closes with the ×
+button, a backdrop click or <kbd>Esc</kbd>. There is no `<mud-dialog>` element: inject the
+`MudDialog` service and open a component or a template.
 
 ```ts
-import { MudDialog, MudDialogRef, MUD_DIALOG_DATA } from 'ngx-mud-ui/dialog';
 import {
-  MudDialogTitle,
-  MudDialogContent,
+  MUD_DIALOG_DATA,
+  MudDialog,
   MudDialogActions,
   MudDialogClose,
+  MudDialogContent,
   MudDialogImage,
+  MudDialogRef,
+  MudDialogTitle,
 } from 'ngx-mud-ui/dialog';
 ```
 
-## Service, not element
-
-There is no `<mud-dialog>` element — like Angular Material's `MatDialog`,
-`MudDialog` is an injectable (`providedIn: 'root'`) that opens a component or a
-`TemplateRef` into an overlay:
-
-```ts
-@Component({ /* ... */ })
-export class ProductPage {
-  private readonly dialog = inject(MudDialog);
-
-  confirmDelete(): void {
-    const ref = this.dialog.open<boolean>(ConfirmComponent, { size: 'sm' });
-
-    ref.closed.subscribe(({ result, reason }) => {
-      if (result) this.delete();
-    });
-  }
-}
-```
-
-Because there is no component to point Storybook Controls at, every story
-below is a **launcher**: a button that calls `MudDialog.open(...)`. The
-Playground's Controls panel is hand-wired to the config fields listed below —
-there is nothing for compodoc to extract from a service, so this page
-documents the config with plain tables instead of `<ArgTypes>`.
-
-## Playground
-
-<Canvas of={DialogStories.Playground} />
-<Controls of={DialogStories.Playground} />
-
 ## Confirm
 
-Title, body, and two actions closing the dialog through `[mudDialogClose]` —
-the bound value becomes the `closed` result, with reason `'action'`.
-
-```html
-<h2 mudDialogTitle>Ștergeți documentul?</h2>
-<div mudDialogContent>Acțiunea nu poate fi anulată.</div>
-<div mudDialogActions>
-  <button mudButton="outlined" [mudDialogClose]="false">Anulează</button>
-  <button mudButton color="destructive" [mudDialogClose]="true">Șterge</button>
-</div>
-```
+`open()` returns a `MudDialogRef`. Its `closed` observable emits once with `{ result, reason }` and
+then completes, so you don't need to unsubscribe. Inside the dialog, `[mudDialogClose]` closes it
+with the bound value as the result.
 
 <Canvas of={DialogStories.Confirm} />
 
-## With image
+## Passing data and returning a result
 
-A hero image via `[mudDialogImage]`. The directive only supplies full-bleed
-plumbing (`display: block; width: 100%; object-fit: cover`) — **height is the
-consumer's decision**. Figma's recommendation is **280px on desktop, 180px on
-mobile**; set it inline or in your own stylesheet:
+Pass `data` in the config and inject it with `MUD_DIALOG_DATA`. Inject `MudDialogRef` to close the
+dialog from code with `close(result)`. A dismissal (×, backdrop, <kbd>Esc</kbd>) gives
+`result: undefined`.
 
-```html
-<img mudDialogImage src="…" alt="" style="height: 280px" />
-```
+For a form, set `closeOnBackdrop: false` so a stray click can't discard what was typed. Set
+`closeOnEscape: false` too when the user must answer.
 
-The image must be the first child: the close button is absolutely positioned
-and overlays it.
+<Canvas of={DialogStories.Data} />
 
-<Canvas of={DialogStories.WithImage} />
+## Sizes
 
-## Stacked actions
+`size` is `sm` (480px), `md` (588px, default) or `lg` (720px). On phones every dialog is
+`min(350px, 100vw - 32px)` wide. The height is capped by the library.
 
-`[mudDialogActions]` takes a `layout` input: `'inline'` (default, right-aligned
-row) or `'stacked'` (full-width buttons in a column). Either way, keep the DOM
-order **secondary action first, primary last** — stacked uses
-`flex-direction: column-reverse` to put the primary on top without any
-reordering, and the same layout activates automatically below the 480px
-breakpoint regardless of `layout`.
+<Canvas of={DialogStories.Sizes} />
 
-<Canvas of={DialogStories.StackedActions} />
+## Image and stacked actions
+
+`[mudDialogImage]` on the first child makes a full-width image under the × button. Set its height
+yourself: 280px on desktop and 180px on phones are recommended.
+
+`layout="stacked"` on `[mudDialogActions]` gives full-width buttons with the primary on top. Keep
+the secondary button first in the markup in both layouts. Below 480px, actions always stack.
+
+<Canvas of={DialogStories.Image} />
 
 ## Long content
 
-`[mudDialogContent]` is the *only* scroll region: when the card hits its
-height cap, the image, title, and actions stay pinned and just the body
-scrolls. A long `[mudDialogTitle]` clamps at **3 lines** (upstream clamps at
-2 — a deliberate divergence).
+Only `[mudDialogContent]` scrolls; the title and actions stay in place. A long title is cut after
+three lines. `autoFocus` decides where focus lands on open; here it's the title, so the text is read
+from the top.
 
 <Canvas of={DialogStories.LongContent} />
 
-## From a TemplateRef
+## From a template
 
-`MudDialog.open()` accepts a `TemplateRef` in place of a component type.
-`config.data` arrives as the template's implicit context variable, and
-directives placed inside the template (including `[mudDialogClose]`) resolve
-the same `MudDialogRef` a component would receive.
+`open()` also takes a `TemplateRef`. `data` arrives as the template's implicit variable
+(`let-data`), and `[mudDialogClose]` works inside it.
 
-```html
-<ng-template #tpl let-data>
-  <h2 mudDialogTitle>Distribuiți acest raport</h2>
-  <div mudDialogContent>… "{{ data.reportName }}" …</div>
-  <div mudDialogActions>
-    <button mudButton="outlined" [mudDialogClose]="undefined">Închide</button>
-  </div>
-</ng-template>
-```
-
-```ts
-this.dialog.open(this.tpl(), { data: { reportName: 'Raport T3 2026' } });
-```
-
-<Canvas of={DialogStories.FromTemplate} />
-
-## API
-
-### `MudDialog.open(componentOrTemplate, config?)`
-
-```ts
-open<R = unknown, D = unknown>(
-  componentOrTemplate: ComponentType<unknown> | TemplateRef<unknown>,
-  config?: MudDialogConfig<D>,
-): MudDialogRef<R>;
-```
-
-Returns a `MudDialogRef<R>` synchronously; the same instance is also
-injectable inside the opened component/template.
-
-### `MudDialogConfig<D>`
-
-<table>
-  <thead>
-    <tr><th>Field</th><th>Default</th><th>Notes</th></tr>
-  </thead>
-  <tbody>
-    <tr><td><code>data?: D</code></td><td>—</td><td>Injected via <code>MUD_DIALOG_DATA</code> (components) or as the template's implicit context (templates).</td></tr>
-    <tr><td><code>size?: 'sm' | 'md' | 'lg'</code></td><td><code>'md'</code></td><td>Width rung: 480 / 588 / 720px. Mobile is always <code>min(350px, 100vw - 32px)</code> regardless of rung.</td></tr>
-    <tr><td><code>showCloseButton?: boolean</code></td><td><code>true</code></td><td>Renders the container-owned × button.</td></tr>
-    <tr><td><code>closeLabel?: string</code></td><td>—</td><td>Accessible name of the × button. Unset, it uses the <code>dialog.close</code> label.</td></tr>
-    <tr><td><code>closeOnBackdrop?: boolean</code></td><td><code>true</code></td><td>Closes the dialog on a backdrop click. Turn it off for a form, so a stray click outside can't discard what was typed.</td></tr>
-    <tr><td><code>closeOnEscape?: boolean</code></td><td><code>true</code></td><td>Closes the dialog on Escape. Turn both off when the user must answer; then only the × and your own buttons close it.</td></tr>
-    <tr><td><code>ariaLabel?: string</code></td><td>—</td><td>Accessible name when the dialog has no <code>mudDialogTitle</code>.</td></tr>
-    <tr><td><code>autoFocus?</code>, <code>restoreFocus?</code></td><td>CDK defaults</td><td>Passthrough to <code>@angular/cdk/dialog</code>.</td></tr>
-  </tbody>
-</table>
-
-There are no width/height/maxHeight fields — the card's height is always
-library-enforced (see Long content above). `panelClass` remains available as
-an unsanctioned CDK escape hatch but is not documented further here.
-
-### `MudDialogRef<R>`
-
-- `close(result?: R, reason?: MudDialogCloseReason): void`
-- `closed: Observable<{ result: R | undefined; reason: MudDialogCloseReason }>`
-- `backdropClick: Observable<MouseEvent>`
-
-### Close reasons
-
-<table>
-  <thead>
-    <tr><th>Reason</th><th>Trigger</th></tr>
-  </thead>
-  <tbody>
-    <tr><td><code>'backdrop'</code></td><td>Clicking the scrim (unless <code>closeOnBackdrop</code> is <code>false</code>).</td></tr>
-    <tr><td><code>'escape'</code></td><td>Pressing Escape (unless <code>closeOnEscape</code> is <code>false</code>).</td></tr>
-    <tr><td><code>'close-button'</code></td><td>Clicking the container's × (governed by <code>showCloseButton</code>, independent of <code>closeOnBackdrop</code> and <code>closeOnEscape</code>).</td></tr>
-    <tr><td><code>'action'</code></td><td><code>[mudDialogClose]</code>, or a programmatic <code>ref.close()</code> with no reason given.</td></tr>
-  </tbody>
-</table>
-
-A system-initiated close — navigation away, `Dialog.closeAll()`, or the
-service being destroyed — bypasses `MudDialogRef.close()` entirely, so it also
-reports reason `'action'`.
-
-Dismissals without a result (×, backdrop, Escape) emit
-`{ result: undefined, reason }` — check `result === undefined` to treat them
-all as a cancel.
-
-### Subscription lifecycle
-
-You do not need to unsubscribe from `MudDialogRef`'s observables. `closed`
-emits exactly once and then **completes** (same contract as Material's
-`afterClosed()`), and `backdropClick` completes when the dialog's overlay is
-disposed — a completed observable releases its subscribers, so nothing leaks.
-
-The one edge case: completion happens when *the dialog* closes, not when
-*your component* is destroyed. If the subscribing component can die while the
-dialog stays open and the callback touches component state, guard it with
-`ref.closed.pipe(takeUntilDestroyed(this.destroyRef))`. For the normal
-open-and-await-outcome flow, a bare `.subscribe()` is correct.
-
-### Directives
-
-<table>
-  <thead>
-    <tr><th>Directive</th><th>Selector</th><th>Purpose</th></tr>
-  </thead>
-  <tbody>
-    <tr><td><code>MudDialogTitle</code></td><td><code>[mudDialogTitle]</code></td><td>Title typography, 3-line clamp, auto-registers into the container's <code>aria-labelledby</code>.</td></tr>
-    <tr><td><code>MudDialogContent</code></td><td><code>[mudDialogContent]</code></td><td>The scroll region and body typography.</td></tr>
-    <tr><td><code>MudDialogActions</code></td><td><code>[mudDialogActions]</code></td><td>Footer row; <code>layout: 'inline' | 'stacked'</code>.</td></tr>
-    <tr><td><code>MudDialogClose</code></td><td><code>[mudDialogClose]</code></td><td>Closes the nearest dialog with the bound value as the result, reason <code>'action'</code>.</td></tr>
-    <tr><td><code>MudDialogImage</code></td><td><code>[mudDialogImage]</code></td><td>Full-bleed hero image plumbing; height is the consumer's.</td></tr>
-  </tbody>
-</table>
+<Canvas of={DialogStories.Template} />
 
 ## Accessibility
 
-- CDK supplies the focus trap, focus restore, `role="dialog"`,
-  `aria-modal="true"`, Escape handling, and scroll blocking — none of it is
-  reimplemented here.
-- A projected `mudDialogTitle` wires its auto-generated id into the
-  container's `aria-labelledby`. For a title-less dialog, set
-  `config.ariaLabel` instead so the dialog still has an accessible name.
-- **The × button's only accessible name** is `config.closeLabel`, or the
-  `dialog.close` label (English `'Close'`) when it is unset, so a language pack
-  from `provideMudLabels` translates it. The dialog is opened from the service, so it reads the
-  app-level labels; a `provideMudLabels` in one component's `providers` does not reach it.
-- The hero image is presentational; the consumer owns `alt` (leave it empty
-  for decorative heroes, as in the With image example above).
-### Initial focus
+- The CDK provides the focus trap, focus restore, `role="dialog"` and `aria-modal="true"`.
+- `[mudDialogTitle]` names the dialog. Without a title, set `ariaLabel` in the config.
+- The × button is named "Close" (translatable), or by `closeLabel`. The dialog reads the app-level
+  labels, not those of the component that opened it.
+- With the default config, focus lands on the × button. For a confirm dialog, consider focusing the
+  least destructive action: `autoFocus: '.cancel-button'`.
 
-Where focus lands on open is **the consumer's decision** via `config.autoFocus`
-(a straight CDK passthrough). The library only supplies the fallback: with the
-defaults (`showCloseButton: true`, `autoFocus: 'first-tabbable'`), the × is
-the first tabbable element in the container, so initial focus lands there.
+## API
 
-```ts
-// Focus a specific control — any CSS selector inside the dialog:
-this.dialog.open(ConfirmComponent, { autoFocus: '.confirm-cancel' });
+### MudDialog
 
-// Focus the dialog surface itself (screen readers announce the title first):
-this.dialog.open(NoticeComponent, { autoFocus: 'dialog' });
+`open<R, D>(componentOrTemplate, config?: MudDialogConfig<D>): MudDialogRef<R>` opens a dialog.
+The service is provided in root.
 
-// Focus the first heading — useful for long, text-heavy dialogs:
-this.dialog.open(TermsComponent, { autoFocus: 'first-heading' });
-```
+### MudDialogConfig
 
-For confirm dialogs, the APG pattern recommends focusing the least destructive
-action — `autoFocus: '.your-cancel-button-class'` is the one-liner for it.
+- `data` (`D`): passed to the dialog through `MUD_DIALOG_DATA`, or as the template's implicit
+  variable.
+- `size` (`'sm' | 'md' | 'lg'`, default `'md'`): width.
+- `showCloseButton` (`boolean`, default `true`): shows the × button.
+- `closeLabel` (`string`): accessible name of the × button.
+- `closeOnBackdrop` (`boolean`, default `true`): closes on a backdrop click.
+- `closeOnEscape` (`boolean`, default `true`): closes on <kbd>Esc</kbd>.
+- `ariaLabel` (`string`): accessible name when there's no `[mudDialogTitle]`.
+- `autoFocus` (`'first-tabbable' | 'first-heading' | 'dialog' | string | boolean`): where focus
+  goes on open; a string is a CSS selector inside the dialog.
+- `restoreFocus` (`boolean`, default `true`): returns focus to the opener on close.
+- `panelClass` (`string | string[]`): extra classes on the overlay panel.
+
+### MudDialogRef&lt;R&gt;
+
+- `closed` (`Observable<MudDialogCloseResult<R>>`): emits `{ result, reason }` once, then completes.
+- `backdropClick` (`Observable<MouseEvent>`): backdrop clicks, also when they don't close the
+  dialog.
+- `close(result?: R, reason?: MudDialogCloseReason)`: closes the dialog; the reason defaults to
+  `'action'`.
+
+### Close reasons
+
+`MudDialogCloseReason` is one of:
+
+- `'action'`: `[mudDialogClose]` or `close()`. Also when the dialog is closed by the system, such
+  as on navigation.
+- `'close-button'`: the × button.
+- `'backdrop'`: a backdrop click.
+- `'escape'`: the <kbd>Esc</kbd> key.
+
+### Directives
+
+- `[mudDialogTitle]`: the title; names the dialog.
+- `[mudDialogContent]`: the body, and the only part that scrolls.
+- `[mudDialogActions]`: the button row. Input `layout`: `'inline'` (default) or `'stacked'`.
+- `[mudDialogClose]`: closes the dialog with the bound value. Input `type` sets the button type
+  (default `'button'`).
+- `[mudDialogImage]`: a full-width image at the top.
+
+### Types
+
+- `MudDialogSize`: `'sm' | 'md' | 'lg'`
+- `MudDialogCloseReason`: `'backdrop' | 'escape' | 'close-button' | 'action'`
+- `MudDialogCloseResult<R>`: `{ result: R | undefined; reason: MudDialogCloseReason }`

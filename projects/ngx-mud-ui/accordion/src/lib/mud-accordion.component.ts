@@ -69,12 +69,13 @@ const NARROW_BELOW = 600;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MudAccordion extends CdkAccordionItem {
+  /** @description Hides the +/- toggle; the header still opens and closes the section. */
   readonly hideToggle = input(false, { transform: booleanAttribute });
 
-  /** Emitted after the body's expansion animation happens. */
+  /** @description Fires once the open animation has finished. */
   readonly afterExpand = output<void>();
 
-  /** Emitted after the body's collapse animation happens. */
+  /** @description Fires once the close animation has finished. */
   readonly afterCollapse = output<void>();
 
   /** @docs-private Signal mirrors of the CDK getter/setter state, for OnPush templates. */

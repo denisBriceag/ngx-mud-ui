@@ -1,158 +1,76 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
-import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
-import { Component, signal } from '@angular/core';
-import { JsonPipe } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { FormField, form, required } from '@angular/forms/signals';
+import { moduleMetadata } from '@storybook/angular-vite';
 import { expect, userEvent, within } from 'storybook/test';
-import { MudDateInput, MudDatePicker, mudAddDays, mudDateToDate, mudToday } from 'ngx-mud-ui/date-picker';
-import { MUD_LABELS_RO, provideMudLabels } from 'ngx-mud-ui/i18n';
-import type { MudDateRange } from 'ngx-mud-ui/date-picker';
+import { MudDateInput } from 'ngx-mud-ui/date-picker';
 import { MudLabel } from 'ngx-mud-ui/label';
-import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+
+import { example } from '../../../example';
+import { DateBasicExample } from './examples/date-basic.example';
+import basicSource from './examples/date-basic.example.ts?raw';
+import { DateBoundsExample } from './examples/date-bounds.example';
+import boundsSource from './examples/date-bounds.example.ts?raw';
+import { DateCalendarExample } from './examples/date-calendar.example';
+import calendarSource from './examples/date-calendar.example.ts?raw';
+import { DateFormatsExample } from './examples/date-formats.example';
+import formatsSource from './examples/date-formats.example.ts?raw';
+import { DateFormsExample } from './examples/date-forms.example';
+import formsSource from './examples/date-forms.example.ts?raw';
+import { DateHeaderExample } from './examples/date-header.example';
+import headerSource from './examples/date-header.example.ts?raw';
+import { DateLocalizedExample } from './examples/date-localized.example';
+import localizedSource from './examples/date-localized.example.ts?raw';
+import { DateRangeExample } from './examples/date-range.example';
+import rangeSource from './examples/date-range.example.ts?raw';
 
 const COL = 'display:flex;flex-direction:column;gap:24px;max-width:560px;padding:24px';
 
-// A function has no Storybook control, so the Playground offers named presets
-// that `mapping` resolves to the real `dateFilter` predicate.
-const DATE_FILTERS: Record<string, ((iso: string) => boolean) | undefined> = {
-  none: undefined,
-  weekdaysOnly: (iso) => {
-    const day = mudDateToDate(iso).getDay();
-
-    return day !== 0 && day !== 6;
-  },
-  fromToday: (iso) => iso >= mudToday(),
-  firstHalfOfMonth: (iso) => Number(iso.slice(8, 10)) <= 15,
-};
-
-// The same for `disabledDates`, an ISO list: a JSON editor can express it, but
-// named presets are quicker to try and read.
-const DISABLED_DATES: Record<string, readonly string[]> = {
-  none: [],
-  augustHolidays: ['2026-08-27', '2026-08-31'],
-  nextSevenDays: Array.from({ length: 7 }, (_, i) => mudAddDays(mudToday(), i + 1)),
-};
-
-type DateArgs = Omit<MudDateInput, 'dateFilter' | 'disabledDates'> & {
-  dateFilter?: keyof typeof DATE_FILTERS;
-  disabledDates?: keyof typeof DISABLED_DATES;
-};
-
-const meta: Meta<DateArgs> = {
+const meta: Meta<MudDateInput<'single'>> = {
   title: 'Components/Form/Date picker',
   component: MudDateInput,
-  decorators: [
-    moduleMetadata({ imports: [MudDateInput, MudDatePicker, MudLabel, MudInlineMessage] }),
-  ],
+  decorators: [moduleMetadata({ imports: [MudDateInput, MudLabel] })],
   argTypes: {
-    headerStyle: { control: 'select', options: ['title', 'dropdown'] },
-    dateFilter: {
-      control: 'select',
-      options: Object.keys(DATE_FILTERS),
-      mapping: DATE_FILTERS,
-      description: [
-        'Return `true` for a SELECTABLE date. Runs after `min`/`max` and `disabledDates`. The presets:',
-        '```ts',
-        'weekdaysOnly:     (iso) => { const day = mudDateToDate(iso).getDay(); return day !== 0 && day !== 6; }',
-        'fromToday:        (iso) => iso >= mudToday()',
-        'firstHalfOfMonth: (iso) => Number(iso.slice(8, 10)) <= 15',
-        '```',
-      ].join('\n'),
-    },
-    disabledDates: {
-      control: 'select',
-      options: Object.keys(DISABLED_DATES),
-      mapping: DISABLED_DATES,
-      description: [
-        'ISO dates to disable, e.g. public holidays. The presets:',
-        '```ts',
-        "augustHolidays: ['2026-08-27', '2026-08-31']",
-        'nextSevenDays:  Array.from({ length: 7 }, (_, i) => mudAddDays(mudToday(), i + 1))',
-        '```',
-      ].join('\n'),
-    },
+    format: { control: 'inline-radio', options: ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'] },
+    headerStyle: { control: 'inline-radio', options: ['title', 'dropdown'] },
+    size: { control: 'inline-radio', options: ['medium', 'large'] },
   },
   args: {
-    dateFilter: 'none',
-    disabledDates: 'none',
     format: 'DD/MM/YYYY',
+    headerStyle: 'title',
     size: 'medium',
-    variant: 'default',
     clearable: true,
     touchUi: false,
     disabled: false,
-    required: false,
     invalid: false,
   },
 };
 
 export default meta;
 
-type Story = StoryObj<DateArgs>;
+type Story = StoryObj<MudDateInput<'single'>>;
 
-/** The 90% case: one tag, a label, and a calendar the user can also type into. */
 export const Playground: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <div style="${COL}">
-        <mud-date-input
-          [format]="format"
-          [size]="size"
-          [variant]="variant"
-          [clearable]="clearable"
-          [headerStyle]="headerStyle"
-          [touchUi]="touchUi"
-          [disabled]="disabled"
-          [required]="required"
-          [invalid]="invalid"
-          [dateFilter]="dateFilter"
-          [disabledDates]="disabledDates"
-        >
-          <mud-label>Data nașterii</mud-label>
-          @if (invalid) {
-            <mud-inline-message variant="error">Alegeți o dată validă.</mud-inline-message>
-          } @else {
-            <mud-inline-message hideIcon>Alegeți o dată din calendar sau tastați-o direct.</mud-inline-message>
-          }
-        </mud-date-input>
-      </div>
+      <mud-date-input
+        style="display:block;max-width:420px"
+        [format]="format"
+        [headerStyle]="headerStyle"
+        [size]="size"
+        [clearable]="clearable"
+        [touchUi]="touchUi"
+        [disabled]="disabled"
+        [invalid]="invalid"
+      >
+        <mud-label>Data</mud-label>
+      </mud-date-input>
     `,
   }),
 };
 
-export const Formats: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="${COL}">
-        <mud-date-input format="DD/MM/YYYY">
-          <mud-label>DD/MM/YYYY</mud-label>
-        </mud-date-input>
-        <mud-date-input format="MM/DD/YYYY">
-          <mud-label>MM/DD/YYYY</mud-label>
-        </mud-date-input>
-        <mud-date-input format="YYYY-MM-DD">
-          <mud-label>YYYY-MM-DD</mud-label>
-        </mud-date-input>
-      </div>
-    `,
-  }),
-};
-
-export const Range: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="${COL}">
-        <mud-date-input mode="range" clearable>
-          <mud-label>Perioada</mud-label>
-          <mud-inline-message hideIcon>Completați data de început; focusul trece automat la data de sfârșit.</mud-inline-message>
-        </mud-date-input>
-      </div>
-    `,
-  }),
+export const Basic: Story = example(DateBasicExample, basicSource);
+export const Formats: Story = example(DateFormatsExample, formatsSource);
+export const Range: Story = example(DateRangeExample, rangeSource, {
   // Layout regression pin (browser only — jsdom has no layout): the two
   // entries hug their pattern text and pack at the field's START. With growing
   // entries each grabbed half the control, stranding the separator mid-field.
@@ -168,227 +86,21 @@ export const Range: Story = {
       await expect(entry.offsetWidth).toBeLessThan(control.offsetWidth * 0.35);
     }
   },
-};
-
-/**
- * Month/weekday names come from `Intl` via `locale`; every UI string comes from
- * the Romanian pack, with the short month names overridden to drop `Intl`'s dots.
- */
-export const LocalizedRomanian: Story = {
-  name: 'Localized (Romanian)',
-  parameters: { controls: { disable: true } },
-  decorators: [
-    applicationConfig({
-      providers: [
-        provideMudLabels(MUD_LABELS_RO, {
-          datePicker: {
-            monthNamesShort: ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Noi', 'Dec'],
-          },
-        }),
-      ],
-    }),
-  ],
-  render: () => ({
-    template: `
-      <div style="${COL}">
-        <mud-date-input locale="ro" clearable>
-          <mud-label>Data nașterii</mud-label>
-        </mud-date-input>
-        <mud-date-picker locale="ro" startAt="2026-08-15" headerStyle="dropdown" />
-      </div>
-    `,
-  }),
-};
-
-export const Bounded: Story = {
-  name: 'Min, max and disabled dates',
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    props: { today: mudToday(), holidays: ['2026-08-27', '2026-08-31'] },
-    template: `
-      <div style="${COL}">
-        <mud-date-input [max]="today">
-          <mud-label>Nu în viitor</mud-label>
-          <mud-inline-message hideIcon>Zilele de după azi sunt dezactivate.</mud-inline-message>
-        </mud-date-input>
-        <mud-date-input [disabledDates]="holidays">
-          <mud-label>Fără sărbători</mud-label>
-          <mud-inline-message hideIcon>27 și 31 august sunt dezactivate.</mud-inline-message>
-        </mud-date-input>
-      </div>
-    `,
-  }),
-};
-
-/** The calendar on its own, for pages that show it inline instead of in a popover. */
-export const InlineCalendar: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="${COL}">
-        <mud-date-picker appearance="flat" />
-      </div>
-    `,
-  }),
-};
-
-export const CalendarModes: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="display:flex;gap:24px;flex-wrap:wrap;padding:24px">
-        <mud-date-picker mode="single" />
-        <mud-date-picker mode="range" />
-        <mud-date-picker mode="multi" />
-      </div>
-    `,
-  }),
-};
-
-export const DropdownHeader: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="${COL}">
-        <mud-date-picker headerStyle="dropdown" />
-      </div>
-    `,
-  }),
-};
-
-export const MonthYearDropdowns: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="${COL}">
-        <mud-date-input headerStyle="dropdown">
-          <mud-label>Data nașterii</mud-label>
-        </mud-date-input>
-      </div>
-    `,
-  }),
-};
-
-export const TouchUi: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="${COL}">
-        <mud-date-input touchUi>
-          <mud-label>Data nașterii</mud-label>
-        </mud-date-input>
-      </div>
-    `,
-  }),
-};
-
-/**
- * Standalone via `[(value)]`, reactive forms via `[formControl]` — both are
- * `ControlValueAccessor` under the hood.
- */
-@Component({
-  selector: 'mud-date-forms-demo',
-  imports: [MudDateInput, MudLabel, ReactiveFormsModule, JsonPipe],
-  template: `
-    <div style="${COL}">
-      <mud-date-input [formControl]="dob" clearable>
-        <mud-label>Reactive forms</mud-label>
-      </mud-date-input>
-      <p>value: {{ dob.value ?? 'null' }}</p>
-
-      <mud-date-input mode="range" [(value)]="period">
-        <mud-label>Two-way binding</mud-label>
-      </mud-date-input>
-      <p>value: {{ period() | json }}</p>
-    </div>
-  `,
-})
-class FormsDemo {
-  readonly dob = new FormControl<string | null>('1990-05-15');
-  readonly period = signal<MudDateRange | null>({ start: '2026-08-01', end: '2026-08-31' });
-}
-
-export const WithForms: Story = {
-  parameters: { controls: { disable: true } },
-  decorators: [moduleMetadata({ imports: [FormsDemo] })],
-  render: () => ({ template: `<mud-date-forms-demo />` }),
-};
-
-/**
- * Signal forms via the FormValueControl contract: `[formField]` binds the
- * value, the required marker and the raw invalid state; the message below is
- * a plain projected `mud-inline-message`, timed by the consumer's own `@if`.
- * Note: `form.dob().invalid()` is signal forms' RAW state (true immediately
- * for an empty required field, before touch) — hence gating on it alone here.
- */
-@Component({
-  selector: 'mud-date-input-signal-demo',
-  imports: [MudDateInput, MudLabel, MudInlineMessage, FormField],
-  template: `
-    <div style="${COL}">
-      <mud-date-input [formField]="form.dob" clearable locale="en-GB">
-        <mud-label>Data nașterii</mud-label>
-        @if (form.dob().invalid()) {
-          <mud-inline-message variant="error">Alegeți data nașterii.</mud-inline-message>
-        }
-      </mud-date-input>
-      <code>
-        value: {{ model().dob ?? '—' }} | touched: {{ form.dob().touched() }} | valid:
-        {{ form.dob().valid() }}
-      </code>
-    </div>
-  `,
-})
-class DateInputSignalDemo {
-  readonly model = signal<{ dob: string | null }>({ dob: null });
-
-  readonly form = form(this.model, (path) => {
-    required(path.dob, { message: 'Alegeți data nașterii.' });
-  });
-}
-
-/**
- * Shown as this story's code sample: the story itself renders a demo
- * component, whose selector alone would tell a reader nothing.
- */
-const SIGNAL_FORMS_SOURCE = `
-@Component({
-  imports: [MudDateInput, MudLabel, MudInlineMessage, FormField],
-  template: \`
-    <mud-date-input [formField]="form.dob" clearable>
-      <mud-label>Data nașterii</mud-label>
-      @if (form.dob().invalid()) {
-        <mud-inline-message variant="error">Alegeți data nașterii.</mud-inline-message>
-      }
-    </mud-date-input>
-  \`,
-})
-export class DobField {
-  readonly model = signal<{ dob: string | null }>({ dob: null });
-
-  // Signal forms bind \`required\` and \`invalid\` on the control for you — the
-  // message text is your own projected \`mud-inline-message\`.
-  readonly form = form(this.model, (path) => {
-    required(path.dob, { message: 'Alegeți data nașterii.' });
-  });
-}
-`;
-
-export const SignalForms: Story = {
-  parameters: {
-    controls: { disable: true },
-    docs: { source: { code: SIGNAL_FORMS_SOURCE, language: 'ts' } },
-  },
-  decorators: [moduleMetadata({ imports: [DateInputSignalDemo] })],
-  render: () => ({ template: `<mud-date-input-signal-demo />` }),
-};
+});
+export const Bounds: Story = example(DateBoundsExample, boundsSource);
+export const Header: Story = example(DateHeaderExample, headerSource);
+export const Calendar: Story = example(DateCalendarExample, calendarSource);
+export const Forms: Story = example(DateFormsExample, formsSource);
+export const Localized: Story = example(DateLocalizedExample, localizedSource);
 
 /** jsdom reports no selection at all, so caret behaviour is only provable here. */
 export const CaretBehaviour: Story = {
   name: 'Caret stays put while typing (browser)',
-  tags: ['!autodocs'],
+  tags: ['!autodocs', '!dev'],
   parameters: { controls: { disable: true } },
-  render: () => ({ template: `<div style="${COL}"><mud-date-input><mud-label>Date</mud-label></mud-date-input></div>` }),
+  render: () => ({
+    template: `<div style="${COL}"><mud-date-input><mud-label>Date</mud-label></mud-date-input></div>`,
+  }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Date') as HTMLInputElement;
@@ -397,7 +109,10 @@ export const CaretBehaviour: Story = {
     // color-contrast check reports "background could not be determined" for
     // any element overlapped from above.
     const rect = input.getBoundingClientRect();
-    const top = document.elementsFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)[0];
+    const top = document.elementsFromPoint(
+      rect.left + rect.width / 2,
+      rect.top + rect.height / 2,
+    )[0];
 
     await expect(top).toBe(input);
 
@@ -429,9 +144,11 @@ export const CaretBehaviour: Story = {
  *  to the browser rather than in any single function. */
 export const BackspaceDeletes: Story = {
   name: 'Backspace can clear the field (browser)',
-  tags: ['!autodocs'],
+  tags: ['!autodocs', '!dev'],
   parameters: { controls: { disable: true } },
-  render: () => ({ template: `<div style="${COL}"><mud-date-input><mud-label>Date</mud-label></mud-date-input></div>` }),
+  render: () => ({
+    template: `<div style="${COL}"><mud-date-input><mud-label>Date</mud-label></mud-date-input></div>`,
+  }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Date') as HTMLInputElement;
@@ -450,9 +167,11 @@ export const BackspaceDeletes: Story = {
 
 export const PopoverKeyboard: Story = {
   name: 'Alt+Down opens and Escape restores focus (browser)',
-  tags: ['!autodocs'],
+  tags: ['!autodocs', '!dev'],
   parameters: { controls: { disable: true } },
-  render: () => ({ template: `<div style="${COL}"><mud-date-input><mud-label>Date</mud-label></mud-date-input></div>` }),
+  render: () => ({
+    template: `<div style="${COL}"><mud-date-input><mud-label>Date</mud-label></mud-date-input></div>`,
+  }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Date') as HTMLInputElement;

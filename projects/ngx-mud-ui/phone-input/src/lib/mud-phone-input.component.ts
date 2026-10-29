@@ -112,8 +112,11 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   /** @description Colour treatment. `destructive` is forced when `invalid` is set. */
   readonly variant = input<MudPhoneInputVariant>('default');
 
+  /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
+  /** @description Adds the red asterisk to the label and the native `required` attribute. */
   readonly required = input(false, { transform: booleanAttribute });
+  /** @description Read-only: the number stays focusable and copyable. */
   readonly readonly = input(false, { transform: booleanAttribute });
 
   /** @description Shows a spinner and blocks editing, e.g. while the number is fetched. */
@@ -125,6 +128,7 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   /** @description Shows a trailing clear button while the field holds digits. */
   readonly clearable = input(false, { transform: booleanAttribute });
 
+  /** @description Native `name` attribute. */
   readonly name = input<string>('');
 
   /** @description Placeholder for the national segment. Defaults to the country's mask. */
@@ -170,10 +174,10 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
   /** @description Extra id(s) merged into the native control's aria-describedby. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
-  /** Fired when the value is committed (blur), carrying the digit-window check. */
+  /** @description Fires when the value is committed (on blur), with the number, the country and whether it's complete. */
   readonly changed = output<MudPhoneInputChange>();
 
-  /** Signal-forms touch contract: emitted when the field loses focus. */
+  /** @description Fires when focus leaves the field; signal forms use it to mark the field touched. */
   readonly touch = output<void>();
 
   private readonly _native = viewChild.required<ElementRef<HTMLInputElement>>('native');
@@ -460,6 +464,14 @@ export class MudPhoneInput implements ControlValueAccessor, FormValueControl<str
       const native = this._native().nativeElement;
 
       if (native.value !== display) native.value = display;
+    });
+
+    // Writes only on a real change: Chrome moves the caret to the end even when the value is unchanged.
+    effect(() => {
+      const query = this._query();
+      const search = this._searchEl()?.nativeElement;
+
+      if (search && search.value !== query) search.value = query;
     });
 
     if (typeof ngDevMode === 'undefined' || ngDevMode) {

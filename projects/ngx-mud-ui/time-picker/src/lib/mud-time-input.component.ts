@@ -99,18 +99,27 @@ export class MudTimeInput implements ControlValueAccessor, FormValueControl<MudT
   /** @description Trailing clear (×) button, shown only while the field holds text. */
   readonly clearable = input(false, { transform: booleanAttribute });
 
+  /** @description Color treatment. `destructive` is forced when `invalid` is set. */
   readonly variant = input<MudTimeInputVariant>('default');
+  /** @description Height and text size: medium (40px) or large (48px). */
   readonly size = input<MudTimeInputSize>('medium');
+  /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
+  /** @description Adds the red asterisk to the label and the native `required` attribute. */
   readonly required = input(false, { transform: booleanAttribute });
+  /** @description Read-only: the time stays focusable and copyable; the picker doesn't open. */
   readonly readonly = input(false, { transform: booleanAttribute });
+  /** @description Destructive visuals + `aria-invalid`. Signal forms bind this automatically. */
   readonly invalid = input(false, { transform: booleanAttribute });
+  /** @description Native `name` attribute. */
   readonly name = input<string>('');
 
   /** @description Empty-state and typing-ghost pattern shaped like `HH:MM` with non-digits (e.g. `OO:MM`). */
   readonly placeholder = input<string | undefined>(undefined);
 
+  /** @description Accessible name used when no `mud-label` is projected. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
+  /** @description Extra id(s) merged into the input's aria-describedby. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
   /** @description Earliest accepted time, `HH:MM` inclusive. Forwarded to the picker. */
@@ -125,6 +134,7 @@ export class MudTimeInput implements ControlValueAccessor, FormValueControl<MudT
   /** @description Return `true` for a SELECTABLE time. Runs after min/max and minuteStep. */
   readonly timeFilter = input<((time: string) => boolean) | undefined>(undefined);
 
+  /** @description Fires after the clear button empties the field. */
   readonly cleared = output<void>();
   readonly touch = output<void>();
 

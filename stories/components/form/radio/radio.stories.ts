@@ -1,24 +1,27 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { moduleMetadata } from '@storybook/angular-vite';
-import { Component, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MudRadio, MudRadioGroup } from 'ngx-mud-ui/radio';
 import { MudLabel } from 'ngx-mud-ui/label';
-import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
+import { MudRadio, MudRadioGroup } from 'ngx-mud-ui/radio';
 
-const COL = 'display:flex;flex-direction:column;gap:32px;max-width:420px;padding:24px';
+import { example } from '../../../example';
+import { RadioBasicExample } from './examples/radio-basic.example';
+import basicSource from './examples/radio-basic.example.ts?raw';
+import { RadioHorizontalExample } from './examples/radio-horizontal.example';
+import horizontalSource from './examples/radio-horizontal.example.ts?raw';
+import { RadioReactiveExample } from './examples/radio-reactive.example';
+import reactiveSource from './examples/radio-reactive.example.ts?raw';
+import { RadioSignalFormsExample } from './examples/radio-signal-forms.example';
+import signalFormsSource from './examples/radio-signal-forms.example.ts?raw';
+import { RadioStatesExample } from './examples/radio-states.example';
+import statesSource from './examples/radio-states.example.ts?raw';
 
-const meta: Meta<MudRadioGroup> = {
+const meta: Meta<MudRadioGroup<string>> = {
   title: 'Components/Form/Radio',
   component: MudRadioGroup,
-  decorators: [moduleMetadata({ imports: [MudRadioGroup, MudRadio, MudLabel, MudInlineMessage] })],
+  decorators: [moduleMetadata({ imports: [MudRadioGroup, MudRadio, MudLabel] })],
   argTypes: {
     size: { control: 'inline-radio', options: ['medium', 'small'] },
     orientation: { control: 'inline-radio', options: ['vertical', 'horizontal'] },
-    disabled: { control: 'boolean' },
-    required: { control: 'boolean' },
-    readonly: { control: 'boolean' },
-    invalid: { control: 'boolean' },
   },
   args: {
     size: 'medium',
@@ -32,226 +35,30 @@ const meta: Meta<MudRadioGroup> = {
 
 export default meta;
 
-type Story = StoryObj<MudRadioGroup>;
+type Story = StoryObj<MudRadioGroup<string>>;
 
 export const Playground: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <div style="${COL}">
-        <mud-radio-group
-          [size]="size"
-          [orientation]="orientation"
-          [disabled]="disabled"
-          [required]="required"
-          [readonly]="readonly"
-          [invalid]="invalid"
-        >
-          <mud-label>Metoda de plată</mud-label>
-          <mud-radio value="card">
-            <mud-label>Card bancar</mud-label>
-            <mud-inline-message hideIcon>Visa, Mastercard.</mud-inline-message>
-          </mud-radio>
-          <mud-radio value="mpay">
-            <mud-label>MPay</mud-label>
-            <mud-inline-message hideIcon>Fără comision.</mud-inline-message>
-          </mud-radio>
-          <mud-radio value="cash">
-            <mud-label>Numerar la ghișeu</mud-label>
-          </mud-radio>
-          @if (invalid) {
-            <mud-inline-message variant="error">Alegeți o metodă de plată.</mud-inline-message>
-          }
-        </mud-radio-group>
-      </div>
-    `,
-  }),
-};
-
-/** Arrow keys rove and select natively (shared name); Tab enters/leaves the group. */
-export const States: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="${COL}">
-        <mud-radio-group value="mpay">
-          <mud-label>Selectat</mud-label>
-          <mud-radio value="card"><mud-label>Card bancar</mud-label></mud-radio>
-          <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
-        </mud-radio-group>
-        <mud-radio-group invalid required>
-          <mud-label>Eroare</mud-label>
-          <mud-radio value="card"><mud-label>Card bancar</mud-label></mud-radio>
-          <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
-          <mud-inline-message variant="error">Alegeți o metodă de plată.</mud-inline-message>
-        </mud-radio-group>
-        <mud-radio-group value="card">
-          <mud-label>Cu opțiune dezactivată</mud-label>
-          <mud-radio value="card"><mud-label>Card bancar</mud-label></mud-radio>
-          <mud-radio value="cash" disabled><mud-label>Numerar</mud-label></mud-radio>
-        </mud-radio-group>
-        <mud-radio-group value="card" disabled>
-          <mud-label>Grup dezactivat</mud-label>
-          <mud-radio value="card"><mud-label>Card bancar</mud-label></mud-radio>
-          <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
-        </mud-radio-group>
-        <mud-radio-group size="small" value="mpay">
-          <mud-label>Mic (small)</mud-label>
-          <mud-radio value="card">
-            <mud-label>Card bancar</mud-label>
-            <mud-inline-message hideIcon>14/20 + dot 10px.</mud-inline-message>
-          </mud-radio>
-          <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
-        </mud-radio-group>
-      </div>
-    `,
-  }),
-};
-
-/** Options in a row, 24px apart; they wrap onto a new line 12px below when the row runs out. */
-export const Horizontal: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => ({
-    template: `
-      <div style="${COL};max-width:560px">
-        <mud-radio-group orientation="horizontal" value="yes">
-          <mud-label>Aveți copii minori?</mud-label>
-          <mud-radio value="yes"><mud-label>Da</mud-label></mud-radio>
-          <mud-radio value="no"><mud-label>Nu</mud-label></mud-radio>
-        </mud-radio-group>
-        <mud-radio-group orientation="horizontal" value="mpay">
-          <mud-label>Metoda de plată</mud-label>
-          <mud-radio value="card">
-            <mud-label>Card bancar</mud-label>
-            <mud-inline-message hideIcon>Visa, Mastercard.</mud-inline-message>
-          </mud-radio>
-          <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
-          <mud-radio value="cash"><mud-label>Numerar la ghișeu</mud-label></mud-radio>
-        </mud-radio-group>
-        <div style="max-width:230px">
-          <mud-radio-group orientation="horizontal" invalid required>
-            <mud-label>Limba în care doriți să primiți corespondența</mud-label>
-            <mud-radio value="ro"><mud-label>Română</mud-label></mud-radio>
-            <mud-radio value="ru"><mud-label>Rusă</mud-label></mud-radio>
-            <mud-radio value="en"><mud-label>Engleză</mud-label></mud-radio>
-            <mud-inline-message variant="error">Alegeți o limbă.</mud-inline-message>
-          </mud-radio-group>
-        </div>
-      </div>
-    `,
-  }),
-};
-
-/** The group is the form control: reactive forms bind on mud-radio-group. */
-@Component({
-  selector: 'mud-radio-reactive-demo',
-  imports: [MudRadioGroup, MudRadio, MudLabel, MudInlineMessage, ReactiveFormsModule],
-  template: `
-    <div style="${COL}">
-      <mud-radio-group required [formControl]="method" [invalid]="method.touched && method.invalid">
+      <mud-radio-group
+        [size]="size"
+        [orientation]="orientation"
+        [disabled]="disabled"
+        [required]="required"
+        [readonly]="readonly"
+        [invalid]="invalid"
+      >
         <mud-label>Metoda de plată</mud-label>
         <mud-radio value="card"><mud-label>Card bancar</mud-label></mud-radio>
         <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
-        <mud-radio value="cash"><mud-label>Numerar</mud-label></mud-radio>
-        @if (method.touched && method.invalid) {
-          <mud-inline-message variant="error">Alegeți o metodă de plată.</mud-inline-message>
-        }
       </mud-radio-group>
-      <code>value: {{ method.value || '—' }} | touched: {{ method.touched }} | valid: {{ method.valid }}</code>
-    </div>
-  `,
-})
-class RadioReactiveDemo {
-  readonly method = new FormControl<string | null>(null, { validators: [Validators.required] });
-}
-
-/**
- * Shown as this story's code sample: the story itself renders a demo
- * component, whose selector alone would tell a reader nothing.
- */
-const REACTIVE_FORMS_SOURCE = `
-@Component({
-  imports: [MudRadioGroup, MudRadio, MudLabel, MudInlineMessage, ReactiveFormsModule],
-  template: \`
-    <mud-radio-group required [formControl]="method" [invalid]="method.touched && method.invalid">
-      <mud-label>Metoda de plată</mud-label>
-      <mud-radio value="card"><mud-label>Card bancar</mud-label></mud-radio>
-      <mud-radio value="mpay"><mud-label>MPay</mud-label></mud-radio>
-      <mud-radio value="cash"><mud-label>Numerar</mud-label></mud-radio>
-      @if (method.touched && method.invalid) {
-        <mud-inline-message variant="error">Alegeți o metodă de plată.</mud-inline-message>
-      }
-    </mud-radio-group>
-  \`,
-})
-export class PaymentMethodField {
-  readonly method = new FormControl<string | null>(null, { validators: [Validators.required] });
-}
-`;
-
-export const ReactiveForms: Story = {
-  parameters: {
-    controls: { disable: true },
-    docs: { source: { code: REACTIVE_FORMS_SOURCE, language: 'ts' } },
-  },
-  decorators: [moduleMetadata({ imports: [RadioReactiveDemo] })],
-  render: () => ({ template: `<mud-radio-reactive-demo />` }),
+    `,
+  }),
 };
 
-/** Standalone two-way binding with non-string values. */
-@Component({
-  selector: 'mud-radio-model-demo',
-  imports: [MudRadioGroup, MudRadio, MudLabel, MudInlineMessage],
-  template: `
-    <div style="${COL}">
-      <mud-radio-group [(value)]="copies">
-        <mud-label>Numărul de copii ai cererii</mud-label>
-        <mud-radio [value]="1"><mud-label>Un exemplar</mud-label></mud-radio>
-        <mud-radio [value]="2"><mud-label>Două exemplare</mud-label></mud-radio>
-        <mud-radio [value]="5">
-          <mud-label>Cinci exemplare</mud-label>
-          <mud-inline-message hideIcon>Taxă suplimentară.</mud-inline-message>
-        </mud-radio>
-      </mud-radio-group>
-      <code>copies: {{ copies() ?? '—' }} (number)</code>
-    </div>
-  `,
-})
-class RadioModelDemo {
-  readonly copies = signal<number | undefined>(undefined);
-}
-
-/**
- * Shown as this story's code sample: the story itself renders a demo
- * component, whose selector alone would tell a reader nothing.
- */
-const NON_STRING_VALUES_SOURCE = `
-@Component({
-  imports: [MudRadioGroup, MudRadio, MudLabel, MudInlineMessage],
-  template: \`
-    <mud-radio-group [(value)]="copies">
-      <mud-label>Numărul de exemplare</mud-label>
-      <mud-radio [value]="1"><mud-label>Un exemplar</mud-label></mud-radio>
-      <mud-radio [value]="2"><mud-label>Două exemplare</mud-label></mud-radio>
-      <mud-radio [value]="5">
-        <mud-label>Cinci exemplare</mud-label>
-        <mud-inline-message hideIcon>Taxă suplimentară.</mud-inline-message>
-      </mud-radio>
-    </mud-radio-group>
-  \`,
-})
-export class CopiesChoice {
-  // Values keep their type. The group compares them with Object.is, so object
-  // values must be the same reference, not a rebuilt equivalent.
-  readonly copies = signal<number | undefined>(undefined);
-}
-`;
-
-export const NonStringValues: Story = {
-  parameters: {
-    controls: { disable: true },
-    docs: { source: { code: NON_STRING_VALUES_SOURCE, language: 'ts' } },
-  },
-  decorators: [moduleMetadata({ imports: [RadioModelDemo] })],
-  render: () => ({ template: `<mud-radio-model-demo />` }),
-};
+export const Basic: Story = example(RadioBasicExample, basicSource);
+export const States: Story = example(RadioStatesExample, statesSource);
+export const Horizontal: Story = example(RadioHorizontalExample, horizontalSource);
+export const ReactiveForms: Story = example(RadioReactiveExample, reactiveSource);
+export const SignalForms: Story = example(RadioSignalFormsExample, signalFormsSource);

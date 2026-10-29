@@ -57,6 +57,13 @@ export default defineConfig([
     },
   },
   {
+    // Docs examples are written as app code, so they use the app's `app-` prefix.
+    files: ['stories/**/examples/*.ts'],
+    rules: {
+      '@angular-eslint/component-selector': ['error', { type: 'element', prefix: 'app', style: 'kebab-case' }],
+    },
+  },
+  {
     files: ['**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
     rules: {},

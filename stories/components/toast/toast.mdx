@@ -1,283 +1,138 @@
-import { Canvas, Controls, Meta } from '@storybook/addon-docs/blocks';
+import { Meta, Canvas } from '@storybook/addon-docs/blocks';
 import * as ToastStories from './toast.stories';
 
 <Meta of={ToastStories} />
 
 # Toast
 
-A transient message pinned to a screen corner, opened from the `MudToast` service.
-Use it to confirm an action the user just took. Never use it for content the user
-must read — a toast auto-dismisses and cannot be recalled.
-
-<Canvas of={ToastStories.Playground} />
-<Controls of={ToastStories.Playground} />
-
-## Opening a toast
-
-`MudToast` is provided in root, so inject it and call `open()` — there is no
-element to place in your template:
+A short message in a corner of the screen that confirms what the user just did, such as "Saved". It
+disappears on its own, so never use it for something the user must read. There is no `<mud-toast>`
+element: inject the `MudToast` service and call `open()`.
 
 ```ts
-import { Component, inject } from '@angular/core';
-import { MudToast } from 'ngx-mud-ui/toast';
-
-@Component({
-  selector: 'app-checkout',
-  template: `<button type="button" (click)="submit()">Trimite cererea</button>`,
-})
-export class CheckoutComponent {
-  private readonly toast = inject(MudToast);
-
-  submit(): void {
-    this.toast.open({
-      variant: 'success',
-      data: { title: 'Cerere trimisă', message: 'Veți primi un e-mail de confirmare.' },
-    });
-  }
-}
+import { MUD_TOAST_DATA, MUD_TOAST_DEFAULT_OPTIONS, MudToast, MudToastRef } from 'ngx-mud-ui/toast';
 ```
-
-`open()` returns a `MudToastRef` you can keep if you need to dismiss the toast
-yourself or react to its lifecycle:
-
-```ts
-const ref = this.toast.open({ variant: 'info', duration: 0, data: { message: 'Se încarcă…' } });
-
-await this.upload();
-ref.dismiss(); // nothing auto-dismissed it, because duration was 0
-```
-
-`data.title` is optional. Without it the toast is a single compact line and the
-close button centres on that line, level with the leading icon.
-
-Toasts render through the CDK overlay, so the overlay stylesheet must be
-loaded alongside the design-system one:
-
-```ts
-import '@angular/cdk/overlay-prebuilt.css';
-```
-
-This entry point is service-only — there is no `<mud-toast>` element in your
-template to remind you — so forgetting the import has no visible cause: toasts
-still open, but render in normal document flow instead of a positioned corner.
 
 ## Variants
 
-`info` and `success` announce politely; `warning` and `error` announce assertively.
+`variant` is `info` (default), `success`, `warning` or `error`, each with its own icon. `data.message`
+is the text and `data.title` a heading; set either or both. With a single row (a title or a message
+alone) the icon and × are centred on it; with more (title and message, or actions) they sit at the
+top.
 
 <Canvas of={ToastStories.Variants} />
 
-Each variant carries its own 24×24 leading glyph, inlined into the component — no
-`provideMudIcons([...])` registration is required, and the icon renders with zero
-consumer setup. It is `aria-hidden`, because the variant is already conveyed by the
-live-region role and the message text.
+## Position and stacking
 
-The glyph is white on `info`, `success` and `error`, and `#B54708` on `warning`
-(the fill there is amber, so white would not meet contrast). In dark mode the
-warning glyph deepens to `#93370D`: the dark fill lightens, and `#B54708` against
-it measures 2.95:1, just under the 3:1 WCAG 1.4.11 floor for non-text contrast.
+`verticalPosition` is `top` (default) or `bottom`. `horizontalPosition` is `end` (default), `start`,
+`center`, `left` or `right`; `start` and `end` follow the text direction.
 
-### Replacing the icon
+The newest toast sits nearest the edge. At most three toasts show at once across all positions; the
+rest wait in a queue. `dismissAll()` closes every toast,
+including queued ones.
 
-Pass `data.icon` to swap the default glyph for your own. Render it at 24×24 —
-the surface constrains it to that box, so an oversized icon cannot break the
-layout — and use `currentColor` so it inherits the variant's icon colour:
+<Canvas of={ToastStories.Position} />
 
-```ts
-import { Component, inject, viewChild } from '@angular/core';
-import type { TemplateRef } from '@angular/core';
-import { MudToast } from 'ngx-mud-ui/toast';
+Toasts always stay above dialogs and drawers. A common flow: confirm in a dialog, then report the
+result with a toast once it closes.
 
-@Component({
-  selector: 'app-brand-toast',
-  template: `
-    <ng-template #brandGlyph>
-      <svg viewBox="0 0 24 24"><path fill="currentColor" d="…" /></svg>
-    </ng-template>
+<Canvas of={ToastStories.Dialog} />
 
-    <button type="button" (click)="save()">Salvează</button>
-  `,
-})
-export class BrandToastComponent {
-  private readonly toast = inject(MudToast);
-  private readonly brandGlyph = viewChild.required<TemplateRef<unknown>>('brandGlyph');
+## Duration and closing from code
 
-  save(): void {
-    this.toast.open({ variant: 'success', data: { message: 'Gata.', icon: this.brandGlyph() } });
-  }
-}
-```
+A toast closes after `duration` ms (default 4000). `duration: 0` keeps it until you call `dismiss()`
+on the `MudToastRef` that `open()` returns. The timer pauses while the pointer is over the toast
+(`pauseOnHover`, default `true`) and always while focus is inside it. `showCloseButton: false`
+hides the close button.
 
-`data.icon` accepts any markup, including a `<mud-icon>` if your application has
-registered that icon itself.
+<Canvas of={ToastStories.Persistent} />
 
-## Positioning and stacking
+## Actions
 
-`horizontalPosition` accepts `start | center | end | left | right` and
-`verticalPosition` accepts `top | bottom`, defaulting to `end` + `top`. `start`
-and `end` follow text direction; `left` and `right` do not.
+`data.actions` takes a template for buttons under the message. `data.title` and `data.message` can be
+templates too. Each template receives the `MudToastRef` as `let-ref`, so a button can call
+`ref.dismiss('action')`. `dismissed` emits why the toast closed: `'timeout'`, `'close-button'`,
+`'action'` or `'dismiss-all'`.
 
-The newest toast always sits nearest the anchored edge — top-anchored stacks grow
-downward, bottom-anchored stacks push older toasts up. Consecutive toasts of the
-same variant sit 8px apart; a variant change opens the gap to 18px.
+Give a toast with an action a longer `duration`. Focus never moves into a toast, so the same action
+must also be available elsewhere on the page.
 
-At most three toasts are visible at once **across all positions**; further toasts
-queue and enter as slots free.
+<Canvas of={ToastStories.Actions} />
 
-<Canvas of={ToastStories.Stacking} />
+## Custom icon and content
 
-### Above dialogs and drawers
+`data.icon` takes a template that replaces the variant's icon; draw it at 24×24 with
+`currentColor`. For a whole custom body, use `openFromComponent(Component, config)` and read `data`
+with `inject(MUD_TOAST_DATA)`. The ref's `instance` is set once `opened` emits.
 
-Toasts always stay above other overlays, such as a [Dialog](?path=/docs/components-dialog--docs)
-or a [Drawer](?path=/docs/components-drawer--docs). This holds even when the toast opened first.
-You don't need to configure anything.
+<Canvas of={ToastStories.Component} />
 
-<Canvas of={ToastStories.OverADialog} />
+## App-wide defaults
 
-### App-wide defaults
-
-`maxVisible` is the only setting that cannot be passed per toast — it comes from
-`MUD_TOAST_DEFAULT_OPTIONS`, which also defaults any `open()` field app-wide:
+Provide `MUD_TOAST_DEFAULT_OPTIONS` to change the defaults for every toast. `maxVisible` can only be
+set here. A value passed to `open()` wins over these defaults.
 
 ```ts
-import { ApplicationConfig } from '@angular/core';
-import { MUD_TOAST_DEFAULT_OPTIONS } from 'ngx-mud-ui/toast';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    {
-      provide: MUD_TOAST_DEFAULT_OPTIONS,
-      useValue: {
-        maxVisible: 5,
-        duration: 6000,
-        verticalPosition: 'bottom',
-        closeLabel: 'Închide',  // optional: unset, the app's toast.close label applies
-      },
-    },
-  ],
-};
+providers: [
+  {
+    provide: MUD_TOAST_DEFAULT_OPTIONS,
+    useValue: { maxVisible: 5, duration: 6000, verticalPosition: 'bottom' },
+  },
+];
 ```
-
-Precedence is explicit `open()` config → these app defaults → the library
-fallbacks. Nothing changes at the call site; the service reads the token itself.
-
-The close button's name also follows the app's `toast.close` label. Toasts open from the service, so they read the app-level `provideMudLabels`; a `provideMudLabels` in one component's `providers` does not reach them.
-
-<Canvas of={ToastStories.AppWideDefaults} />
-
-## Auto-dismiss
-
-`duration` defaults to 4000ms; `duration: 0` keeps the toast until it is dismissed.
-Four seconds is short for a long or actionable message — raise it when the toast
-carries a link.
-
-The timer pauses while the pointer is over the toast, which `pauseOnHover: false`
-turns off. It **also** pauses whenever focus is inside the toast, and that is not
-configurable: dismissing a toast that holds the user's focus destroys their focus
-target mid-interaction. Pausing banks the remaining time rather than restarting,
-so repeated hovering cannot keep a toast alive indefinitely.
-
-## Custom content
-
-`title`, `message` and `actions` each accept a `TemplateRef`, which receives the
-`MudToastRef` as its implicit context:
-
-```ts
-import { Component, inject, viewChild } from '@angular/core';
-import type { TemplateRef } from '@angular/core';
-import { MudToast } from 'ngx-mud-ui/toast';
-import { MudButton } from 'ngx-mud-ui/button';
-
-@Component({
-  selector: 'app-document-row',
-  imports: [MudButton],
-  template: `
-    <ng-template #undoable let-ref>
-      Document șters.
-      <button mudButton="text" (click)="restore(); ref.dismiss('action')">Anulează</button>
-    </ng-template>
-
-    <button type="button" (click)="remove()">Șterge</button>
-  `,
-})
-export class DocumentRowComponent {
-  private readonly toast = inject(MudToast);
-  private readonly undoable = viewChild.required<TemplateRef<unknown>>('undoable');
-
-  remove(): void {
-    this.toast.open({ variant: 'info', duration: 8000, data: { message: this.undoable() } });
-  }
-
-  restore(): void {
-    /* … */
-  }
-}
-```
-
-For a body that is a whole component, use `openFromComponent`. The opened
-component injects its payload from `MUD_TOAST_DATA`:
-
-```ts
-import { Component, inject, output } from '@angular/core';
-import { MUD_TOAST_DATA, MudToast } from 'ngx-mud-ui/toast';
-
-@Component({
-  selector: 'app-upload-progress-toast',
-  template: `<p>Se încarcă {{ data.fileId }}…</p>`,
-})
-export class UploadProgressToast {
-  readonly data = inject<{ fileId: string }>(MUD_TOAST_DATA);
-  readonly retry = output<void>();
-}
-
-@Component({ selector: 'app-uploader', template: `<button (click)="upload()">Încarcă</button>` })
-export class UploaderComponent {
-  private readonly toast = inject(MudToast);
-
-  upload(): void {
-    const ref = this.toast.openFromComponent(UploadProgressToast, { data: { fileId: 'f-42' }, duration: 0 });
-
-    // `instance` exists only once the toast is on screen — see below.
-    ref.opened.subscribe(() => ref.instance?.retry.subscribe(() => this.upload()));
-  }
-}
-```
-
-`ref.instance` is only populated once `opened` emits — it is `undefined` while
-the toast is queued, so guard access from inside `opened.subscribe(...)` rather
-than reading it immediately after `openFromComponent` returns.
-
-The enter/exit settling check reads `getAnimations({ subtree: true })` on the
-toast surface, so it also picks up animations running inside an
-`openFromComponent` body. An infinite CSS animation in that body (a spinner,
-say) never reaches a `finished` state, so it holds `opened` — and later that
-toast's queue slot — open for the full backstop timeout (600ms) instead of
-settling right away. Stop any looping animation once your component no longer
-needs it, rather than leaving it running for the toast's whole lifetime.
 
 ## Accessibility
 
-<table>
-  <thead>
-    <tr><th>Variant</th><th>Role</th><th>Politeness</th></tr>
-  </thead>
-  <tbody>
-    <tr><td><code>info</code>, <code>success</code></td><td><code>status</code></td><td><code>polite</code></td></tr>
-    <tr><td><code>warning</code>, <code>error</code></td><td><code>alert</code></td><td><code>assertive</code></td></tr>
-  </tbody>
-</table>
+- `info` and `success` toasts are announced politely (`role="status"`); `warning` and `error`
+  assertively (`role="alert"`).
+- `announcementMessage` announces a different text through the CDK `LiveAnnouncer` instead, when the
+  visible text isn't what a screen reader user needs to hear.
+- The close button is named "Close" (translatable), or by `closeLabel`. Toasts read the app-level
+  labels, not those of the component that opened them.
+- The icon is decorative.
 
-Setting `announcementMessage` replaces that live region: the surface drops its
-role and the string is announced through `LiveAnnouncer` instead, so nothing is
-announced twice. Use it when the visible text is not what a screen reader user
-needs to hear.
+## API
 
-Focus is never moved into a toast, and the overlay sits at the end of the
-document — so **a toast's action must never be the only route to a function.**
-Always offer the same action somewhere in the page.
+### MudToast
 
-## Subscription lifecycle
+- `open(config: MudToastConfig): MudToastRef` opens a toast with the built-in layout.
+- `openFromComponent<T, D>(component, config?: MudToastComponentConfig<D>): MudToastRef<T>` opens a
+  toast with your component as its body.
+- `dismissAll()` closes all toasts, including queued ones.
 
-`opened` emits once after the enter animation and completes; `dismissed` emits the
-reason once (`'timeout' | 'close-button' | 'action' | 'dismiss-all'`) and
-completes. Neither needs unsubscribing.
+### Config
+
+Shared by `open()`, `openFromComponent()` and `MUD_TOAST_DEFAULT_OPTIONS`:
+
+- `variant` (`MudToastVariant`, default `'info'`)
+- `duration` (`number`, default `4000`): ms before it closes; `0` never closes on its own.
+- `pauseOnHover` (`boolean`, default `true`)
+- `horizontalPosition` (`MudToastHorizontalPosition`, default `'end'`)
+- `verticalPosition` (`MudToastVerticalPosition`, default `'top'`)
+- `showCloseButton` (`boolean`, default `true`)
+- `closeLabel` (`string`): accessible name of the close button.
+- `announcementMessage` (`string`): text to announce instead of the toast's content.
+
+`open()` also takes `data: MudToastData`:
+
+- `message` (`string | TemplateRef`): the text. Optional when `title` is set.
+- `title` (`string | TemplateRef`): a heading.
+- `actions` (`TemplateRef`)
+- `icon` (`TemplateRef`)
+
+`openFromComponent()` takes `data` (any value, read with `MUD_TOAST_DATA`). `MUD_TOAST_DEFAULT_OPTIONS`
+also takes `maxVisible` (`number`, default `3`).
+
+### MudToastRef&lt;T&gt;
+
+- `opened` (`Observable<void>`): emits once the toast is on screen, then completes.
+- `dismissed` (`Observable<MudToastDismissReason>`): emits the reason once, then completes.
+- `instance` (`T | undefined`): the component from `openFromComponent`, once `opened` has emitted.
+- `dismiss(reason?: MudToastDismissReason)`: closes the toast (default reason `'action'`).
+
+### Types
+
+- `MudToastVariant`: `'info' | 'warning' | 'success' | 'error'`
+- `MudToastHorizontalPosition`: `'start' | 'center' | 'end' | 'left' | 'right'`
+- `MudToastVerticalPosition`: `'top' | 'bottom'`
+- `MudToastDismissReason`: `'timeout' | 'close-button' | 'action' | 'dismiss-all'`

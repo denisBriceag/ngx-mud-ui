@@ -49,11 +49,13 @@ export class MudSwitch implements ControlValueAccessor, FormCheckboxControl {
   /** @description On/off state. Two-way bindable; also driven by both forms systems. */
   readonly checked = model(false);
 
+  /** @description Disables the switch. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
 
   /** @description Adds the native `required` attribute (the switch must be on). */
   readonly required = input(false, { transform: booleanAttribute });
 
+  /** @description Native `name` attribute. */
   readonly name = input<string>('');
 
   /** @description Accessible name when no visible label is rendered. */
@@ -65,7 +67,7 @@ export class MudSwitch implements ControlValueAccessor, FormCheckboxControl {
   /** @description Id(s) of external descriptive text for the native control. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
-  /** Signal-forms touch contract: emitted when focus leaves the control. */
+  /** @description Fires when focus leaves the field; signal forms use it to mark the field touched. */
   readonly touch = output<void>();
 
   private readonly _native = viewChild.required<ElementRef<HTMLInputElement>>('native');

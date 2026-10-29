@@ -18,6 +18,7 @@ import { Subject } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MudStep extends CdkStep {
+  /** @description Second line under the label; a blocked step shows its `errorMessage` instead. */
   readonly supportingText = input<string | undefined>(undefined);
 
   /** @docs-private Fires when `stepControl` is rebound, so the stepper re-watches it. */

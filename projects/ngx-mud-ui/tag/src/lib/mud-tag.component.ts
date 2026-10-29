@@ -29,12 +29,15 @@ declare const ngDevMode: boolean | undefined;
   },
 })
 export class MudTag {
+  /** @description Color; `info` doesn't support the `outlined` type. */
   readonly color = input<MudTagColor>('neutral');
+  /** @description `subtle` (tinted), `strong` (filled) or `outlined`. */
   readonly type = input<MudTagType>('subtle');
+  /** @description Height and text size. */
   readonly size = input<MudTagSize>('medium');
-  /** Visual-only disabled design; the owning container announces the state. */
+  /** @description Greys the tag out (visual only); the owning row or control announces the state. */
   readonly disabled = input(false, { transform: booleanAttribute });
-  /** Accessible name; when set the tag becomes a polite live region (role="status"). */
+  /** @description Accessible name; when set the tag becomes a polite live region (`role="status"`). */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
   private readonly _effectiveType = computed<MudTagType>(() => {

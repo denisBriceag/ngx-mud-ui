@@ -6,102 +6,83 @@ import { MudTab } from 'ngx-mud-ui/tabs';
 
 # Tabs
 
-A tabbed panel set. `mud-tab-group` owns the selection and the keyboard
-behaviour; each `mud-tab` contributes a label and its content. Tab content is
-lazily attached, so panels are not rendered until first shown.
-
-## Import
+Splits content into panels, one visible at a time. `mud-tab-group` holds the selection and keyboard
+handling; each `mud-tab` has a label and its content.
 
 ```ts
-import { MudTab, MudTabGroup } from 'ngx-mud-ui/tabs';
-
-@Component({
-  imports: [MudTab, MudTabGroup],
-  template: `
-    <mud-tab-group [(selectedIndex)]="index" (selectedTabChange)="onChange($event)">
-      <mud-tab label="Overview">…</mud-tab>
-      <mud-tab label="Details" [disabled]="true">…</mud-tab>
-    </mud-tab-group>
-  `,
-})
-export class Demo {}
+import { MudTab, MudTabGroup, MudTabLabel } from 'ngx-mud-ui/tabs';
 ```
 
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
+<Canvas of={TabsStories.Playground} />
+<Controls of={TabsStories.Playground} />
 
 ## Basic
 
+Give each tab a `label`, and name the group with `aria-label` or `aria-labelledby`. `selectedIndex`
+is two-way bindable, for example to sync tabs with the URL. `selectedTabChange` emits `{ index, tab }`.
+
+Every panel is rendered when the group is created; inactive ones are hidden. Use `@if` or `@defer`
+inside a tab to load heavy content only when it's needed.
+
 <Canvas of={TabsStories.Basic} />
-<Controls of={TabsStories.Basic} />
 
-## Stretched
+## Stretched and small
 
-<Canvas of={TabsStories.Stretched} />
+`stretchTabs` spreads the tabs across the full width. `size` is `md` (default) or `sm`.
 
-## Overflowing
+<Canvas of={TabsStories.Sizes} />
 
-<Canvas of={TabsStories.Overflowing} />
+## Icons, counts and disabled tabs
 
-## Icons and counters
+For a label with an icon or other markup, put an `<ng-template mudTabLabel>` in the tab instead of
+`label`. `badgeCount` shows a count after the label; it shows `0` too, so use `null` to hide it.
 
-<Canvas of={TabsStories.WithIconsAndCounters} />
+A `disabled` tab can't be selected, and the keyboard skips it. If the first tab is disabled, the
+first enabled tab is selected.
 
-## Disabled tabs
+<Canvas of={TabsStories.Labels} />
 
-<Canvas of={TabsStories.DisabledTabs} />
+## Many tabs
 
-## Interactive
+When the tabs don't fit, the header scrolls and shows arrow buttons at the edges.
 
-<Canvas of={TabsStories.Interactive} />
+<Canvas of={TabsStories.Overflow} />
 
-## Badges
+## Controlling from code
 
-<Canvas of={TabsStories.WithBadges} />
+Change `selectedIndex` to switch tabs, as in this step flow. `focusTab(index)` moves keyboard focus
+to a tab, and `selectTab(index)` selects one.
+
+<Canvas of={TabsStories.Controlled} />
+
+## Accessibility
+
+- The tabs follow the ARIA tabs pattern (`tablist`, `tab`, `tabpanel`).
+- <kbd>←</kbd> <kbd>→</kbd> (or <kbd>↑</kbd> <kbd>↓</kbd>), <kbd>Home</kbd> and <kbd>End</kbd> move
+  to another tab and select it.
+- If a panel has nothing focusable in it, set `contentTabIndex` to `0` so keyboard users can reach
+  its content.
 
 ## API
 
-### `MudTabGroup`
+### MudTabGroup
 
 Selector: `mud-tab-group`
 
 <ArgTypes of={TabsStories} />
 
-### `MudTab`
+Methods: `selectTab(index)`, `focusTab(index)`.
+
+### MudTab
 
 Selector: `mud-tab`
 
 <ArgTypes of={MudTab} />
 
-### `MudTabLabel`
+### MudTabLabel
 
-Selector: `[mudTabLabel]`
+Selector: `ng-template[mudTabLabel]`, inside a `mud-tab`: a custom label.
 
-For a label richer than plain text, project an `ng-template` instead of setting
-the `label` input:
+### Types
 
-```html
-<mud-tab>
-  <ng-template mudTabLabel>
-    <mud-icon name="alarm" /> Alerts
-  </ng-template>
-  …content…
-</mud-tab>
-```
-
-## Usage tips
-
-- **Name the group.** Set `aria-label` or `aria-labelledby` on `mud-tab-group`
-  so the tab list is announced with a purpose rather than as an anonymous set.
-- **`badgeCount` shows at zero.** Any value `>= 0` renders the pill, so use
-  `null` — not `0` — to hide it. A visible `0` badge is usually a bug.
-- **`selectedIndex` is two-way bindable**, which is how you drive tabs from a
-  route or restore a remembered position.
-- **`selectedTabChange` fires with a `MudTabChangeEvent`** carrying the index and
-  the tab instance, so you can act on identity rather than position.
-- **`contentTabIndex` controls whether the panel itself is focusable.** Leave it
-  `null` unless the panel has no focusable content of its own, in which case `0`
-  keeps keyboard users from being stranded on the tab list.
+- `MudTabChangeEvent`: `{ index: number; tab: MudTab }`

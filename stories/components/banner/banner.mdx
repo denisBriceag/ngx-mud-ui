@@ -5,43 +5,13 @@ import * as BannerStories from './banner.stories';
 
 # Banner
 
-A full-width, top-of-page system message: scheduled maintenance, outages,
-announcements. Persistent and non-contextual — it draws attention without
-blocking interaction and stays until dismissed or resolved.
-
-Pick the right one of the three message components:
-
-<table>
-  <thead>
-    <tr><th>Component</th><th>Use it for</th></tr>
-  </thead>
-  <tbody>
-    <tr><td><code>mud-banner</code></td><td>Full-width system message at the top of the page</td></tr>
-    <tr><td><code>mud-inline-message</code></td><td>A short message attached to a form control</td></tr>
-    <tr><td><code>MudToast</code></td><td>A transient confirmation in the corner (service-only — no element)</td></tr>
-  </tbody>
-</table>
-
-## Import
+A full-width system message at the top of the page: maintenance, outages, announcements. It doesn't
+block the page and stays until it's dismissed or the condition ends. For a message about one form
+field use [Inline message](?path=/docs/components-inline-message--docs); for a short confirmation
+such as "Saved" use [Toast](?path=/docs/components-toast--docs).
 
 ```ts
 import { MudBanner } from 'ngx-mud-ui/banner';
-
-@Component({
-  imports: [MudBanner],
-  template: `
-    <mud-banner variant="warning" closable (closed)="hide()">
-      Scheduled maintenance tonight 22:00–00:00.
-    </mud-banner>
-  `,
-})
-export class Demo {}
-```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
 ```
 
 <Canvas of={BannerStories.Playground} />
@@ -49,137 +19,62 @@ The base stylesheet must be in your app's `angular.json` `styles` once:
 
 ## Variants and types
 
-Three variants — `info`, `warning`, `error`. There is deliberately no
-`success`: a banner reports a system condition, not the outcome of an action.
-
-Two types — `subtle` (tinted surface) and `strong` (filled surface with
-on-colour text).
+`variant` is `info` (default), `warning` or `error`. There is no `success`: a banner reports a
+system condition, not the result of an action. `type` is `subtle` (default, tinted) or `strong`
+(filled).
 
 <Canvas of={BannerStories.Variants} />
 
-Each variant renders a default glyph, but the icon slot is projection, not a
-fixed asset — project your own `<svg>` or `<mud-icon>` as the first child to
-replace it:
+## Custom icon
 
-```html
-<mud-banner variant="error">
-  <mud-icon name="alarm" />
-  Payments are currently unavailable.
-</mud-banner>
-```
+Each variant has its own icon. To replace it, project a `<mud-icon>` or `<svg>` as the first child.
 
-## Announcing the banner
+<Canvas of={BannerStories.Icon} />
 
-By default a banner is **not** an ARIA live region. A banner that is already on
-the page at load would otherwise interrupt the screen reader mid-read, and an
-assertive one would cut off whatever was being announced.
+## Links and actions
 
-`live` announces the message when it **changes while the banner is already on
-screen**. That is the case it covers, and the only one it covers reliably:
+The message is your content, so a link inside it can be an `href` or a `routerLink`. Links with
+the `actions` attribute sit after the message; on phones they wrap under it. On `strong` banners,
+links take the banner's text color.
 
-- a session countdown — "Your session expires in 5 minutes" → "in 2 minutes"
-- a connection banner that stays put and updates as connectivity changes
-- a persistent status bar flipping "All systems normal" → "Payments degraded"
-
-```html
-<!-- rendered from the start; only the text changes -->
-<mud-banner variant="error" live>{{ systemStatus() }}</mud-banner>
-```
-
-With `live` set, `info` announces politely (`role="status"`) and `warning` /
-`error` announce assertively (`role="alert"`).
-
-Leave it off for anything simply *there* when the page renders — a
-scheduled-maintenance notice, a standing announcement. Those are read in normal
-document order, which is what you want.
-
-Two things that are not banners at all: a message about one form field belongs
-in `mud-inline-message`, and a transient confirmation like "Saved" belongs in a
-toast.
-
-With `live` set, `info` announces politely (`role="status"`) and `warning` /
-`error` announce assertively (`role="alert"`).
-
-When `live` is **not** set, giving the banner an `aria-label` puts a `region`
-role on the host so it becomes a navigable landmark — an `aria-label` alone,
-without a role, is ignored by assistive technology. With `live` set, the role is
-`status` or `alert` as above, and the label names that live region instead.
-
-### What `live` will not do
-
-It will not announce a banner that **appears**. A live region has to be in the
-accessibility tree before its content changes, so mounting an already-populated
-banner is not a content change and announces nothing:
-
-```html
-<!-- announces nothing — the region and its text arrive in the same mutation -->
-@if (outage()) {
-  <mud-banner variant="error" live>Payments are unavailable.</mud-banner>
-}
-```
-
-MDN says this plainly of `role="alert"`: *"Do not try to dynamically
-add/generate an element with `role="alert"` that is already populated with the
-alert message you want announced — this generally does not lead to an
-announcement, as it is not a content change."*
-
-So if what you need announced is the **arrival** of a message, do not reach for
-`live`. Keep a live region of your own in the layout from first render, write
-into it when the condition occurs, and let the banner be purely visual. `live`
-is for a banner that is already there and whose text moves.
-
-## Localization
-
-The banner owns exactly one string, the dismiss button's accessible name. It
-comes from the `banner.close` label (English `Close`), so a language pack from
-`provideMudLabels` translates it. To override one banner:
-
-```html
-<mud-banner closable closeLabel="Închide">…</mud-banner>
-```
-
-A blank or whitespace `closeLabel` falls back to the label rather than leaving
-the button unnamed. See the [Localization guide](?path=/docs/foundations-localization--docs). Everything else the banner
-renders is your projected content, so it is already in your language.
-
-## Links
-
-The message is projected, so put whatever you need inside — including a
-`routerLink`, which a text-plus-href API could not express.
-
-<Canvas of={BannerStories.WithLink} />
-
-## Actions
-
-To put links after the message rather than inside it, mark each one with the
-`actions` attribute. The first link's text starts 8px after the message. Each
-link keeps its own padded click area, and the click areas sit 12px apart. On
-phones the links follow the message, and move under it when the line is full.
-
-```html
-<mud-banner variant="info" type="strong">
-  A new version of the portal is available.
-  <a actions mudLink routerLink="/news">What changed</a>
-</mud-banner>
-```
-
-On strong banners, links take the banner's text colour: white on blue and red,
-dark on amber. The underline still marks them as links. This applies to links
-inside the message too, so you never set a colour yourself.
-
-<Canvas of={BannerStories.WithActions} />
+<Canvas of={BannerStories.Links} />
 
 ## Dismissing
 
-`closable` renders a close button that emits `closed`. **The banner does
-not remove itself** — you own that, so it composes with `@if` in your template.
+`closable` adds a close button that emits `closed`. The banner doesn't remove itself: hide it in
+your template, as here.
 
 <Canvas of={BannerStories.Closable} />
 
-The close button's visible size is 24×24, with a hit area of 32×32 that grows to
-40×40 on coarse-pointer devices. Only the invisible hit area changes, so there is
-no visual jump between pointer types.
+## Announcing changes
+
+A banner isn't announced by default, so one that's on the page at load doesn't interrupt the
+screen reader. `live` announces the text **when it changes while the banner is on screen**, such
+as this session countdown: politely for `info` (`role="status"`), assertively for `warning` and
+`error` (`role="alert"`).
+
+`live` doesn't announce a banner that _appears_: a live region must exist before its content
+changes. To announce a new message, keep your own live region in the layout and write into it.
+
+<Canvas of={BannerStories.Live} />
+
+## Accessibility
+
+- Without `live`, an `aria-label` turns the banner into a named `region` landmark. With `live`, it
+  names the live region.
+- The close button is named "Close" (translatable, see
+  [Localization](?path=/docs/foundations-localization--docs)), or `closeLabel` for one banner.
+- The close button looks 24×24 but its hit area is 32×32, and 40×40 on touch screens.
 
 ## API
 
+Selector: `mud-banner`
+
 <ArgTypes of={BannerStories} />
+
+Content slots: an optional icon as the first child, the message, and `[actions]` links.
+
+### Types
+
+- `MudBannerVariant`: `'info' | 'warning' | 'error'`
+- `MudBannerType`: `'subtle' | 'strong'`

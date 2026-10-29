@@ -5,6 +5,7 @@ import {
   computed,
   contentChild,
   contentChildren,
+  effect,
   forwardRef,
   inject,
   input,
@@ -64,7 +65,9 @@ export class MudSearchInput implements ControlValueAccessor, FormValueControl<st
   /** @description Silhouette: rectangular (8px radius) or circular (pill). */
   readonly shape = input<MudSearchInputShape>('rectangular');
 
+  /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
+  /** @description Adds the red asterisk to the label and the native `required` attribute. */
   readonly required = input(false, { transform: booleanAttribute });
 
   /** @description Read-only: the field stays focusable and copyable. */
@@ -97,10 +100,15 @@ export class MudSearchInput implements ControlValueAccessor, FormValueControl<st
   /** @description Current value. Two-way bindable; also driven by both forms systems. */
   readonly value = model('');
 
+  /** @description Native `name` attribute. */
   readonly name = input<string>('');
+  /** @description Native `placeholder`. Don't use it in place of a label. */
   readonly placeholder = input<string | undefined>(undefined);
+  /** @description Native `autocomplete`. */
   readonly autocomplete = input<string | undefined>(undefined);
+  /** @description Native `minlength`. */
   readonly minLength = input<number | undefined>(undefined);
+  /** @description Native `maxlength`. */
   readonly maxLength = input<number | undefined>(undefined);
 
   /** @description Accessible name used when no `mud-label` is projected. */
@@ -109,13 +117,13 @@ export class MudSearchInput implements ControlValueAccessor, FormValueControl<st
   /** @description Extra id(s) merged into the native control's aria-describedby. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
-  /** Fired on Enter or the submit button, with the current query. */
+  /** @description Fires on Enter or the submit button, with the current query. */
   readonly searched = output<string>();
 
-  /** Fired after the clear affordance empties the field. */
+  /** @description Fires after the clear button empties the field. */
   readonly cleared = output<void>();
 
-  /** Signal-forms touch contract: emitted when focus leaves the control. */
+  /** @description Fires when focus leaves the field; signal forms use it to mark the field touched. */
   readonly touch = output<void>();
 
   private readonly _native = viewChild.required<ElementRef<HTMLInputElement>>('native');
@@ -199,6 +207,14 @@ export class MudSearchInput implements ControlValueAccessor, FormValueControl<st
 
   constructor() {
     inject(MudStyleLoader).load(_MudInputFieldStyles);
+
+    // Writes only on a real change: Chrome moves the caret to the end even when the value is unchanged.
+    effect(() => {
+      const value = this.value();
+      const native = this._native().nativeElement;
+
+      if (native.value !== value) native.value = value;
+    });
   }
 
   writeValue(value: string | null | undefined): void {

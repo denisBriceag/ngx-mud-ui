@@ -60,7 +60,9 @@ export class MudSegment<T = unknown> {
   private readonly _group = inject<MudSegmentedControl<T>>(forwardRef(() => MudSegmentedControl));
   private readonly _elementRef = inject<ElementRef<HTMLButtonElement>>(ElementRef);
 
+  /** @description The value this segment selects. */
   readonly value = input.required<T>();
+  /** @description Disables this segment. */
   readonly disabled = input(false, { transform: booleanAttribute });
 
   protected readonly _selected = computed(() => this._group._isSelected(this));
@@ -131,16 +133,23 @@ export class MudSegmentedControl<T = unknown>
 
   readonly segments = contentChildren<MudSegment<T>>(MudSegment);
 
+  /** @description Accessible name of the group. Set it, or `aria-labelledby`: the control has no visible label. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
+  /** @description Id of an element that names the group. */
   readonly ariaLabelledby = input<string | undefined>(undefined, { alias: 'aria-labelledby' });
+  /** @description Disables every segment. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
+  /** @description Stretches the control and its segments to the container width, for phones. */
   readonly fullWidth = input(false, { transform: booleanAttribute });
+  /** @description Height and text size. */
   readonly size = input<MudSegmentedControlSize>('medium');
+  /** @description The selected segment's value. Two-way bindable; also driven by both forms systems. */
   readonly value = model<T | undefined>(undefined);
 
+  /** @description Fires when the user selects a segment, with its value and the segment. */
   readonly selectionChange = output<MudSegmentedControlChange<T>>();
 
-  /** Signal-forms touch contract: emitted when focus leaves the group. */
+  /** @description Fires when focus leaves the group; signal forms use it to mark the field touched. */
   readonly touch = output<void>();
 
   private readonly _cvaDisabled = signal(false);

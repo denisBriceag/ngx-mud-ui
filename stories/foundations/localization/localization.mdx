@@ -5,39 +5,21 @@ import * as LocalizationStories from './localization.stories';
 
 # Localization
 
-Every text the library puts on screen, or says to a screen reader, can be translated. This
-covers button names, announcements, empty states and the month names in a calendar. English is the
-default. Romanian and Russian packs ship with the library, and you can supply your own words or
-connect your translation library.
+Every text the library shows, or says to a screen reader, can be translated: button names,
+announcements, empty states, month names. English is the default. **Romanian and Russian packs
+ship with the library**, and you can override any word or plug in your own translation library.
 
-Use the buttons to switch the language of everything below. The banner message, the field labels and
-the city names are the demo's own texts, translated by the demo the way your app would. The library's
-texts switch on their own: open the "Locality" list to see its empty message, open the calendar, or
-look at the file size and the page buttons. Some library texts are only heard, such as the banner's
-"Close" button and the file's "Remove file" button.
+Switch the language below. The field labels, banner message and city names are the demo's own
+texts. Everything else, including what only a screen reader hears, comes from the library. Open the
+"Locality" list or the calendar to see more.
 
 <Canvas of={LocalizationStories.LanguageSwitcher} />
 
-## What the library translates
+## Quick start
 
-The library translates the text it owns:
-
-- **Accessible names** of its own buttons, such as "Close", "Clear" and "Next month".
-- **Announcements** read by screen readers, such as "3 files added".
-- **Built-in messages**, such as "No results" in a select.
-- **Formats**: month and weekday names, number formats, file sizes and page numbers.
-
-Everything you put in is yours to translate: projected `<mud-label>` and `<mud-inline-message>`
-content, placeholders, option labels, table headers, dialog and toast content, and any `aria-label`
-you set yourself.
-
-## Choosing a language pack
-
-Add the pack for your language once, in your application config. Each pack is a complete set of
-texts.
+Add a pack and a formatting locale once, in your application config:
 
 ```ts
-import { bootstrapApplication } from '@angular/platform-browser';
 import { MUD_LABELS_RO, provideMudFormatLocale, provideMudLabels } from 'ngx-mud-ui/i18n';
 
 bootstrapApplication(App, {
@@ -45,16 +27,24 @@ bootstrapApplication(App, {
 });
 ```
 
-The library ships `MUD_LABELS_EN`, `MUD_LABELS_RO` and `MUD_LABELS_RU`. You don't need the English
-pack, because English is what you get without one.
+Set **both**. A pack changes words only, and the locale changes formats only (dates, numbers, file
+sizes). The packs are `MUD_LABELS_EN`, `MUD_LABELS_RO` and `MUD_LABELS_RU`; you never need the
+English one, since it's the default.
 
-A pack changes words only. Dates, numbers and sizes follow the formatting locale, so set that too.
-See [Dates, numbers and the formatting locale](#dates-numbers-and-the-formatting-locale).
+## Who translates what
+
+**The library** translates the text it owns: the accessible names of its own buttons ("Close",
+"Next month"), screen-reader announcements ("3 files added"), built-in messages ("No results"), and
+formats such as month names, numbers and file sizes.
+
+**You** translate everything you put in: projected `<mud-label>` and `<mud-inline-message>`
+content, placeholders, option labels, table headers, dialog and toast content, and any `aria-label`
+you set yourself.
 
 ## Changing a few words
 
-`provideMudLabels` takes any number of arguments and merges them from left to right, one namespace
-at a time. Put a pack first, then the keys you want to change.
+`provideMudLabels` merges its arguments from left to right, one namespace at a time. Put a pack
+first, then only the keys you change:
 
 ```ts
 provideMudLabels(MUD_LABELS_RO, {
@@ -63,26 +53,21 @@ provideMudLabels(MUD_LABELS_RO, {
 });
 ```
 
-List only the keys you change. A key you leave out keeps the value from the arguments before it,
-and then the English text. A text that carries a value, like the page number above, is a function
-that receives that value and returns the text.
+A text that carries a value, like the page number above, is a function. Every key, with its text
+in all three languages, is in the [label reference](#label-reference) at the bottom of this page.
 
-Call `provideMudLabels` once per injector (one `providers` array) and pass everything as arguments. A
-second call in the same `providers` array replaces the first instead of merging with it.
-
-Each namespace is named after its component, for example `banner`, `datePicker` or `fileInput`.
-[Every key per component](#every-key-per-component) lists them all.
+Call `provideMudLabels` once per `providers` array and pass everything as arguments. A second call
+in the same array replaces the first instead of merging with it.
 
 ## Using your translation library
 
-`provideMudLabels` also accepts a function. The function runs in an injection context, so it can
-`inject()` your translation service. Return a signal and the library re-reads it when the language
-changes.
+`provideMudLabels` also takes a function that runs in an injection context, so it can `inject()`
+your translation service. Return a signal and the library re-reads it when the language changes.
 
 **Transloco**
 
 ```ts
-provideMudLabels(() => {
+provideMudLabels(MUD_LABELS_RO, () => {
   const transloco = inject(TranslocoService);
   const lang = toSignal(transloco.langChanges$, { initialValue: transloco.getActiveLang() });
 
@@ -100,7 +85,7 @@ provideMudLabels(() => {
 **ngx-translate**
 
 ```ts
-provideMudLabels(() => {
+provideMudLabels(MUD_LABELS_RO, () => {
   const translate = inject(TranslateService);
   const lang = toSignal(translate.onLangChange.pipe(map((event) => event.lang)), {
     initialValue: translate.currentLang,
@@ -117,7 +102,7 @@ provideMudLabels(() => {
 });
 ```
 
-**Angular i18n (`$localize`)** builds one bundle per language, so a plain object is enough.
+**Angular i18n (`$localize`)** builds one bundle per language, so a plain object is enough:
 
 ```ts
 provideMudLabels({
@@ -126,20 +111,15 @@ provideMudLabels({
 });
 ```
 
-To keep the library's packs for the keys you don't translate, put a pack first:
-`provideMudLabels(MUD_LABELS_RO, () => …)`. Later arguments win.
+In the Transloco and ngx-translate examples, the pack in front supplies every key you don't
+translate yourself. Put one in front of the `$localize` object too if you only translate some keys.
 
 ## Switching language at runtime
 
-Pass a signal, or a function that returns one, to both `provideMudLabels` and
-`provideMudFormatLocale`. Every component on screen updates at once, with no per-component wiring.
+Pass a signal (or a function returning one) to both providers. Every component on screen updates at
+once. This is exactly what the demo above does.
 
 ```ts
-@Injectable({ providedIn: 'root' })
-export class LanguageService {
-  readonly lang = signal<'en' | 'ro' | 'ru'>('en');
-}
-
 const LOCALES = { en: 'en-US', ro: 'ro-MD', ru: 'ru-RU' } as const;
 
 bootstrapApplication(App, {
@@ -158,13 +138,13 @@ bootstrapApplication(App, {
 });
 ```
 
-The demo at the top of this page does the same with one signal inside the component's `providers`.
 An empty object means "no overrides", so English applies.
 
-## A different language in one part of the app
+## One section in another language
 
-Add `provideMudLabels` to the `providers` of one component and its subtree reads those texts. The
-nested provider merges onto its parent, so you only list what differs.
+Providers nest. Add them to one component and its subtree, including its overlays (select panels,
+calendars, tooltips, menus), uses those texts. A nested `provideMudLabels` merges onto its parent,
+so list only what differs.
 
 ```ts
 @Component({
@@ -175,261 +155,43 @@ nested provider merges onto its parent, so you only list what differs.
 export class RussianSection {}
 ```
 
-The component's own overlays follow it: a select's panel, the calendar, a tooltip, a menu and the
-phone input's country list.
-
-**Toasts and dialogs are the exception.** They open from a service, so they read the app-level
-`provideMudLabels`, not a component's. To name the close button of one toast or dialog, pass
-`closeLabel` in its config.
+> **Toasts and dialogs are the exception.** They open from a service, so they read the app-level
+> labels. To rename one toast's or dialog's close button, pass `closeLabel` in its config.
 
 ## One instance
 
-Most texts also have an input, so one field can say something different. An input always beats the
-labels.
+Most texts also have an input that beats the labels for that one component:
 
 ```html
 <mud-banner closable closeLabel="Ascunde">…</mud-banner>
 ```
 
-- **Blank means unset.** An empty string, or only spaces, falls back to the labels, so a button is
+- **Blank means unset.** An empty or whitespace-only value falls back to the labels, so a button is
   never left without a name.
-- **Two texts keep the empty string.** `notificationLabel=""` on a badge makes the dot decorative,
-  with no role and no name. `fileListLabel=""` on a file input leaves the file list unnamed.
-- **A text that carries a value is a function.** `removeLabel` on a chip, an input chip, a file
-  input and a file item, `cancelLabel` on a file item, and `countryLabel(name, dialCode)` on a
-  phone input all take one. `formatsCaption` on a file input receives the list of formats as a
-  `readonly string[]`.
-
-```ts
-readonly removeLabel = (name: string): string => `Elimină ${name}`;
-```
-
-```html
-<mud-chip type="input" removable [removeLabel]="removeLabel" label="Ana Rusu">Ana Rusu</mud-chip>
-```
+- **Two inputs keep the empty string on purpose.** `notificationLabel=""` on a badge makes the dot
+  decorative; `fileListLabel=""` on a file input leaves the file list unnamed.
+- **Texts that carry a value take a function**, the same shape as the label key: `removeLabel` on
+  chips, input chips and file items, `cancelLabel` on a file item, `countryLabel(name, dialCode)` on
+  a phone input, `formatsCaption(formats)` on a file input.
 
 ## Dates, numbers and the formatting locale
 
-Formatting is separate from the words. A format locale decides month and weekday names, number
-digits and separators, file sizes, page numbers, the badge's "99+" and the counters in text fields.
-Each component looks for it in this order:
+The formatting locale decides month and weekday names, digits and separators, file sizes, page
+numbers, the badge's "99+" and text-field counters. Each component uses the first one it finds:
 
-1. The component's own `locale` input, on the components that have one.
-2. `provideMudFormatLocale(...)`.
+1. Its own `locale` input, on components that have one.
+2. The nearest `provideMudFormatLocale(...)`.
 3. Angular's `LOCALE_ID`.
 
-```ts
-provideMudFormatLocale('ro-MD');
-```
+An invalid or blank locale tag is ignored and the next one down applies.
 
-A language pack never changes formatting, and a format locale never changes words. Set both. An
-invalid or blank locale tag is ignored. A nested `provideMudFormatLocale` then falls back to the
-locale of the provider above it, and the root one falls back to `LOCALE_ID`.
+The numeric input groups digits (`1.250,5`) only when its own `locale` input is set. Without it, it
+uses the formatting locale's decimal style (`1250,5`) without grouping.
 
-The numeric input needs care. It groups digits (`1.250,5`) only when its own `locale` input is set.
-Without it, it shows the number in the format locale's decimal style (`1250,5`) and reads that
-locale's own digits back.
+## Label reference
 
-## Every key per component
+Every text in `MudLabels`, generated from the shipped packs. Values in a function's text are sample
+arguments. A dash means the pack doesn't set that key: the month-name lists are optional, and when
+they're unset the names come from the formatting locale.
 
-This is every text in `MudLabels`, with the English value. A name in braces, such as `{name}`, marks where a value goes.
-Functions receive the values named at the end of each line.
-
-### Avatar
-
-Namespace `avatar`.
-
-- `initials`: `Avatar for {initials}` (function of `initials`)
-- `fallback`: `User avatar`
-
-### Badge
-
-Namespace `badge`.
-
-- `notification`: `Notification`
-
-### Banner
-
-Namespace `banner`.
-
-- `close`: `Close`
-
-### Breadcrumb
-
-Namespace `breadcrumb`.
-
-- `navigation`: `Breadcrumb`
-- `overflow`: `Show collapsed pages`
-
-### Chip
-
-Namespace `chip`.
-
-- `remove`: `Remove {label}` (function of `label`)
-
-### Date picker
-
-Namespace `datePicker`.
-
-- `calendar`: `Calendar`
-- `previousMonth`: `Previous month`
-- `nextMonth`: `Next month`
-- `previousYear`: `Previous year`
-- `nextYear`: `Next year`
-- `chooseMonth`: `{month}, Choose month` (function of `month`)
-- `chooseYear`: `{year}, Choose year` (function of `year`)
-- `today`: `Today`
-- `clear`: `Clear`
-- `rangeStart`: `Start date`
-- `rangeEnd`: `End date`
-- `formatHint`: `Date format: {pattern}` (function of `pattern`)
-- `monthChanged`: `{monthYear}` (function of `monthYear`)
-- `rangeStartSelected`: `{start} selected, choose end date` (function of `start`)
-- `rangeSelected`: `{start} to {end} selected` (function of `start`, `end`)
-- `monthNamesShort` and `monthNamesLong`: optional lists of 12 names, January first. Unset, the names come from Intl. They are the only pack keys that override Intl's month names; everything else that is formatted (dates, numbers, country names) comes from the formatting locale.
-
-### Dialog
-
-Namespace `dialog`.
-
-- `close`: `Close`
-
-### File input
-
-Namespace `fileInput`.
-
-- `cta`: `Drag and drop or`
-- `chooseFiles`: `Choose files`
-- `dropzoneActive`: `Release to upload`
-- `fileList`: `Selected files`
-- `required`: `required`
-- `formats`: `Accepted formats: {formats}` (function of `formats`)
-- `maxSize`: `Max size: {size}` (function of `size`)
-- `added`: `{name} added` for one file, `{count} files added` for several (function of the `names` list)
-- `removed`: `{name} removed` (function of `name`)
-- `rejected`: `{name} was rejected` (function of `name`)
-
-### File item
-
-Namespace `fileItem`.
-
-- `remove`: `Remove file {filename}` (function of `filename`)
-- `cancel`: `Cancel upload {filename}` (function of `filename`)
-
-### File size
-
-Namespace `fileSize`.
-
-- `units`: `B`, `KB`, `MB`, `GB`, `TB`
-
-### Info box
-
-Namespace `infoBox`.
-
-- `close`: `Close`
-
-### Input chip
-
-Namespace `inputChip`.
-
-- `remove`: `Remove {chip}` (function of `chip`)
-- `added`: `{chip} added` (function of `chip`)
-- `removed`: `{chip} removed` (function of `chip`)
-- `rejectedPattern`: `{value} is not in the expected format` (function of `value`)
-- `rejectedDuplicate`: `{value} is already added` (function of `value`)
-- `rejectedMax`: `Maximum number of values reached`
-
-### Numeric input
-
-Namespace `numericInput`.
-
-- `increment`: `Increase`
-- `decrement`: `Decrease`
-- `clear`: `Clear`
-
-### Pagination
-
-Namespace `pagination`.
-
-- `navigation`: `Pagination`
-- `previous`: `Previous`
-- `next`: `Next`
-- `previousAria`: `Previous page, go to page {page}` (function of `page`)
-- `nextAria`: `Next page, go to page {page}` (function of `page`)
-- `pageAria`: `Page {page} of {total}` (function of `page`, `total`)
-- `overflowAria`: `Show pages {from} to {to}` (function of `from`, `to`)
-
-### Phone input
-
-Namespace `phoneInput`.
-
-- `clear`: `Clear`
-- `country`: `Country: {name} {dialCode}` (function of `name`, `dialCode`)
-- `countryList`: `Country` (the name of the country listbox; per field: `countryListLabel`)
-- `countrySearch`: `Search country`
-- `countryEmpty`: `No countries found`
-
-### Search input
-
-Namespace `searchInput`.
-
-- `submit`: `Search`
-- `clear`: `Clear`
-
-### Select input
-
-Namespace `selectInput`.
-
-- `options`: `Options`
-- `empty`: `No options`
-- `noResults`: `No results`
-- `loading`: `Loading…`
-
-### Spinner
-
-Namespace `spinner`.
-
-- `loading`: `Loading`
-
-### Stepper
-
-Namespace `stepper`.
-
-- `completed`: `completed`
-- `blocked`: `has errors`
-
-### Table
-
-Namespace `table`.
-
-- `sort`: `Sort`
-
-### Text input
-
-Namespace `textInput`.
-
-- `clear`: `Clear field`
-
-### Time picker
-
-Namespace `timePicker`.
-
-- `picker`: `Time`
-- `openPicker`: `Open time picker`
-- `hours`: `Hours`
-- `minutes`: `Minutes`
-- `clear`: `Clear`
-- `formatHint`: `Time format: {pattern}` (function of `pattern`)
-
-### Toast
-
-Namespace `toast`.
-
-- `close`: `Close`
-
-### Tooltip
-
-Namespace `tooltip`.
-
-- `close`: `Close`
-- `coachHint`: `Press Esc to close`
+<Canvas of={LocalizationStories.Reference} />

@@ -101,7 +101,9 @@ export class MudSelectInput<T = unknown>
   /** @description Size rung: medium (40px) or large (48px). */
   readonly size = input<MudSelectInputSize>('medium');
 
+  /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
+  /** @description Adds the red asterisk to the label. */
   readonly required = input(false, { transform: booleanAttribute });
 
   /** @description Focusable and readable, but the listbox cannot open. */
@@ -122,6 +124,7 @@ export class MudSelectInput<T = unknown>
   /** @description Decides whether an option's value equals the selected value; defaults to `Object.is`. */
   readonly compareWith = input<MudSelectCompare<T>>(Object.is);
 
+  /** @description Native `name` attribute. */
   readonly name = input<string>('');
 
   /** @description Shown in the trigger while nothing is selected. */
@@ -164,7 +167,7 @@ export class MudSelectInput<T = unknown>
   /** @description Extra id(s) merged into the trigger's aria-describedby. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
-  /** Signal-forms touch contract: emitted when focus leaves the control. */
+  /** @description Fires when focus leaves the field; signal forms use it to mark the field touched. */
   readonly touch = output<void>();
 
   private readonly _overlay = inject(Overlay);
@@ -173,6 +176,7 @@ export class MudSelectInput<T = unknown>
 
   private readonly _trigger =
     viewChild.required<ElementRef<HTMLButtonElement | HTMLInputElement>>('trigger');
+  private readonly _searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
   private readonly _control = viewChild.required<ElementRef<HTMLElement>>('control');
   private readonly _panelTemplate = viewChild.required<TemplateRef<unknown>>('panel');
 
@@ -335,6 +339,14 @@ export class MudSelectInput<T = unknown>
 
     styles.load(_MudInputFieldStyles);
     styles.load(_MudMenuPanelStyles);
+
+    // Writes only on a real change: Chrome moves the caret to the end even when the value is unchanged.
+    effect(() => {
+      const text = this._inputText();
+      const native = this._searchInput()?.nativeElement;
+
+      if (native && native.value !== text) native.value = text;
+    });
 
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       effect(() => {

@@ -5,78 +5,46 @@ import * as TagStories from './tag.stories';
 
 # Tag
 
-A small status label — approved, pending, rejected. Unlike a chip, a tag is not
-interactive: it reports state rather than accepting input.
-
-## Import
+A small status label, such as approved, pending or rejected. A tag isn't interactive; for something
+the user can toggle or remove, use a [Chip](?path=/docs/components-chip--docs).
 
 ```ts
 import { MudTag } from 'ngx-mud-ui/tag';
-
-@Component({
-  imports: [MudTag],
-  template: `
-    <mud-tag color="success">Approved</mud-tag>
-    <mud-tag color="danger" type="strong" size="small">Rejected</mud-tag>
-  `,
-})
-export class Demo {}
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={TagStories.Playground} />
 <Controls of={TagStories.Playground} />
 
-## Matrix
+## Colors and types
 
-<Canvas of={TagStories.Matrix} />
+`color` is `neutral` (default), `muted`, `brand`, `info`, `success`, `accent` or `danger`. `type` is
+`subtle` (default, tinted), `strong` (filled, for states nobody should miss) or `outlined`. `info`
+has no `outlined` type and falls back to `subtle` with a dev-mode warning.
 
-## Sizes
+Color isn't the message: the text must say what the state is.
 
-<Canvas of={TagStories.Sizes} />
+<Canvas of={TagStories.Types} />
 
-## Icons
+## Icons, sizes and disabled
 
-A tag can show an icon before its label, after it, or both. Mark each icon with
-`icon-start` or `icon-end`; the tag places it on that side, whatever order you
-write it in.
+Mark an icon with `icon-start` or `icon-end`; the tag places it on that side. Use `[scale]="16"` on a
+`medium` tag (default) and `[scale]="12"` on a `small` one.
 
-```html
-<mud-tag color="success"><mud-icon icon-start name="checkmark-small" [scale]="16" /> Approved</mud-tag>
-<mud-tag color="brand">Details <mud-icon icon-end name="chevron-right-small" [scale]="16" /></mud-tag>
-```
+`disabled` greys the tag out whatever its color, for a status in a disabled row. It's visual only,
+so the row or control must announce the state.
 
-Each icon tightens only its own edge: 6px on a medium tag, 4px on a small one. The
-icon renders at 16px on medium and 12px on small, so pass `[scale]="16"`.
+A tag never grows wider than its container: a label that doesn't fit ends in "…". Keep labels
+short.
 
 <Canvas of={TagStories.Icons} />
 
-## Disabled
+## Announcing changes
 
-Use `disabled` when the thing the tag labels is unavailable, such as a status inside a
-disabled row. It replaces every `color` with the disabled grey, because a disabled tag
-carries no state meaning. An `outlined` tag keeps its transparent fill and greys its
-border and text.
+A tag is silent by default. With an `aria-label`, it becomes a polite live region
+(`role="status"`) and changes to its text are announced. Set it when the status can change while
+the user is on the page.
 
-```html
-<mud-tag color="success" disabled>Approved</mud-tag>
-```
-
-The change is visual only. The tag adds no `aria-disabled`, so the disabled state must
-be announced by the control or row that owns it.
-
-<Canvas of={TagStories.Disabled} />
-
-## Announced status
-
-<Canvas of={TagStories.AnnouncedStatus} />
+<Canvas of={TagStories.Status} />
 
 ## API
 
@@ -84,18 +52,10 @@ Selector: `mud-tag`
 
 <ArgTypes of={TagStories} />
 
-## Usage tips
+Content slots: `[icon-start]`, the label and `[icon-end]`.
 
-- **`aria-label` turns the tag into a live region.** Only when it is set does the
-  tag become `role="status"` and announce changes; unlabelled tags stay silent,
-  matching the official design system. Set it when the state can change while
-  the user is on the page, leave it off for static labels.
-- **A tag is not a chip.** Nothing here toggles or removes — reach for
-  `mud-chip` when the user acts on it.
-- **`type="strong"` is for the states that must not be missed**, such as a
-  rejection; `subtle` is the default for routine statuses.
-- **A tag never grows wider than its container.** A label that doesn't fit ends
-  in "…"; with an icon, the label is cut at its end instead. Keep labels short:
-  a status, not a sentence.
-- **Colour is not the message.** `success` and `danger` read identically to a
-  colourblind user, so the tag's text must say what the state is.
+### Types
+
+- `MudTagColor`: `'muted' | 'neutral' | 'accent' | 'success' | 'brand' | 'danger' | 'info'`
+- `MudTagType`: `'subtle' | 'strong' | 'outlined'`
+- `MudTagSize`: `'medium' | 'small'`

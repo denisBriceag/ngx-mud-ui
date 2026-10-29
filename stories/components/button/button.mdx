@@ -6,79 +6,49 @@ import { MudIconButton } from 'ngx-mud-ui/button';
 
 # Button
 
-Two attribute directives that style a native `<button>` or `<a>`: `mudButton` for
-labelled actions and `mudIconButton` for icon-only ones. Because they are
-directives rather than wrapper components, the host element keeps its native
-semantics — `type`, `form`, `href`, `routerLink` and event bindings all work as
+`mudButton` and `mudIconButton` are attribute directives for a native `<button>` or `<a>`. The
+element keeps its native behavior: `type`, `form`, `href`, `routerLink` and event bindings work as
 usual.
-
-## Import
 
 ```ts
 import { MudButton, MudIconButton } from 'ngx-mud-ui/button';
-
-@Component({
-  imports: [MudButton, MudIconButton],
-  template: `
-    <button type="button" mudButton>Save</button>
-    <button type="button" mudIconButton aria-label="Add">…</button>
-  `,
-})
-export class Demo {}
 ```
-
-The directive brings the button CSS itself; the base stylesheet (tokens, font) must be in
-your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={ButtonStories.Playground} />
 <Controls of={ButtonStories.Playground} />
 
-## Variants
+## Basic
 
-`mudButton` takes the variant as its own value. The attribute may be left empty —
-`<button mudButton>` is the same as `<button mudButton="filled">`.
+Add `mudButton` to a `<button>`. Always set `type`: an unset type inside a `<form>` submits it.
 
-### Filled
+<Canvas of={ButtonStories.Basic} />
 
-<Canvas of={ButtonStories.FilledStyles} />
+## Variants and colors
 
-### Outlined
+The variant is the directive's own value: `filled` (default, also `mudButton` with no value),
+`outlined` or `text`. `color` picks the color. `secondary` and `neutral` exist for `filled` only;
+any other unsupported pair falls back to `primary` with a dev-mode warning.
 
-<Canvas of={ButtonStories.OutlinedStyles} />
+<Canvas of={ButtonStories.Variants} />
 
-### Text
+## Sizes and shapes
 
-<Canvas of={ButtonStories.TextStyles} />
-
-## Sizes
+`size` is `large` (default), `medium` or `small`. `shape="circular"` rounds the corners fully.
 
 <Canvas of={ButtonStories.Sizes} />
 
-## Shapes
+## Icons
 
-<Canvas of={ButtonStories.Shapes} />
+Icons are projected content: put a `<mud-icon>` before or after the text. For an icon-only action
+use `mudIconButton`, a transparent circle in `medium` (40px, default) or `small` (32px) size. It
+needs an `aria-label`, `aria-labelledby` or `title`, and warns in dev mode without one.
 
-## Full width
-
-<Canvas of={ButtonStories.FullWidth} />
-
-## With icons
-
-Leading and trailing icons are plain projected content — there is no icon input.
-
-<Canvas of={ButtonStories.WithIcons} />
-
-## Icon button
-
-<Canvas of={ButtonStories.IconButton} />
+<Canvas of={ButtonStories.Icons} />
 
 ## Loading
+
+While `loading` is set, the button shows a spinner, ignores clicks (your `(click)` handler doesn't
+run) and exposes `aria-busy="true"`. It stays focusable, so keyboard users keep their place.
 
 <Canvas of={ButtonStories.Loading} />
 
@@ -86,61 +56,45 @@ Leading and trailing icons are plain projected content — there is no icon inpu
 
 <Canvas of={ButtonStories.Disabled} />
 
-## Anchors
+## Links
 
-<Canvas of={ButtonStories.AnchorButtons} />
+On an `<a>`, `disabled` sets `aria-disabled="true"` and `tabindex="-1"` and blocks activation, since
+links can't be natively disabled.
 
-## Badge buttons
+<Canvas of={ButtonStories.Link} />
 
-Entry points to the trusted government platforms (mpay, mpass, msign, mpower, mdelivery). There is
-no dedicated directive yet: keep `mudButton` on the button — it loads the styles — and add the
-`btn-badge btn-badge--{primary|neutral} btn-badge--{platform}` classes. The `loading` input works as
-on any other button.
+## Full width
 
-```html
-<button mudButton class="btn-badge btn-badge--primary btn-badge--mpay" type="button">
-  <span class="btn-badge__logo" aria-hidden="true"><img src="logos/m-pay.svg" alt="" /></span>
-  <span class="btn-badge__label">Plătește cu mpay</span>
-</button>
-```
+`fullWidth` stretches the button to its container, for stacked form actions.
 
-<Canvas of={ButtonStories.BadgeButtons} />
+<Canvas of={ButtonStories.FullWidth} />
+
+## Platform buttons
+
+Entry points to the government platforms (mpay, mpass, msign, mpower, mdelivery). Keep
+`mudButton` on the button and add the `btn-badge btn-badge--{primary|neutral} btn-badge--{platform}`
+classes. `loading` and `disabled` work as usual.
+
+<Canvas of={ButtonStories.Platform} />
 
 ## API
 
-### `MudButton`
+### MudButton
 
-Selector: `button[mudButton], a[mudButton]` · `exportAs: 'mudButton'`
+Selector: `button[mudButton], a[mudButton]` · Exported as: `mudButton`
 
 <ArgTypes of={ButtonStories} />
 
-### `MudIconButton`
+### MudIconButton
 
-Selector: `button[mudIconButton], a[mudIconButton]` · `exportAs: 'mudIconButton'`
-
-`mudIconButton` is always a transparent circle; its one styling input is `size`:
-`medium` (40px, 20px glyph, default) or `small` (32px, 16px glyph — the size that fits a
-40px table row). It shares `disabled` and `loading` with `mudButton`.
+Selector: `button[mudIconButton], a[mudIconButton]` · Exported as: `mudIconButton`
 
 <ArgTypes of={MudIconButton} />
 
-## Usage tips
+### Types
 
-- **Not every color works with every variant.** `secondary` and `neutral` are
-  filled-only; `outlined` and `text` support `primary`, `strict` and
-  `destructive`. An unsupported pair falls back to `primary` and logs a
-  dev-mode warning rather than rendering an unstyled button.
-- **Icon buttons need an accessible name.** `mudIconButton` warns in dev mode
-  when the host has no `aria-label`, `aria-labelledby` or `title`, since the
-  glyph itself carries no text.
-- **`loading` keeps focus.** A loading button stays in the tab order and exposes
-  `aria-busy="true"` / `aria-disabled="true"` instead of the `disabled`
-  attribute, so keyboard users don't lose their place mid-action. Clicks are
-  swallowed in the capture phase, so your own `(click)` handler never fires.
-- **Disabled anchors are a different mechanism.** An `<a>` cannot be natively
-  disabled, so `disabled` maps to `aria-disabled="true"` plus `tabindex="-1"`.
-  The `href` is still present — the directive blocks activation.
-- **Use `fullWidth` for stacked form actions**, not for laying out button rows;
-  it stretches the button to its container.
-- **Set `type` explicitly.** These are native buttons, so an unset `type` inside
-  a `<form>` submits it. The stories use `type="button"` throughout.
+- `MudButtonVariant`: `'filled' | 'outlined' | 'text'`
+- `MudButtonColor`: `'primary' | 'secondary' | 'strict' | 'neutral' | 'destructive'`
+- `MudButtonSize`: `'large' | 'medium' | 'small'`
+- `MudButtonShape`: `'rectangular' | 'circular'`
+- `MudIconButtonSize`: `'medium' | 'small'`

@@ -3,48 +3,68 @@ import * as MudIconStories from './mud-icon.stories';
 
 <Meta of={MudIconStories} />
 
-# Icon
+# Icons
 
-One component renders every icon in the set. Icons are tree-shakeable: each is a
-separate export, and only the ones you register are bundled.
-
-## Import
-
-Register the icons you use once at bootstrap, then use `mud-icon` anywhere:
+The `<mud-icon>` component renders every icon in the set. Each icon is a separate export, and only
+the icons you register end up in your bundle.
 
 ```ts
-// bootstrap
-import { provideMudIcons, alarm, arrowLeft } from 'ngx-mud-ui/icons';
-
-bootstrapApplication(App, {
-  providers: [provideMudIcons([alarm, arrowLeft])],
-});
+import { MudIconComponent, provideMudIcons } from 'ngx-mud-ui/icons';
 ```
+
+## Registering icons
+
+Register the icons you use once, in `app.config.ts`, then use `<mud-icon>` anywhere:
 
 ```ts
-// component
-import { MudIconComponent } from 'ngx-mud-ui/icons';
+import { alarm, arrowLeft, deleteIcon, provideMudIcons } from 'ngx-mud-ui/icons';
 
-@Component({
-  imports: [MudIconComponent],
-  template: `<mud-icon name="alarm" variant="outlined" [scale]="24" />`,
-})
-export class Demo {}
+export const appConfig: ApplicationConfig = {
+  providers: [provideMudIcons([alarm, arrowLeft, deleteIcon])],
+};
 ```
 
-The base stylesheet must be in your app's `angular.json` `styles` once:
+You import an icon by its camelCase name (`arrowLeft`) and use it by its kebab-case `name`
+(`name="arrow-left"`). `delete` is a reserved word in JavaScript, so its export is `deleteIcon`.
+`name` is typed, so your editor autocompletes it and catches typos.
 
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
-
-Every icon in the set is registered here, so the `name` control lists all of
-them.
+`provideMudIcons` works in any environment injector: the app config, or a lazy route's `providers`
+to register icons when that route loads. Several calls add to one registry. It can't go in a
+component's `providers`.
 
 <Canvas of={MudIconStories.Playground} />
 <Controls of={MudIconStories.Playground} />
+
+## Size and variant
+
+`scale` is `12`, `16`, `20`, `24` (default) or `32`. Each size up to 24 has its own drawing; 32
+scales up the 24 drawing, for empty states and highlights. `variant` is `outlined` (default) or
+`filled`.
+
+When an icon has no drawing at the requested size or variant, the nearest one is used. An
+unregistered name renders nothing. Both log a warning in development.
+
+<Canvas of={MudIconStories.Basic} />
+
+## Color
+
+Icons are drawn with `currentColor`, so they take the color of the surrounding text, inside
+components too. To color an icon on its own, use the semantic `--mud-color-icon-*` tokens, which
+also switch in dark mode. Avoid fixed hex colors.
+
+<Canvas of={MudIconStories.Color} />
+
+## All icons
+
+Use the `scale` control to see each icon at another size.
+
+<Canvas of={MudIconStories.Gallery} />
+
+## Accessibility
+
+An icon is decorative by default (`aria-hidden="true"`), which is right next to visible text. When
+the icon is the only content, as in an icon-only button, give it (or the button) an `aria-label`;
+the icon then gets `role="img"`.
 
 ## API
 
@@ -52,19 +72,10 @@ Selector: `mud-icon`
 
 <ArgTypes of={MudIconStories} />
 
-## Usage tips
+### Functions and types
 
-- **Only registered icons render.** `provideMudIcons` is what pulls an icon into
-  the bundle; a `name` you never registered resolves to nothing. That is the
-  price of tree-shaking.
-- **Icons are decorative by default.** With no `aria-label` the host is
-  `aria-hidden`, which is correct beside a visible text label. Set `aria-label`
-  only when the icon is the sole carrier of meaning.
-- **The input is aliased `aria-label`**, so bind it as `[aria-label]="…"` in
-  templates rather than by its class member name.
-- **Color follows CSS `color`.** The glyph is drawn with `currentColor`, so it
-  inherits from the surrounding text and adapts to the theme without extra work.
-- **`scale` is a fixed rung** — 12, 16, 20, 24 or 32 — not an arbitrary pixel
-  size, because the artwork is drawn per size rather than scaled. 32 is the
-  exception: it has no artwork of its own and renders the 24 drawing scaled
-  up, for feature callouts and empty states.
+- `provideMudIcons(icons: MudIcon[]): EnvironmentProviders`: registers icons.
+- `MudIconRegistry`: the service behind it, with `register(icons)` and `get(name)`.
+- `MudIconName`: the union of all icon names.
+- `MudIconScale`: `12 | 16 | 20 | 24 | 32`
+- `MudIconVariant`: `'outlined' | 'filled'`

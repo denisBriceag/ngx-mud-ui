@@ -35,10 +35,15 @@ export class MudCornerBadge {
   private readonly _host = inject(ElementRef<HTMLElement>).nativeElement;
   private readonly _descriptionId = `mud-badge-description-${nextId++}`;
 
+  /** @description Badge content, usually a count. `null` removes the badge. */
   readonly mudBadge = input<string | number | null>(null);
+  /** @description Size; `xs` is dot-only. */
   readonly badgeSize = input<MudBadgeSize>('md');
+  /** @description Color variant. */
   readonly badgeVariant = input<MudBadgeVariant>('danger');
+  /** @description Corner of the host; a single keyword fills in the other axis (`before` = `above before`). */
   readonly badgePosition = input<MudBadgePosition>('above after');
+  /** @description Numeric content above this renders as `{max}+`; `null` never truncates. */
   readonly badgeMax = input<number | null, number | string | null | undefined>(null, {
     transform: (value) => {
       if (value == null || value === '') return null;
@@ -56,7 +61,9 @@ export class MudCornerBadge {
       return parsed;
     },
   });
+  /** @description `numbered` shows the content, `dot` ignores it. */
   readonly badgeType = input<MudBadgeType>('numbered');
+  /** @description What the badge means ("5 unread messages"). Describes the host via `aria-describedby` and hides the visual badge from screen readers. */
   readonly badgeDescription = input<string | null>(null);
 
   private _badge: HTMLElement | null = null;

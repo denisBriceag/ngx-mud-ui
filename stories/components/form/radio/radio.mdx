@@ -6,125 +6,86 @@ import { MudRadio } from 'ngx-mud-ui/radio';
 
 # Radio
 
-A single-choice group. `mud-radio-group` owns the value and the form binding;
-each `mud-radio` contributes one option and derives its checked state from the
-group.
-
-## Import
+A single choice from a few options. `mud-radio-group` holds the value and the form binding; each
+`mud-radio` is one option. A radio can't be used outside a group; for a single on/off choice, use a
+[Checkbox](?path=/docs/components-form-checkbox--docs) or a
+[Switch](?path=/docs/components-form-switch--docs).
 
 ```ts
-import { MudRadio, MudRadioGroup } from 'ngx-mud-ui/radio';
-import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
-
-@Component({
-  imports: [MudRadio, MudRadioGroup, MudLabel, MudInlineMessage],
-  template: `
-    <mud-radio-group [formControl]="method" required>
-      <mud-label>Metoda de plată</mud-label>
-      <mud-radio value="card">
-        <mud-label>Card bancar</mud-label>
-      </mud-radio>
-      <mud-radio value="mpay">
-        <mud-label>MPay</mud-label>
-        <mud-inline-message hideIcon>Fără comision.</mud-inline-message>
-      </mud-radio>
-      @if (method.touched && method.invalid) {
-        <mud-inline-message variant="error">Alegeți o metodă de plată.</mud-inline-message>
-      }
-    </mud-radio-group>
-  `,
-})
-export class Demo {}
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudRadio, MudRadioGroup } from 'ngx-mud-ui/radio';
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={RadioStories.Playground} />
 <Controls of={RadioStories.Playground} />
 
+## Basic
+
+`value` on the group is two-way bindable. Where you put a `<mud-label>` or `<mud-inline-message>`
+decides what it belongs to:
+
+- **Directly in the group**, the label names the group (its legend) and messages describe the group.
+- **Inside a `mud-radio`**, they belong to that option only.
+
+`disabled` on an option adds to the group's own `disabled`.
+
+<Canvas of={RadioStories.Basic} />
+
 ## States
+
+Set these on the group; they apply to every option. `invalid` shows the error style and sets
+`aria-invalid`, `readonly` keeps the options focusable but stops changes, `required` adds a red
+asterisk, and `size` is `medium` (default) or `small`.
 
 <Canvas of={RadioStories.States} />
 
-## Horizontal layout
+## Horizontal
 
-Use a row for two or three short options, such as a yes/no question. Set
-`orientation="horizontal"` on the group; the default is `vertical`.
-
-```html
-<mud-radio-group orientation="horizontal">
-  <mud-label>Aveți copii minori?</mud-label>
-  <mud-radio value="yes"><mud-label>Da</mud-label></mud-radio>
-  <mud-radio value="no"><mud-label>Nu</mud-label></mud-radio>
-</mud-radio-group>
-```
-
-Options sit 24px apart. When the row runs out of room, they wrap onto a new
-line 12px below. The group label stays above the options and its messages
-stay below. Arrow keys move between options the same way in either layout.
+`orientation="horizontal"` puts the options in a row, for two or three short options such as a
+yes/no question. They wrap when there isn't room.
 
 <Canvas of={RadioStories.Horizontal} />
 
 ## Reactive forms
 
+Bind `formControl` or `formControlName` on the group, and bind `invalid` yourself, usually
+`ctrl.touched && ctrl.invalid`.
+
 <Canvas of={RadioStories.ReactiveForms} />
 
-## Non-string values
+## Signal forms
 
-<Canvas of={RadioStories.NonStringValues} />
+Bind `[formField]` on the group; `invalid` and `disabled` follow the field. Values don't have to be
+strings: here they're numbers. They're compared with `Object.is`, so object values must be the same
+instance each time.
+
+<Canvas of={RadioStories.SignalForms} />
+
+## Accessibility
+
+- The group is a `radiogroup` named by its `<mud-label>`. Group messages sit in a `role="alert"`
+  region, so showing an error announces it.
+- <kbd>Tab</kbd> enters the group at the selected option; arrow keys move and select.
+- Call `focus()` on the group to focus the selected option, or the first enabled one.
 
 ## API
 
-### `MudRadioGroup`
+### MudRadioGroup
 
 Selector: `mud-radio-group`
 
 <ArgTypes of={RadioStories} />
 
-### `MudRadio`
+Method: `focus(options?)`.
+
+### MudRadio
 
 Selector: `mud-radio`
 
 <ArgTypes of={MudRadio} />
 
-### Label and messages
+### Types
 
-Neither component renders message text of its own. Project a `<mud-label>`
-for the visible label and any number of `<mud-inline-message>` elements for
-assistive text — *you* decide when they render, and where they land depends
-on where you nest them:
-
-- A `<mud-label>`/`<mud-inline-message>` projected **directly under
-  `mud-radio-group`** belongs to the group: the label becomes the group's
-  legend and messages land in the group's `role="alert"` region wired into
-  its `aria-describedby`.
-- The same elements projected **inside a `mud-radio`** belong to that option
-  only: its label associates with just that native input, and its messages
-  land in a wrapper scoped to that radio — with **no `role`**, since a single
-  radio has no invalid state of its own; only the group is ever marked
-  invalid.
-- The `invalid` input on the group drives the destructive visuals on every
-  child + `aria-invalid`; with signal forms it is bound automatically, with
-  reactive forms bind `[invalid]="ctrl.touched && ctrl.invalid"`.
-
-## Usage tips
-
-- **A radio cannot be used outside a group.** Checked state derives from the
-  group's value, so a lone `mud-radio` has no source of truth. For a single
-  on/off choice use `mud-checkbox` or `mud-switch`.
-- **Values are compared with `Object.is`**, so object and array values must be
-  the same reference — rebuilding the options array each change detection cycle
-  silently breaks selection. Primitives and enum values are safest.
-- **`size` and `orientation` are set on the group**, not per option, and apply to every child.
-- **Per-option `disabled` stacks with the group's.** A radio is disabled if
-  either it or its group says so; disabling the group does not clear child
-  settings.
-- **`readonly` keeps the options focusable** but prevents the selection from
-  changing, which `disabled` does not — disabled options leave the tab order.
+- `MudRadioGroupSize`: `'medium' | 'small'`
+- `MudRadioGroupOrientation`: `'vertical' | 'horizontal'`

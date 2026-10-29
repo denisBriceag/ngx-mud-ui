@@ -5,53 +5,64 @@ import * as NumericInputStories from './numeric-input.stories';
 
 # Numeric input
 
-A number field with locale-aware formatting, optional steppers, clamping to a
-range, and a suffix slot for units or currency.
-
-## Import
+A field for numbers, with optional +/− steppers, limits, rounding and locale formatting. It works on
+its own with `[(value)]`, with reactive and template-driven forms, and with signal forms.
 
 ```ts
-import { MudNumericInput } from 'ngx-mud-ui/numeric-input';
-import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
-
-@Component({
-  imports: [MudNumericInput, MudLabel, MudInlineMessage],
-  template: `
-    <mud-numeric-input [min]="0" [max]="10000" [precision]="2" locale="ro-MD" showSteppers [formControl]="amount">
-      <mud-label>Suma</mud-label>
-      <span suffix>MDL</span>
-      @if (amount.touched && amount.invalid) {
-        <mud-inline-message variant="error">Suma este obligatorie.</mud-inline-message>
-      }
-    </mud-numeric-input>
-  `,
-})
-export class Demo {}
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudNumericInput } from 'ngx-mud-ui/numeric-input';
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={NumericInputStories.Playground} />
 <Controls of={NumericInputStories.Playground} />
 
-## Locale and currency
+## Basic
 
-<Canvas of={NumericInputStories.LocaleCurrency} />
+`value` is a `number`, or **`null` when the field is empty**; don't confuse `null` with `0`.
+`showSteppers` adds +/− buttons that move by `step` (default 1), as do <kbd>↑</kbd> and
 
-## Steppers and states
+<kbd>↓</kbd>. `min` and `max` stop the steppers and clamp the value when it's committed, so the user
+can type past them and see it corrected on blur. `allowDecimal` and `allowNegative` set to `false`
+block the separator and the minus sign as you type.
 
-<Canvas of={NumericInputStories.SteppersAndStates} />
+<Canvas of={NumericInputStories.Basic} />
 
-## Reactive forms
+## Locale, currency and rounding
 
-<Canvas of={NumericInputStories.ReactiveForms} />
+`locale` sets how the number is shown and read: with `ro-MD`, `1250.5` shows as `1.250,5`, and
+grouped input is understood. Without `locale`, the number follows the
+[formatting locale](?path=/docs/foundations-localization--docs) for its decimal separator and
+digits, without grouping. `precision` rounds the value to that many decimals when it's committed.
+
+Put text before or after the number with `prefix` or `suffix` (such as a currency), and an icon with
+`icon-start`. `clearable` adds a × button. `errored` fires when typed input is rejected
+(`'not-a-number'`) or clamped (`'out-of-range'`); `stepped` fires on each step.
+
+<Canvas of={NumericInputStories.Currency} />
+
+## States
+
+`variant`, `invalid`, `required`, `readonly`, `disabled` and `loading` work as in a
+[Text input](?path=/docs/components-form-text-input--docs). `size` is `medium` (40px, default) or
+`large` (48px). With `maxLength`, a character counter shows; describe it with `counterLabel`.
+
+<Canvas of={NumericInputStories.States} />
+
+## Forms
+
+Bind `formControl` and bind `invalid` yourself, or bind `[formField]`: with signal forms `min`,
+`max`, `required` and `invalid` follow the field.
+
+<Canvas of={NumericInputStories.Forms} />
+
+## Accessibility
+
+- The steppers and the clear button are named "Increase", "Decrease" and "Clear" (translatable), or
+  by `incrementLabel`, `decrementLabel` and `clearLabel`.
+- `ariaValuetext` gives a friendlier value to announce, such as "1 250 lei".
+- Messages sit in a `role="alert"` region linked with `aria-describedby`. Call `focus()` to focus
+  the field.
 
 ## API
 
@@ -59,41 +70,12 @@ Selector: `mud-numeric-input`
 
 <ArgTypes of={NumericInputStories} />
 
-### Label and messages
+Method: `focus(options?)`. Content slots: `mud-label`, `[icon-start]`, `[prefix]`, `[suffix]` and
+`mud-inline-message`.
 
-The field renders no message text of its own. Project a `<mud-label>` for
-the visible label and any number of `<mud-inline-message>` elements for
-assistive text — *you* decide when they render:
+### Types
 
-- Messages land in a field-owned `role="alert"` region wired into
-  `aria-describedby`, alongside the counter's id while it shows; toggling a
-  message on announces it to screen readers.
-- Inside a field, `mud-inline-message` is always the small size — its
-  `size` input is ignored.
-- The field's `invalid` input drives the red border and `aria-invalid`;
-  with signal forms it is bound automatically, with reactive forms bind
-  `[invalid]="ctrl.invalid && ctrl.touched"`.
-
-## Usage tips
-
-- **The empty value is `null`, not `0`.** Treat `null` as "nothing entered" —
-  conflating it with zero is the usual source of bugs with required amount
-  fields.
-- **`locale` changes parsing as well as display.** With `ro-MD`, `1250.5`
-  renders as `1.250,5` and grouped input is parsed leniently. Leave it unset and
-  the number follows `provideMudFormatLocale` (then `LOCALE_ID`) for its decimal
-  separator and digits, such as `1234,5` in `ro-MD`, but is never grouped. The
-  field parses the format locale's own digits as well as ASCII ones.
-- **Clamping happens on commit, not on keystroke**, so a user can type past
-  `max` and see it corrected on blur rather than having characters swallowed.
-  `errored` fires when that happens.
-- **`allowDecimal` and `allowNegative` block at the keyboard.** Turning them off
-  refuses the separator and the minus sign outright, and commits truncate or
-  clamp accordingly.
-- **`precision` rounds on commit** and controls the displayed fraction digits —
-  it does not merely format.
-- **The button names come from the labels.** `incrementLabel`, `decrementLabel`
-  and `clearLabel` are optional per-field overrides; leave them unset (or blank)
-  and the `numericInput` labels apply. `counterLabel` is an optional sentence
-  you write yourself for screen readers. The visible `n / max` counter uses the
-  format locale's digits. See the [Localization guide](?path=/docs/foundations-localization--docs).
+- `MudNumericInputVariant`: `'default' | 'warning' | 'destructive' | 'success'`
+- `MudNumericInputSize`: `'medium' | 'large'`
+- `MudNumericInputErrorKind`: `'not-a-number' | 'out-of-range'`
+- `MudNumericInputStep`: `{ value: number; direction: 1 | -1 }`

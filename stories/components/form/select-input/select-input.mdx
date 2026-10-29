@@ -3,166 +3,95 @@ import * as SelectInputStories from './select-input.stories';
 
 <Meta of={SelectInputStories} />
 
-# Select input
+# Select
 
-A single-select dropdown driven by an `options` array, with the same label,
-helper and error treatment as the other fields. The listbox renders in a CDK
-overlay.
-
-## Import
+A field that opens a list to pick one option, with optional search, groups and server-side results.
+It works on its own with `[(value)]`, with reactive and template-driven forms, and with signal forms.
 
 ```ts
-import { MudSelectInput } from 'ngx-mud-ui/select-input';
-import type { MudSelectOption } from 'ngx-mud-ui/select-input';
-import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
-
-@Component({
-  imports: [MudSelectInput, MudLabel, MudInlineMessage],
-  template: `
-    <mud-select-input required [options]="raions" [formControl]="raion">
-      <mud-label>Raion</mud-label>
-      @if (raion.touched && raion.invalid) {
-        <mud-inline-message variant="error">Alegeți un raion.</mud-inline-message>
-      }
-    </mud-select-input>
-  `,
-})
-export class Demo {
-  readonly raions: readonly MudSelectOption<string>[] = [
-    { value: 'ch', label: 'Chișinău' },
-    { value: 'bl', label: 'Bălți' },
-  ];
-}
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudSelectInput } from 'ngx-mud-ui/select-input';
+import type { MudSelectItem, MudSelectOption } from 'ngx-mud-ui/select-input';
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={SelectInputStories.Playground} />
 <Controls of={SelectInputStories.Playground} />
 
-## States
+## Basic
+
+Options are data, not elements: pass an array of `{ value, label, disabled? }` to `options`. `value`
+is two-way bindable and keeps its type, so options can carry numbers or objects. Put a `<mud-label>`
+and any `<mud-inline-message>` inside, as in a
+[Text input](?path=/docs/components-form-text-input--docs). `placeholder` shows while nothing is
+selected. `open` is two-way bindable too.
+
+<Canvas of={SelectInputStories.Basic} />
+
+## States and start icon
+
+`invalid`, `required` and `disabled` work as in a text input; `readonly` keeps the field focusable
+but the list closed. `size` is `medium` (40px, default) or `large` (48px). With no options, the list
+shows "No options" (`emptyText`).
+
+An element with `icon-start` shows before the text; mark it `aria-hidden="true"`.
 
 <Canvas of={SelectInputStories.States} />
 
-## Reactive forms
+## Search and groups
 
-<Canvas of={SelectInputStories.ReactiveForms} />
+`searchable` turns the field into a text input that filters the list. Matching ignores case and
+diacritics (`balti` finds Bălți) and looks at labels only. When nothing matches, the list shows "No
+results" (`noResultsText`). Closing the list clears the text, so the field shows the selected label
+again. `query` is two-way bindable; pass `filterWith` (a function of option and query) to match
+differently. `mudSelectDefaultFilter` is exported if you want to wrap it.
 
-## Non-string values
-
-<Canvas of={SelectInputStories.NonStringValues} />
-
-## Searching
-
-Add `searchable` to let people type to narrow a long list. The field becomes a text input.
-Closed, it shows the selected label. Open, it shows what the user typed, and the selected label
-moves to the placeholder.
-
-```html
-<mud-select-input searchable [options]="cities" />
-```
-
-Matching ignores case and diacritics, so `balti` finds Bălți. It looks at the label only, never the
-value. Each keystroke moves the highlight to the first enabled match. Typing in a closed field opens
-it. Closing the list always clears the text, so the field shows the selected label again.
-
-Bind `[(query)]` to read or set the text. Pass `[filterWith]` to match differently; the function
-receives an option and the query. `mudSelectDefaultFilter` is exported if you want to wrap it.
+Put `{ label, options }` objects in `options` for a heading above a run of options, one level deep.
+A group with no match disappears while searching. `isMudSelectGroup(item)` tells a group from an
+option.
 
 <Canvas of={SelectInputStories.Searchable} />
 
-When nothing matches, the list shows `noResultsText`, which defaults to the `selectInput.noResults` label (English 'No results').
-
-<Canvas of={SelectInputStories.NoResults} />
-
 ## Searching on the server
 
-For lists too big to ship to the browser, search on your server. Set `[filterWith]="null"` so the
-select shows `options` exactly as you give them. Watch `query`, fetch matches, and pass them back
-as `options`. Set `loading` while the request runs. The list then shows one loading row with
-`loadingText`, which defaults to the `selectInput.loading` label (English 'Loading…').
+Set `[filterWith]="null"` so the select shows `options` exactly as given, fetch results when `query`
+changes, and set `loading` while the request runs (the list shows "Loading…", `loadingText`).
+Debouncing, a minimum length and cancelling old requests are up to you; closing the list writes `''`
+to `query`.
 
-```html
-<mud-select-input
-  searchable
-  [filterWith]="null"
-  [loading]="loading()"
-  [options]="options()"
-  [(query)]="query"
-  [(value)]="city"
-/>
-```
+Results from the server are new objects, so pass `compareWith` to compare by `id`. The select
+remembers the label of the selected option, but only once it has seen it, so include the selected
+option in `options` at least once.
 
-Debouncing, a minimum query length and cancelling stale requests are yours to do. Closing the list
-writes `''` to `query`, so ignore queries shorter than your minimum. The story uses a 300ms
-debounce, a two-character minimum and `switchMap`. Catch errors inside the `switchMap`, so one
-failed request ends the loading row instead of stopping the search.
+<Canvas of={SelectInputStories.Server} />
 
-The select remembers the label of the option you picked, even when new results no longer contain it.
-It can only remember an option it has seen, so include the selected option in `options` at least
-once. For an edit form, put it in the initial options.
+## Forms
 
-<Canvas of={SelectInputStories.ServerSearch} />
+Bind `formControl` and bind `invalid` yourself, or bind `[formField]` and let the field drive
+`invalid` and `required`.
 
-## Comparing object values
+<Canvas of={SelectInputStories.Forms} />
 
-Options may carry objects. Fresh results from the server are new objects, so `Object.is` would no
-longer find the current choice. Pass `[compareWith]` with a function that compares by identity, such
-as an `id`.
+## Accessibility
 
-```ts
-readonly sameCity = (a: City | undefined, b: City | undefined) => a?.id === b?.id;
-```
+The field is a combobox (`aria-expanded`, `aria-activedescendant`) named by its `<mud-label>`, which
+names the list too. Messages sit in a `role="alert"` region. A polite live region announces loading
+and "no results".
 
-It decides the selected check mark, the highlight when the list opens and the label in the field.
-The select never calls it with an empty value, so it may read properties of its arguments. An empty
-value (`null` or `undefined`) matches only an option whose value is that same empty value.
+**Keyboard, plain select** (focus stays on the field):
 
-## Groups
+- <kbd>↓</kbd> <kbd>↑</kbd> open the list, then move the highlight; <kbd>Home</kbd> <kbd>End</kbd>
+  jump to the first or last option.
+- <kbd>Enter</kbd> or <kbd>Space</kbd> open the list, then select the highlighted option.
+- Typing letters jumps to the first option starting with them (case and diacritics ignored).
+- <kbd>Esc</kbd> closes the list; <kbd>Tab</kbd> closes it and moves on.
 
-Put `{ label, options }` objects in `options` to show a heading above a run of options. Groups and
-loose options can be mixed in any order, one level deep. Each group after the first has a rule above
-it. A group with no options renders nothing. In a searchable select, a group with no match
-disappears while the user types. To tell a group from an option in your own code, use
-`isMudSelectGroup(item)`.
+**Keyboard, searchable select** (the field is a text input):
 
-```ts
-readonly places: MudSelectItem<string>[] = [
-  { label: 'Municipii', options: [{ value: 'ch', label: 'Chișinău' }] },
-  { label: 'Raioane', options: [{ value: 'cl', label: 'Cahul' }] },
-];
-```
-
-<Canvas of={SelectInputStories.Groups} />
-
-## Start icon
-
-Put an element with the `icon-start` attribute inside the select to show it before the text. Use an
-inline `<svg>` or an icon of your own, and mark it `aria-hidden="true"`. A click on it focuses the
-field and acts like a click on the field itself. With nothing projected, no space is reserved.
-
-```html
-<mud-select-input [options]="cities">
-  <svg icon-start viewBox="0 0 20 20" aria-hidden="true">…</svg>
-</mud-select-input>
-```
-
-<Canvas of={SelectInputStories.WithIcon} />
-
-## Type-to-jump
-
-On a select that is not `searchable`, typing letters on the focused field jumps to the first enabled
-option whose label starts with them. Diacritics and case are ignored. The list opens if it was
-closed. Letters typed within about half a second form one prefix. Repeating one letter, as in
-`cc`, cycles through the options that start with it. A space counts only once you have typed a
-letter; otherwise it opens the list as before.
+- Typing opens and filters the list; <kbd>↓</kbd> <kbd>↑</kbd> move the highlight.
+- <kbd>Enter</kbd> selects the highlighted option; on a closed field it can submit the form.
+- <kbd>Esc</kbd> closes the list and clears the text; <kbd>Tab</kbd> and clicking outside close it
+  without picking anything.
 
 ## API
 
@@ -170,65 +99,16 @@ Selector: `mud-select-input`
 
 <ArgTypes of={SelectInputStories} />
 
-### Label and messages
+Method: `focus(options?)`. Content slots: `mud-label`, `[icon-start]` and `mud-inline-message`.
 
-The field renders no message text of its own. Project a `<mud-label>` for
-the visible label and any number of `<mud-inline-message>` elements for
-assistive text — *you* decide when they render:
+### Functions and types
 
-- Messages land in a field-owned `role="alert"` region wired into
-  `aria-describedby` on the trigger; the overlay listbox itself also uses the
-  same label for its `aria-labelledby`/`aria-label` pair, so a projected
-  `mud-label` names both the trigger and the panel.
-- Inside a field, `mud-inline-message` is always the small size — its
-  `size` input is ignored.
-- The field's `invalid` input drives the destructive variant and
-  `aria-invalid`; with signal forms it is bound automatically, with reactive
-  forms bind `[invalid]="ctrl.invalid && ctrl.touched"`.
-
-## Good to know
-
-- **`options` is data, not projected content.** There is no `mud-option`
-  element — build the array and let the component render it.
-- **The component is generic in the option value**, so options can carry numbers
-  or objects, not just strings. The selected value keeps its type.
-- **`open` is two-way bindable**, which is what makes "open the dropdown when
-  the user lands here" possible without reaching into the component.
-- **`emptyText` shows inside the panel** when `options` is empty. It defaults to
-  the `selectInput.empty` label (English 'No options'). Prefer it over hiding the field
-  entirely so the user can see the control exists.
-- **`readonly` keeps the trigger focusable but the listbox shut**, which is the
-  right state for a value the user may read and copy but not change.
-
-## Accessibility
-
-**Name it**: project a `<mud-label>` inside the select, or set `aria-label` when there is no visible
-label. The list is named the same way.
-
-**Keyboard, select that is not searchable**: focus stays on the field.
-
-- **ArrowDown** and **ArrowUp** open the list, then move the highlight over enabled options.
-- **Home** and **End** move the highlight to the first or last enabled option.
-- **Enter** and **Space** open the list, then select the highlighted option.
-- **Escape** closes the list. **Tab** closes it and moves on.
-- **Letters** jump to the first matching option, and open the list.
-
-**Keyboard, searchable select**: the field is a text input, so most keys are text.
-
-- Typing opens the list and filters it.
-- **ArrowDown** and **ArrowUp** open the list, then move the highlight.
-- **Home**, **End** and **Space** move the caret or type a space. They do not touch the list.
-- **Enter** selects the highlighted option. On a closed field it acts like Enter in any text field,
-  so it can submit an enclosing form.
-- **Escape** closes the list and clears the text. The value is unchanged.
-- **Tab**, leaving the field and clicking outside close the list and clear the text. They never pick
-  the highlighted option.
-
-**States**: the field is a combobox with `aria-expanded` and `aria-activedescendant`; options keep
-focus off themselves. A searchable field adds `aria-autocomplete="list"`. Groups are
-`role="group"` named by their heading. A polite live region says `loadingText` while loading and
-`noResultsText` when a query finds nothing. It does not announce result counts. While loading, Enter
-selects nothing.
-
-**What you must do**: pick a language pack with `provideMudLabels`, or set `loadingText`, `noResultsText` and `emptyText` yourself. The listbox's fallback name comes from `selectInput.options`; a `<mud-label>` or `aria-label` replaces it. A select inside a subtree with its own `provideMudLabels` also localizes its panel. See the [Localization guide](?path=/docs/foundations-localization--docs). Hide the start icon from
-screen readers with `aria-hidden="true"`, or label it yourself if it carries meaning.
+- `MudSelectOption<T>`: `{ value: T; label: string; disabled?: boolean }`
+- `MudSelectOptionGroup<T>`: `{ label: string; options: readonly MudSelectOption<T>[] }`
+- `MudSelectItem<T>`: `MudSelectOption<T> | MudSelectOptionGroup<T>`
+- `MudSelectCompare<T>`: `(a: T, b: T) => boolean`
+- `MudSelectFilter<T>`: `(option: MudSelectOption<T>, query: string) => boolean`
+- `isMudSelectGroup(item)`: whether an item is a group.
+- `mudSelectDefaultFilter`: the default `filterWith`.
+- `MudSelectInputVariant`: `'default' | 'destructive'`
+- `MudSelectInputSize`: `'medium' | 'large'`

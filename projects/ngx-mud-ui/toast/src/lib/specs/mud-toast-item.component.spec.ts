@@ -21,9 +21,13 @@ function makeEntry(data: MudToastData, overrides: { variant?: MudToastVariant; s
 
 @Component({
   imports: [MudToastItem],
-  template: `<mud-toast-item [entry]="entry()" />`,
+  template: `
+    <ng-template #actions><button type="button">Anulează</button></ng-template>
+    <mud-toast-item [entry]="entry()" />
+  `,
 })
 class Host {
+  readonly actions = viewChild.required<TemplateRef<unknown>>('actions');
   readonly entry = signal<MudToastEntry>(makeEntry({ message: 'Salvat' }));
 }
 
@@ -117,6 +121,31 @@ describe('MudToastItem', () => {
 
     expect(el.querySelector('.mud-toast__title')).toBeNull();
     expect(el.classList.contains('mud-toast--has-title')).toBe(false);
+  });
+
+  it('stacks (top-aligns icon and ×) only with more than one row', () => {
+    const fixture = TestBed.createComponent(Host);
+    const el: HTMLElement = fixture.nativeElement;
+    const stacked = (data: MudToastData) => {
+      fixture.componentInstance.entry.set(makeEntry(data));
+      fixture.detectChanges();
+
+      return el.querySelector('mud-toast-item')!.classList.contains('mud-toast--stacked');
+    };
+
+    expect(stacked({ title: 'Salvat' })).toBe(false);
+    expect(stacked({ message: 'Salvat' })).toBe(false);
+    expect(stacked({ title: 'Salvat', message: 'Cererea a fost trimisă.' })).toBe(true);
+    expect(stacked({ message: 'Șters', actions: fixture.componentInstance.actions() })).toBe(true);
+  });
+
+  it('renders no empty message row for a title-only toast', () => {
+    const fixture = TestBed.createComponent(Host);
+
+    fixture.componentInstance.entry.set(makeEntry({ title: 'Salvat' }));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.mud-toast__body')).toBeNull();
   });
 
   it('dismisses with close-button when the × is activated', () => {

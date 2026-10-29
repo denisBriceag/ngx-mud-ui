@@ -1,309 +1,159 @@
 import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
-import { MudDatePicker } from 'ngx-mud-ui/date-picker';
 import * as DateStories from './date-picker.stories';
+import { MudDatePicker } from 'ngx-mud-ui/date-picker';
 
 <Meta of={DateStories} />
 
 # Date picker
 
-Two components in one entry point: `MudDateInput`, a masked date field that
-opens a calendar popover, and `MudDatePicker`, the calendar itself — usable
-inline for pages that show a calendar rather than a field.
-
-## Import
+`mud-date-input` is a date field: type the date, or pick it from a calendar that opens below. It
+also takes a date range. `mud-date-picker` is the calendar on its own. Both work on their own with
+`[(value)]`, with reactive and template-driven forms, and with signal forms.
 
 ```ts
-import { MudDateInput } from 'ngx-mud-ui/date-picker';
-import { MudLabel } from 'ngx-mud-ui/label';
+import { MudDateInput, MudDatePicker } from 'ngx-mud-ui/date-picker';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
-
-@Component({
-  imports: [MudDateInput, MudLabel, MudInlineMessage],
-  template: `
-    <mud-date-input required [formControl]="dob">
-      <mud-label>Data nașterii</mud-label>
-      @if (dob.touched && dob.invalid) {
-        <mud-inline-message variant="error">Alegeți o dată.</mud-inline-message>
-      }
-    </mud-date-input>
-  `,
-})
-export class Demo {}
+import { MudLabel } from 'ngx-mud-ui/label';
 ```
-
-The calendar popover renders through the CDK overlay, so the overlay stylesheet
-must be loaded alongside the design-system one:
-
-```ts
-import '@angular/cdk/overlay-prebuilt.css';
-```
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## The value is an ISO date string
-
-Both components use `YYYY-MM-DD` strings — never `Date` objects — in every
-mode. A calendar cell is a civil date, not an instant, and `Date` brings a
-timezone with it:
-
-```ts
-JSON.stringify({ dob: new Date(1990, 4, 15) })
-// → {"dob":"1990-05-14T21:00:00.000Z"}   ← a birthday off by one day in UTC+3
-```
-
-With ISO strings the value that leaves your form is the value the user saw.
-This is also what the platform chose: `<input type="date">.value` is exactly
-`YYYY-MM-DD`.
-
-Most backends already send date-only strings, so there is nothing to convert:
-
-```ts
-dob = new FormControl<string | null>(user.dob);   // "1990-05-15"
-```
-
-When you do hold a timestamp, convert explicitly:
-
-```ts
-import { mudDateFromDate, mudDateToDate, mudToday, mudAddDays } from 'ngx-mud-ui/date-picker';
-
-mudDateFromDate(new Date(user.dobTimestamp))  // local Y/M/D → '1990-05-15'
-mudDateToDate('2026-08-27')                   // → Date at local NOON
-```
-
-`mudDateToDate` returns local noon on purpose — a DST transition can shift
-midnight across a day boundary, noon cannot. Never use `new Date('2026-08-27')`
-yourself: it parses as UTC midnight.
-
-A value that is not `YYYY-MM-DD` renders as empty and logs a dev-mode warning
-naming the fix, rather than being silently truncated at the `T`.
 
 <Canvas of={DateStories.Playground} />
 <Controls of={DateStories.Playground} />
 
+## Basic
+
+The value is an **ISO date string**, `YYYY-MM-DD`, or `null`; never a `Date`. A calendar day is a
+date, not a moment in time, and a `Date` brings a time zone: `new Date(1990, 4, 15)` sent as JSON
+becomes `"1990-05-14T21:00:00.000Z"` in Moldova, a day early. Most backends already send date-only
+strings, so usually there's nothing to convert. A value that isn't `YYYY-MM-DD` shows as empty, with
+a warning in development.
+
+`clearable` adds a × button that emits `cleared`. The calendar opens from its button or with
+
+<kbd>Alt</kbd>+<kbd>↓</kbd>, never on focus, so typing is never interrupted. `open` is two-way
+bindable.
+
+<Canvas of={DateStories.Basic} />
+
 ## Formats
 
-`format` sets both the entry mask and the display order. The value stays ISO
-regardless.
-
-`placeholder` is the format pattern the user sees: shown while the field is
-empty and as the ghost behind the caret while typing. It must mirror the
-format's shape, with the format's separators in place and a non-digit
-character everywhere else, for example `ZZ/LL/AAAA` for `DD/MM/YYYY`.
-Anything else falls back to the format itself with a warning in development
-builds.
+`format` is `DD/MM/YYYY` (default), `MM/DD/YYYY` or `YYYY-MM-DD`; it sets how the date is typed and
+shown, while the value stays ISO. `placeholder` is the pattern shown in the empty field and behind the
+caret while typing. It must have the format's shape and separators, such as `ZZ/LL/AAAA` for
+Romanian; anything else falls back to the format, with a warning in development.
 
 <Canvas of={DateStories.Formats} />
 
 ## Range
 
-`mode="range"` renders two masked inputs in one field. Completing the start
-advances focus to the end; `Backspace` at the head of the end input walks back.
-Two inputs rather than one control holding both dates, because two accessible
-names are what makes it announce correctly.
-
-Each input's accessible name is the field's own label **plus** the segment, so
-a `<mud-date-input mode="range">` with a projected `<mud-label>Perioada</mud-label>`
-announces "Perioada, start date" — composed with `aria-labelledby`, not an
-`aria-label` that would throw your label away.
+`mode="range"` shows two inputs in one field, and the value is `{ start, end }`. After the start
+date, focus moves to the end; <kbd>Backspace</kbd> at the start of the end input goes back. A range
+entered the wrong way round is swapped. Screen readers hear each input as the field's label plus
+"Start date" or "End date".
 
 <Canvas of={DateStories.Range} />
 
-## Jumping to a month or year
+## Limits and unavailable days
 
-For dates far from today, such as a birth date, set `headerStyle="dropdown"`.
-The calendar header then shows a month chip and a year chip. Each opens a grid,
-so the user picks a year and a month in two clicks instead of paging back month
-by month. The default, `title`, shows "Month Year" as one heading.
+`min` and `max` are inclusive ISO limits. `disabledDates` lists ISO dates that can't be picked, such
+as holidays, and `dateFilter` returns `true` for the days that can, such as weekdays only. Unavailable
+days are dimmed in the calendar and refused when typed. They never add a validation error to your
+form; validation is up to you.
 
-```html
-<mud-date-input headerStyle="dropdown">
-  <mud-label>Data nașterii</mud-label>
-</mud-date-input>
-```
+While typing, an incomplete or refused date leaves `value` as `null`. On blur, the field goes back
+to the last date it held; clearing the field yourself is never undone.
 
-<Canvas of={DateStories.MonthYearDropdowns} />
+<Canvas of={DateStories.Bounds} />
 
-## Touch screens
+## Header style and touch screens
 
-The calendar always stays on screen. It opens below the field, or above it if
-it doesn't fit below. On a narrow phone it narrows to the screen minus 16px
-on each side. When neither space is big enough, it moves into view and may cover
-the field. On a very short screen, such as a phone held sideways, it scrolls.
+`headerStyle="dropdown"` shows month and year buttons in the calendar header, so a date far away,
+such as a birth date, takes two clicks instead of many pages. The default, `title`, shows "Month
+Year" as one button.
 
-On a phone you may prefer a dialog instead. Add `touchUi` to open the calendar
-in the middle of the screen, like Angular Material's `touchUi`.
+The calendar always stays on screen: it opens below the field, or above when there's no room, and
+narrows on phones. `touchUi` opens it as a centered dialog over a backdrop instead, with the
+dropdown header by default. It never switches on by itself; bind it to a media query to use it on
+small screens, as here. A change applies the next time the calendar opens.
 
-The dialog sits over a dimmed backdrop and the page behind it does not scroll.
-Tapping the backdrop or pressing `Escape` closes it and returns focus to the
-field. Picking a date closes it, as in the normal calendar. With `touchUi`, the
-header shows the month and year chips unless you set `headerStyle` yourself.
-
-`touchUi` never switches on by itself. To use it on small screens only, bind it
-to a media query:
-
-```ts
-import { BreakpointObserver } from '@angular/cdk/layout';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
-
-readonly touch = toSignal(
-  inject(BreakpointObserver)
-    .observe('(max-width: 640px)')
-    .pipe(map((state) => state.matches)),
-  { initialValue: false },
-);
-```
-
-```html
-<mud-date-input [touchUi]="touch()">
-  <mud-label>Data nașterii</mud-label>
-</mud-date-input>
-```
-
-A change to `touchUi` applies the next time the calendar opens.
-
-<Canvas of={DateStories.TouchUi} />
-
-## Bounds and disabled dates
-
-`min` / `max` are inclusive ISO bounds. `disabledDates` takes an ISO array for
-the holiday case; `dateFilter` takes a predicate returning `true` for a
-**selectable** day, for rules like "weekdays only".
-
-These disable days in the calendar and refuse out-of-range typed input — they
-never write a `ValidationError` into your form. Validation rules stay yours, as
-with every other control in this library.
-
-An unavailable day is dimmed, takes no hover state and previews no range, so
-the rule is visible and not only announced.
-
-### What happens to a refused entry
-
-While you type, the field commits only what it can use, so an incomplete,
-impossible or out-of-bounds entry leaves `value` as `null`. On **blur** the
-field settles: an entry it cannot use is replaced by the last date the field
-actually held, so a refused edit neither strands rejected text on screen nor
-destroys the value that was already there. Deleting the field yourself is a
-deliberate "no date" and is never undone.
-
-The calendar makes the same choice — clicking an unavailable day is a no-op
-that keeps the current selection.
-
-A range entered the other way round (later date first) is **reordered**, in
-both the field and the calendar, rather than being rejected.
-
-<Canvas of={DateStories.Bounded} />
+<Canvas of={DateStories.Header} />
 
 ## The calendar on its own
 
-`MudDatePicker` renders the calendar by itself — `appearance="flat"` drops the
-card shadow for embedding inside your own surface, and it supports the same
-`single` / `range` / `multi` selection modes and both header styles.
+`<mud-date-picker>` takes `mode="single"` (an ISO string), `range` (`{ start, end }`) or `multi` (a
+list of ISO strings). `appearance="flat"` removes the card shadow, to put it in your own surface.
+`startAt` sets the month shown first without selecting anything, `showTodayShortcut` toggles the
+"Today" button, and `monthChange` emits `{ year, month }` (month 0-based) as the user pages.
 
-The header drills down: the title (or the month/year chips in `dropdown`
-style) opens a month picker showing **short** month names, and a year picker
-paging **12 years** at a time — both 4×3 grids, both one click back to the
-days. Years drill into months rather than straight back to days, one choice at
-a time.
+Clicking the header goes to a month grid, then a year grid of 12 years. It takes the same `min`,
+`max`, `disabledDates`, `dateFilter`, `firstDayOfWeek` and `locale` as the field.
 
-<Canvas of={DateStories.InlineCalendar} />
-<Canvas of={DateStories.CalendarModes} />
-<Canvas of={DateStories.DropdownHeader} />
+<Canvas of={DateStories.Calendar} />
 
 ## Forms
 
-Works with reactive and template-driven forms via `ControlValueAccessor`,
-standalone via `[(value)]`, and with signal forms via `[formField]` — both
-components implement the `FormValueControl` protocol.
+Bind `formControl` and bind `invalid` yourself, or bind `[formField]` and let the field drive
+`invalid` and `required`. The calendar on its own takes the same bindings.
 
-<Canvas of={DateStories.WithForms} />
+<Canvas of={DateStories.Forms} />
 
-## Label and messages
+## Language
 
-`MudDateInput` renders no label or message text of its own. Project a
-`<mud-label>` for the visible label and any number of `<mud-inline-message>`
-elements for assistive text — *you* decide when they render:
+Month and weekday names come from the browser (`Intl`) in the `locale` input, or the
+[formatting locale](?path=/docs/foundations-localization--docs). All other texts (the Today button,
+the arrows, the clear button, announcements) are in the `datePicker` labels. When `Intl`'s short
+month names don't suit your design, set `monthNamesShort` and `monthNamesLong` there.
+`firstDayOfWeek` is 1 (Monday) by default; 0 is Sunday.
 
-- Messages land in a field-owned `role="alert"` region wired into
-  `aria-describedby`, alongside the field's own format hint; toggling one on
-  announces it to screen readers.
-- In range mode, the field's own label composes with each segment's own
-  "Start date" / "End date" name through `aria-labelledby` — see
-  [Range](#range) above.
-- The field's `invalid` input drives the red border and `aria-invalid`; with
-  signal forms it is bound automatically, with reactive forms bind
-  `[invalid]="ctrl.invalid && ctrl.touched"`.
+<Canvas of={DateStories.Localized} />
 
-`MudDatePicker` renders no messages at all — it only takes `invalid` for the
-destructive grid styling and `aria-invalid`, since a standalone calendar has
-nowhere natural to put assistive text.
+## Dates in code
 
-## Keyboard
+Helpers for the ISO strings:
 
-<table>
-  <thead>
-    <tr><th>Key</th><th>Action</th></tr>
-  </thead>
-  <tbody>
-    <tr><td><code>Alt</code> + <code>↓</code></td><td>Open the calendar from the field</td></tr>
-    <tr><td><code>←</code> <code>→</code> <code>↑</code> <code>↓</code></td><td>Move by day / week</td></tr>
-    <tr><td><code>PageUp</code> / <code>PageDown</code></td><td>Previous / next month</td></tr>
-    <tr><td><code>Shift</code> + <code>PageUp</code> / <code>PageDown</code></td><td>Previous / next year</td></tr>
-    <tr><td><code>Home</code> / <code>End</code></td><td>Start / end of the visible week</td></tr>
-    <tr><td><code>Enter</code> / <code>Space</code></td><td>Select the focused day</td></tr>
-    <tr><td><code>Escape</code></td><td>Close the calendar — from the grid (focus returns to the field) or from the field itself</td></tr>
-  </tbody>
-</table>
+- `mudToday()`: today, as `YYYY-MM-DD`.
+- `mudAddDays(iso, days)`: a date a number of days later (or earlier, with a negative number).
+- `mudDateFromDate(date)`: a `Date`'s local day as `YYYY-MM-DD`.
+- `mudDateToDate(iso)`: a `Date` at local noon, which daylight saving can't push to another day.
+  Don't use `new Date('2026-08-27')`: it reads the date as UTC midnight.
 
-The day grid is a single tab stop with roving focus. The calendar **never
-opens on focus** — a dialog that captures arrow keys the moment you tab into a
-field you meant to type in is the classic date-picker mistake.
+## Accessibility
 
-## Localization
+- Messages and the format hint are linked with `aria-describedby`; messages sit in a `role="alert"`
+  region, so showing an error announces it.
+- In the calendar, the day grid is one <kbd>Tab</kbd> stop. Arrows move by day and week;
+  <kbd>Page Up</kbd> and <kbd>Page Down</kbd> by month (with <kbd>Shift</kbd>, by year);
+  <kbd>Home</kbd> and <kbd>End</kbd> to the start and end of the week; <kbd>Enter</kbd> or
+  <kbd>Space</kbd> selects.
+- <kbd>Esc</kbd> closes the calendar and returns focus to the field.
+- `mud-date-picker` shows no messages; it only takes `invalid` for the error style and
+  `aria-invalid`.
 
-Two independent layers:
+## API
 
-1. **Month and weekday names** come from `Intl`, driven by the `locale` input.
-   Without it they follow `provideMudFormatLocale`, then the app's `LOCALE_ID`.
-   `locale="ro"` alone localizes the calendar's names, with no translation table.
-2. **Every UI string** (the Today button, the nav arrows, the clear button,
-   the range field names, the screen-reader announcements) lives in the
-   `datePicker` namespace of the library's labels. Pick a language pack or
-   override single keys with `provideMudLabels`. See the
-   [Localization guide](?path=/docs/foundations-localization--docs).
+### MudDateInput
 
-The month-picker grid shows **short** month names (`Aug`), derived from `Intl`
-with a trailing dot removed. When Intl's forms don't match your design, set
-`monthNamesShort` and `monthNamesLong` in the `datePicker` namespace.
-`monthNamesShort` fills the month-picker grid. `monthNamesLong` fills the header
-title, the dropdown chip, the month-change announcements and the month
-buttons' accessible names. Both arrays have 12 entries, January first.
+Selector: `mud-date-input`
 
-```ts
-import { bootstrapApplication } from '@angular/platform-browser';
-import { MUD_LABELS_RO, provideMudFormatLocale, provideMudLabels } from 'ngx-mud-ui/i18n';
+<ArgTypes of={DateStories} />
 
-bootstrapApplication(App, {
-  providers: [
-    provideMudLabels(MUD_LABELS_RO, {
-      datePicker: {
-        today: 'Astăzi',
-        monthNamesShort: ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Noi', 'Dec'],
-      },
-    }),
-    provideMudFormatLocale('ro'),
-  ],
-});
-```
+Content slots: `mud-label` and `mud-inline-message`.
 
-<Canvas of={DateStories.LocalizedRomanian} />
+### MudDatePicker
 
-To switch language at runtime, pass signals to `provideMudLabels` and
-`provideMudFormatLocale`. Every open calendar re-renders at once, month and
-weekday names included. The guide shows the full pattern under
-[Switching language at runtime](?path=/docs/foundations-localization--docs#switching-language-at-runtime).
+Selector: `mud-date-picker`
 
-`firstDayOfWeek` defaults to 1 (Monday), matching the Romanian and wider
-European convention.
+<ArgTypes of={MudDatePicker} />
+
+### Types
+
+- `MudDateInputMode`: `'single' | 'range'`
+- `MudDatePickerMode`: `'single' | 'range' | 'multi'`
+- `MudDateValue<M>`: `string | null` (single), `MudDateRange | null` (range), `string[] | null` (multi)
+- `MudDateRange`: `{ start: string | null; end: string | null }`
+- `MudDateFormat`: `'DD/MM/YYYY' | 'MM/DD/YYYY' | 'YYYY-MM-DD'`
+- `MudDatePickerHeaderStyle`: `'title' | 'dropdown'`
+- `MudDatePickerAppearance`: `'elevated' | 'flat'`
+- `MudDateMonthChange`: `{ year: number; month: number }`
+- `MudDateInputSize`: `'medium' | 'large'`
+- `MudDateInputVariant`: `'default' | 'warning' | 'destructive' | 'success'`
+- `MudCivilDate`: `{ y: number; m: number; d: number }`

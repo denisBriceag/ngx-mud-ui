@@ -41,12 +41,17 @@ export class MudLink {
   private readonly _element = inject(ElementRef<HTMLElement>).nativeElement;
   private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
+  /** @description Color: `primary` (brand, default; also an empty attribute) or `strict` (text color). */
   readonly mudLink = input.required<MudLinkStyle, MudLinkStyle | ''>({
     transform: (value) => value || 'primary',
   });
+  /** @description Text size. */
   readonly size = input<MudLinkSize>('medium');
+  /** @description When the underline shows. */
   readonly underline = input<MudLinkUnderline>('always');
+  /** @description Invisible hit area: `pointer` 32px, `touch` 40px, `auto` picks by device, `none` keeps the text box (for links in running text). */
   readonly touchTarget = input<MudLinkTouchTarget>('auto');
+  /** @description Sets `aria-disabled`, removes the link from the tab order and blocks activation. */
   readonly disabled = input(false, { transform: booleanAttribute });
   /** @description Shows the external-link glyph on `target="_blank"` anchors with no trailing icon. */
   readonly external = input(true, { transform: booleanAttribute });

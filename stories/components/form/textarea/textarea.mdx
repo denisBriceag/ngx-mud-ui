@@ -5,52 +5,51 @@ import * as TextareaStories from './textarea.stories';
 
 # Textarea
 
-The multi-line text field. Same label, helper and error treatment as `mud-text-input`,
-plus a character counter and a resize policy.
-
-## Import
+A multi-line text field with a label, messages and an optional character counter. It works on its
+own with `[(value)]`, with reactive and template-driven forms, and with signal forms.
 
 ```ts
-import { MudTextarea } from 'ngx-mud-ui/textarea';
-import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
-
-@Component({
-  imports: [MudTextarea, MudLabel, MudInlineMessage],
-  template: `
-    <mud-textarea [formControl]="message" [maxLength]="500" [rows]="6">
-      <mud-label>Mesaj</mud-label>
-      @if (message.touched && message.invalid) {
-        <mud-inline-message variant="error">Mesajul este obligatoriu.</mud-inline-message>
-      }
-    </mud-textarea>
-  `,
-})
-export class Demo {}
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudTextarea } from 'ngx-mud-ui/textarea';
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={TextareaStories.Playground} />
 <Controls of={TextareaStories.Playground} />
 
-## Counter and states
+## Basic and counter
 
-<Canvas of={TextareaStories.CounterAndStates} />
+Put a `<mud-label>` and any `<mud-inline-message>` inside, as in a
+[Text input](?path=/docs/components-form-text-input--docs). With `maxLength` set, a `n / max`
+counter shows (turn it off with `[showCounter]="false"`). The visible counter isn't useful to screen
+readers, so give it a sentence with `counterLabel`. `maxLength` is a hard limit; for a soft one,
+validate in the form instead.
 
-## Resize and sizes
+`rows` (default 4) is the starting height. `resize` is `vertical` (default) or `none`; horizontal
+resizing is never allowed.
 
-<Canvas of={TextareaStories.ResizeAndSizes} />
+<Canvas of={TextareaStories.Basic} />
 
-## Truncation
+## Variants and states
 
-<Canvas of={TextareaStories.Truncation} />
+The same as a text input: `variant` (`default`, `warning`, `success`, `destructive`), `invalid`,
+`required`, `readonly` and `disabled`. `size` is `medium` (120px tall at least, default) or
+`large` (150px).
+
+<Canvas of={TextareaStories.States} />
+
+## Forms
+
+Bind `formControl` and bind `invalid` yourself, or bind `[formField]` and let the field drive
+`invalid`, `required` and `maxLength`.
+
+<Canvas of={TextareaStories.Forms} />
+
+## Accessibility
+
+Messages and the counter are linked with `aria-describedby`; messages sit in a `role="alert"` region,
+so showing an error announces it. Use `aria-label` only when there's no `<mud-label>`. Call `focus()`
+to focus the textarea.
 
 ## API
 
@@ -58,34 +57,10 @@ Selector: `mud-textarea`
 
 <ArgTypes of={TextareaStories} />
 
-### Label and messages
+Method: `focus(options?)`. Content slots: `mud-label` and `mud-inline-message`.
 
-The field renders no message text of its own. Project a `<mud-label>` for
-the visible label and any number of `<mud-inline-message>` elements for
-assistive text — *you* decide when they render:
+### Types
 
-- Messages land in a field-owned `role="alert"` region wired into
-  `aria-describedby`, alongside the counter's id while it shows; toggling a
-  message on announces it to screen readers.
-- Inside a field, `mud-inline-message` is always the small size — its
-  `size` input is ignored.
-- The field's `invalid` input drives the red border and `aria-invalid`;
-  with signal forms it is bound automatically, with reactive forms bind
-  `[invalid]="ctrl.invalid && ctrl.touched"`.
-
-## Usage tips
-
-- **The counter needs `maxLength`.** `showCounter` is on by default but renders
-  nothing until a maximum is set, since there is nothing to count towards.
-- **`counterLabel` is the screen-reader sentence for the counter** and is fully
-  consumer-owned — the visible `n / max` is not announced usefully on its own.
-- **Horizontal resizing is never allowed.** `resize` chooses between `vertical`
-  and `none`, because a textarea widened past its container breaks the layout.
-- **`rows` is the starting height, not a limit.** With `resize="vertical"` the
-  user can still drag it taller.
-- **`maxLength` is a hard native limit.** For a soft limit that warns but still
-  accepts, leave it unset and validate in the form instead.
-- **`invalid` drives visuals; a projected message supplies the text.** Nothing
-  renders a message for you — pair `invalid` with an `@if`-guarded
-  `<mud-inline-message variant="error">` to show one only when it should
-  appear.
+- `MudTextareaVariant`: `'default' | 'warning' | 'destructive' | 'success'`
+- `MudTextareaSize`: `'medium' | 'large'`
+- `MudTextareaResize`: `'vertical' | 'none'`

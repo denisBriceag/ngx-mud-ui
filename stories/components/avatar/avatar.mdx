@@ -5,52 +5,51 @@ import * as AvatarStories from './avatar.stories';
 
 # Avatar
 
-Represents a person or entity. Either project the content yourself — initials
-text, an icon, or an `<img>` — or pass `name` / `initials` and let the avatar
-derive the initials.
-
-## Import
+A round picture of a person: a photo, initials or an icon.
 
 ```ts
 import { MudAvatar } from 'ngx-mud-ui/avatar';
-
-@Component({
-  imports: [MudAvatar],
-  template: `
-    <mud-avatar name="Olga Popescu" />
-    <mud-avatar label="Olga Popescu">OP</mud-avatar>
-    <mud-avatar name="Olga Popescu"><img src="/photo.jpg" alt="Olga Popescu" /></mud-avatar>
-  `,
-})
-export class Demo {}
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={AvatarStories.Playground} />
 <Controls of={AvatarStories.Playground} />
 
-## Content types
+## Content
 
-<Canvas of={AvatarStories.ContentTypes} />
+The avatar styles what you put inside it: an `<img>` is cropped to the circle, a `<mud-icon>` or
+`<svg>` is tinted, and text is shown as uppercase initials. With only `name`, it shows the initials
+itself.
 
-## Name fallback
+<Canvas of={AvatarStories.Basic} />
 
-<Canvas of={AvatarStories.NameFallback} />
+## Initials from a name
+
+`name` derives the initials from the first and last word, and is also the accessible name.
+`initials` sets them yourself (trimmed to two characters and uppercased). Pass `name` together with
+a photo: if the photo fails to load, the initials take its place.
+
+<Canvas of={AvatarStories.Name} />
 
 ## Sizes
 
+`size` is `extra-small` (24px), `small` (32px), `medium` (40px, default), `large` (48px) or
+`extra-large` (72px). Give an icon the matching `scale`.
+
 <Canvas of={AvatarStories.Sizes} />
 
-## Avatar stack
+## Stack
 
-<Canvas of={AvatarStories.AvatarStack} />
+Wrap avatars in an element with the `avatar-stack` class to overlap them. The overlap follows the
+avatars' size.
+
+<Canvas of={AvatarStories.Stack} />
+
+## Accessibility
+
+The avatar is an image (`role="img"`). Its accessible name is the first that is set: `label`,
+`name`, "Avatar for" plus the initials, or "User avatar". Projected content is hidden from screen
+readers, so the `alt` of a photo isn't read on its own. These texts are translatable, see
+[Localization](?path=/docs/foundations-localization--docs).
 
 ## API
 
@@ -58,16 +57,6 @@ Selector: `mud-avatar`
 
 <ArgTypes of={AvatarStories} />
 
-## Usage tips
+### Types
 
-- **A projected `<img>` that fails to load collapses**, so passing `name`
-  alongside the photo gives you the official photo-to-initials fallback for
-  free. Photo-only avatars show an empty circle when the URL breaks.
-- **`initials` overrides derivation from `name`** and is trimmed to two
-  characters and uppercased. Use it when your initials rules differ from
-  first-letter-of-each-word.
-- **`label` changes the accessibility semantics**, not just the text: the host
-  becomes `role="img"` with that name and the projected content turns
-  presentational. Set it whenever the avatar carries meaning on its own.
-- **Decorative avatars beside a visible name need no `label`.** Leaving it unset
-  keeps the avatar silent so screen readers don't hear the name twice.
+- `MudAvatarSize`: `'extra-small' | 'small' | 'medium' | 'large' | 'extra-large'`

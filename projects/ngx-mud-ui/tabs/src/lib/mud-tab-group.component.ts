@@ -134,13 +134,20 @@ export class MudTabGroup {
 
   readonly tabs = contentChildren(MudTab);
 
+  /** @description Accessible name for the tab list. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
+  /** @description Id of an element that names the tab list. */
   readonly ariaLabelledby = input<string | undefined>(undefined, { alias: 'aria-labelledby' });
+  /** @description `tabindex` of the active panel; set `0` when the panel has nothing focusable in it. */
   readonly contentTabIndex = input<number | null>(null);
+  /** @description Stretches the tabs to fill the header width. */
   readonly stretchTabs = input(false, { transform: booleanAttribute });
+  /** @description Tab height and text size. */
   readonly size = input<'md' | 'sm'>('md');
+  /** @description Index of the selected tab. Two-way bindable. */
   readonly selectedIndex = model(0);
 
+  /** @description Fires when the selected tab changes, with its index and the tab. */
   readonly selectedTabChange = output<MudTabChangeEvent>();
 
   protected readonly focusedIndex = signal(0);

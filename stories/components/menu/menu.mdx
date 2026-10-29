@@ -1,22 +1,17 @@
 import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
 import * as MenuStories from './menu.stories';
-import { MudMegaMenu, MudMegaMenuColumn, MudMegaMenuTrigger } from 'ngx-mud-ui/menu';
+import { MudMenuItem, MudMegaMenu, MudMegaMenuTrigger, MudMegaMenuColumn } from 'ngx-mud-ui/menu';
 
 <Meta of={MenuStories} />
 
 # Menu
 
-A floating panel of choosable options opened from a trigger. Two semantics via
-`type`: `contextual` (an ARIA menu of actions) and `selection` (a single-select
-ARIA listbox whose chosen option carries a trailing check).
-
-## Import
+A floating list of options opened from a button. `mud-menu` is for actions or a single choice on
+one element. `mud-mega-menu` is a full-width navigation panel for a site header.
 
 ```ts
+import { MudMenu, MudMenuItem, MudMenuTrigger } from 'ngx-mud-ui/menu';
 import {
-  MudMenu,
-  MudMenuItem,
-  MudMenuTrigger,
   MudMegaMenu,
   MudMegaMenuColumn,
   MudMegaMenuLink,
@@ -25,154 +20,147 @@ import {
 } from 'ngx-mud-ui/menu';
 ```
 
-## Usage
-
-Attach a panel to any button with `[mudMenuTriggerFor]`. The popover dismisses
-on a decision, outside interaction, Escape, or pressing the trigger again.
-
-The `open` input is different: it renders the panel **in place, in the normal
-page flow** — no anchoring, no overlay. Use it for permanently visible panels
-or inside your own positioning system; use the trigger for anchored popovers.
-While a trigger is presenting the menu, `open` is ignored.
-
 <Canvas of={MenuStories.Playground} />
 <Controls of={MenuStories.Playground} />
 
-## Types
+## Basic
 
-<Canvas of={MenuStories.Types} />
+Put `[mudMenuTriggerFor]` on a button and point it at a `<mud-menu>`. The menu emits `selected`
+with the activated item's `value`. It closes on a choice, an outside click, <kbd>Esc</kbd> or the
+button. A `disabled` item stays focusable but can't be activated.
 
-## Leading elements
+<Canvas of={MenuStories.Basic} />
 
-Items take `leading="icon" | "checkbox" | "radio"`; icon content projects
-through the `[icon]` slot. Set `closeOnSelect` to `false` for keep-open
-checkbox menus.
+## Single choice
 
-<Canvas of={MenuStories.Leadings} />
+`type="selection"` makes the menu a listbox: the chosen item shows a check mark, and `value` is
+two-way bindable.
 
-## Segmented
+<Canvas of={MenuStories.Selection} />
 
-A `heading` item renders a separator plus an optional section label — leave it
-empty for the separator alone.
+## Icons, checkboxes and radios
 
-<Canvas of={MenuStories.Segmented} />
+`leading="icon"` shows the item's `[icon]` content before the label. `leading="checkbox"` and
+`leading="radio"` show a check box or radio; you keep their state and pass it to `selected`, as
+here. Set `[closeOnSelect]="false"` to let users change several options in a row.
 
-## Truncation
+<Canvas of={MenuStories.Leading} />
 
-Labels clamp at two lines.
+## Sections and long labels
 
-<Canvas of={MenuStories.Truncation} />
+An item with `heading` is a divider, with an optional section label. Labels wrap to two lines and
+then end in "…".
+
+`open` renders the panel in place, in the page flow, without a trigger. Use it for a panel that's
+always visible; it's ignored while a trigger shows the menu.
+
+<Canvas of={MenuStories.Sections} />
 
 ## Nested menus
 
-Put `[mudMenuTriggerFor]` on a `mud-menu-item` to open a submenu — chevron,
-hover-open, ArrowRight/ArrowLeft and chain dismissal included.
+Put `[mudMenuTriggerFor]` on a `<mud-menu-item>` to open a submenu. It opens on hover or
+
+<kbd>→</kbd>, and <kbd>←</kbd> closes it.
 
 <Canvas of={MenuStories.Nested} />
 
-## Full-width menu
+## Position
 
-A header nav item that expands a panel spanning the whole header, laid out as
-columns of a heading over navigation links. Use it for the "Servicii" style
-entry in a site header; the regular menu above is for actions on one element.
+`yPosition` is `below` (default) or `above`; `xPosition` is `after` (default, aligned to the
+button's start edge) or `before`. The menu flips if there isn't room.
 
-Mark the header bar with `mudMegaMenuOrigin`, put `[mudMegaMenuTriggerFor]` on
-a `<button>` inside it, and project columns of your own anchors (`href` or
-`routerLink`) into `<mud-mega-menu>`. The button renders its own chevron.
+<Canvas of={MenuStories.Position} />
 
-```html
-<header mudMegaMenuOrigin>
-  <button [mudMegaMenuTriggerFor]="services">Servicii</button>
-</header>
+## Mega menu
 
-<mud-mega-menu #services>
-  <mud-mega-menu-column heading="Plăți">
-    <a mudMegaMenuLink routerLink="/mpay">MPay</a>
-    <a mudMegaMenuLink href="https://msign.gov.md">MSign</a>
-  </mud-mega-menu-column>
-</mud-mega-menu>
-```
+A header item that opens a panel of link columns across the whole header. Mark the header with
+`mudMegaMenuOrigin`, put `[mudMegaMenuTriggerFor]` on a `<button>` in it (the button renders its
+own chevron), and fill `<mud-mega-menu>` with `<mud-mega-menu-column>`s of `mudMegaMenuLink`
+anchors (`href` or `routerLink`).
 
-The panel takes the origin's exact width and sits flush under it; triggers that
-share an origin close each other. Without an origin the panel spans the viewport
-under the button, which suits fixed or top-of-page headers. It closes on a link
-click (after navigation starts), Escape, an outside click, or the button again.
+The panel is as wide as the origin and sits right under it; buttons sharing an origin close each
+other. Without an origin, the panel spans the window under the button. It closes on a link click,
 
-<Canvas of={MenuStories.FullWidth} />
-<Canvas of={MenuStories.FullWidthNoOrigin} />
+<kbd>Esc</kbd>, an outside click or the button.
 
-### Reacting to open and close
+The button emits `opened` and `closed`; get it with `viewChild(MudMegaMenuTrigger)` to call
+`open()`, `close(restoreFocus)` or `toggle()`. `panelClass` adds classes to the panel; style them
+in a global stylesheet, since the panel renders in an overlay.
 
-The button emits `opened` and `closed` when the panel actually opens or closes.
-`<mud-mega-menu>` has its own `closed` output for close requests raised inside
-the panel: Escape, a link click, or Tab past the last link.
-
-To drive the panel from code, grab the button with a template reference or
-`viewChild` and call `open()`, `close(restoreFocus)` or `toggle()`.
-
-```html
-<button [mudMegaMenuTriggerFor]="menu" (opened)="track('open')">Servicii</button>
-```
-
-```ts
-readonly services = viewChild.required(MudMegaMenuTrigger);
-
-closeFromCode() {
-  this.services().close(true); // true returns focus to the button
-}
-```
-
-### Styling the panel
-
-Add your own classes to the panel root with `panelClass`. The panel renders in
-the overlay container, so style it with global CSS rather than component styles.
-
-```html
-<mud-mega-menu #menu panelClass="app-services" aria-label="Toate serviciile">
-```
-
-The panel is named by its button (`aria-labelledby`), so the name is the
-button's text, or the button's own `aria-label` for an icon-only button. An
-`aria-label` on `<mud-mega-menu>` overrides it.
+<Canvas of={MenuStories.Mega} />
 
 ## Accessibility
 
-### Full-width menu
+**Menu.** A `contextual` menu is an ARIA `menu`; a `selection` menu is a `listbox`. Name the panel
+with `aria-label`. The button gets `aria-haspopup` and `aria-expanded`.
 
-**Name it**: the panel is a `nav` labelled by its button (`aria-labelledby`), so
-its name follows the button's text or `aria-label`, even if the label changes
-while the panel is open. Set `aria-label` on `<mud-mega-menu>` to override it.
+- <kbd>Enter</kbd>, <kbd>Space</kbd> or <kbd>↓</kbd> on the button opens the menu at the first item;
+  <kbd>↑</kbd> opens it at the last.
+- <kbd>↑</kbd> <kbd>↓</kbd> <kbd>Home</kbd> <kbd>End</kbd> move between items; <kbd>Enter</kbd> or
+  <kbd>Space</kbd> activates one.
+- <kbd>Esc</kbd> closes the menu and returns focus to the button; <kbd>Tab</kbd> closes every open
+  menu.
 
-**Keyboard**:
-- **Enter / Space** toggles the panel; focus stays on the button.
-- **↓** opens the panel and moves to the first link.
-- With the panel open, **Tab** from the button enters it; from the last link it
-  closes the panel and continues on the page.
-- **Shift+Tab** from the first link returns to the button and keeps the panel
-  open; from the button it closes the panel.
-- **Esc** closes and returns focus to the button.
+**Mega menu.** The panel is a `nav` named by its button's text (or the button's `aria-label`); an
+`aria-label` on `<mud-mega-menu>` overrides it. Column headings are `h3`, so keep them consistent
+with your page outline, and name the header's own `<nav>`.
 
-**States**: `aria-expanded` on the button; `aria-controls` points at the open
-panel. Links are plain anchors, so screen readers announce them as links.
-
-**What you must do**: give the header's own `<nav>` an `aria-label`, and keep
-the mega menu's headings consistent with your page's heading outline (they
-render as `h3`).
+- <kbd>Enter</kbd> or <kbd>Space</kbd> toggles the panel; <kbd>↓</kbd> opens it at the first link.
+- <kbd>Tab</kbd> from the open button enters the panel; <kbd>Tab</kbd> past the last link closes it.
+  <kbd>Shift</kbd>+<kbd>Tab</kbd> from the first link returns to the button.
+- <kbd>Esc</kbd> closes it and returns focus to the button.
 
 ## API
 
 ### MudMenu
 
+Selector: `mud-menu`
+
 <ArgTypes of={MenuStories} />
 
+### MudMenuItem
+
+Selector: `mud-menu-item`. Content slots: `[icon]` and the label.
+
+<ArgTypes of={MudMenuItem} />
+
+### MudMenuTrigger
+
+Selector: `[mudMenuTriggerFor]`
+
+- `mudMenuTriggerFor` (input, `MudMenu`, required): the menu to open.
+- `opened` / `closed` (outputs): fire when the menu opens or closes.
+- `open()`, `close(restoreFocus: boolean)`, `closeAll(restoreFocus: boolean)`, `toggle()`: control it
+  from code. `closeAll` also closes parent menus.
+
 ### MudMegaMenu
+
+Selector: `mud-mega-menu`
 
 <ArgTypes of={MudMegaMenu} />
 
 ### MudMegaMenuTrigger
 
+Selector: `button[mudMegaMenuTriggerFor]`
+
 <ArgTypes of={MudMegaMenuTrigger} />
+
+Methods: `open()`, `close(restoreFocus: boolean)`, `toggle()`.
 
 ### MudMegaMenuColumn
 
+Selector: `mud-mega-menu-column`
+
 <ArgTypes of={MudMegaMenuColumn} />
+
+### Other directives
+
+- `[mudMegaMenuOrigin]`: the element the panel spans and aligns under.
+- `a[mudMegaMenuLink]`: a link in a column; clicking it closes the panel.
+
+### Types
+
+- `MudMenuType`: `'contextual' | 'selection'`
+- `MudMenuItemLeading`: `'none' | 'icon' | 'checkbox' | 'radio'`
+- `MudMenuPositionX`: `'before' | 'after'`
+- `MudMenuPositionY`: `'above' | 'below'`

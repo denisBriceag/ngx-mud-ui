@@ -33,6 +33,7 @@ declare const ngDevMode: boolean | undefined;
 export class MudIndicatorStep {
   private readonly _indicator = inject<MudStepIndicator>(forwardRef(() => MudStepIndicator));
 
+  /** @description The step's heading; the content goes under it. */
   readonly heading = input.required<string>();
 
   private readonly _formatLocale = injectMudFormatLocale();

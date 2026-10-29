@@ -91,7 +91,7 @@ const ANIMATION_TIMEOUT_MS = 600;
 
             @if (messageTemplate(); as tpl) {
               <div class="mud-toast__body"><ng-container *ngTemplateOutlet="tpl; context: ctx()" /></div>
-            } @else {
+            } @else if (hasMessage()) {
               <p class="mud-toast__body">{{ messageText() }}</p>
             }
           </div>
@@ -125,6 +125,7 @@ const ANIMATION_TIMEOUT_MS = 600;
     '[class.mud-toast--success]': 'entry().config.variant === "success"',
     '[class.mud-toast--error]': 'entry().config.variant === "error"',
     '[class.mud-toast--has-title]': 'hasTitle()',
+    '[class.mud-toast--stacked]': 'stacked()',
     '[class.mud-toast--leaving]': 'entry().leaving()',
     '[attr.data-toast-id]': 'entry().id',
     '(pointerenter)': 'onHoverStart()',
@@ -159,6 +160,19 @@ export class MudToastItem implements OnDestroy {
 
     return typeof title === 'string' ? title.trim().length > 0 : !!title;
   });
+
+  readonly hasMessage = computed(() => {
+    const message = this.entry().data?.message;
+
+    return typeof message === 'string' ? message.trim().length > 0 : !!message;
+  });
+
+  /** More than one row (title, message, actions) or custom content: icon and close align to the top. */
+  readonly stacked = computed(
+    () =>
+      !!this.entry().componentType ||
+      [this.hasTitle(), this.hasMessage(), !!this.entry().data?.actions].filter(Boolean).length > 1,
+  );
 
   readonly titleTemplate = computed(() => this._asTemplate(this.entry().data?.title));
   readonly titleText = computed(() => this._asText(this.entry().data?.title));

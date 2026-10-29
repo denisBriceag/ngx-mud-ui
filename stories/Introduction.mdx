@@ -4,189 +4,46 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 <img src="/logo-mark.svg" alt="ngx-mud-ui logo" width="56" />
 
-# ngx-mud-ui
+# Getting started
 
-> **Unofficial library — not for production use.** `ngx-mud-ui` is an independent
-> project. It is not made, endorsed or maintained by eGov Moldova, and it is not
-> intended for use in production projects. It is purely inspired by the official
-> [`@egov-moldova/mud`](https://www.npmjs.com/package/@egov-moldova/mud) package and its
+Angular components for **MUD**, the Moldova Unified Design system.
+
+> **Unofficial.** `ngx-mud-ui` is an independent project, not made or endorsed by eGov Moldova,
+> and not meant for production. It is inspired by the official
+> [`@egov-moldova/mud`](https://www.npmjs.com/package/@egov-moldova/mud) package and the
 > [MUD documentation](https://mud.dev.egov.md/).
 
-An Angular component library implementing **MUD** — the Moldova Unified Design
-system by eGov Moldova. It provides the design system's components, icons, design
-tokens and typography as Angular packages.
+## 1. Install
 
-## What's inside
-
-- **23 entry points** — 22 component packages plus the icon set, each importable
-  on its own so you only pull in what you use.
-- **178 icons** rendered by a single `<mud-icon>` component, individually
-  tree-shakeable: only the icons you register reach your bundle.
-- **Design tokens** — the full colour, spacing, elevation, border and typography
-  scales as CSS custom properties, plus an opt-in **dark theme**.
-- **The Onest typeface**, bundled with the styles.
-- **Both Angular forms systems** — every form control implements
-  `ControlValueAccessor` (reactive and template-driven) *and* the signal-forms
-  contract, and each also works standalone through a two-way `model()`.
-
-Browse **Foundations** for the tokens and **Components** for the API of each
-package, with the form controls grouped under **Components → Form**. Every
-component page carries its inputs, outputs, live examples and usage notes.
-
-## Requirements
-
-<table>
-  <thead>
-    <tr><th>Dependency</th><th>Version</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>Angular (<code>core</code>, <code>common</code>, <code>forms</code>, <code>platform-browser</code>)</td><td><code>^22.1.0</code></td></tr>
-    <tr><td><code>@angular/cdk</code></td><td><code>^22.1.0</code></td></tr>
-    <tr><td>Node (to build from source)</td><td><code>24.18.0</code> — see <code>.nvmrc</code></td></tr>
-  </tbody>
-</table>
-
-These are peer dependencies: your application provides them.
-
-## Installation
-
-> **Not on a public registry yet.** `ngx-mud-ui` is not published to npm, so
-> install it from a build of this repository. Once it is published the usual
-> `pnpm add ngx-mud-ui` will work and this section will say so.
-
-Build the package, then install the output into your application:
+Requires Angular 22.2 or later. In your application, run:
 
 ```bash
-# in this repository
-pnpm install
-pnpm build           # ng-packagr -> dist/ngx-mud-ui
+ng add ngx-mud-ui
 ```
 
-```bash
-# in your application
-pnpm add file:../ngx-mud-ui/dist/ngx-mud-ui
-pnpm add @angular/cdk    # peer dependency
-```
+The schematic installs the peer dependencies, registers the stylesheets in `angular.json` and
+sets the Onest font on `body`. It asks whether to include the dark theme (`--darkMode` skips the
+prompt); in a multi-app workspace, pass `--project <name>`.
 
-To hand the package to someone else, pack it instead:
+## 2. Use a component
 
-```bash
-cd dist/ngx-mud-ui && npm pack     # -> ngx-mud-ui-0.0.1.tgz
-```
-
-## Global setup
-
-Run the schematic in your application:
-
-```bash
-ng add ngx-mud-ui              # asks whether to include dark mode
-ng add ngx-mud-ui --darkMode   # also adds the opt-in dark theme stylesheet
-```
-
-It installs any missing peer dependencies (`@angular/cdk`), adds the stylesheets below to
-`angular.json`, and sets the page font with a `body` rule in your global stylesheet. Running it
-again changes nothing. In a workspace with several applications, pass `--project <name>`.
-
-### Manual setup
-
-**1. Add the base stylesheet** to your app's `angular.json`, in the `build` target's `styles`
-(and in the `test` target's too if it uses Karma; the default vitest runner inherits styles
-from `build`). It defines the design tokens (`--mud-*`), the Onest font and the shared
-animations; each component brings its own CSS.
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-**Using the tokens.** Every token is a global CSS variable, so your own styles can match the
-library: the colors (`--mud-color-*`, which switch with dark mode) and the shared scales —
-spacing and gaps (`--mud-spacing-*`), radius (`--mud-border-radius-*`), border widths, shadows
-(`--mud-drop-shadow-*`), focus ring, font family and the type scale. See
-[Design tokens](?path=/story/foundations-design-tokens--reference).
-
-```scss
-.my-card {
-  gap: var(--mud-spacing-16);
-  border-radius: var(--mud-border-radius-8);
-  box-shadow: var(--mud-drop-shadow-300);
-  color: var(--mud-color-text-base-default);
-}
-```
-
-Component-specific tokens (`--mud-toast-*`, `--mud-table-*`, …) can be overridden too, but that
-is **not recommended** — the library follows the official MUD design. Dark mode: set
-`data-theme="dark"` on `<html>` (see [Dark Mode](?path=/docs/foundations-dark-mode--docs)).
-
-**Breakpoints.** `@use 'ngx-mud-ui/breakpoints' as bp;` in stylesheets and `MudBreakpoints` in
-TypeScript — see [Breakpoints](?path=/docs/foundations-breakpoints--docs).
-
-**Languages.** Every built-in text (button names, announcements, empty states) is English by default. `ngx-mud-ui/i18n` ships Romanian and Russian packs and lets you plug in your own translation library — see [Localization](?path=/docs/foundations-localization--docs).
-
-**Your page is yours.** The base stylesheet styles no `body`, headings, links or paragraphs and
-ships no utility classes — the app owns its page typography and layout (the `mud-sidebar-layout`
-shell included). Each component starts from the official body text style, so content you project
-*into* a component — a tab panel, dialog or drawer body, accordion panel, table cell — inherits it;
-style that content yourself where you want something else.
-
-**Customizing components.** The components follow the official MUD design, so customization goes
-through the design tokens only — the colors and the shared scales above. Component class names,
-element structure and internal styles are private implementation details: they are not a supported
-API and may change in any release, so styling them from your app is not supported.
-
-**2. Add the CDK overlay stylesheet** to the same `styles`, before the base stylesheet. It's
-needed by every component that renders in an overlay — tooltip, menu and mega-menu, select,
-phone, date and time pickers, dialog, drawer, toast, breadcrumb overflow, pagination's page menu:
-
-```json
-"styles": ["@angular/cdk/overlay-prebuilt.css", "node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-**3. Set the page font** in your global stylesheet, so text outside the components uses Onest too:
-
-```scss
-body {
-  font-family: var(--mud-font-family-base);
-  font-size: 1rem;
-}
-```
-
-**4. Register the icons you use** — see [Icons](#icons) below. Only needed if
-you render `<mud-icon>`.
-
-## Using a component
-
-Every component is standalone: import the class and put it in a component's
-`imports`. There is no `NgModule` to register.
+Every component is standalone. Import it from its entry point and add it to `imports`:
 
 ```ts
 import { Component } from '@angular/core';
 import { MudButton } from 'ngx-mud-ui/button';
-import { MudTextInput } from 'ngx-mud-ui/text-input';
-import { MudLabel } from 'ngx-mud-ui/label';
 
 @Component({
-  selector: 'app-request',
-  imports: [MudButton, MudTextInput, MudLabel],
-  template: `
-    <mud-text-input required [(value)]="idnp" [maxLength]="13">
-      <mud-label>IDNP</mud-label>
-    </mud-text-input>
-    <button type="button" mudButton (click)="submit()">Continuă</button>
-  `,
+  selector: 'app-root',
+  imports: [MudButton],
+  template: `<button type="button" mudButton>Continue</button>`,
 })
-export class RequestForm {
-  idnp = '';
-
-  submit(): void {
-    // …
-  }
-}
+export class App {}
 ```
 
-## Icons
+## 3. Register icons (optional)
 
-Icons are separate exports, so the bundle only carries the ones you register.
-Register them once at bootstrap:
+Only the icons you register reach your bundle:
 
 ```ts
 import { provideMudIcons, alarm, arrowLeft } from 'ngx-mud-ui/icons';
@@ -196,147 +53,47 @@ bootstrapApplication(App, {
 });
 ```
 
-Then render them anywhere:
+Then render them with `<mud-icon name="alarm" />`. See **Components → Icon** for the full set.
 
-```ts
-import { MudIconComponent } from 'ngx-mud-ui/icons';
+<details>
+  <summary><strong>Manual setup (without <code>ng add</code>)</strong></summary>
 
-@Component({
-  imports: [MudIconComponent],
-  template: `<mud-icon name="alarm" variant="outlined" [scale]="24" />`,
-})
-export class Demo {}
+Install the package and its peer dependency:
+
+```bash
+npm install ngx-mud-ui @angular/cdk
 ```
 
-Icons default to `variant="outlined"` and `scale="24"`, take their colour from
-the surrounding CSS `color`, and are decorative unless you give them an
-`aria-label`. The full set is browsable under **Components → Icon**.
-
-## Entry points
-
-<table>
-  <thead>
-    <tr><th>Import from</th><th>Provides</th></tr>
-  </thead>
-  <tbody>
-    <tr><td><code>ngx-mud-ui/accordion</code></td><td>Accordion, accordion group, header, title, description</td></tr>
-    <tr><td><code>ngx-mud-ui/avatar</code></td><td>Avatar</td></tr>
-    <tr><td><code>ngx-mud-ui/banner</code></td><td>Full-width system message banner</td></tr>
-    <tr><td><code>ngx-mud-ui/badge</code></td><td>Inline badge and corner-badge directive</td></tr>
-    <tr><td><code>ngx-mud-ui/button</code></td><td>Button and icon-button directives</td></tr>
-    <tr><td><code>ngx-mud-ui/checkbox</code></td><td>Checkbox</td></tr>
-    <tr><td><code>ngx-mud-ui/chip</code></td><td>Filter and input chips</td></tr>
-    <tr><td><code>ngx-mud-ui/dialog</code></td><td>Modal dialog service <em>(CDK dialog)</em></td></tr>
-    <tr><td><code>ngx-mud-ui/drawer</code></td><td>Edge-pinned slide-in panel service <em>(CDK dialog)</em></td></tr>
-    <tr><td><code>ngx-mud-ui/icons</code></td><td>Icon component, registry, providers, 178 icons</td></tr>
-    <tr><td><code>ngx-mud-ui/info-box</code></td><td>In-content callout</td></tr>
-    <tr><td><code>ngx-mud-ui/inline-message</code></td><td>Inline message</td></tr>
-    <tr><td><code>ngx-mud-ui/input-chip</code></td><td>Chip-list field</td></tr>
-    <tr><td><code>ngx-mud-ui/label</code></td><td>Field label projection element</td></tr>
-    <tr><td><code>ngx-mud-ui/link</code></td><td>Link directive</td></tr>
-    <tr><td><code>ngx-mud-ui/numeric-input</code></td><td>Numeric field with steppers and locale formatting</td></tr>
-    <tr><td><code>ngx-mud-ui/pagination</code></td><td>Page navigator, pairs with the table data source</td></tr>
-    <tr><td><code>ngx-mud-ui/radio</code></td><td>Radio group and radio</td></tr>
-    <tr><td><code>ngx-mud-ui/search-input</code></td><td>Search field</td></tr>
-    <tr><td><code>ngx-mud-ui/segmented-control</code></td><td>Segmented control and segment</td></tr>
-    <tr><td><code>ngx-mud-ui/select-input</code></td><td>Select field <em>(CDK overlay)</em></td></tr>
-    <tr><td><code>ngx-mud-ui/spinner</code></td><td>Spinner</td></tr>
-    <tr><td><code>ngx-mud-ui/stepper</code></td><td>Stepper and step indicator</td></tr>
-    <tr><td><code>ngx-mud-ui/switch</code></td><td>Switch</td></tr>
-    <tr><td><code>ngx-mud-ui/table</code></td><td>Table (CDK), sort, in-memory data source</td></tr>
-    <tr><td><code>ngx-mud-ui/tabs</code></td><td>Tab group, tab, tab label</td></tr>
-    <tr><td><code>ngx-mud-ui/tag</code></td><td>Tag</td></tr>
-    <tr><td><code>ngx-mud-ui/text-input</code></td><td>Single-line text field</td></tr>
-    <tr><td><code>ngx-mud-ui/textarea</code></td><td>Multi-line field</td></tr>
-    <tr><td><code>ngx-mud-ui/tooltip</code></td><td>Tooltip directive <em>(CDK overlay)</em></td></tr>
-    <tr><td><code>ngx-mud-ui/breakpoints</code></td><td>Breakpoints: Sass mixins + <code>MudBreakpoints</code></td></tr>
-    <tr><td><code>{'ngx-mud-ui/prebuilt/mud.css'}</code></td><td>Base stylesheet: tokens, Onest font</td></tr>
-    <tr><td><code>{'ngx-mud-ui/prebuilt/mud-dark.css'}</code></td><td>Opt-in dark theme (any order next to <code>mud.css</code>)</td></tr>
-  </tbody>
-</table>
-
-## Theming
-
-The dark theme is **opt-in**: add `node_modules/ngx-mud-ui/prebuilt/mud-dark.css` to `styles`,
-next to `mud.css` (it re-points the color tokens; `:root[data-theme='dark']` out-ranks the light
-`:root` values, so the order of the two files does not matter). The planned `ng add` schematic will offer this as an option. Then light and dark are a single attribute on the root element:
+Add the stylesheets to the `build` target's `styles` in `angular.json` (and to `test` if it
+uses Karma), before your own. Add `ngx-mud-ui/prebuilt/mud-dark.css` too if you want the dark
+theme.
 
 ```json
 "styles": [
-  "node_modules/ngx-mud-ui/prebuilt/mud.css",
-  "node_modules/ngx-mud-ui/prebuilt/mud-dark.css",
+  "@angular/cdk/overlay-prebuilt.css",
+  "ngx-mud-ui/prebuilt/mud.css",
   "src/styles.scss"
 ]
 ```
 
-```ts
-document.documentElement.setAttribute('data-theme', 'dark'); // remove it for light
+Set the page font in your global stylesheet:
+
+```scss
+body {
+  font-family: var(--mud-font-family-base);
+  font-size: 1rem;
+}
 ```
 
-The attribute must sit on the **root** element. Scoped theming — putting
-`data-theme` on a wrapper to darken one section — is not supported, for two
-reasons:
+</details>
 
-- Many semantic tokens are **chains**: `--mud-color-link-strict-default` is declared
-  on `:root` as `var(--mud-color-text-base-default)`. CSS substitutes a custom
-  property's `var()` where that property is *declared*, so the chained token has
-  already baked in its light value by the time a nested wrapper remaps the base
-  one. The section's links stay black on your dark band.
-- Tooltips and selects render through a **CDK overlay container attached
-  directly to `<body>`**, outside any wrapper, so they would keep the page
-  theme regardless.
+## Next steps
 
-For a permanently dark band (a hero, a footer), style it with explicit colours
-instead. Use the **Theme** switch in this Storybook's toolbar to preview any
-story in either mode, and see **Foundations → Dark Mode** for the full
-explanation.
-
-## Forms
-
-Form controls work with whichever system your app uses:
-
-```html
-<!-- reactive -->
-<mud-text-input [formControl]="idnp" [invalid]="idnp.invalid && idnp.touched">
-  <mud-label>IDNP</mud-label>
-  @if (idnp.invalid && idnp.touched) {
-    <mud-inline-message variant="error">IDNP invalid.</mud-inline-message>
-  }
-</mud-text-input>
-
-<!-- signal forms -->
-<mud-text-input [formField]="form.idnp" required>
-  <mud-label>IDNP</mud-label>
-  @if (form.idnp().touched() && form.idnp().invalid()) {
-    <mud-inline-message variant="error">IDNP invalid.</mud-inline-message>
-  }
-</mud-text-input>
-
-<!-- standalone -->
-<mud-text-input [(value)]="idnp">
-  <mud-label>IDNP</mud-label>
-</mud-text-input>
-```
-
-The label and any assistive message are projected content, not inputs: a
-projected `<mud-label>` wires `for`/`id` and a projected `<mud-inline-message>`
-gets a field-owned `role="alert"` wrapper and `aria-describedby` for free. The
-`invalid` flag and *when* a message appears stay entirely consumer-owned — the
-signal-forms example above shows the recommended timing, gating the message on
-`touched()` so it doesn't appear before the user has interacted with the
-field.
-
-## Working on the library
-
-```bash
-pnpm storybook          # this Storybook, in watch mode
-pnpm build              # build the library into dist/
-pnpm test               # unit tests
-pnpm lint               # ESLint
-pnpm icons:generate     # regenerate icon sources from icons-source/
-```
-
-## Links
-
-- Repository: [denisBriceag/ngx-mud-ui](https://github.com/denisBriceag/ngx-mud-ui)
-- Design system: [egov-moldova/design-system](https://github.com/egov-moldova/design-system)
+- [Design tokens](?path=/story/foundations-design-tokens--reference): the `--mud-*` variables
+  for colors, spacing, radius and type. They are the only supported way to style or customize
+  the library.
+- [Dark Mode](?path=/docs/foundations-dark-mode--docs), [Breakpoints](?path=/docs/foundations-breakpoints--docs)
+  and [Localization](?path=/docs/foundations-localization--docs).
+- **Components** in the sidebar, each with its API, live examples and usage notes. Form
+  controls work with reactive, template-driven and signal forms.
+- Source and issues: [denisBriceag/ngx-mud-ui](https://github.com/denisBriceag/ngx-mud-ui).

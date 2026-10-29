@@ -23,7 +23,9 @@ export type MudSpinnerVariant = 'brand' | 'dark' | 'light' | 'light-on-color';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MudSpinner {
+  /** @description Diameter: 16, 20, 32 or 40px. */
   readonly size = input<MudSpinnerSize>('medium');
+  /** @description Color; `light-on-color` is for saturated backgrounds. */
   readonly variant = input<MudSpinnerVariant>('brand');
   /** @description Visually-hidden status text; defaults to the app labels (`spinner.loading`). */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });

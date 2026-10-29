@@ -5,42 +5,39 @@ import * as SpinnerStories from './spinner.stories';
 
 # Spinner
 
-An indeterminate loading indicator for work with no measurable progress. It
-renders as a status region so assistive tech is told that something is loading.
-
-## Import
+Shows that something is loading when you can't tell how long it will take. For a button that's
+working, use the button's own `loading` state instead.
 
 ```ts
 import { MudSpinner } from 'ngx-mud-ui/spinner';
-
-@Component({
-  imports: [MudSpinner],
-  template: `
-    <mud-spinner />
-    <mud-spinner size="small" variant="light-on-color" aria-label="Se încarcă" />
-  `,
-})
-export class Demo {}
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={SpinnerStories.Playground} />
 <Controls of={SpinnerStories.Playground} />
 
 ## Sizes
 
+`size` is `extra-small` (16px), `small` (20px), `medium` (32px, default) or `large` (40px).
+
 <Canvas of={SpinnerStories.Sizes} />
 
 ## Variants
 
+`variant` is `brand` (default), `dark`, `light` for dark surfaces, or `light-on-color` for
+saturated ones, where the brand color loses contrast.
+
 <Canvas of={SpinnerStories.Variants} />
+
+## While content loads
+
+Show the spinner in place of the content, and mark the region `aria-busy` while it loads.
+
+<Canvas of={SpinnerStories.Loading} />
+
+## Accessibility
+
+The spinner is a status region (`role="status"`) with hidden text that screen readers read. The text
+is "Loading" (translatable); set `aria-label` to say what's loading, such as "Loading requests".
 
 ## API
 
@@ -48,15 +45,7 @@ Selector: `mud-spinner`
 
 <ArgTypes of={SpinnerStories} />
 
-## Usage tips
+### Types
 
-- **Set an `aria-label` that says what is loading.** It defaults to the
-  `spinner.loading` label (English `'Loading'`, translated by a language pack), which is a safety net
-  rather than a choice. The text is rendered
-  visually hidden inside the status region and read aloud.
-- **`variant="light-on-color"` is for saturated backgrounds**, where the default
-  brand spinner loses contrast.
-- **Don't stack a spinner on a loading button.** `mudButton` has its own
-  `loading` state with the matching accessibility contract.
-- **Use it only for indeterminate waits.** When you know how much work is left,
-  a progress indicator tells the user far more.
+- `MudSpinnerSize`: `'extra-small' | 'small' | 'medium' | 'large'`
+- `MudSpinnerVariant`: `'brand' | 'dark' | 'light' | 'light-on-color'`

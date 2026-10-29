@@ -30,8 +30,8 @@ free; hard-code a palette value (or a hex) and you are frozen to one appearance.
 
 **1. Add the dark stylesheet.** The dark theme is opt-in and ships separately, so apps that stay
 light don't load it. Add it to `angular.json` `styles` next to the base stylesheet — its `:root[data-theme='dark']`
-rules out-rank the light `:root` values, so the order of the two files does not matter. (A planned `ng add ngx-mud-ui` schematic will offer
-this as an option; until it ships, add the entry by hand.)
+rules out-rank the light `:root` values, so the order of the two files does not matter. `ng add ngx-mud-ui --darkMode`
+adds the entry for you.
 
 ```json
 "styles": [

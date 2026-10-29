@@ -115,7 +115,9 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
   /** @description Maximum per-file size in bytes; larger files reject with code `size`. */
   readonly maxSize = input<number | undefined>(undefined);
 
+  /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
+  /** @description Adds the red asterisk and, for screen readers, the `requiredLabel` word to the label. */
   readonly required = input(false, { transform: booleanAttribute });
 
   /** @description Destructive visuals + `aria-invalid`. Signal forms bind this automatically. */
@@ -124,6 +126,7 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
   /** @description Set false to render your own `mud-file-item` rows instead of the built-in list. */
   readonly showFileList = input(true, { transform: booleanAttribute });
 
+  /** @description Native `name` attribute. */
   readonly name = input<string>('');
 
   /** @description Lead-in text of the drop-area call to action, before the browse link. */
@@ -165,13 +168,13 @@ export class MudFileInput implements ControlValueAccessor, FormValueControl<File
   /** @description Extra id(s) merged into the browse control's aria-describedby. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
-  /** Fired once per rejected file (type / size / count). */
+  /** @description Fires once per rejected file, with the reason (`type`, `size` or `count`) and the file. */
   readonly rejected = output<MudFileInputRejection>();
 
-  /** Fired when a file is removed from the built-in list. */
+  /** @description Fires when a file is removed from the built-in list. */
   readonly removed = output<MudFileInputRemove>();
 
-  /** Signal-forms touch contract: emitted when focus leaves the control. */
+  /** @description Fires when focus leaves the field; signal forms use it to mark the field touched. */
   readonly touch = output<void>();
 
   private readonly _labels = injectMudLabels();

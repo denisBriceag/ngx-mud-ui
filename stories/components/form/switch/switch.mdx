@@ -5,68 +5,39 @@ import * as SwitchStories from './switch.stories';
 
 # Switch
 
-An instant on/off toggle. A native `<input type="checkbox" role="switch">` — the
-official accessibility pattern — drives a styled track and thumb, and the label
-toggles on click.
-
-## Import
+An on/off toggle that takes effect immediately. If the change only applies after the user presses
+Save, use a [Checkbox](?path=/docs/components-form-checkbox--docs) instead.
 
 ```ts
-import { MudSwitch } from 'ngx-mud-ui/switch';
 import { MudLabel } from 'ngx-mud-ui/label';
-
-@Component({
-  imports: [MudSwitch, MudLabel],
-  template: `
-    <mud-switch [formControl]="notifications">
-      <mud-label>Notificări prin e-mail</mud-label>
-    </mud-switch>
-  `,
-})
-export class Demo {}
+import { MudSwitch } from 'ngx-mud-ui/switch';
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={SwitchStories.Playground} />
 <Controls of={SwitchStories.Playground} />
 
-## States
+## Basic
 
-<Canvas of={SwitchStories.States} />
+Put a `<mud-label>` inside; clicking it toggles the switch. `checked` is two-way bindable. The switch
+has one size and no invalid, read-only or help-text states, like the official design. For a message,
+point `aria-describedby` at your own element.
 
-## Settings panel
+<Canvas of={SwitchStories.Basic} />
 
-<Canvas of={SwitchStories.SettingsPanel} />
+## Forms
+
+Bind `formControl` (reactive and template-driven forms) or `[formField]` (signal forms).
+
+<Canvas of={SwitchStories.Forms} />
+
+## Accessibility
+
+The switch is a native checkbox with `role="switch"`, so <kbd>Space</kbd> toggles it and screen
+readers announce "on" or "off". Use `aria-label` or `aria-labelledby` only when there's no
+`<mud-label>`.
 
 ## API
 
 Selector: `mud-switch`
 
 <ArgTypes of={SwitchStories} />
-
-### Label
-
-The switch renders no message text of its own. Project a `<mud-label>` for
-the visible label beside the track — without one, fall back to `aria-label`
-or `aria-labelledby` for the accessible name.
-
-## Usage tips
-
-- **A switch takes effect immediately.** If the change only applies after a
-  Save button, use a checkbox — the switch's affordance promises instant
-  application.
-- **It is deliberately minimal**, matching the official switch: one size, and no
-  invalid, readonly or supporting-text states. Attach an external message with
-  `aria-describedby` when you need one.
-- **It works with both forms systems**: signal forms via the `FormCheckboxControl`
-  contract, reactive and template-driven forms via `ControlValueAccessor`, or
-  standalone with `[(checked)]`.
-- **Use `aria-label` only when no `mud-label` is projected**; with both set
-  the accessible name silently replaces the visible one.

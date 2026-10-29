@@ -17,7 +17,9 @@ export abstract class MudButtonBase {
   protected readonly _element = inject(ElementRef<HTMLElement>).nativeElement;
   protected readonly _isAnchor = this._element.tagName === 'A';
 
+  /** @description Disables the button; on an `<a>` it sets `aria-disabled` and removes it from the tab order. */
   readonly disabled = input(false, { transform: booleanAttribute });
+  /** @description Shows a spinner and ignores clicks while keeping focus; sets `aria-busy`. */
   readonly loading = input(false, { transform: booleanAttribute });
 
   protected abstract readonly _hostClasses: Signal<string>;

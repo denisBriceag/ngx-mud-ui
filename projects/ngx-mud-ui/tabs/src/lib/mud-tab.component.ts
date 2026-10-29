@@ -25,10 +25,15 @@ let uniqueId = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MudTab {
+  /** @description Plain-text label; for richer content use an `ng-template mudTabLabel`. */
   readonly label = input('');
+  /** @description Accessible name for the tab, when the label alone isn't enough. */
   readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
+  /** @description Id of an element that names the tab. */
   readonly ariaLabelledby = input<string | undefined>(undefined, { alias: 'aria-labelledby' });
+  /** @description Makes the tab unselectable; the keyboard skips it. */
   readonly disabled = input(false, { transform: booleanAttribute });
+  /** @description Id for the tab button; the panel gets the same id plus `-panel`. */
   readonly id = input<string | undefined>(undefined);
   /** @description Count pill after the label; null hides it. */
   readonly badgeCount = input<number | null, number | string | null | undefined>(null, {

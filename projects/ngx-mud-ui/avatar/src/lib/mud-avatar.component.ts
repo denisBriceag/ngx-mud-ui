@@ -59,9 +59,10 @@ export function deriveInitials(name: string | undefined): string {
   },
 })
 export class MudAvatar {
+  /** @description Diameter: 24, 32, 40, 48 or 72px. */
   readonly size = input<MudAvatarSize>('medium');
 
-  /** @description Accessible name for the avatar. */
+  /** @description Accessible name; wins over `name`. */
   readonly label = input<string | undefined>(undefined);
 
   /** @description Full name; derives the initials and the accessible name. */

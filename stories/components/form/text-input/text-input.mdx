@@ -5,74 +5,69 @@ import * as TextInputStories from './text-input.stories';
 
 # Text input
 
-The single-line text field: optional leading and trailing icons and a clear
-button, with the label and any assistive or error messages projected as
-`<mud-label>` / `<mud-inline-message>` content the consumer controls. Works
-standalone via `[(value)]`, with reactive and template-driven forms, and with
-signal forms.
-
-## Import
+A single-line text field with a label, optional icons and messages. It works on its own with
+`[(value)]`, with reactive and template-driven forms, and with signal forms.
 
 ```ts
-import { MudTextInput } from 'ngx-mud-ui/text-input';
-import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
-
-@Component({
-  imports: [MudTextInput, MudLabel, MudInlineMessage],
-  template: `
-    <mud-text-input required [formControl]="idnp" [maxLength]="13">
-      <mud-label>IDNP</mud-label>
-      @if (idnp.touched && idnp.invalid) {
-        <mud-inline-message variant="error">IDNP-ul trebuie să conțină 13 cifre.</mud-inline-message>
-      }
-    </mud-text-input>
-  `,
-})
-export class Demo {}
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudTextInput } from 'ngx-mud-ui/text-input';
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={TextInputStories.Playground} />
 <Controls of={TextInputStories.Playground} />
 
-## Variants
+## Basic
+
+Put a `<mud-label>` inside for the label and any `<mud-inline-message>` for help or errors; the field
+links them to the input. Inside a field, messages always use the small size. `value` is two-way
+bindable. Native attributes such as `type`, `autocomplete`, `inputMode`, `minLength`, `maxLength`
+and `pattern` are inputs.
+
+<Canvas of={TextInputStories.Basic} />
+
+## Variants and states
+
+- `variant` is `default`, `warning`, `success` or `destructive`. `invalid` forces `destructive` and
+  sets `aria-invalid`.
+- `required` adds a red asterisk; `readonly` keeps the value focusable and copyable; `disabled`
+  turns it off.
+- `loading` shows a spinner, blocks input and sets `aria-busy`.
+- `size` is `medium` (40px, default) or `large` (48px).
+
+The field shows no message by itself: add a `<mud-inline-message>` when you want one.
 
 <Canvas of={TextInputStories.Variants} />
 
-## Sizes
+## Icons and clear button
 
-<Canvas of={TextInputStories.Sizes} />
+Put a 20px icon at the start with `icon-start` or at the end with `icon-end`. `clearable` shows a ×
+button while the field has a value; it's hidden while the field is disabled, read-only or loading.
+The button is named "Clear field" (translatable), or by `clearLabel`.
 
-## States
-
-<Canvas of={TextInputStories.States} />
-
-## Icons and clear
-
-<Canvas of={TextInputStories.IconsAndClear} />
+<Canvas of={TextInputStories.Icons} />
 
 ## Reactive forms
+
+Bind `formControl` or `formControlName`, and bind `invalid` yourself, usually
+`ctrl.invalid && ctrl.touched`. Show a message per error, as here.
 
 <Canvas of={TextInputStories.ReactiveForms} />
 
 ## Signal forms
 
+Bind `[formField]`: the value, `disabled`, `required`, `pattern` and `invalid` follow the field. This
+example shows each validator's own message once the field is touched.
+
 <Canvas of={TextInputStories.SignalForms} />
 
-## Composable content
+## Accessibility
 
-Both the label and the assistive messages accept any content — a label with
-emphasis, several messages at once, an error containing a link.
-
-<Canvas of={TextInputStories.Composable} />
+- Messages sit in a `role="alert"` region linked with `aria-describedby`, so showing an error
+  announces it.
+- `aria-describedby` on the field adds ids of messages you render elsewhere.
+- Use `aria-label` only when there's no `<mud-label>`. A placeholder is not a label.
+- Call `focus()` to focus the input.
 
 ## API
 
@@ -80,34 +75,11 @@ Selector: `mud-text-input`
 
 <ArgTypes of={TextInputStories} />
 
-### Label and messages
+Method: `focus(options?)`. Content slots: `mud-label`, `[icon-start]`, `[icon-end]` and
+`mud-inline-message`.
 
-The field renders no message text of its own. Project a `<mud-label>` for
-the visible label and any number of `<mud-inline-message>` elements for
-assistive text — *you* decide when they render:
+### Types
 
-- Messages land in a field-owned `role="alert"` region wired into
-  `aria-describedby`; toggling one on announces it to screen readers.
-- Inside a field, `mud-inline-message` is always the small size — its
-  `size` input is ignored.
-- The field's `invalid` input drives the red border and `aria-invalid`;
-  with signal forms it is bound automatically, with reactive forms bind
-  `[invalid]="ctrl.invalid && ctrl.touched"`.
-
-## Usage tips
-
-- **`invalid` drives visuals; a projected message supplies the text.**
-  Nothing renders a message for you — pair `invalid` with an `@if`-guarded
-  `<mud-inline-message variant="error">` to show one only when it should
-  appear.
-- **`aria-describedby` is for messages rendered outside the field.** The
-  field already wires its own assistive-region id; to use only your own,
-  don't project any `mud-inline-message`.
-- **`pattern` accepts a string, a RegExp, or the `RegExp[]` signal forms push.**
-  It is normalised internally, and only the first expression reaches the native
-  `pattern` attribute.
-- **`clearable` is suppressed** while the field is disabled, read-only or
-  loading, so the affordance never appears on a field the user cannot edit.
-- **`clearLabel` is an optional override.** It names the clear button. Unset or
-  blank, the `textInput.clear` label applies (English 'Clear field'), so a
-  language pack from `provideMudLabels` translates it.
+- `MudTextInputVariant`: `'default' | 'warning' | 'destructive' | 'success'`
+- `MudTextInputSize`: `'medium' | 'large'`
+- `MudTextInputType`: `'text' | 'email' | 'password' | 'tel' | 'url' | 'search'`

@@ -5,6 +5,7 @@ import {
   computed,
   contentChild,
   contentChildren,
+  effect,
   forwardRef,
   inject,
   input,
@@ -63,6 +64,7 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
   /** @description Size rung: medium (120px min-height) or large (150px). */
   readonly size = input<MudTextareaSize>('medium');
 
+  /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
 
   /** @description Adds the red asterisk to the label and the native `required` attribute. */
@@ -83,9 +85,13 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
   /** @description Current value. Two-way bindable; also driven by both forms systems. */
   readonly value = model('');
 
+  /** @description Native `name` attribute. */
   readonly name = input<string>('');
+  /** @description Native `placeholder`. Don't use it in place of a label. */
   readonly placeholder = input<string | undefined>(undefined);
+  /** @description Native `minlength`. */
   readonly minLength = input<number | undefined>(undefined);
+  /** @description Native `maxlength`; also turns on the counter. */
   readonly maxLength = input<number | undefined>(undefined);
 
   /** @description Shows the `n / max` character counter while `maxLength` is set. */
@@ -100,7 +106,7 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
   /** @description Extra id(s) merged into the native control's aria-describedby. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
-  /** Signal-forms touch contract: emitted when focus leaves the control. */
+  /** @description Fires when focus leaves the field; signal forms use it to mark the field touched. */
   readonly touch = output<void>();
 
   private readonly _native = viewChild.required<ElementRef<HTMLTextAreaElement>>('native');
@@ -190,6 +196,14 @@ export class MudTextarea implements ControlValueAccessor, FormValueControl<strin
 
   constructor() {
     inject(MudStyleLoader).load(_MudInputFieldStyles);
+
+    // Writes only on a real change: Chrome moves the caret to the end even when the value is unchanged.
+    effect(() => {
+      const value = this.value();
+      const native = this._native().nativeElement;
+
+      if (native.value !== value) native.value = value;
+    });
   }
 
   writeValue(value: string | null | undefined): void {

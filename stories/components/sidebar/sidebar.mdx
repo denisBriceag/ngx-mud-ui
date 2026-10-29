@@ -1,225 +1,132 @@
-import { Meta, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import { Meta, Canvas, Controls, ArgTypes } from '@storybook/addon-docs/blocks';
 import * as SidebarStories from './sidebar.stories';
+import { MudSidebarGroup, MudSidebarItem } from 'ngx-mud-ui/sidebar';
 
 <Meta of={SidebarStories} />
 
 # Sidebar
 
-`<mud-sidebar>` is the side navigation of a page: a panel of grouped links that can shrink to an
-icon-only rail. Put it in `<mud-sidebar-layout>` and it lines up with the page's 12-column grid.
-
-<Canvas of={SidebarStories.Playground} />
-
-<Controls of={SidebarStories.Playground} />
-
-## Import
+The side navigation of a page: groups of links that can shrink to an icon-only rail. Inside
+`mud-sidebar-layout` it lines up with the page's 12-column grid.
 
 ```ts
 import {
   MudSidebar,
-  MudSidebarHeader,
-  MudSidebarGroup,
-  MudSidebarItem,
-  MudSidebarToggle,
-  MudSidebarLayout,
   MudSidebarContent,
+  MudSidebarGroup,
+  MudSidebarHeader,
+  MudSidebarItem,
+  MudSidebarLayout,
+  MudSidebarToggle,
 } from 'ngx-mud-ui/sidebar';
 ```
 
-Add the base stylesheet to your app's `angular.json` `styles` once:
+<Canvas of={SidebarStories.Playground} />
+<Controls of={SidebarStories.Playground} />
 
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
+## Basic
 
-## Building a sidebar
+A sidebar is built from:
 
-A sidebar is made of five parts. Only groups and rows are required.
+- `<mud-sidebar>`: the panel, a navigation landmark. Give it an `aria-label`.
+- `[mudSidebarHeader]` (optional): content at the top, such as a profile, the toggle or a main
+  action.
+- `<mud-sidebar-group>`: a section with an optional `heading`. It can hold rows or anything else:
+  chips, a contact list, a tree.
+- `mud-sidebar-item`: a row, on your own `<a>` or `<button>`.
 
-<table>
-  <thead>
-    <tr><th>Part</th><th>What it is</th></tr>
-  </thead>
-  <tbody>
-    <tr><td><code>&lt;mud-sidebar&gt;</code></td><td>The panel. It is a navigation landmark, so give it an <code>aria-label</code>.</td></tr>
-    <tr><td><code>[mudSidebarHeader]</code></td><td>Optional content at the top: a profile, the toggle, a main action. It never gets a divider.</td></tr>
-    <tr><td><code>&lt;mud-sidebar-group&gt;</code></td><td>A section with an optional <code>heading</code>. Any content works: rows, chips, a list of contacts, a tree.</td></tr>
-    <tr><td><code>mud-sidebar-item</code></td><td>A row. Put it on your own <code>&lt;a&gt;</code> or <code>&lt;button&gt;</code>.</td></tr>
-    <tr><td><code>button[mudSidebarToggle]</code></td><td>Optional button that switches between the full panel and the compact rail.</td></tr>
-  </tbody>
-</table>
+Bind a row's `selected` to `routerLinkActive` to mark the current page. On its own the panel is
+368px wide.
 
-```html
-<mud-sidebar aria-label="Main navigation">
-  <mud-sidebar-group heading="Heading">
-    <a mud-sidebar-item routerLink="/overview" routerLinkActive #rla="routerLinkActive" [selected]="rla.isActive">
-      <mud-icon icon name="group" [scale]="20" />
-      Overview
-    </a>
-  </mud-sidebar-group>
-</mud-sidebar>
-```
-
-The panel is 368px wide on its own. Inside `<mud-sidebar-layout>` it takes the width of its columns.
-
-<Canvas of={SidebarStories.Default} />
-
-## Groups, headings and dividers
-
-A group's `heading` is a short label above its content. Leave it out for a group without one.
-
-Every group except the first gets a divider above it. Set `divider` to `true` or `false` to
-override that for one group. The header does not count as a group, so the first group after it
-has no divider. The automatic spacing and dividers only work for groups that are **direct
-children** of `mud-sidebar`; don't wrap them in another element.
-
-```html
-<mud-sidebar-group heading="Contacte" [divider]="sb.compact()">…</mud-sidebar-group>
-```
+<Canvas of={SidebarStories.Basic} />
 
 ## Rows
 
-A row is a link for a page, or a button for an action. It has the same look and slots as a
-[Tree Item](?path=/docs/components-tree-item--docs):
+A row has the same look and slots as a [Tree item](?path=/docs/components-tree-item--docs): an
+`[icon]`, an optional `[selectedIcon]` (a filled variant shown while selected), the label, a
+`[secondaryLabel]` note and a `[trailing]` badge or tag. For counts, use a `<mud-badge>` with
+`size="xl"`: `neutral` for a count, `danger` for notifications.
 
-- `icon`: the leading icon. Add `selectedIcon` with a filled variant to swap it while selected.
-- The text you put in the row is its label.
-- `secondaryLabel`: a short note at the end of the row.
-- `trailing`: a badge or a tag at the end of the row.
+Only a `<button>` row can be `disabled`; for a link that isn't available, leave it out.
 
-Bind `selected` to `routerLinkActive` to highlight the current page. Only a `<button>` row can be
-`disabled`; a link can't, so leave the link out instead.
+Every group except the first gets a divider above it; `divider` overrides that for one group. The
+header doesn't count as a group. Groups must be direct children of `mud-sidebar`.
 
-For count badges use [`<mud-badge>`](?path=/docs/components-badge--docs) with `size="xl"`:
-`variant="neutral"` for a count, `variant="danger"` for a notification.
-
-<Canvas of={SidebarStories.States} />
+<Canvas of={SidebarStories.Rows} />
 
 ## The compact rail
 
-Set `collapsed` to shrink the sidebar to a 68px rail. Bind it with `[(collapsed)]` to keep it in
-your state. A bare `collapsed` attribute does not compile; write `[collapsed]="true"`.
+`collapsed` shrinks the sidebar to a 68px rail; it's two-way bindable. Each row then shows only its
+icon in a 40×40 circle, and its label in a tooltip on hover or focus. Headings are hidden. **Every
+row needs an icon**, since the icon is all the rail shows.
 
-In the rail each row becomes a 40×40 round button showing only its 20px icon. Headings are hidden, and
-buttons and separators sit 20px apart. The sidebar draws your toggle as a 40×40 circle with a
-20px icon in both states, whatever size you give the button; in the rail it also gets the grey fill. Hover or focus a row to see its label in a tooltip on its right.
-
-**Every row needs an icon.** The icon is all the rail draws, so a row without one is an empty circle.
+A `button[mudSidebarToggle]` inside the sidebar switches it and keeps `aria-expanded` up to date.
+Name it after the menu ("Menu"), not the action, and keep it outside any `@if`, or it loses focus
+when the rail switches. A bare `collapsed` attribute doesn't compile; write `[collapsed]="true"`.
 
 <Canvas of={SidebarStories.Compact} />
 
-### The toggle
-
-Add `mudSidebarToggle` to a button inside the sidebar, usually in the header. It switches
-`collapsed` and keeps `aria-expanded` and `aria-controls` up to date. You supply the icon and an
-`aria-label` that names the menu, such as "Menu". Keep that name the same in both states;
-`aria-expanded` already tells screen readers whether the sidebar is open:
-
-```html
-<div mudSidebarHeader>
-  <button mudIconButton mudSidebarToggle aria-label="Menu">
-    <mud-icon name="sidebar" [scale]="20" />
-  </button>
-</div>
-```
-
-Keep the toggle **outside** any `@if` that swaps content. Otherwise Angular recreates it on every
-click and keyboard focus is lost.
-
-### Your own content in the rail
-
-The sidebar only changes what it owns: rows, headings and dividers. Your header and group content
-need a compact version too. Swap it with `@if` on `compact()`, read through `#sb="mudSidebar"`:
-
-```html
-<mud-sidebar #sb="mudSidebar" aria-label="Împuterniciri" [(collapsed)]="collapsed">
-  <div mudSidebarHeader>
-    @if (sb.compact()) {
-      <mud-avatar name="Anastasia Cojocaru" />
-    } @else {
-      <button mudButton size="medium">Împuternicire nouă</button>
-    }
-  </div>
-  …
-</mud-sidebar>
-```
-
-Use `compact()`, not `collapsed()`. `compact()` is what is drawn: it is `collapsed` except below
-768px, where the sidebar is always drawn in full. `narrow()` tells you whether the screen is below 768px.
-
 ## Page layout
 
-`<mud-sidebar-layout>` places the sidebar and your content on a 12-column grid. Mark the content
-with `mudSidebarContent`:
+`<mud-sidebar-layout>` places the sidebar and the element marked `mudSidebarContent` on a grid up to
+1248px wide (twelve 68px columns, 32px gaps, 40px side padding): the full sidebar takes 4 columns,
+the rail 1. The sidebar keeps its own height.
 
-```html
-<mud-sidebar-layout>
-  <mud-sidebar aria-label="Împuterniciri">…</mud-sidebar>
-  <main mudSidebarContent>…</main>
-</mud-sidebar-layout>
-```
+Below 768px the layout stacks: the sidebar goes full width above the content, loses its border and
+toggle, and is always drawn in full. Your `collapsed` value is kept for wider screens. For a phone
+menu that slides in, put the sidebar in a [Drawer](?path=/docs/components-drawer--docs).
 
-The grid is 1248px at most, with 40px padding on each side: twelve 68px columns and 32px gaps.
+Your own header and group content need a rail version too. Get the sidebar with
+`#sb="mudSidebar"` and switch on `sb.compact()`, which is what's actually drawn. (`collapsed()` stays
+`true` below 768px, where the sidebar is still drawn in full; `narrow()` tells you the screen is
+below 768px.)
 
-<table>
-  <thead>
-    <tr><th>State</th><th>Sidebar</th><th>Content</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>Full</td><td>4 columns, 368px</td><td>8 columns, 768px</td></tr>
-    <tr><td>Compact</td><td>1 column, 68px</td><td>11 columns, 1068px</td></tr>
-    <tr><td>No sidebar</td><td>none</td><td>12 columns</td></tr>
-  </tbody>
-</table>
+<Canvas of={SidebarStories.Page} />
 
-On narrower screens the columns shrink, but the compact rail never drops below 68px. The sidebar
-keeps its own height; it does not stretch to the content.
+## Nested pages
 
-<Canvas of={SidebarStories.MpowerPage} />
+To nest pages, put a [Tree](?path=/docs/components-tree--docs) in a group. In the rail only the
+tree's top level shows; opening a section expands the sidebar first.
 
-### Below 768px
-
-Below 768px the layout stacks: the sidebar sits full width above the content, and the side padding
-drops to 16px. The sidebar loses its border and rounded corners, the toggle is hidden, and the
-sidebar is drawn in full even when `collapsed` is set. Your `collapsed` value is kept, so the rail
-comes back on a wider screen.
-
-A slide-in drawer for phones is not part of the sidebar. It will be a separate `mud-drawer`
-component, and the sidebar can be placed inside it.
-
-## Nested navigation
-
-To nest pages, put a [Tree](?path=/docs/components-tree--docs) inside a group. The sidebar has no
-expand and collapse of its own.
-
-In the rail only the tree's top level shows. Clicking a section there expands the sidebar so its
-children can open.
-
-<Canvas of={SidebarStories.WithTree} />
+<Canvas of={SidebarStories.Tree} />
 
 ## Accessibility
 
-**Name it.** The sidebar is a navigation landmark. Give it an `aria-label` (or `aria-labelledby`);
-it warns in development when it has none. A group with a `heading` is a group named by that heading.
+- The sidebar is a navigation landmark: name it with `aria-label` or `aria-labelledby` (it warns in
+  development without one). A group with a `heading` is a group named by it.
+- A selected link row has `aria-current="page"`; a button row `aria-current="true"`.
+- The toggle has `aria-expanded` and `aria-controls` pointing at the sidebar's `id`.
+- In the rail, labels are hidden visually but still read. In a tree, a key that would move focus
+  to a hidden row expands the sidebar first.
+- Give icon-only buttons in your own rail content an `aria-label`.
 
-**Keyboard.**
+## API
 
-- **Tab** moves through the rows and controls in page order.
-- **Enter** follows a link row; **Enter** or **Space** activates a button row.
-- A tree inside a group keeps its own arrow-key navigation. In the rail, a key that would move
-  focus onto a hidden child row (**Arrow Right** or **\*** on a parent, or arrows and typeahead in a
-  tree with an open section) first expands the sidebar, so focus always stays visible.
+### MudSidebar
 
-**States.**
+Selector: `mud-sidebar` · Exported as: `mudSidebar`
 
-- A selected link row has `aria-current="page"`; a selected button row has `aria-current="true"`.
-- The toggle has `aria-expanded` (true while the sidebar is in full) and `aria-controls` pointing at
-  the sidebar's `id`.
-- In the rail the labels are visually hidden but still read out, so a row keeps its name. The
-  tooltip repeats the label for sighted users only; it is not added as a description.
+<ArgTypes of={SidebarStories} />
 
-**What you must do.**
+Signals: `compact()` (drawn as the rail), `narrow()` (screen below 768px). Method: `toggle()`.
 
-- Give every row an icon, so the rail can show it.
-- Give the toggle a stable `aria-label` that names the menu, not the action (no "Collapse"/"Expand").
-- Give icon-only buttons in your own compact content an `aria-label`.
+### MudSidebarGroup
+
+Selector: `mud-sidebar-group` · Exported as: `mudSidebarGroup`
+
+<ArgTypes of={MudSidebarGroup} />
+
+### MudSidebarItem
+
+Selector: `a[mud-sidebar-item], button[mud-sidebar-item]` · Exported as: `mudSidebarItem`
+
+<ArgTypes of={MudSidebarItem} />
+
+Content slots: `[icon]`, `[selectedIcon]`, the label, `[secondaryLabel]` and `[trailing]`.
+
+### Other parts
+
+- `[mudSidebarHeader]`: content at the top of the sidebar.
+- `button[mudSidebarToggle]` (exported as `mudSidebarToggle`): switches `collapsed`.
+- `mud-sidebar-layout` (exported as `mudSidebarLayout`): the page grid.
+- `[mudSidebarContent]`: the page content next to the sidebar.

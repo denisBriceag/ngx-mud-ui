@@ -83,8 +83,11 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
   /** @description Size rung: medium (40px min-height) or large (48px). */
   readonly size = input<MudInputChipSize>('medium');
 
+  /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
+  /** @description Adds the red asterisk to the label. */
   readonly required = input(false, { transform: booleanAttribute });
+  /** @description Read-only: the chips stay readable, but none can be added or removed. */
   readonly readonly = input(false, { transform: booleanAttribute });
 
   /** @description Destructive visuals + `aria-invalid`. Signal forms bind this automatically. */
@@ -105,6 +108,7 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
   /** @description Characters that confirm a chip in addition to Enter. Newlines always split pastes. */
   readonly separators = input(',');
 
+  /** @description Native `name` attribute. */
   readonly name = input<string>('');
 
   /** @description Shown only while no chips exist. */
@@ -128,16 +132,16 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
   /** @description Extra id(s) merged into the native control's aria-describedby. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
-  /** Fired when a chip is confirmed. */
+  /** @description Fires when a chip is added. */
   readonly chipAdded = output<MudInputChipAdd>();
 
-  /** Fired when a chip is removed. */
+  /** @description Fires when a chip is removed. */
   readonly chipRemoved = output<MudInputChipRemove>();
 
-  /** Fired for every rejected value (pattern / duplicate / max). */
+  /** @description Fires for every rejected value, with the reason (`pattern`, `duplicate` or `max`). */
   readonly errored = output<MudInputChipError>();
 
-  /** Signal-forms touch contract: emitted when focus leaves the inline input. */
+  /** @description Fires when focus leaves the field; signal forms use it to mark the field touched. */
   readonly touch = output<void>();
 
   private readonly _labels = injectMudLabels();
@@ -228,6 +232,14 @@ export class MudInputChip implements ControlValueAccessor, FormValueControl<stri
 
   constructor() {
     inject(MudStyleLoader).load(_MudInputFieldStyles);
+
+    // Writes only on a real change: Chrome moves the caret to the end even when the value is unchanged.
+    effect(() => {
+      const draft = this.draft();
+      const native = this._native().nativeElement;
+
+      if (native.value !== draft) native.value = draft;
+    });
 
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       effect(() => {

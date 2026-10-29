@@ -93,7 +93,7 @@ export class MudFileItem {
   /** @description Builds the button's accessible name from the filename while `uploading`, where it cancels. */
   readonly cancelLabel = input<((filename: string) => string) | undefined>(undefined);
 
-  /** Fired when the remove (or cancel) button is pressed. */
+  /** @description Fires when the remove (or, while uploading, cancel) button is pressed. */
   readonly removed = output<MudFileItemRemove>();
 
   private readonly _filenameEl = viewChild<ElementRef<HTMLElement>>('filenameEl');

@@ -1,163 +1,47 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { applicationConfig, moduleMetadata } from '@storybook/angular-vite';
 import { MudBreadcrumb, MudBreadcrumbItem } from 'ngx-mud-ui/breadcrumb';
-import { homeLine, MudIconComponent, provideMudIcons } from 'ngx-mud-ui/icons';
+import { homeLine, provideMudIcons } from 'ngx-mud-ui/icons';
 
-interface PlaygroundArgs {
-  maxVisible: number;
-  label: string;
-  overflowLabel: string;
-  responsive: boolean;
-}
-
-const playgroundSource = (args: PlaygroundArgs): string => `import { Component } from '@angular/core';
-import { MudBreadcrumb, MudBreadcrumbItem } from 'ngx-mud-ui/breadcrumb';
-
-@Component({
-  selector: 'app-page-header',
-  imports: [MudBreadcrumb, MudBreadcrumbItem],
-  template: \`
-    <nav mudBreadcrumb
-      [maxVisible]="${args.maxVisible}"
-      label="${args.label}"
-      overflowLabel="${args.overflowLabel}"
-      [responsive]="${args.responsive}">
-      <ol>
-        <li mudBreadcrumbItem><a href="/">Acasă</a></li>
-        <li mudBreadcrumbItem><a href="/servicii">Servicii</a></li>
-        <li mudBreadcrumbItem><a href="/servicii/acte">Acte de identitate</a></li>
-        <li mudBreadcrumbItem><a href="/servicii/acte/buletin">Buletin</a></li>
-        <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
-      </ol>
-    </nav>
-  \`,
-})
-export class PageHeaderComponent {}`;
-
-const COLLAPSED_SOURCE = `import { Component } from '@angular/core';
-import { MudBreadcrumb, MudBreadcrumbItem } from 'ngx-mud-ui/breadcrumb';
-
-@Component({
-  selector: 'app-request-breadcrumb',
-  imports: [MudBreadcrumb, MudBreadcrumbItem],
-  template: \`
-    <nav mudBreadcrumb>
-      <ol>
-        <li mudBreadcrumbItem><a href="/">Acasă</a></li>
-        <li mudBreadcrumbItem><a href="/servicii">Servicii</a></li>
-        <li mudBreadcrumbItem><a href="/servicii/acte">Acte</a></li>
-        <li mudBreadcrumbItem><a href="/servicii/acte/buletin">Buletin</a></li>
-        <li mudBreadcrumbItem><a href="/servicii/acte/buletin/cereri">Cereri</a></li>
-        <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
-      </ol>
-    </nav>
-  \`,
-})
-export class RequestBreadcrumbComponent {}`;
-
-const TRUNCATED_SOURCE = `import { Component } from '@angular/core';
-import { MudBreadcrumb, MudBreadcrumbItem } from 'ngx-mud-ui/breadcrumb';
-
-@Component({
-  selector: 'app-directorate-breadcrumb',
-  imports: [MudBreadcrumb, MudBreadcrumbItem],
-  template: \`
-    <nav mudBreadcrumb>
-      <ol>
-        <li mudBreadcrumbItem><a href="/">Acasă</a></li>
-        <li mudBreadcrumbItem>
-          <a href="/directia">Direcția generală pentru eliberarea actelor de identitate</a>
-        </li>
-        <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
-      </ol>
-    </nav>
-  \`,
-})
-export class DirectorateBreadcrumbComponent {}`;
-
-const STATES_SOURCE = `import { Component } from '@angular/core';
-import { MudBreadcrumb, MudBreadcrumbItem } from 'ngx-mud-ui/breadcrumb';
-
-@Component({
-  selector: 'app-states-breadcrumb',
-  imports: [MudBreadcrumb, MudBreadcrumbItem],
-  template: \`
-    <nav mudBreadcrumb>
-      <ol>
-        <li mudBreadcrumbItem><a href="/">Acasă</a></li>
-        <li mudBreadcrumbItem disabled><a href="/indisponibil">Indisponibil</a></li>
-        <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
-      </ol>
-    </nav>
-  \`,
-})
-export class StatesBreadcrumbComponent {}`;
-
-const NARROW_SOURCE = `import { Component } from '@angular/core';
-import { MudBreadcrumb, MudBreadcrumbItem } from 'ngx-mud-ui/breadcrumb';
-
-@Component({
-  selector: 'app-narrow-breadcrumb',
-  imports: [MudBreadcrumb, MudBreadcrumbItem],
-  template: \`
-    <!-- The collapse to a back link is a container query on this wrapper, not
-         a viewport media query — it fires whenever the wrapper itself is
-         narrow, even on a wide screen. -->
-    <div style="width:360px;border:1px dashed var(--mud-color-border-base-default);padding:12px">
-      <nav mudBreadcrumb>
-        <ol>
-          <li mudBreadcrumbItem><a href="/">Acasă</a></li>
-          <li mudBreadcrumbItem><a href="/servicii">Servicii</a></li>
-          <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
-        </ol>
-      </nav>
-    </div>
-  \`,
-})
-export class NarrowBreadcrumbComponent {}`;
+import { example } from '../../example';
+import { BreadcrumbBasicExample } from './examples/breadcrumb-basic.example';
+import basicSource from './examples/breadcrumb-basic.example.ts?raw';
+import { BreadcrumbCollapsedExample } from './examples/breadcrumb-collapsed.example';
+import collapsedSource from './examples/breadcrumb-collapsed.example.ts?raw';
+import { BreadcrumbIconExample } from './examples/breadcrumb-icon.example';
+import iconSource from './examples/breadcrumb-icon.example.ts?raw';
+import { BreadcrumbLongLabelExample } from './examples/breadcrumb-long-label.example';
+import longLabelSource from './examples/breadcrumb-long-label.example.ts?raw';
+import { BreadcrumbNarrowExample } from './examples/breadcrumb-narrow.example';
+import narrowSource from './examples/breadcrumb-narrow.example.ts?raw';
+import { BreadcrumbStatesExample } from './examples/breadcrumb-states.example';
+import statesSource from './examples/breadcrumb-states.example.ts?raw';
 
 const meta: Meta<MudBreadcrumb> = {
   title: 'Components/Breadcrumb',
   component: MudBreadcrumb,
-  decorators: [moduleMetadata({ imports: [MudBreadcrumb, MudBreadcrumbItem] })],
-  argTypes: {
-    maxVisible: { control: { type: 'number', min: 2 } },
-    label: { control: 'text' },
-    overflowLabel: { control: 'text' },
-    responsive: { control: 'boolean' },
-  },
-  args: {
-    maxVisible: 4,
-    label: 'Breadcrumb',
-    overflowLabel: 'Show collapsed pages',
-    responsive: true,
-  },
+  decorators: [
+    applicationConfig({ providers: [provideMudIcons([homeLine])] }),
+    moduleMetadata({ imports: [MudBreadcrumb, MudBreadcrumbItem] }),
+  ],
+  argTypes: { maxVisible: { control: { type: 'number', min: 2 } } },
+  args: { maxVisible: 4, responsive: true },
 };
 
 export default meta;
 
 type Story = StoryObj<MudBreadcrumb>;
 
-/** Every input bound — drop maxVisible to 2 and watch the middle collapse. */
 export const Playground: Story = {
-  parameters: {
-    // `transform`, not a static `code`: the snippet is rebuilt from the live
-    // args, so changing a control updates the values shown below.
-    docs: { source: { language: 'ts', transform: (_c: string, ctx: { args: PlaygroundArgs }) => playgroundSource(ctx.args) } },
-  },
   render: (args) => ({
     props: args,
     template: `
-      <nav mudBreadcrumb
-        [maxVisible]="maxVisible"
-        [label]="label"
-        [overflowLabel]="overflowLabel"
-        [responsive]="responsive">
+      <nav mudBreadcrumb [maxVisible]="maxVisible" [responsive]="responsive">
         <ol>
-          <li mudBreadcrumbItem><a href="/">Acasă</a></li>
-          <li mudBreadcrumbItem><a href="/servicii">Servicii</a></li>
-          <li mudBreadcrumbItem><a href="/servicii/acte">Acte de identitate</a></li>
-          <li mudBreadcrumbItem><a href="/servicii/acte/buletin">Buletin</a></li>
+          <li mudBreadcrumbItem><a href="#">Acasă</a></li>
+          <li mudBreadcrumbItem><a href="#servicii">Servicii</a></li>
+          <li mudBreadcrumbItem><a href="#acte">Acte de identitate</a></li>
+          <li mudBreadcrumbItem><a href="#buletin">Buletin</a></li>
           <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
         </ol>
       </nav>
@@ -165,121 +49,9 @@ export const Playground: Story = {
   }),
 };
 
-/** Six crumbs against the default limit of four: first + overflow + last two. */
-export const Collapsed: Story = {
-  parameters: {
-    controls: { disable: true },
-    docs: { source: { code: COLLAPSED_SOURCE, language: 'ts' } },
-  },
-  render: () => ({
-    template: `
-      <nav mudBreadcrumb>
-        <ol>
-          <li mudBreadcrumbItem><a href="/">Acasă</a></li>
-          <li mudBreadcrumbItem><a href="/servicii">Servicii</a></li>
-          <li mudBreadcrumbItem><a href="/servicii/acte">Acte</a></li>
-          <li mudBreadcrumbItem><a href="/servicii/acte/buletin">Buletin</a></li>
-          <li mudBreadcrumbItem><a href="/servicii/acte/buletin/cereri">Cereri</a></li>
-          <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
-        </ol>
-      </nav>
-    `,
-  }),
-};
-
-/** A label past 30 characters truncates; the full title lives in the tooltip. */
-export const Truncated: Story = {
-  parameters: {
-    controls: { disable: true },
-    docs: { source: { code: TRUNCATED_SOURCE, language: 'ts' } },
-  },
-  render: () => ({
-    template: `
-      <nav mudBreadcrumb>
-        <ol>
-          <li mudBreadcrumbItem><a href="/">Acasă</a></li>
-          <li mudBreadcrumbItem>
-            <a href="/directia">Direcția generală pentru eliberarea actelor de identitate</a>
-          </li>
-          <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
-        </ol>
-      </nav>
-    `,
-  }),
-};
-
-/** A house before "Acasă", and the same crumb as an icon only. */
-export const LeadingIcon: Story = {
-  parameters: { controls: { disable: true } },
-  decorators: [
-    applicationConfig({ providers: [provideMudIcons([homeLine])] }),
-    moduleMetadata({ imports: [MudIconComponent] }),
-  ],
-  render: () => ({
-    template: `
-      <div style="display:flex;flex-direction:column;gap:24px">
-        <nav mudBreadcrumb aria-label="Cu text">
-          <ol>
-            <li mudBreadcrumbItem>
-              <a href="/"><mud-icon icon-start name="home-line" [scale]="16" />Acasă</a>
-            </li>
-            <li mudBreadcrumbItem><a href="/servicii">Servicii</a></li>
-            <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
-          </ol>
-        </nav>
-        <nav mudBreadcrumb aria-label="Doar pictogramă">
-          <ol>
-            <li mudBreadcrumbItem label="Acasă">
-              <a href="/" aria-label="Acasă"><mud-icon icon-start name="home-line" [scale]="16" /></a>
-            </li>
-            <li mudBreadcrumbItem><a href="/servicii">Servicii</a></li>
-            <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
-          </ol>
-        </nav>
-      </div>
-    `,
-  }),
-};
-
-/** Active and disabled crumbs side by side. */
-export const States: Story = {
-  parameters: {
-    controls: { disable: true },
-    docs: { source: { code: STATES_SOURCE, language: 'ts' } },
-  },
-  render: () => ({
-    template: `
-      <nav mudBreadcrumb>
-        <ol>
-          <li mudBreadcrumbItem><a href="/">Acasă</a></li>
-          <li mudBreadcrumbItem disabled><a href="/indisponibil">Indisponibil</a></li>
-          <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
-        </ol>
-      </nav>
-    `,
-  }),
-};
-
-/**
- * The collapse is a container query, so it fires on the 360px wrapper even on a
- * desktop viewport. Changing the Storybook viewport toolbar will NOT trigger it.
- */
-export const Narrow: Story = {
-  parameters: {
-    controls: { disable: true },
-    docs: { source: { code: NARROW_SOURCE, language: 'ts' } },
-  },
-  render: () => ({
-    template: `
-      <div style="width:360px;border:1px dashed var(--mud-color-border-base-default);padding:12px">
-        <nav mudBreadcrumb>
-          <ol>
-            <li mudBreadcrumbItem><a href="/">Acasă</a></li>
-            <li mudBreadcrumbItem><a href="/servicii">Servicii</a></li>
-            <li mudBreadcrumbItem active><span>Cerere nouă</span></li>
-          </ol>
-        </nav>
-      </div>
-    `,
-  }),
-};
+export const Basic: Story = example(BreadcrumbBasicExample, basicSource);
+export const Collapsed: Story = example(BreadcrumbCollapsedExample, collapsedSource);
+export const LongLabel: Story = example(BreadcrumbLongLabelExample, longLabelSource);
+export const Icon: Story = example(BreadcrumbIconExample, iconSource);
+export const States: Story = example(BreadcrumbStatesExample, statesSource);
+export const Narrow: Story = example(BreadcrumbNarrowExample, narrowSource);

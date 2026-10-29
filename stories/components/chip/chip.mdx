@@ -5,55 +5,49 @@ import * as ChipStories from './chip.stories';
 
 # Chip
 
-A compact pill that plays two distinct roles, selected with `type`:
-
-- **`filter`** (default) — a toggle button. Clicking flips `selected` and the
-  host exposes `aria-pressed`.
-- **`input`** — a discrete value the user already entered. The body is static
-  (no dead tab stop) and, with `removable`, a trailing close button emits
-  `removed`.
-
-## Import
+A compact pill with two roles, chosen with `type`: a `filter` chip (default) is a toggle button,
+and an `input` chip shows a value the user entered, optionally with a remove button. To type and
+collect values in a field, see [Input chip](?path=/docs/components-form-input-chip--docs).
 
 ```ts
 import { MudChip } from 'ngx-mud-ui/chip';
-
-@Component({
-  imports: [MudChip],
-  template: `
-    <mud-chip selectionMode="multi" [(selected)]="active" [count]="12">Acte</mud-chip>
-    <mud-chip type="input" removable (removed)="drop(tag)">{{ tag }}</mud-chip>
-  `,
-})
-export class Demo {}
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={ChipStories.Playground} />
 <Controls of={ChipStories.Playground} />
 
-## Filter modes
+## Filter chips
 
-`mono` is radio-like: the chip only flips color, and keeping the group exclusive
-is the consumer's job — react to `selectedChange` and clear the others. `multi`
-is checkbox-like and renders a leading check automatically while selected.
+A filter chip toggles `selected` on click (two-way bindable) and exposes `aria-pressed`.
 
-<Canvas of={ChipStories.FilterModes} />
+- `selectionMode="mono"` (default) only changes the color. Keeping one chip active at a time is up
+  to you: react to `selectedChange`, as in the first group.
+- `selectionMode="multi"` adds a check mark while selected, for picking several.
 
-## Input tokens
+Wrap a set of chips in an element with `role="group"` and an `aria-label`.
 
-<Canvas of={ChipStories.InputTokens} />
+<Canvas of={ChipStories.Filter} />
+
+## Input chips
+
+`type="input"` makes a static token, not a button. With `removable`, a close button emits `removed`;
+remove the chip from your list in response. The close button is named "Remove" plus `label`
+(translatable), or by your `removeLabel` function.
+
+<Canvas of={ChipStories.Input} />
+
+## Icon, avatar and count
+
+Project a leading icon with `icon-start` (16px) or a small image with `avatar`. `count` adds a
+number after the label; it shows for any number, including `0`.
+
+<Canvas of={ChipStories.Content} />
 
 ## Sizes and states
 
-<Canvas of={ChipStories.SizesAndStates} />
+`size` is `medium` (36px, default) or `small` (28px). `disabled` blocks toggling and removing.
+
+<Canvas of={ChipStories.Sizes} />
 
 ## API
 
@@ -61,52 +55,10 @@ Selector: `mud-chip`
 
 <ArgTypes of={ChipStories} />
 
-### Content slots
+Content slots: `[avatar]`, `[icon-start]` and the label (default content).
 
-{/* Storybook's MDX pipeline has no remark-gfm, so pipe tables render as plain
-    text — tables in these docs pages must be written as HTML. */}
+### Types
 
-<table>
-  <thead>
-    <tr><th>Slot</th><th>Selector</th><th>Notes</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Avatar</td>
-      <td><code>[avatar]</code></td>
-      <td>Hugs the leading edge; intended for a small <code>&lt;img&gt;</code>.</td>
-    </tr>
-    <tr>
-      <td>Leading icon</td>
-      <td><code>[icon-start]</code></td>
-      <td>Sits after the multi-select check.</td>
-    </tr>
-    <tr>
-      <td>Label</td>
-      <td><em>(default)</em></td>
-      <td>The visible text.</td>
-    </tr>
-  </tbody>
-</table>
-
-## Usage tips
-
-- **`selected` is a `model()`** — bind it two-way with `[(selected)]`, or listen
-  to `selectedChange` and drive it yourself. It is ignored for `type="input"`.
-- **Mono-exclusivity is not built in.** With `selectionMode="mono"` the chip
-  still toggles itself independently; only one chip appearing active is
-  something you enforce in the parent, as the Filter modes example shows.
-- **`removable` only applies to `type="input"`.** Setting it on a filter chip
-  renders nothing — the remove button requires both.
-- **Rename the remove button with `removeLabel`.** It is a function that gets
-  the chip's `label` and returns the button's accessible name, such as
-  `removeLabel = (name: string) => 'Elimină ' + name`, bound with `[removeLabel]="removeLabel"`. Unset, the `chip.remove` label
-  applies (English `"Remove Ana Popescu"`), so a language pack from
-  `provideMudLabels` translates it. See the [Localization guide](?path=/docs/foundations-localization--docs).
-- **`label` is ARIA-only.** It sets `aria-label` on the chip and enriches the
-  remove button's name — it does not render. Visible text belongs in the default
-  content.
-- **`count` renders only for finite numbers**, so leaving it `undefined` hides
-  the badge while `[count]="0"` shows a zero.
-- **`disabled` blocks both interactions** — toggling and removing — and disables
-  the underlying native buttons.
+- `MudChipType`: `'filter' | 'input'`
+- `MudChipSize`: `'small' | 'medium'`
+- `MudChipSelectionMode`: `'mono' | 'multi'`

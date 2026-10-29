@@ -5,94 +5,77 @@ import * as PhoneInputStories from './phone-input.stories';
 
 # Phone input
 
-Phone entry with a country dial-code prefix and a per-country format mask. The
-form value is canonical **E.164** (`+37362123456`); the masked national segment
-you see is only a rendering of it. Works standalone via `[(value)]`, with
-reactive and template-driven forms via `ControlValueAccessor`, and with signal
-forms.
-
-## Import
+A phone number field that formats the number as you type and returns it in international (E.164)
+form. Moldova by default, with an optional list of countries. It works on its own with `[(value)]`,
+with reactive and template-driven forms, and with signal forms.
 
 ```ts
-import { MudPhoneInput } from 'ngx-mud-ui/phone-input';
-import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
-
-@Component({
-  imports: [MudPhoneInput, MudLabel, MudInlineMessage],
-  template: `
-    <mud-phone-input [formControl]="phone" required>
-      <mud-label>Telefon</mud-label>
-      @if (phone.touched && phone.invalid) {
-        <mud-inline-message variant="error">Introduceți un număr complet.</mud-inline-message>
-      }
-    </mud-phone-input>
-  `,
-})
-export class Demo {}
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudPhoneInput } from 'ngx-mud-ui/phone-input';
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={PhoneInputStories.Playground} />
 <Controls of={PhoneInputStories.Playground} />
 
-## Modes
+## Basic
 
-`local` (default) fixes the country and renders its prefix as inert text — the
-Moldova-first case. `international` renders a combobox that opens a searchable
-country list.
+`value` is always E.164 (`+37362123456`), or `''` when no digits are entered, so a `required`
+validator works as usual. The number is formatted with the country's mask, and digits beyond the
+country's maximum are refused. The caret stays in place when you edit mid-number.
+
+`changed` fires on blur with `{ value, country, complete }`. Number lengths differ per country (some
+allow a range), so read `complete` instead of writing a length validator.
+
+<Canvas of={PhoneInputStories.Basic} />
+
+## Choosing a country
+
+`mode="local"` (default) shows a fixed dial code. `mode="international"` adds a button that opens a
+searchable list of countries. `country` (an ISO code such as `'MD'`) is two-way bindable and follows
+the number: a stored `+40…` number selects Romania. Changing the country keeps the digits.
+
+Country names come from the browser (`Intl.DisplayNames`) in the field's `locale`, or the
+[formatting locale](?path=/docs/foundations-localization--docs), so they read "Germania" in a
+Romanian app. The English name stays searchable in any language.
 
 <Canvas of={PhoneInputStories.International} />
 
-## Countries
+## Your own country list
+
+The default list has 15 countries, Moldova first. `countries` narrows it with ISO codes (`'RO'`) or
+extends it with `MudPhoneCountry` objects. For every phone field in the app, use
+`provideMudPhoneCountries([...])` instead; a field's own `countries` still wins. Unknown codes are
+skipped and malformed countries warn in development; `validateCountry()` checks one yourself.
 
 <Canvas of={PhoneInputStories.Countries} />
 
-### Localised names
-
-<Canvas of={PhoneInputStories.Locales} />
-
-### Adding countries
-
-<Canvas of={PhoneInputStories.CustomCountries} />
-
 ## States
 
-Besides `disabled` and `readonly`, the field has a `loading` state for when its
-number is still being fetched, for example from the person's profile. While
-`loading` is on, a spinner shows inside the field, nothing can be typed or
-cleared, the country list can't open (an open one closes), and screen readers
-hear the field as busy. It works like `loading` on the text and number fields.
-
-```html
-<mud-phone-input [value]="phone()" [loading]="profileLoading()">
-  <mud-label>Telefon</mud-label>
-</mud-phone-input>
-```
+`variant`, `invalid`, `required`, `readonly` and `disabled` work as in a
+[Text input](?path=/docs/components-form-text-input--docs). `loading`, for example while the number
+loads from the user's profile, shows a spinner, blocks editing and closes the country list.
+`clearable` adds a × button. `size` is `medium` (default) or `large`.
 
 <Canvas of={PhoneInputStories.States} />
 
-## Composed content
+## Forms
 
-Both the label and the assistive messages accept any content — a label with
-emphasis, a message containing a link.
+Bind `formControl` and bind `invalid` yourself, or bind `[formField]` and let the field drive
+`invalid` and `required`.
 
-<Canvas of={PhoneInputStories.ComposedContent} />
+<Canvas of={PhoneInputStories.Forms} />
 
-## Reactive forms
+## Accessibility
 
-<Canvas of={PhoneInputStories.ReactiveForms} />
-
-## Signal forms
-
-<Canvas of={PhoneInputStories.SignalForms} />
+- The country button is named "Country: Moldova +373", or by your `countryLabel(name, dialCode)`
+  function. The list, its search field and the "no results" text use `countryListLabel`,
+  `countrySearchLabel` and `countryEmptyText`; the clear button uses `clearLabel`. All are
+  translatable.
+- In the country list, focus moves to the search field: arrows, <kbd>Home</kbd> and <kbd>End</kbd>
+  move through the matches, <kbd>Enter</kbd> selects and <kbd>Esc</kbd> closes, returning focus to
+  the button.
+- Messages sit in a `role="alert"` region linked to the number input. Call `focus()` to focus it.
 
 ## API
 
@@ -100,95 +83,20 @@ Selector: `mud-phone-input`
 
 <ArgTypes of={PhoneInputStories} />
 
-### Label and messages
+Method: `focus(options?)`. Content slots: `mud-label` and `mud-inline-message`.
 
-The field renders no message text of its own. Project a `<mud-label>` for
-the visible label and any number of `<mud-inline-message>` elements for
-assistive text — *you* decide when they render:
+### Functions and constants
 
-- Messages land in a field-owned `role="alert"` region wired into
-  `aria-describedby` on the tel input.
-- Inside a field, `mud-inline-message` is always the small size — its
-  `size` input is ignored.
-- The field's `invalid` input drives the red border and `aria-invalid`;
-  with signal forms it is bound automatically, with reactive forms bind
-  `[invalid]="ctrl.invalid && ctrl.touched"`.
+- `provideMudPhoneCountries(countries)`: the country list for every phone field.
+- `MUD_PHONE_COUNTRIES`: the built-in countries; `MUD_PHONE_DEFAULT_ISO`: `'MD'`; `MUD_PHONE_FLAGS`:
+  their flag images.
+- `findCountry(iso)`, `findCountryByDialCode(...)`, `validateCountry(country)`.
 
-## Usage tips
+### Types
 
-- **The value is always E.164, or empty.** A bare dial code is not a phone
-  number, so an empty field publishes `''` rather than `'+373'` — your
-  `required` validator works as written.
-- **`country` is two-way and self-correcting.** Writing a `value` whose dial
-  code belongs to another country in the list moves `country` to it, so loading
-  a stored `+40…` number selects Romania without you wiring anything. Changing
-  `country` keeps the digits and swaps the dial code.
-- **An unknown `country` warns and falls back to Moldova** rather than
-  rendering an empty prefix.
-- **Digits are clamped to the country maximum** as you type; the mask cannot
-  overflow.
-- **`changed` reports completeness**, meaning the national digit count sits in
-  that country's `minDigits..maxDigits` window. Length varies per country (and
-  is a range for Germany, Italy and Bulgaria), so a single length validator
-  cannot express it — read it from the event instead.
-- **Editing mid-number keeps your caret.** The caret is re-anchored to the digit
-  it followed after each re-mask, which is a deliberate improvement over the
-  reference implementation's jump-to-end behaviour.
-- **In `international` mode the search field owns the keyboard.** Opening moves
-  focus into it (the trigger keeps `aria-activedescendant` semantics on the
-  search input), arrows and Home/End walk the *filtered* rows, Enter selects and
-  Escape closes — both returning focus to the trigger. This differs from
-  `mud-select-input`, which keeps focus on its trigger; the search field is what
-  forces the difference.
-- **`countries` both narrows and extends the list.** Entries are either an ISO
-  code from the built-in table (`'RO'`) or a whole `MudPhoneCountry` object,
-  which is how you add a country the curated set does not carry:
-
-  ```ts
-  const POLAND: MudPhoneCountry = {
-    iso: 'PL', dialCode: '+48', name: 'Poland',
-    mask: 'XXX XXX XXX', minDigits: 9, maxDigits: 9,
-    flag: 'data:image/svg+xml,…', // optional; the row renders without one
-    aliases: ['Polska'],          // optional extra search terms
-  };
-
-  <mud-phone-input mode="international" [countries]="['MD', 'RO', POLAND]" />
-  ```
-
-  For a form with several phone fields, configure the list once instead:
-
-  ```ts
-  bootstrapApplication(App, {
-    providers: [provideMudPhoneCountries(['MD', 'RO', POLAND])],
-  });
-  ```
-
-  Precedence is field input → provider → the curated table, so one field can
-  still opt out with its own `countries`.
-
-  A supplied country is selectable via `country`, is matched by dial-code
-  inference, and formats with its own mask. Unknown ISO codes are skipped with
-  a dev warning, and a malformed object (a mask whose `X` count disagrees with
-  `maxDigits`, a bad dial code, inverted digit bounds) warns but is still
-  offered — run `validateCountry()` yourself if you want to check ahead of time.
-- **The default list is the official curated diaspora set** (15 entries,
-  Moldova first) — it is upstream's curation for the eGov audience, not a
-  technical limit. Import `MUD_PHONE_COUNTRIES` if you need the dial codes,
-  masks or digit windows yourself, and extend via `countries` as above.
-- **Country names are localised by the platform, not by data we ship.** The
-  visible name comes from `Intl.DisplayNames` keyed on the ISO code, in the
-  format locale (override per field with `locale`; otherwise
-  `provideMudFormatLocale`, then `LOCALE_ID`). So the list reads
-  "Germania" in a Romanian app and "Германия" in a Russian one without any
-  per-language table. `MudPhoneCountry.name` is only the English fallback for
-  runtimes without `Intl.DisplayNames` — and it stays searchable, so typing the
-  English name works in any locale. Add regional spellings via `aliases`.
-- **The country button's name is a function of the country.** `countryLabel`
-  takes the country name and dial code and returns the accessible name, such as
-  `countryLabel = (name: string, code: string) => 'Țara: ' + name + ' ' + code`, bound with `[countryLabel]="countryLabel"`. Unset, the
-  `phoneInput.country` label applies (English "Country: Moldova +373"). The other
-  texts (`clearLabel`, `countryListLabel`, `countrySearchLabel`, `countryEmptyText`) are optional
-  overrides of the same namespace. The country list has its own name,
-  `countryListLabel` (English "Country"); it doesn't change with the selected country.
-- **Use `aria-label` only when no `mud-label` is projected**; with both set
-  the accessible name silently replaces the visible one.
+- `MudPhoneCountry`: `{ iso; dialCode; name; mask; minDigits; maxDigits; aliases?; flag? }`. In
+  `mask`, `X` is a digit and anything else is shown as is.
+- `MudPhoneInputChange`: `{ value: string; country: string; complete: boolean }`
+- `MudPhoneInputMode`: `'local' | 'international'`
+- `MudPhoneInputSize`: `'medium' | 'large'`
+- `MudPhoneInputVariant`: `'default' | 'warning' | 'destructive' | 'success'`

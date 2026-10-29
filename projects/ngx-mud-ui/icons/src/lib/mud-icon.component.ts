@@ -39,9 +39,13 @@ export class MudIconComponent {
   private readonly _registry = inject(MudIconRegistry);
   private readonly _sanitizer = inject(DomSanitizer);
 
+  /** @description Icon name in kebab-case (`arrow-left`); the icon must be registered with `provideMudIcons`. */
   readonly name = input.required<MudIconName>();
+  /** @description Drawing style; falls back to `outlined` when the icon has no such variant. */
   readonly variant = input<MudIconVariant>('outlined');
+  /** @description Size in px. 12–24 have their own drawings; 32 scales up the 24 drawing. */
   readonly scale = input<MudIconScale>(24);
+  /** @description Accessible name; gives the icon `role="img"`. Without it the icon is decorative (`aria-hidden`). */
   readonly ariaLabel = input<string | undefined, string | undefined>(undefined, {
     alias: 'aria-label',
     transform: (value) => {

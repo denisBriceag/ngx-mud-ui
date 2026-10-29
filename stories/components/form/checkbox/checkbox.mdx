@@ -5,56 +5,63 @@ import * as CheckboxStories from './checkbox.stories';
 
 # Checkbox
 
-A native checkbox with the design-system treatment, a projected label and
-assistive messages. Works standalone via `[(checked)]`, with reactive and
-template-driven forms via `ControlValueAccessor`, and with signal forms.
-
-## Import
+A checkbox with a label and optional messages. It works on its own with `[(checked)]`, with reactive
+and template-driven forms, and with signal forms.
 
 ```ts
 import { MudCheckbox } from 'ngx-mud-ui/checkbox';
-import { MudLabel } from 'ngx-mud-ui/label';
 import { MudInlineMessage } from 'ngx-mud-ui/inline-message';
-
-@Component({
-  imports: [MudCheckbox, MudLabel, MudInlineMessage],
-  template: `
-    <mud-checkbox [formControl]="terms" required>
-      <mud-label>Accept termenii</mud-label>
-      @if (terms.touched && terms.invalid) {
-        <mud-inline-message variant="error">Trebuie să acceptați termenii.</mud-inline-message>
-      }
-    </mud-checkbox>
-  `,
-})
-export class Demo {}
+import { MudLabel } from 'ngx-mud-ui/label';
 ```
-
-The base stylesheet must be in your app's `angular.json` `styles` once:
-
-```json
-"styles": ["node_modules/ngx-mud-ui/prebuilt/mud.css", "src/styles.scss"]
-```
-
-## Playground
 
 <Canvas of={CheckboxStories.Playground} />
 <Controls of={CheckboxStories.Playground} />
 
+## Basic
+
+Put a `<mud-label>` inside for the visible label, and any `<mud-inline-message>` for help or errors.
+The checkbox links them to the input for screen readers. `checked` is two-way bindable.
+
+<Canvas of={CheckboxStories.Basic} />
+
 ## States
+
+- `indeterminate` shows a dash, for a partly checked group. It's yours to manage: a click doesn't
+  clear it.
+- `invalid` shows the error style and sets `aria-invalid`. The checkbox shows no message by itself;
+  add a `<mud-inline-message variant="error">` when you want one.
+- `readonly` keeps the checkbox focusable but unchangeable; `disabled` takes it out entirely.
+- `required` adds a red asterisk. `size` is `medium` (24px, default) or `small` (20px).
 
 <Canvas of={CheckboxStories.States} />
 
-## Composed content
+## Reactive forms
 
-Rich label and message content is projected directly — a link inside the
-label, an inline message with emphasis.
+Bind `formControl` or `formControlName`. Bind `invalid` yourself, usually
+`ctrl.invalid && ctrl.touched`, and show the error message under the same condition.
 
-<Canvas of={CheckboxStories.ComposedContent} />
+<Canvas of={CheckboxStories.ReactiveForms} />
+
+## Signal forms
+
+Bind `[formField]`: the value, `disabled` and `invalid` follow the field. When the message appears
+is still up to you; here it waits until the field is touched.
+
+<Canvas of={CheckboxStories.SignalForms} />
 
 ## Select all
 
+A parent checkbox whose state comes from its children: checked when all are, indeterminate when
+some are.
+
 <Canvas of={CheckboxStories.SelectAll} />
+
+## Accessibility
+
+- It's a native checkbox, so <kbd>Space</kbd> toggles it.
+- Messages sit in a `role="alert"` region linked with `aria-describedby`, so showing one announces
+  it.
+- Use `aria-label` only when there's no `<mud-label>`; it would replace the visible name.
 
 ## API
 
@@ -62,28 +69,8 @@ Selector: `mud-checkbox`
 
 <ArgTypes of={CheckboxStories} />
 
-### Label and messages
+Content slots: `mud-label` and `mud-inline-message`.
 
-The checkbox renders no message text of its own. Project a `<mud-label>` for
-the visible label beside the box and any number of `<mud-inline-message>`
-elements for assistive text — *you* decide when they render:
+### Types
 
-- Messages land in a field-owned `role="alert"` region wired into
-  `aria-describedby`; toggling one on announces it to screen readers.
-- The `invalid` input drives the red border and `aria-invalid`; with signal
-  forms it is bound automatically, with reactive forms bind
-  `[invalid]="ctrl.invalid && ctrl.touched"`.
-
-## Usage tips
-
-- **`indeterminate` is consumer-owned.** Rendering follows the input only, and a
-  user toggle does **not** clear it — you must update it yourself in the change
-  handler. This is what makes the select-all pattern work.
-- **`invalid` drives the visuals; a projected message supplies the text.**
-  Nothing renders a message for you — pair `invalid` with an `@if`-guarded
-  `<mud-inline-message variant="error">` to show one only when it should
-  appear.
-- **`readonly` still focusable.** It keeps the box reachable and readable but
-  not toggleable — different from `disabled`, which removes it from the flow.
-- **Use `aria-label` only when no `mud-label` is projected**; with both set
-  the accessible name silently replaces the visible one.
+- `MudCheckboxSize`: `'medium' | 'small'`

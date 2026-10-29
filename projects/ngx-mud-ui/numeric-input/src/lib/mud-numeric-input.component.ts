@@ -72,8 +72,11 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
   /** @description Size rung: medium (40px) or large (48px). */
   readonly size = input<MudNumericInputSize>('medium');
 
+  /** @description Disables the field. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
+  /** @description Adds the red asterisk to the label and the native `required` attribute. */
   readonly required = input(false, { transform: booleanAttribute });
+  /** @description Read-only: the field stays focusable and copyable. */
   readonly readonly = input(false, { transform: booleanAttribute });
 
   /** @description Destructive visuals + `aria-invalid`. Signal forms bind this automatically. */
@@ -112,8 +115,11 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
   /** @description Shows a trailing clear (×) while the field holds a value. */
   readonly clearable = input(false, { transform: booleanAttribute });
 
+  /** @description Native `name` attribute. */
   readonly name = input<string>('');
+  /** @description Native `placeholder`. Don't use it in place of a label. */
   readonly placeholder = input<string | undefined>(undefined);
+  /** @description Maximum number of characters; also turns on the counter. */
   readonly maxLength = input<number | undefined>(undefined);
 
   /** @description Shows the `n / max` character counter while `maxLength` is set. */
@@ -166,13 +172,13 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
   /** @description Extra id(s) merged into the native control's aria-describedby. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
-  /** Fired when a stepper or arrow key changes the value. */
+  /** @description Fires when a stepper or an arrow key changes the value. */
   readonly stepped = output<MudNumericInputStep>();
 
-  /** Fired when typed input is rejected or clamped at parse/commit time. */
+  /** @description Fires when typed input is rejected or clamped on commit. */
   readonly errored = output<MudNumericInputErrorKind>();
 
-  /** Signal-forms touch contract: emitted when focus leaves the control. */
+  /** @description Fires when focus leaves the field; signal forms use it to mark the field touched. */
   readonly touch = output<void>();
 
   private readonly _native = viewChild.required<ElementRef<HTMLInputElement>>('native');
@@ -298,6 +304,14 @@ export class MudNumericInput implements ControlValueAccessor, FormValueControl<n
       if (untracked(this._focused) && Object.is(typedValue, value)) return;
 
       untracked(() => this._display.set(this._format(value)));
+    });
+
+    // Writes only on a real change: Chrome moves the caret to the end even when the value is unchanged.
+    effect(() => {
+      const display = this._display();
+      const native = this._native().nativeElement;
+
+      if (native.value !== display) native.value = display;
     });
   }
 

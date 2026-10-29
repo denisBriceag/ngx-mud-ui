@@ -63,6 +63,7 @@ export class MudCheckbox implements ControlValueAccessor, FormCheckboxControl {
   /** @description Mixed state (the dash); consumer-owned, user toggles do not clear it. */
   readonly indeterminate = input(false, { transform: booleanAttribute });
 
+  /** @description Disables the checkbox. Both forms systems set it for you. */
   readonly disabled = input(false, { transform: booleanAttribute });
 
   /** @description Adds the red asterisk and the native `required` attribute. */
@@ -74,6 +75,7 @@ export class MudCheckbox implements ControlValueAccessor, FormCheckboxControl {
   /** @description Destructive visuals + `aria-invalid`. Signal forms bind this automatically. */
   readonly invalid = input(false, { transform: booleanAttribute });
 
+  /** @description Native `name` attribute. */
   readonly name = input<string>('');
 
   /** @description Accessible name when no visible label is rendered. */
@@ -85,7 +87,7 @@ export class MudCheckbox implements ControlValueAccessor, FormCheckboxControl {
   /** @description Extra id(s) merged into the native control's aria-describedby. */
   readonly ariaDescribedby = input<string | undefined>(undefined, { alias: 'aria-describedby' });
 
-  /** Signal-forms touch contract: emitted when focus leaves the control. */
+  /** @description Fires when focus leaves the checkbox; signal forms use it to mark the field touched. */
   readonly touch = output<void>();
 
   private readonly _native = viewChild.required<ElementRef<HTMLInputElement>>('native');
