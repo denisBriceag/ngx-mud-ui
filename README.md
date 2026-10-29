@@ -1,83 +1,103 @@
-# NgxMudUi
+# ngx-mud-ui
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.3.
+Angular components for **MUD**, the Moldova Unified Design system.
 
-## Development server
+> **Unofficial.** `ngx-mud-ui` is an independent project, not made or endorsed by eGov Moldova,
+> and not meant for production. It is inspired by the official
+> [`@egov-moldova/mud`](https://www.npmjs.com/package/@egov-moldova/mud) package and the
+> [MUD documentation](https://mud.dev.egov.md/).
 
-To start a local development server, run:
+## Quick start
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Requires Angular 22.2 or later.
 
 ```bash
-ng generate component component-name
+ng add ngx-mud-ui
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+```ts
+import { Component } from '@angular/core';
+import { MudButton } from 'ngx-mud-ui/button';
+
+@Component({
+  selector: 'app-root',
+  imports: [MudButton],
+  template: `<button type="button" mudButton>Continue</button>`,
+})
+export class App {}
+```
+
+The [package README](projects/ngx-mud-ui/README.md) covers installation options, the component
+list, icons, theming and localization. For live examples and the full API, run the Storybook
+(see below).
+
+## Development
+
+### Setup
+
+Use the Node version in [`.nvmrc`](.nvmrc) and pnpm 10.
 
 ```bash
-ng generate --help
+pnpm install   # also generates documentation.json for the Storybook API tables
+pnpm storybook # http://localhost:6006
 ```
 
-## Building
+### Scripts
 
-To build the project run:
+| Command                                    | What it does                                                                                            |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `pnpm storybook`                           | Runs the docs site with live reload.                                                                    |
+| `pnpm build`                               | Builds the package into `dist/ngx-mud-ui`, with the prebuilt stylesheets, fonts and `ng add` schematic. |
+| `pnpm test`                                | Library unit tests (Vitest).                                                                            |
+| `pnpm test:stories`                        | Runs every story's interaction test in a real browser.                                                  |
+| `pnpm test:schematics` / `pnpm test:tools` | Tests for the `ng add` schematic and the build tools.                                                   |
+| `pnpm lint`                                | ESLint over the library, schematic, stories and Storybook config.                                       |
+| `pnpm styles:check`                        | After `pnpm build`: checks that component CSS is unlayered and that every token it reads exists.        |
+| `pnpm icons:generate`                      | Regenerates the icon data from `projects/ngx-mud-ui/icons-source`.                                      |
+| `pnpm docs:json`                           | Regenerates `documentation.json` after changing a component's API.                                      |
+
+Build with `pnpm build`, not `ng build`: `ng build` alone leaves out the stylesheets and
+schematic, so `ng add` and every app's `styles` entry would point at nothing. `pnpm watch`
+rebuilds only the TypeScript; run `node tools/build-prebuilt.mjs` once it starts if a linked app
+needs the stylesheets.
+
+CI runs on pushes to `main` and on pull requests: lint, the unit, tools and schematic tests, the
+build, `styles:check` and a Storybook build. It doesn't run `test:stories`, so run that locally.
+
+### Layout
+
+```
+projects/ngx-mud-ui/   the library, one folder per entry point (each with a specs/ folder)
+  styles/              tokens, themes and the prebuilt stylesheets
+schematics/            the ng add schematic
+stories/               Storybook: Introduction, Foundations and a folder per component
+  components/<name>/   <name>.mdx (docs page), <name>.stories.ts, examples/*.example.ts
+tools/                 build, icon generation and style checks
+```
+
+Each docs example is a standalone component in `examples/`, and the page shows its source as
+written. Add new examples the same way, using the `app-` selector prefix.
+
+### Conventions
+
+- **Naming:** selectors start with `mud-` or `mud` (`<mud-icon>`, `[mudButton]`), design tokens
+  with `--mud-`, and component-private custom properties with `--_`.
+- **Sizes:** every `size` input uses `xs`, `sm`, `md`, `lg`, `xl`.
+- **Styling:** the `--mud-*` tokens are the public styling API. Component class names, DOM
+  structure and internal styles are private. Component CSS is not in a cascade layer (tokens are,
+  in `mud.base`), so when one component restyles another's element it must win by specificity,
+  never by load order.
+- **API docs:** every public input, output and model has a `/** @description … */` comment; the
+  Storybook API tables are built from them.
+
+### Publishing
 
 ```bash
-ng build
+pnpm build
+cd dist/ngx-mud-ui && npm publish
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## License
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Icons
-
-Tree-shakeable icon components and data live in the `ngx-mud-ui/icons`
-secondary entry point. See
-[`projects/ngx-mud-ui/icons/README.md`](projects/ngx-mud-ui/icons/README.md)
-for registration and usage.
-
-## Naming conventions
-
-Everything the library puts into an app is namespaced with `mud`:
-
-| Layer | Prefix | Example |
-|---|---|---|
-| Angular component/directive selectors | `mud-` / `mud…` | `<mud-icon>`, `[mudButton]` |
-| Component CSS classes (internal, ship with each component) | BEM blocks, often `mud-` | `.mud-btn`, `.input-field__control` |
-| Design tokens (CSS custom properties, from `prebuilt/mud.css`) | `--mud-` | `--mud-color-background-brand-default`, `--mud-spacing-16` |
-| Component-private custom properties | `--_` | `--_btn-height` |
-
-- **`mud-`** matches the package name (`ngx-mud-ui`) and the upstream **Moldova Unified Design**
-  system ([mud.egov.md](https://mud.egov.md/)), so markup reads like the design-system docs.
-- **Tokens** are the styling API: colors (`--mud-color-*`) and the shared scales (spacing, radius,
-  border width, shadows, focus ring, font, type scale). There are no utility classes; component
-  classes are internal and not a public API.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+[MIT](LICENSE) © Denis Briceag. Includes material from the MUD design system and flag-icons; see
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

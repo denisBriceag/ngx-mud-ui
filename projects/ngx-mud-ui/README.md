@@ -1,75 +1,167 @@
-# NgxMudUi
+# ngx-mud-ui
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.0.
+Angular components for **MUD**, the Moldova Unified Design system.
 
+> **Unofficial.** `ngx-mud-ui` is an independent project, not made or endorsed by eGov Moldova,
+> and not meant for production. It is inspired by the official
+> [`@egov-moldova/mud`](https://www.npmjs.com/package/@egov-moldova/mud) package and the
+> [MUD documentation](https://mud.dev.egov.md/).
 
-## Styles
+- Standalone components built on signals and the Angular CDK.
+- Every form control works with reactive, template-driven and signal forms.
+- Light and dark themes, styled through `--mud-*` design tokens.
+- Interface strings in Romanian, Russian and English.
+- One entry point per component, so you only ship what you import.
 
-Add `node_modules/ngx-mud-ui/prebuilt/mud.css` to the app's `angular.json` `styles` (build and
-test) — tokens (`--mud-*`), the Onest font and shared keyframes. The dark theme is opt-in: add
-`node_modules/ngx-mud-ui/prebuilt/mud-dark.css` as well and set `data-theme="dark"` on `<html>`.
-Component CSS ships with each component; the library styles nothing else on the page and has no utility classes.
-Public styling API: colors (`--mud-color-*`), the shared scales (spacing, radius, border width,
-shadows, focus ring, font, type scale) and breakpoints (`ngx-mud-ui/breakpoints`: Sass mixins +
-`MudBreakpoints`). Component tokens (`--mud-toast-*`, …) are overridable but not recommended.
+## Requirements
 
-Customization is through the tokens only. Component class names, DOM structure and internal styles
-are private and may change in any release; overriding them is not supported. Component CSS is not in
-a cascade layer (tokens are, in `mud.base`). Inside the library, a component restyling another
-component's element must win by specificity, never by load order. Guard: `pnpm styles:check` after
-`pnpm build` (component CSS unlayered + every token read exists; in CI). Overlay components also need
-`@angular/cdk/overlay-prebuilt.css`.
+Angular 22.2 or later, with `@angular/cdk` at the same version.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Installation
 
 ```bash
-ng generate component component-name
+ng add ngx-mud-ui
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+The schematic installs the peer dependencies, adds the stylesheets to `angular.json` and sets the
+Onest font on `body`. Options:
+
+- `--darkMode`: also add the dark theme stylesheet (otherwise it asks).
+- `--project <name>`: the application to set up, in a multi-app workspace.
+
+<details>
+<summary>Manual setup</summary>
 
 ```bash
-ng generate --help
+npm install ngx-mud-ui @angular/cdk
 ```
 
-## Building
+Add the stylesheets to the `build` target's `styles` in `angular.json`, before your own:
 
-Build from the repository root with **`pnpm build`** — not `ng build`. It runs ng-packagr and then
-`tools/build-prebuilt.mjs`, which writes the base stylesheet (`prebuilt/mud.css`), the opt-in dark
-theme (`prebuilt/mud-dark.css`) and the fonts into `dist/ngx-mud-ui` — and fails if any is missing.
-`ng build` alone produces a package without them, and every app's `angular.json` `styles` entry
-would then point at nothing.
-
-`pnpm watch` rebuilds the TypeScript only and ng-packagr empties `dist/` first — run
-`node tools/build-prebuilt.mjs` after it starts if a linked app needs the base stylesheet.
-
-### Publishing the Library
-
-```bash
-pnpm build
-cd dist/ngx-mud-ui && npm publish
+```json
+"styles": [
+  "@angular/cdk/overlay-prebuilt.css",
+  "ngx-mud-ui/prebuilt/mud.css",
+  "src/styles.scss"
+]
 ```
 
-## Running unit tests
+Add `ngx-mud-ui/prebuilt/mud-dark.css` as well for the dark theme. Then set the font in your global
+stylesheet:
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
+```scss
+body {
+  font-family: var(--mud-font-family-base);
+  font-size: 1rem;
+}
 ```
 
-## Running end-to-end tests
+</details>
 
-For end-to-end (e2e) testing, run:
+## Usage
 
-```bash
-ng e2e
+Import a component from its entry point and add it to `imports`:
+
+```ts
+import { Component, signal } from '@angular/core';
+import { MudButton } from 'ngx-mud-ui/button';
+import { MudLabel } from 'ngx-mud-ui/label';
+import { MudTextInput } from 'ngx-mud-ui/text-input';
+
+@Component({
+  selector: 'app-contact',
+  imports: [MudButton, MudLabel, MudTextInput],
+  template: `
+    <mud-text-input [(value)]="email" type="email" required>
+      <mud-label>E-mail</mud-label>
+    </mud-text-input>
+    <button type="button" mudButton>Continue</button>
+  `,
+})
+export class Contact {
+  readonly email = signal('');
+}
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Components
 
-## Additional Resources
+| Group       | Entry points                                                                                                                                                                                                    |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Actions     | `button`, `link`, `menu`                                                                                                                                                                                        |
+| Forms       | `checkbox`, `date-picker`, `file-input`, `input-chip`, `label`, `numeric-input`, `phone-input`, `radio`, `search-input`, `segmented-control`, `select-input`, `switch`, `text-input`, `textarea`, `time-picker` |
+| Feedback    | `badge`, `banner`, `info-box`, `inline-message`, `spinner`, `toast`, `tooltip`                                                                                                                                  |
+| Overlays    | `dialog`, `drawer`                                                                                                                                                                                              |
+| Navigation  | `breadcrumb`, `pagination`, `sidebar`, `stepper`, `tabs`, `tree`, `tree-item`                                                                                                                                   |
+| Content     | `accordion`, `avatar`, `chip`, `icons`, `table`, `tag`                                                                                                                                                          |
+| Foundations | `breakpoints`, `i18n`                                                                                                                                                                                           |
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Each is imported as `ngx-mud-ui/<entry point>`, for example `ngx-mud-ui/date-picker`. Sizes use
+the same scale everywhere: `xs`, `sm`, `md`, `lg`, `xl`.
+
+## Icons
+
+Only the icons you register reach your bundle:
+
+```ts
+import { provideMudIcons, alarm, arrowLeft } from 'ngx-mud-ui/icons';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideMudIcons([alarm, arrowLeft])],
+};
+```
+
+Then render one with `<mud-icon name="alarm" />`, importing `MudIconComponent`.
+
+## Theming
+
+The `--mud-*` CSS custom properties are the only styling API: colors, spacing, radius, border
+width, shadows, focus ring and type scale. Component class names and DOM structure are internal
+and may change in any release.
+
+**Dark mode:** include `mud-dark.css` (see Installation), then set `data-theme="dark"` on
+`<html>`. Without that attribute the page stays light.
+
+**Breakpoints:** Sass mixins and matching CDK media queries.
+
+```scss
+@use 'ngx-mud-ui/breakpoints' as bp;
+
+.layout {
+  @include bp.up(md) {
+    display: grid;
+  }
+}
+```
+
+```ts
+import { MudBreakpoints } from 'ngx-mud-ui/breakpoints';
+
+inject(BreakpointObserver).observe(MudBreakpoints.Md);
+```
+
+## Localization
+
+Components ship with English labels. Provide the Romanian or Russian pack, and the locale used for
+dates and numbers:
+
+```ts
+import { MUD_LABELS_RO, provideMudFormatLocale, provideMudLabels } from 'ngx-mud-ui/i18n';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideMudLabels(MUD_LABELS_RO), provideMudFormatLocale('ro-MD')],
+};
+```
+
+`provideMudLabels` also accepts partial overrides and functions that `inject()` your own
+translation service.
+
+## Documentation
+
+The Storybook in the [repository](https://github.com/denisBriceag/ngx-mud-ui) has a page per
+component with live examples, the full API and accessibility notes.
+
+## License
+
+MIT © Denis Briceag. Icon artwork, design token values, flags and the Romanian and Russian strings
+come from the MUD design system by the e-Governance Agency of Moldova (MIT); see
+[THIRD_PARTY_NOTICES.md](https://github.com/denisBriceag/ngx-mud-ui/blob/main/THIRD_PARTY_NOTICES.md).
