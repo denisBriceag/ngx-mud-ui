@@ -44,6 +44,12 @@ describe('buildPrebuilt', () => {
     expect(existsSync(join(OUT, 'fonts', 'Onest', 'onest-variable.woff2'))).toBe(true);
   });
 
+  it('ships the licence and third-party notices unchanged', () => {
+    for (const file of ['LICENSE', 'THIRD_PARTY_NOTICES.md']) {
+      expect(readFileSync(join(OUT, file), 'utf8')).toBe(readFileSync(file, 'utf8'));
+    }
+  });
+
   it('emits no class selectors (no utilities, no component CSS)', () => {
     expect(css).not.toMatch(/(^|[}\s,])\.[a-zA-Z][\w-]*[^{]*\{/m);
   });

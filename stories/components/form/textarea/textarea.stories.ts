@@ -6,8 +6,10 @@ import { MudTextarea } from 'ngx-mud-ui/textarea';
 import { example } from '../../../example';
 import { TextareaBasicExample } from './examples/textarea-basic.example';
 import basicSource from './examples/textarea-basic.example.ts?raw';
-import { TextareaFormsExample } from './examples/textarea-forms.example';
-import formsSource from './examples/textarea-forms.example.ts?raw';
+import { TextareaReactiveExample } from './examples/textarea-reactive.example';
+import reactiveSource from './examples/textarea-reactive.example.ts?raw';
+import { TextareaSignalFormsExample } from './examples/textarea-signal-forms.example';
+import signalFormsSource from './examples/textarea-signal-forms.example.ts?raw';
 import { TextareaStatesExample } from './examples/textarea-states.example';
 import statesSource from './examples/textarea-states.example.ts?raw';
 
@@ -59,4 +61,5 @@ export const Playground: Story = {
 
 export const Basic: Story = example(TextareaBasicExample, basicSource);
 export const States: Story = example(TextareaStatesExample, statesSource);
-export const Forms: Story = example(TextareaFormsExample, formsSource);
+export const ReactiveForms: Story = example(TextareaReactiveExample, reactiveSource);
+export const SignalForms: Story = example(TextareaSignalFormsExample, signalFormsSource);

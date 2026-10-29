@@ -40,13 +40,18 @@ tooltip is added for you: add a `mudTooltip` to the segment if you want one.
 
 <Canvas of={SegmentedControlStories.LongLabels} />
 
-## Forms
+## Reactive forms
 
-Bind `formControl`, `formControlName` or `ngModel`, or `[formField]` with signal forms; the value
-and disabled state follow. The control has no error style or message area, since it switches views
-rather than collecting data.
+Bind `formControl`, `formControlName` or `ngModel`; the value and disabled state follow. The
+control has no error style or message area, since it switches views rather than collecting data.
 
-<Canvas of={SegmentedControlStories.Forms} />
+<Canvas of={SegmentedControlStories.ReactiveForms} />
+
+## Signal forms
+
+Bind `[formField]`: the value and `disabled` follow the field.
+
+<Canvas of={SegmentedControlStories.SignalForms} />
 
 ## Accessibility
 

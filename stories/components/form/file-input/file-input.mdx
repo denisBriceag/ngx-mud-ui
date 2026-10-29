@@ -39,13 +39,18 @@ automatically.
 
 <Canvas of={FileInputStories.Variants} />
 
-## Forms
+## Reactive forms
 
 Bind `formControl`: the value is the `File[]`, so `Validators.required` rejects an empty selection
-and your validators see the real files. Bind `invalid` yourself. With signal forms, bind
-`[formField]`.
+and your validators see the real files. Bind `invalid` yourself.
 
-<Canvas of={FileInputStories.Forms} />
+<Canvas of={FileInputStories.ReactiveForms} />
+
+## Signal forms
+
+Bind `[formField]`: the value, `disabled`, `required` and `invalid` follow the field.
+
+<Canvas of={FileInputStories.SignalForms} />
 
 ## File rows
 

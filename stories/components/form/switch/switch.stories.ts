@@ -6,8 +6,10 @@ import { MudSwitch } from 'ngx-mud-ui/switch';
 import { example } from '../../../example';
 import { SwitchBasicExample } from './examples/switch-basic.example';
 import basicSource from './examples/switch-basic.example.ts?raw';
-import { SwitchFormsExample } from './examples/switch-forms.example';
-import formsSource from './examples/switch-forms.example.ts?raw';
+import { SwitchReactiveExample } from './examples/switch-reactive.example';
+import reactiveSource from './examples/switch-reactive.example.ts?raw';
+import { SwitchSignalFormsExample } from './examples/switch-signal-forms.example';
+import signalFormsSource from './examples/switch-signal-forms.example.ts?raw';
 
 const meta: Meta<MudSwitch> = {
   title: 'Components/Form/Switch',
@@ -28,4 +30,5 @@ export const Playground: Story = {
 };
 
 export const Basic: Story = example(SwitchBasicExample, basicSource);
-export const Forms: Story = example(SwitchFormsExample, formsSource);
+export const ReactiveForms: Story = example(SwitchReactiveExample, reactiveSource);
+export const SignalForms: Story = example(SwitchSignalFormsExample, signalFormsSource);

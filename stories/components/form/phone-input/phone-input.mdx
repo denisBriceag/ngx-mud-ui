@@ -59,12 +59,18 @@ loads from the user's profile, shows a spinner, blocks editing and closes the co
 
 <Canvas of={PhoneInputStories.States} />
 
-## Forms
+## Reactive forms
 
-Bind `formControl` and bind `invalid` yourself, or bind `[formField]` and let the field drive
-`invalid` and `required`.
+Bind `formControl` or `formControlName`, and bind `invalid` yourself, usually
+`ctrl.touched && ctrl.invalid`.
 
-<Canvas of={PhoneInputStories.Forms} />
+<Canvas of={PhoneInputStories.ReactiveForms} />
+
+## Signal forms
+
+Bind `[formField]`: the value, `disabled`, `required` and `invalid` follow the field.
+
+<Canvas of={PhoneInputStories.SignalForms} />
 
 ## Accessibility
 

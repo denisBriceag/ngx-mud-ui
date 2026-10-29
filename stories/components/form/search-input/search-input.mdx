@@ -40,6 +40,20 @@ replaces the clear button. While `loading`, a spinner takes the trailing place. 
 
 <Canvas of={SearchInputStories.States} />
 
+## Reactive forms
+
+Bind `formControl` or `formControlName`, and bind `invalid` yourself, usually
+`ctrl.touched && ctrl.invalid`. The value is the query string.
+
+<Canvas of={SearchInputStories.ReactiveForms} />
+
+## Signal forms
+
+Bind `[formField]`: the value, `disabled`, `minLength` and `invalid` follow the field. Here the list
+filters while the query is valid.
+
+<Canvas of={SearchInputStories.SignalForms} />
+
 ## Accessibility
 
 - The clear and submit buttons are named "Clear" and "Search" (translatable), or by `clearLabel`

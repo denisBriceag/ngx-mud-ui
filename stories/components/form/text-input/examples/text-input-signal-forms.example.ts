@@ -11,10 +11,9 @@ import { MudTextInput } from 'ngx-mud-ui/text-input';
     <!-- [formField] binds the value, disabled, required and invalid for you. -->
     <mud-text-input type="email" autocomplete="email" [formField]="contact.email">
       <mud-label>E-mail</mud-label>
-      @if (contact.email().touched() && contact.email().invalid()) {
-        @for (error of contact.email().errors(); track error.kind) {
-          <mud-inline-message variant="error">{{ error.message }}</mud-inline-message>
-        }
+      <!-- A message must be the block's only root to reach the field's message slot, so no @for here. -->
+      @if (contact.email().touched() && contact.email().errors()[0]; as error) {
+        <mud-inline-message variant="error">{{ error.message }}</mud-inline-message>
       }
     </mud-text-input>
   `,

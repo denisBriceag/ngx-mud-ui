@@ -61,12 +61,19 @@ the same list on its own; its `value` is set once both are picked. It takes the 
 
 <Canvas of={TimeStories.Picker} />
 
-## Forms
+## Reactive forms
 
-Bind `formControl` and bind `invalid` yourself, or bind `[formField]` and let the field drive
-`invalid` and `required`.
+Bind `formControl` or `formControlName`, and bind `invalid` yourself, usually
+`ctrl.touched && ctrl.invalid`. The value is a 24-hour `HH:MM` string, or `null` when
+empty.
 
-<Canvas of={TimeStories.Forms} />
+<Canvas of={TimeStories.ReactiveForms} />
+
+## Signal forms
+
+Bind `[formField]`: the value, `disabled`, `required` and `invalid` follow the field.
+
+<Canvas of={TimeStories.SignalForms} />
 
 ## Accessibility
 

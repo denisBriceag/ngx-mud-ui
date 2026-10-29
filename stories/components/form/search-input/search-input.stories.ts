@@ -7,10 +7,14 @@ import { MudSearchInput } from 'ngx-mud-ui/search-input';
 import { example } from '../../../example';
 import { SearchInputBasicExample } from './examples/search-input-basic.example';
 import basicSource from './examples/search-input-basic.example.ts?raw';
+import { SearchInputReactiveExample } from './examples/search-input-reactive.example';
+import reactiveSource from './examples/search-input-reactive.example.ts?raw';
 import { SearchInputShapesExample } from './examples/search-input-shapes.example';
 import shapesSource from './examples/search-input-shapes.example.ts?raw';
 import { SearchInputStatesExample } from './examples/search-input-states.example';
 import statesSource from './examples/search-input-states.example.ts?raw';
+import { SearchInputSignalFormsExample } from './examples/search-input-signal-forms.example';
+import signalFormsSource from './examples/search-input-signal-forms.example.ts?raw';
 
 const meta: Meta<MudSearchInput> = {
   title: 'Components/Form/Search input',
@@ -60,3 +64,5 @@ export const Playground: Story = {
 export const Basic: Story = example(SearchInputBasicExample, basicSource);
 export const Shapes: Story = example(SearchInputShapesExample, shapesSource);
 export const States: Story = example(SearchInputStatesExample, statesSource);
+export const ReactiveForms: Story = example(SearchInputReactiveExample, reactiveSource);
+export const SignalForms: Story = example(SearchInputSignalFormsExample, signalFormsSource);

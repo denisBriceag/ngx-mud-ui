@@ -8,8 +8,10 @@ import { NumericInputBasicExample } from './examples/numeric-input-basic.example
 import basicSource from './examples/numeric-input-basic.example.ts?raw';
 import { NumericInputCurrencyExample } from './examples/numeric-input-currency.example';
 import currencySource from './examples/numeric-input-currency.example.ts?raw';
-import { NumericInputFormsExample } from './examples/numeric-input-forms.example';
-import formsSource from './examples/numeric-input-forms.example.ts?raw';
+import { NumericInputReactiveExample } from './examples/numeric-input-reactive.example';
+import reactiveSource from './examples/numeric-input-reactive.example.ts?raw';
+import { NumericInputSignalFormsExample } from './examples/numeric-input-signal-forms.example';
+import signalFormsSource from './examples/numeric-input-signal-forms.example.ts?raw';
 import { NumericInputStatesExample } from './examples/numeric-input-states.example';
 import statesSource from './examples/numeric-input-states.example.ts?raw';
 
@@ -63,4 +65,5 @@ export const Playground: Story = {
 export const Basic: Story = example(NumericInputBasicExample, basicSource);
 export const Currency: Story = example(NumericInputCurrencyExample, currencySource);
 export const States: Story = example(NumericInputStatesExample, statesSource);
-export const Forms: Story = example(NumericInputFormsExample, formsSource);
+export const ReactiveForms: Story = example(NumericInputReactiveExample, reactiveSource);
+export const SignalForms: Story = example(NumericInputSignalFormsExample, signalFormsSource);

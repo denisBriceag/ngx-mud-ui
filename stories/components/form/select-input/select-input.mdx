@@ -65,12 +65,19 @@ option in `options` at least once.
 
 <Canvas of={SelectInputStories.Server} />
 
-## Forms
+## Reactive forms
 
-Bind `formControl` and bind `invalid` yourself, or bind `[formField]` and let the field drive
-`invalid` and `required`.
+Bind `formControl` or `formControlName`, and bind `invalid` yourself, usually
+`ctrl.touched && ctrl.invalid`.
 
-<Canvas of={SelectInputStories.Forms} />
+<Canvas of={SelectInputStories.ReactiveForms} />
+
+## Signal forms
+
+Bind `[formField]`: the value, `disabled`, `required` and `invalid` follow the field. Values
+keep their type, such as the numbers here.
+
+<Canvas of={SelectInputStories.SignalForms} />
 
 ## Accessibility
 

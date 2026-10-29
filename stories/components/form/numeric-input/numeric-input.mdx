@@ -49,12 +49,19 @@ Put text before or after the number with `prefix` or `suffix` (such as a currenc
 
 <Canvas of={NumericInputStories.States} />
 
-## Forms
+## Reactive forms
 
-Bind `formControl` and bind `invalid` yourself, or bind `[formField]`: with signal forms `min`,
-`max`, `required` and `invalid` follow the field.
+Bind `formControl` or `formControlName`, and bind `invalid` yourself, usually
+`ctrl.touched && ctrl.invalid`. The value is a `number`, or `null` when empty.
 
-<Canvas of={NumericInputStories.Forms} />
+<Canvas of={NumericInputStories.ReactiveForms} />
+
+## Signal forms
+
+Bind `[formField]`: the value, `disabled`, `min`, `max`, `required` and `invalid` follow the
+field.
+
+<Canvas of={NumericInputStories.SignalForms} />
 
 ## Accessibility
 

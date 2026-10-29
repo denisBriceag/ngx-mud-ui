@@ -38,12 +38,18 @@ The same as a text input: `variant` (`default`, `warning`, `success`, `destructi
 
 <Canvas of={TextareaStories.States} />
 
-## Forms
+## Reactive forms
 
-Bind `formControl` and bind `invalid` yourself, or bind `[formField]` and let the field drive
-`invalid`, `required` and `maxLength`.
+Bind `formControl` or `formControlName`, and bind `invalid` yourself, usually
+`ctrl.touched && ctrl.invalid`.
 
-<Canvas of={TextareaStories.Forms} />
+<Canvas of={TextareaStories.ReactiveForms} />
+
+## Signal forms
+
+Bind `[formField]`: the value, `disabled`, `required`, `maxLength` and `invalid` follow the field.
+
+<Canvas of={TextareaStories.SignalForms} />
 
 ## Accessibility
 

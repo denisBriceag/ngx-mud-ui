@@ -13,8 +13,10 @@ import { DateCalendarExample } from './examples/date-calendar.example';
 import calendarSource from './examples/date-calendar.example.ts?raw';
 import { DateFormatsExample } from './examples/date-formats.example';
 import formatsSource from './examples/date-formats.example.ts?raw';
-import { DateFormsExample } from './examples/date-forms.example';
-import formsSource from './examples/date-forms.example.ts?raw';
+import { DateReactiveExample } from './examples/date-reactive.example';
+import reactiveSource from './examples/date-reactive.example.ts?raw';
+import { DateSignalFormsExample } from './examples/date-signal-forms.example';
+import signalFormsSource from './examples/date-signal-forms.example.ts?raw';
 import { DateHeaderExample } from './examples/date-header.example';
 import headerSource from './examples/date-header.example.ts?raw';
 import { DateLocalizedExample } from './examples/date-localized.example';
@@ -90,7 +92,8 @@ export const Range: Story = example(DateRangeExample, rangeSource, {
 export const Bounds: Story = example(DateBoundsExample, boundsSource);
 export const Header: Story = example(DateHeaderExample, headerSource);
 export const Calendar: Story = example(DateCalendarExample, calendarSource);
-export const Forms: Story = example(DateFormsExample, formsSource);
+export const ReactiveForms: Story = example(DateReactiveExample, reactiveSource);
+export const SignalForms: Story = example(DateSignalFormsExample, signalFormsSource);
 export const Localized: Story = example(DateLocalizedExample, localizedSource);
 
 /** jsdom reports no selection at all, so caret behaviour is only provable here. */

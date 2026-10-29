@@ -89,12 +89,19 @@ Clicking the header goes to a month grid, then a year grid of 12 years. It takes
 
 <Canvas of={DateStories.Calendar} />
 
-## Forms
+## Reactive forms
 
-Bind `formControl` and bind `invalid` yourself, or bind `[formField]` and let the field drive
-`invalid` and `required`. The calendar on its own takes the same bindings.
+Bind `formControl` or `formControlName`, and bind `invalid` yourself, usually
+`ctrl.touched && ctrl.invalid`. The value is an ISO date string (`YYYY-MM-DD`). The calendar on its own takes
+the same bindings.
 
-<Canvas of={DateStories.Forms} />
+<Canvas of={DateStories.ReactiveForms} />
+
+## Signal forms
+
+Bind `[formField]`: the value, `disabled`, `required` and `invalid` follow the field.
+
+<Canvas of={DateStories.SignalForms} />
 
 ## Language
 

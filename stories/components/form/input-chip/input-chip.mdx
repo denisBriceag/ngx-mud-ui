@@ -45,12 +45,19 @@ the draft, so show the reason yourself. `chipAdded` and `chipRemoved` fire for e
 
 <Canvas of={InputChipStories.States} />
 
-## Forms
+## Reactive forms
 
-Bind `formControl` (the value is `string[]`) and bind `invalid` yourself, or bind `[formField]` and
-let the field drive `invalid`.
+Bind `formControl` or `formControlName`, and bind `invalid` yourself, usually
+`ctrl.touched && ctrl.invalid`. The value is `string[]`.
 
-<Canvas of={InputChipStories.Forms} />
+<Canvas of={InputChipStories.ReactiveForms} />
+
+## Signal forms
+
+Bind `[formField]`: the value, `disabled` and `invalid` follow the field. `minLength` and
+`maxLength` validators count chips.
+
+<Canvas of={InputChipStories.SignalForms} />
 
 ## Accessibility
 

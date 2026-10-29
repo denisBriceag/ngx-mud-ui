@@ -24,11 +24,17 @@ point `aria-describedby` at your own element.
 
 <Canvas of={SwitchStories.Basic} />
 
-## Forms
+## Reactive forms
 
-Bind `formControl` (reactive and template-driven forms) or `[formField]` (signal forms).
+Bind `formControl`, `formControlName` or `ngModel`; the value is a `boolean`.
 
-<Canvas of={SwitchStories.Forms} />
+<Canvas of={SwitchStories.ReactiveForms} />
+
+## Signal forms
+
+Bind `[formField]`: the value and `disabled` follow the field.
+
+<Canvas of={SwitchStories.SignalForms} />
 
 ## Accessibility
 
