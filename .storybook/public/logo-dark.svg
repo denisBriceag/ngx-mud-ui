@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 184 40" role="img" aria-label="ngx-mud-ui">
+  <rect width="40" height="40" rx="10" fill="#fff"/>
+  <rect x="9" y="10" width="22" height="5" rx="2.5" fill="#121212"/>
+  <rect x="9" y="17.5" width="16" height="5" rx="2.5" fill="#121212" opacity=".7"/>
+  <rect x="9" y="25" width="10" height="5" rx="2.5" fill="#121212" opacity=".4"/>
+  <text x="52" y="27" fill="#fff" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="600">ngx-mud-ui</text>
+</svg>

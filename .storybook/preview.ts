@@ -1,6 +1,10 @@
 import type { Decorator, Preview, StoryContext } from '@storybook/angular-vite';
 import { setCompodocJson } from '@storybook/addon-docs/angular';
+import { DocsContainer, type DocsContainerProps } from '@storybook/addon-docs/blocks';
+import { createElement, useEffect as useReactEffect, useState, type PropsWithChildren } from 'react';
+import { GLOBALS_UPDATED } from 'storybook/internal/core-events';
 import { emitTransformCode, useEffect } from 'storybook/preview-api';
+import { themes } from 'storybook/theming';
 
 import { extractArgTypes } from './compodoc-argtypes';
 
@@ -17,14 +21,45 @@ setCompodocJson(docJson);
 
 // Theme must live on the ROOT element — nested data-theme wrappers don't
 // re-resolve the chained --color-* tokens (see Foundations/Dark Mode).
-const withTheme: Decorator = (story, context) => {
-  if (context.globals['theme'] === 'dark') {
+const applyTheme = (theme: unknown): void => {
+  if (theme === 'dark') {
     document.documentElement.setAttribute('data-theme', 'dark');
   } else {
     document.documentElement.removeAttribute('data-theme');
   }
+};
+
+const withTheme: Decorator = (story, context) => {
+  applyTheme(context.globals['theme']);
 
   return story();
+};
+
+/**
+ * Docs pages follow the Theme toolbar too, including pages without stories (Introduction,
+ * Foundations), where no decorator runs.
+ */
+const ThemedDocsContainer = ({ context, children }: PropsWithChildren<DocsContainerProps>) => {
+  const [theme, setTheme] = useState<unknown>(
+    () => (context as unknown as { store: { userGlobals: { get(): Record<string, unknown> } } })
+      .store.userGlobals.get()['theme'],
+  );
+
+  useReactEffect(() => {
+    const update = ({ globals }: { globals: Record<string, unknown> }) => setTheme(globals['theme']);
+
+    context.channel.on(GLOBALS_UPDATED, update);
+
+    return () => context.channel.off(GLOBALS_UPDATED, update);
+  }, [context]);
+
+  applyTheme(theme);
+
+  return createElement(
+    DocsContainer,
+    { context, theme: theme === 'dark' ? themes.dark : themes.light },
+    children,
+  );
 };
 
 /** What each Playground template actually renders with: args plus any extra props, such as `options`. */
@@ -117,7 +152,11 @@ const preview: Preview = {
   },
   initialGlobals: { theme: 'light' },
   parameters: {
-    docs: { extractArgTypes, source: { transform: playgroundSource } },
+    docs: {
+      container: ThemedDocsContainer,
+      extractArgTypes,
+      source: { transform: playgroundSource },
+    },
     options: {
       storySort: { order: ['Introduction', 'Foundations', 'Components', '*'] },
     },
