@@ -1,8 +1,25 @@
+# Supply-chain hardening.
+# Refuse versions published less than 3 days ago: hijacked releases are usually caught and pulled by then.
+minimumReleaseAge: 4320
+# Refuse a version published with weaker evidence than earlier ones (e.g. provenance dropped), a hijack signal.
+trustPolicy: no-downgrade
+# Reviewed false positives: old-line backports published after a newer line gained provenance.
+trustPolicyExclude:
+  - semver@6.3.1
+# Fail, rather than silently skip, when a new dependency wants to run an install script.
+strictDepBuilds: true
+
+# The only dependencies allowed to run install scripts.
 allowBuilds:
   '@parcel/watcher': true
   esbuild: true
   lmdb: true
   msgpackr-extract: true
+
 overrides:
   # Analog lists build-angular as an optional peer and pnpm installs it anyway; nothing here uses it.
   '@analogjs/vite-plugin-angular>@angular-devkit/build-angular': '-'
+  # @angular/build pins vite 8.3.0 exactly, which has open advisories; 8.3.5 is a patch release.
+  '@angular/build>vite': '^8.3.5'
+  # React refuses to run when react and react-dom differ; keep Storybook's react-dom on our react.
+  react-dom: $react

@@ -61,8 +61,14 @@ schematic, so `ng add` and every app's `styles` entry would point at nothing. `p
 rebuilds only the TypeScript; run `node tools/build-prebuilt.mjs` once it starts if a linked app
 needs the stylesheets.
 
-CI runs on pushes to `main` and on pull requests: lint, the unit, tools and schematic tests, the
+CI runs on pushes to `main` and on pull requests: a dependency audit, lint, the unit, tools and schematic tests, the
 build, `styles:check` and a Storybook build. It doesn't run `test:stories`, so run that locally.
+
+### Storybook deployment
+
+Vercel builds the Storybook on every push, using [`vercel.json`](vercel.json): pushes to `main`
+update the production site and other branches get a preview URL. Node comes from `engines` in
+`package.json`.
 
 ### Layout
 
@@ -92,10 +98,24 @@ written. Add new examples the same way, using the `app-` selector prefix.
 
 ### Publishing
 
-```bash
-pnpm build
-cd dist/ngx-mud-ui && npm publish
-```
+Publishing a GitHub release tagged `v<version>` runs [`publish.yml`](.github/workflows/publish.yml):
+it checks that the tag matches `projects/ngx-mud-ui/package.json`, runs the checks, builds and
+publishes with a provenance attestation. It uses npm trusted publishing, so there is no npm token
+to leak.
+
+One-time setup: npm only lets an existing package trust a workflow, so publish the first version
+by hand (`pnpm build`, then `npm publish --access public` in `dist/ngx-mud-ui`, with 2FA on). Then,
+on npmjs.com, add `denisBriceag/ngx-mud-ui` with workflow `publish.yml` and environment `npm` as
+the package's trusted publisher, and set publishing access to require 2FA and disallow tokens.
+
+### Supply chain
+
+- `pnpm-workspace.yaml` refuses versions under 3 days old (`minimumReleaseAge`) and versions with
+  weaker publish evidence than earlier ones (`trustPolicy`), and only the listed packages may run
+  install scripts (`allowBuilds`, enforced by `strictDepBuilds`).
+- CI installs from the lockfile and fails on high or critical advisories (`pnpm audit`).
+- GitHub Actions are pinned to commit SHAs. Dependabot proposes weekly updates for npm and
+  Actions, also after a 3-day wait.
 
 ## License
 
