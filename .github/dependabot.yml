@@ -1,0 +1,23 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    # Same 3-day quarantine as minimumReleaseAge in pnpm-workspace.yaml.
+    cooldown:
+      default-days: 3
+    groups:
+      angular:
+        patterns: ['@angular/*', '@angular-devkit/*', '@schematics/angular', 'ng-packagr']
+      storybook:
+        patterns: ['storybook', '@storybook/*']
+      vitest:
+        patterns: ['vitest', '@vitest/*']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 3
